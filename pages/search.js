@@ -47,7 +47,7 @@ const search = () => {
   const [showFilter, setShowFilter] = useState(true)
   const { activeListings } = useMarketplaceContext()
   const router = useRouter()
-
+  const [categories, setCategories] = useState([])
   const [itemName, setItemName] = useState()
   const [includeImage, setIncludeImage] = useState()
   const [includeVideo, setIncludeVideo] = useState()
@@ -62,6 +62,14 @@ const search = () => {
   useEffect(() => {
     console.log(activeListings)
   }, [activeListings])
+
+  useEffect(async () => {
+    const query = `*[_type == "category"] {
+      name
+  }`
+    const res = await config.fetch(query)
+    setCategories(res)
+  }, [])
 
   useEffect(() => {
     const data = router.query
@@ -182,59 +190,29 @@ const search = () => {
         <div className="relative mb-12 flex flex-col">
           <div className="flex flex-col justify-between space-y-6 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-2 ">
             <nav
-              className="nc-Nav hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base"
+              className="hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base"
               data-nc-id="Nav"
             >
               <ul className="flex  sm:space-x-2">
-                <li className="nc-NavItem relative" data-nc-id="NavItem">
+                <li className="nc-NavItem relative">
                   <button className="bg-primary-100/90 dark:bg-primary-100 text-primary-900 block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none focus:outline-none sm:px-6 sm:py-3  sm:text-base">
                     All NFTs
                   </button>
                 </li>
-                <li className="nc-NavItem relative" data-nc-id="NavItem">
-                  <button
-                    className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
-                      dark
-                        ? 'hover:bg-slate-600 hover:text-slate-200'
-                        : 'hover:bg-sky-100'
-                    } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
-                  >
-                    Arts
-                  </button>
-                </li>
-                <li className="nc-NavItem relative" data-nc-id="NavItem">
-                  <button
-                    className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
-                      dark
-                        ? 'hover:bg-slate-600 hover:text-slate-200'
-                        : 'hover:bg-sky-100'
-                    } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
-                  >
-                    Musics
-                  </button>
-                </li>
-                <li className="nc-NavItem relative" data-nc-id="NavItem">
-                  <button
-                    className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
-                      dark
-                        ? 'hover:bg-slate-600 hover:text-slate-200'
-                        : 'hover:bg-sky-100'
-                    } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
-                  >
-                    Sports
-                  </button>
-                </li>
-                <li className="nc-NavItem relative" data-nc-id="NavItem">
-                  <button
-                    className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
-                      dark
-                        ? 'hover:bg-slate-600 hover:text-slate-200'
-                        : 'hover:bg-sky-100'
-                    } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
-                  >
-                    Photography
-                  </button>
-                </li>
+                {categories.length > 0 &&
+                  categories.map((item) => (
+                    <li className="nc-NavItem relative" data-nc-id="NavItem">
+                      <button
+                        className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
+                          dark
+                            ? 'hover:bg-slate-600 hover:text-slate-200'
+                            : 'hover:bg-sky-100'
+                        } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
+                      >
+                        {item.name}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </nav>
             <span className="block flex-shrink-0 text-right">
