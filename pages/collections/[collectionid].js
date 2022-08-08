@@ -137,9 +137,11 @@ const Collection = () => {
           errorToastStyle
         )
       },
+      onSuccess: (res) => {
+        console.log(res)
+      },
     }
   )
-  console.log(activeListings)
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', marketplaceAddress],
     getActiveListings(rpcUrl),

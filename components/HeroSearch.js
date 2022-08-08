@@ -4,6 +4,9 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useSearchContext } from '../contexts/SearchContext'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import Slider, { Range } from 'rc-slider'
+import { useRouter } from 'next/router'
+import 'rc-slider/assets/index.css'
 import {
   IconBulb,
   IconDollar,
@@ -13,12 +16,18 @@ import {
 
 const HeroSearch = () => {
   const { dark } = useThemeContext()
+  const [itemName, setItemName] = useState('')
   const [includeImage, setIncludeImage] = useState(true)
   const [includeVideo, setIncludeVideo] = useState(false)
   const [includeAudio, setIncludeAudio] = useState(false)
   const [includeAuction, setIncludeAuction] = useState(false)
   const [includeDirect, setIncludeDirect] = useState(true)
   const [includeHasOffers, setIncludeHasOffers] = useState(false)
+  const [priceRange, setPriceRange] = useState([0, 100])
+  const router = useRouter()
+  // useEffect(() => {
+  //   console.log(itemName)
+  // }, [itemName])
 
   return (
     <div className="heroSearchForm z-10 mb-12 w-full p-[20px] lg:mb-0">
@@ -40,6 +49,8 @@ const HeroSearch = () => {
                 <input
                   className="block w-full truncate border-none bg-transparent p-0 font-semibold placeholder-neutral-800 focus:placeholder-neutral-300 focus:outline-none focus:ring-0  xl:text-lg"
                   placeholder="Seach NFTs"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
                 />
                 <span className="mt-0.5 block text-sm font-light text-neutral-400 ">
                   <span className="line-clamp-1">
@@ -92,7 +103,7 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeImage}
-                          onChange={setIncludeImage}
+                          onChange={() => setIncludeImage((curVal) => !curVal)}
                           className={`${
                             includeImage ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -119,7 +130,7 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeVideo}
-                          onChange={setIncludeVideo}
+                          onChange={() => setIncludeVideo((curVal) => !curVal)}
                           className={`${
                             includeVideo ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -146,7 +157,7 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeAudio}
-                          onChange={setIncludeAudio}
+                          onChange={() => setIncludeAudio((curVal) => !curVal)}
                           className={`${
                             includeAudio ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -168,6 +179,7 @@ const HeroSearch = () => {
               </Transition>
             </Menu>
           </div>
+
           <div className="searchfields relative flex">
             <Menu as="div" className="relative inline-block text-left">
               <div>
@@ -212,7 +224,7 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeDirect}
-                          onChange={setIncludeDirect}
+                          onChange={() => setIncludeDirect((curVal) => !curVal)}
                           className={`${
                             includeDirect ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -239,7 +251,9 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeAuction}
-                          onChange={setIncludeAuction}
+                          onChange={() =>
+                            setIncludeAuction((curVal) => !curVal)
+                          }
                           className={`${
                             includeAuction ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -266,7 +280,9 @@ const HeroSearch = () => {
                         </div>
                         <Switch
                           checked={includeHasOffers}
-                          onChange={setIncludeHasOffers}
+                          onChange={() =>
+                            setIncludeHasOffers((curVal) => !curVal)
+                          }
                           className={`${
                             includeHasOffers ? 'bg-blue-500' : 'bg-neutral-400'
                           }
@@ -292,36 +308,77 @@ const HeroSearch = () => {
           </div>
 
           <div className="searchfields relative flex">
-            <button
-              className="[ nc-hero-field-padding ] flex w-full flex-shrink-0 cursor-pointer items-center space-x-3 text-left focus:outline-none "
-              id="headlessui-popover-button-:r1v:"
-              type="button"
-              aria-expanded="false"
-            >
-              <div className="text-neutral-300 dark:text-neutral-400">
-                <IconDollar />
-              </div>
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
+                  <div className="text-neutral-300 dark:text-neutral-400">
+                    <IconDollar />
+                  </div>
 
-              <div className="flex-grow">
-                <span className="block min-w-[170px] truncate font-semibold xl:text-lg">
-                  0.01ETH ~ 10ETH
-                </span>
-                <span className="mt-1 block text-sm font-light leading-none text-neutral-400 ">
-                  Price range
-                </span>
+                  <div className="flex-grow">
+                    <span className="block min-w-[130px] text-left font-semibold xl:text-lg">
+                      {priceRange[0]}ETH ~ {priceRange[1]}ETH
+                    </span>
+                    <span className="mt-1 block text-left text-sm font-light leading-none text-neutral-400 ">
+                      Price Range
+                    </span>
+                  </div>
+                </Menu.Button>
               </div>
-            </button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
+                  <div className="px-1 py-1 ">
+                    <Menu.Item>
+                      <div className="mb-3 font-bold">Select Price Range</div>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
+                        <Slider
+                          range
+                          allowCross={false}
+                          defaultValue={priceRange}
+                          onChange={(value) => setPriceRange(value)}
+                        />
+                      </div>
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
           </div>
 
           <div className="py-4 pl-4 lg:py-0">
-            <a
+            <button
               type="button"
               className="flex h-14 w-full items-center justify-center rounded-full bg-blue-500 text-neutral-50 hover:bg-blue-700 focus:outline-none md:h-16 md:w-16"
-              href="/search"
+              onClick={() => {
+                router.push({
+                  pathname: '/search',
+                  query: {
+                    n: itemName,
+                    i: includeImage,
+                    v: includeVideo,
+                    a: includeAudio,
+                    d: includeDirect,
+                    ac: includeAuction,
+                    h: includeHasOffers,
+                    _r: priceRange[0],
+                    r_: priceRange[1],
+                  },
+                })
+              }}
             >
               <span className="mr-3 md:hidden">Search</span>
               <RiSearchLine fontSize="25px" />
-            </a>
+            </button>
           </div>
         </form>
       </div>

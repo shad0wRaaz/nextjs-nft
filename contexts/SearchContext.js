@@ -1,17 +1,12 @@
-import {createContext, useContext, useState} from 'react';
+import { createContext, useContext, useState, useEffect } from 'react'
 
-const SearchContext = createContext();
+const SearchContext = createContext()
 
-export function SearchProvider({children}) {
-    const [collectionArray, setCollectionArray] = useState([{address: 'asdf', name:'monkey'}])
-    return(
-        <SearchContext.Provider value={{collectionArray, setCollectionArray}}>
-            {children}
-        </SearchContext.Provider>
-    )
+export function SearchProvider({ children }) {
+  return <SearchContext.Provider value={{}}>{children}</SearchContext.Provider>
 }
 
 //Export useContext Hook
 export function useSearchContext() {
-    return useContext(SearchContext);
+  return useContext(SearchContext)
 }

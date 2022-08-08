@@ -372,7 +372,7 @@ export const IconFollowing = () => {
 }
 export const IconFilter = () => {
   return (
-    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
       <path
         d="M14.3201 19.07C14.3201 19.68 13.92 20.48 13.41 20.79L12.0001 21.7C10.6901 22.51 8.87006 21.6 8.87006 19.98V14.63C8.87006 13.92 8.47006 13.01 8.06006 12.51L4.22003 8.47C3.71003 7.96 3.31006 7.06001 3.31006 6.45001V4.13C3.31006 2.92 4.22008 2.01001 5.33008 2.01001H18.67C19.78 2.01001 20.6901 2.92 20.6901 4.03V6.25C20.6901 7.06 20.1801 8.07001 19.6801 8.57001"
         stroke="currentColor"
@@ -469,7 +469,7 @@ export const IconOffer = () => {
 export const IconDollar = () => {
   return (
     <svg
-      class="nc-icon-field nc-icon-field-2"
+      className="nc-icon-field nc-icon-field-2"
       width="24"
       height="24"
       fill="none"
@@ -500,7 +500,7 @@ export const IconDollar = () => {
       ></path>
       <path
         stroke="currentColor"
-        sstrokeWidth="1.5"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M12 15.75V16.25"
@@ -667,6 +667,51 @@ export const IconSearch = () => {
       ></path>
       <path
         d="M22 22L20 20"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </svg>
+  )
+}
+export const IconExchange = () => {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M11.5166 5.70834L14.0499 8.24168"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M11.5166 14.2917V5.70834"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M8.48327 14.2917L5.94995 11.7583"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M8.48315 5.70834V14.2917"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M10.0001 18.3333C14.6025 18.3333 18.3334 14.6024 18.3334 10C18.3334 5.39763 14.6025 1.66667 10.0001 1.66667C5.39771 1.66667 1.66675 5.39763 1.66675 10C1.66675 14.6024 5.39771 18.3333 10.0001 18.3333Z"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"

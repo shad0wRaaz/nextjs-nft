@@ -29,7 +29,7 @@ const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
   formWrapper: 'flex flex-wrap flex-col ',
   pageTitle: 'm-4 ml-1 font-bold text-3xl text-gray-200 flex gap-[15px]',
-  smallText: 'text-sm m-2 text-[#bbb] mt-0 mb-0 leading-4',
+  smallText: 'text-sm m-2 text-[#bbb] mt-0 mb-0',
   subHeading:
     'text-xl font-bold m-2 mt-[2.5rem] mb-2 pt-[2rem] border-t-slate-700 border-t border-dashed',
   input:
@@ -109,6 +109,7 @@ const CreateNFT = () => {
           propertyValue: '',
         },
       ],
+      category: '',
     },
   })
 
@@ -118,7 +119,8 @@ const CreateNFT = () => {
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()
-  const [profile, setProfile] = useState()
+  const [fileType, setFileType] = useState()
+  // const [fileType, setFileType] = useState('image')
   const connectWithMetamask = useMetamask()
   const { myCollections, setMyCollections } = useUserContext()
   const [
@@ -360,6 +362,14 @@ const CreateNFT = () => {
     }),
   }
 
+  const checkFileType = (base64) => {
+    let start = base64.indexOf('/') + 1
+    let end = base64.indexOf(';base64') - start
+
+    setFileType(base64.substr(start, end))
+    console.log(base64.substr(start, end))
+  }
+
   return (
     <div className={style.wrapper}>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -384,31 +394,66 @@ const CreateNFT = () => {
                   })
                 }
               />
+              <div className="flex justify-between gap-2">
+                <div className="w-[1/2]">
+                  <p className={style.label}>Image, Audio, Video*</p>
+                  <p className={style.smallText}>
+                    Supported file types: JPG, PNG, GIF, SVG, WEBP, MP4, WEBM,
+                    MP3, WAV, OGG. Max size: 5MB
+                  </p>
+                  <div
+                    className={style.previewImage}
+                    style={{ height: '200px', width: '300px' }}
+                  >
+                    {isNaN(state.image) && <MediaRenderer src={state.image} />}
+                  </div>
+                  <div className="imageUploader mb-4 ml-3">
+                    <FileBase
+                      type="file"
+                      multiple={false}
+                      onDone={({ base64 }) => {
+                        checkFileType(base64)
+                        dispatch({
+                          type: 'CHANGE_IMAGE',
+                          payload: { image: base64 },
+                        })
+                      }}
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <p className={style.label}>Image, Audio, Video*</p>
-                <p className={style.smallText}>
-                  Supported file types: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
-                  OGG. Max size: 5MB
-                </p>
-                <div
-                  className={style.previewImage}
-                  style={{ height: '200px', width: '300px' }}
-                >
-                  {isNaN(state.image) && <MediaRenderer src={state.image} />}
-                </div>
-                <div className="imageUploader mb-4 ml-3">
-                  <FileBase
-                    type="file"
-                    multiple={false}
-                    onDone={({ base64 }) =>
-                      dispatch({
-                        type: 'CHANGE_IMAGE',
-                        payload: { image: base64 },
-                      })
-                    }
-                  />
-                </div>
+                {fileType &&
+                  (fileType === 'mp3' ||
+                    fileType == 'mp4' ||
+                    fileType === 'mpeg') && (
+                    <div className="w-[1/2]">
+                      <p className={style.label}>Cover Image Uploader</p>
+                      <p className={style.smallText}>
+                        Supported file types: JPG, PNG, GIF, WEBP. Max size: 5MB
+                      </p>
+                      <div
+                        className={style.previewImage}
+                        style={{ height: '200px', width: '300px' }}
+                      >
+                        {isNaN(state.image) && (
+                          <MediaRenderer src={state.image} />
+                        )}
+                      </div>
+                      <div className="imageUploader mb-4 ml-3">
+                        <FileBase
+                          type="file"
+                          multiple={false}
+                          onDone={({ base64 }) => {
+                            checkFileType(base64)
+                            dispatch({
+                              type: 'CHANGE_IMAGE',
+                              payload: { image: base64 },
+                            })
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
               </div>
 
               <p className={style.label}>Item Description</p>

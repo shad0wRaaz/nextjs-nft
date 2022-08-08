@@ -104,7 +104,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
       },
       onSuccess: (res) => {
         ;(async () => {
-          setUserProfile(await getUnsignedImagePath(res.profileImage))
+          setUserProfile(await getUnsignedImagePath(res?.profileImage))
         })()
         //check if the item is in auction, if in auction, owner will be marketplace
         if (

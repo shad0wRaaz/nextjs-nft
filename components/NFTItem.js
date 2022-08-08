@@ -39,11 +39,8 @@ const NFTItem = ({ nftItem }) => {
           <div className="aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
             <img
               src={nftItem.asset.image}
-              unoptimized
               className="rounded-2xl object-cover transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-              alt="nc-imgs"
-              objectFit="cover"
-              layout="fill"
+              alt={nftItem.asset.name}
             />
           </div>
 
