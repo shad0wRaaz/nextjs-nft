@@ -2,10 +2,10 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NFTItem from '../components/NFTItem'
 import { config } from '../lib/sanityClient'
+import { HiOutlineViewGrid } from 'react-icons/hi'
 import { BsChevronUp, BiChevronDown, BsChevronDown } from 'react-icons/bs'
 import { FiArrowRight } from 'react-icons/fi'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useSearchContext } from '../contexts/SearchContext'
 import { useRouter } from 'next/router'
 import {
   IconBulb,
@@ -22,6 +22,7 @@ import Slider, { Range } from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import { Menu, Transition, Switch } from '@headlessui/react'
 import { BigNumber } from 'ethers'
+import ReactPaginate from 'react-paginate'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -59,6 +60,24 @@ const search = () => {
   const [priceRange, setPriceRange] = useState([0, 100])
   const [sortAsc, setSortAsc] = useState(true)
   const [filteredListings, setFilteredListings] = useState()
+
+  //variables for pagination
+  const [itemsPerPage, setItemsPerPage] = useState(4)
+  const [currentItems, setCurrentItems] = useState(null)
+  const [pageCount, setPageCount] = useState(0)
+  const [itemOffset, setItemOffset] = useState(0)
+
+  useEffect(() => {
+    if (!filteredListings) return
+    const endOffset = itemOffset + itemsPerPage
+    setCurrentItems(filteredListings.slice(itemOffset, endOffset))
+    setPageCount(Math.ceil(filteredListings.length / itemsPerPage))
+  }, [itemOffset, itemsPerPage, filteredListings])
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % filteredListings.length
+    setItemOffset(newOffset)
+  }
 
   useEffect(() => {
     console.log(activeListings)
@@ -731,29 +750,143 @@ const search = () => {
           </div>
         )}
 
-        {filteredListings?.length > 0 && (
-          <div className={style.nftwrapper}>
-            {filteredListings?.map((nftItem, id) => {
-              if (itemName) {
-                if (
-                  nftItem.asset.name
-                    .toLowerCase()
-                    .includes(itemName.toLowerCase())
-                ) {
+        {currentItems?.length > 0 && (
+          <>
+            <div className={style.nftwrapper}>
+              {currentItems?.map((nftItem, id) => {
+                if (itemName) {
+                  if (
+                    nftItem.asset.name
+                      .toLowerCase()
+                      .includes(itemName.toLowerCase())
+                  ) {
+                    return <NFTItem key={id} nftItem={nftItem} />
+                  }
+                } else {
                   return <NFTItem key={id} nftItem={nftItem} />
                 }
-              } else {
-                return <NFTItem key={id} nftItem={nftItem} />
-              }
-            })}
-            {/* {activeListings?.map((nftItem, id) => {
-              if(nftItem.asset.name.includes(itemName)){
-                return (
-                  <NFTItem key={id} nftItem={nftItem} />
-                )
-              })
-            })} */}
-          </div>
+              })}
+              {/* {activeListings?.map((nftItem, id) => {
+                if(nftItem.asset.name.includes(itemName)){
+                  return (
+                    <NFTItem key={id} nftItem={nftItem} />
+                  )
+                })
+              })} */}
+            </div>
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={pageCount}
+              previousLabel="<"
+              renderOnZeroPageCount={null}
+              className="mt-[4rem] flex justify-center gap-3"
+              previousClassName="px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] hover:bg-neutral-100 cursor-pointer hover:border-neutral-200"
+              nextClassName="px-3 rounded-full flex items-center justify-center border h-[50px] w-[50px] hover:bg-neutral-100 cursor-pointer hover:border-neutral-200"
+              activeClassName="bg-sky-600 border-sky-700 text-sky-100 hover:bg-sky-600 border"
+              pageLinkClassName="p-3"
+              pageClassName="flex items-center justify-center rounded-full border w-[50px] h-[50px] hover:bg-neutral-100 hover:border-neutral-200 cursor-pointer"
+            />
+
+            {/* Selection of items per page */}
+            <Menu
+              as="div"
+              className="relative mt-4 flex justify-center text-left"
+            >
+              {({ open }) => (
+                <>
+                  <div>
+                    <Menu.Button
+                      className={`border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
+                        dark
+                          ? 'border-sky-700/30 hover:border-sky-700/60'
+                          : 'border-neutral-200 hover:border-neutral-400'
+                      } px-4 py-2 text-sm focus:outline-none`}
+                    >
+                      <HiOutlineViewGrid />
+                      <span className="ml-2">
+                        Showing{' '}
+                        {itemsPerPage == '100000' ? 'All' : itemsPerPage} items
+                      </span>
+                      <span className="bg-primary-500 ml-3 flex h-4 w-4 flex-shrink-0 cursor-pointer items-center justify-center rounded-full">
+                        <BsChevronDown
+                          className={`transition ${open && 'rotate-180'}`}
+                        />
+                      </span>
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      className={`absolute top-full z-30 mt-3 max-w-sm translate-y-0 rounded-3xl text-sm ${
+                        dark ? 'bg-slate-700' : 'bg-white'
+                      } py-5 px-4 opacity-100 shadow-xl sm:py-6 sm:px-8`}
+                    >
+                      <div className="px-1 py-1 ">
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage('100000')}
+                          >
+                            Show All
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage(4)}
+                          >
+                            Show 4 items per page
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage(8)}
+                          >
+                            Show 8 items per page
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage(12)}
+                          >
+                            Show 12 items per page
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage(16)}
+                          >
+                            Show 16 items per page
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div
+                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            onClick={() => setItemsPerPage(20)}
+                          >
+                            Show 20 items per page
+                          </div>
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </>
+              )}
+            </Menu>
+          </>
         )}
       </div>
       <Footer />
