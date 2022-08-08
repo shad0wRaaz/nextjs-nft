@@ -48,6 +48,7 @@ const search = () => {
   const { activeListings } = useMarketplaceContext()
   const router = useRouter()
   const [categories, setCategories] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [itemName, setItemName] = useState()
   const [includeImage, setIncludeImage] = useState()
   const [includeVideo, setIncludeVideo] = useState()
@@ -195,7 +196,18 @@ const search = () => {
             >
               <ul className="flex  sm:space-x-2">
                 <li className="nc-NavItem relative">
-                  <button className="bg-primary-100/90 dark:bg-primary-100 text-primary-900 block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none focus:outline-none sm:px-6 sm:py-3  sm:text-base">
+                  <button
+                    className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
+                      dark
+                        ? selectedCategory === 'all'
+                          ? 'bg-slate-600 text-slate-200'
+                          : 'text-slate-500 hover:bg-slate-600 hover:text-slate-200'
+                        : selectedCategory === 'all'
+                        ? 'bg-sky-100 text-neutral-800'
+                        : 'text-neutral-500 hover:bg-sky-100'
+                    } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
+                    onClick={() => setSelectedCategory('all')}
+                  >
                     All NFTs
                   </button>
                 </li>
@@ -203,11 +215,16 @@ const search = () => {
                   categories.map((item) => (
                     <li className="nc-NavItem relative" data-nc-id="NavItem">
                       <button
-                        className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none text-neutral-500 hover:text-neutral-800 ${
+                        className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
                           dark
-                            ? 'hover:bg-slate-600 hover:text-slate-200'
-                            : 'hover:bg-sky-100'
+                            ? selectedCategory === item.name
+                              ? 'bg-slate-600 text-slate-200'
+                              : 'text-slate-500 hover:bg-slate-600 hover:text-slate-200'
+                            : selectedCategory === item.name
+                            ? 'bg-sky-100 text-neutral-800'
+                            : 'text-neutral-500 hover:bg-sky-100'
                         } focus:outline-none  sm:px-6 sm:py-3 sm:text-base`}
+                        onClick={() => setSelectedCategory(`${item.name}`)}
                       >
                         {item.name}
                       </button>
