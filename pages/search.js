@@ -126,6 +126,12 @@ const search = () => {
       })
     }
 
+    if (selectedCategory != 'all') {
+      data = data.filter((item) => {
+        return item.asset.properties.category == selectedCategory
+      })
+    }
+
     data = data.filter((item) => {
       let itemPrice = item.buyoutPrice / DIVIDER
       return (
@@ -136,7 +142,7 @@ const search = () => {
     })
 
     setFilteredListings(data)
-  }, [itemName, activeListings, priceRange, sortAsc])
+  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
