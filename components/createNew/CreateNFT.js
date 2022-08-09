@@ -76,6 +76,11 @@ function reducer(state, action) {
         ...state,
         properties: { ...state.properties, traits: action.payload.traits },
       }
+    case 'CHANGE_CATEGORY':
+      return {
+        ...state,
+        properties: { ...state.properties, category: action.payload.category },
+      }
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
@@ -89,6 +94,7 @@ function reducer(state, action) {
               propertyValue: '',
             },
           ],
+          category: '',
         },
       }
     default:
@@ -362,6 +368,17 @@ const CreateNFT = () => {
     }),
   }
 
+  const updateCategory = async (collectionName) => {
+    const query = `*[_type == "nftCollection" && name == "${collectionName}"]{category}`
+    const res = await config.fetch(query)
+    if (res) {
+      dispatch({
+        type: 'CHANGE_CATEGORY',
+        payload: { category: res[0].category },
+      })
+    }
+  }
+
   const checkFileType = (base64) => {
     let start = base64.indexOf('/') + 1
     let end = base64.indexOf(';base64') - start
@@ -482,7 +499,10 @@ const CreateNFT = () => {
                   {myCollections?.length > 0 ? (
                     <RadioGroup
                       value={selectedCollection}
-                      onChange={(e) => setSelectedCollection(e)}
+                      onChange={(e) => {
+                        updateCategory(e.name)
+                        setSelectedCollection(e)
+                      }}
                     >
                       <RadioGroup.Label className="sr-only">
                         Server size

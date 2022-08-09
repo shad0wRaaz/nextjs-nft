@@ -23,6 +23,7 @@ import 'rc-slider/assets/index.css'
 import { Menu, Transition, Switch } from '@headlessui/react'
 import { BigNumber } from 'ethers'
 import ReactPaginate from 'react-paginate'
+import SearchItem from '../components/SearchItem'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -760,10 +761,10 @@ const search = () => {
                       .toLowerCase()
                       .includes(itemName.toLowerCase())
                   ) {
-                    return <NFTItem key={id} nftItem={nftItem} />
+                    return <SearchItem key={id} nftItem={nftItem} />
                   }
                 } else {
-                  return <NFTItem key={id} nftItem={nftItem} />
+                  return <SearchItem key={id} nftItem={nftItem} />
                 }
               })}
               {/* {activeListings?.map((nftItem, id) => {

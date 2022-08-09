@@ -87,7 +87,9 @@ const BrowseByCategory = () => {
         }
       >
         <h2 className={dark ? style.title : style.title + ' text-black'}>
-          Browse by Category
+          <span>
+            Browse <span className="textGradBlue">Collections</span> by Category
+          </span>
           <div className={style.controls}>
             <HiArrowSmLeft
               fontSize="25px"
@@ -114,7 +116,7 @@ const BrowseByCategory = () => {
                     <div className={style.imageContainer}>
                       <img
                         src={category.imageUrl}
-                        className="h-[160px] w-[100%] cursor-pointer transition hover:scale-125"
+                        className="h-[160px] w-[100%] cursor-pointer object-cover transition hover:scale-125"
                       />
                     </div>
                     <div className={style.collectionCardName}>
