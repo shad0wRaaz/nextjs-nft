@@ -7,7 +7,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.100.0",
     "@aws-sdk/s3-request-presigner": "^3.100.0",
-    "@prisma/client": "^4.1.0",
+    "@sanity/client": "^3.3.3",
     "aws-sdk": "^2.853.0",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",

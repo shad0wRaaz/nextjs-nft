@@ -34,7 +34,7 @@ const SearchItem = ({ nftItem }) => {
           <div className="relative flex-shrink-0 ">
             <div>
               <div
-                className="nc-NcImage aspect-w-11 aspect-h-12 z-0 flex h-[300px] w-[300px] cursor-pointer overflow-hidden rounded-3xl"
+                className="aspect-w-11 aspect-h-12 z-0 flex h-[300px] w-full cursor-pointer overflow-hidden rounded-3xl"
                 data-nc-id="NcImage"
               >
                 <img
@@ -131,12 +131,12 @@ const SearchItem = ({ nftItem }) => {
 
             <h2 className="text-lg font-medium">{nftItem.asset.name}</h2>
 
-            <div className="w-2d4 w-full border-b border-neutral-100"></div>
+            <div className={`w-2d4 w-full border-b ${dark ? 'border-sky-700/30' : 'border-neutral-100'}`}></div>
 
             <div className="flex items-end justify-between ">
               <div className="pt-3">
                 <div className="relative flex items-baseline rounded-lg border-2 border-green-500 py-1.5 px-2.5 text-sm font-semibold sm:text-base md:py-2 md:px-3.5 ">
-                  <span className="absolute bottom-full -mx-1 block translate-y-1 bg-white p-1 text-xs font-normal text-neutral-500 group-hover:bg-neutral-50">
+                  <span className={`absolute bottom-full -mx-1 block translate-y-1 p-1 ${dark ? 'bg-slate-900 text-slate-300' : 'bg-white text-neutral-500'} text-xs font-normal text-neutral-500`}>
                     Price
                   </span>
 
@@ -147,7 +147,7 @@ const SearchItem = ({ nftItem }) => {
                 </div>
               </div>
 
-              <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+              <div className={`flex items-center text-sm ${dark ? 'text-slate-500': 'text-neutral-500'}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -164,7 +164,7 @@ const SearchItem = ({ nftItem }) => {
                   ></path>
                 </svg>
 
-                <span className="ml-1 mt-0.5">17 hours left</span>
+                <span className={`ml-1 mt-0.5 ${dark ? 'text-slate-500': 'text-neutral-500'}`}>17 hours left</span>
               </div>
             </div>
           </div>
@@ -175,3 +175,4 @@ const SearchItem = ({ nftItem }) => {
 }
 
 export default SearchItem
+

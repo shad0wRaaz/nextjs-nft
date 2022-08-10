@@ -174,7 +174,7 @@ const search = () => {
             : style.pageBanner + ' bg-sky-100'
         }
       >
-        <div className="container relative -bottom-[100px] mx-auto">
+        <div className="container relative -bottom-[100px] mx-auto p-4">
           <header className="mx-auto -mt-10 flex max-w-2xl flex-col lg:-mt-7">
             <form
               className="relative w-full "
@@ -213,7 +213,7 @@ const search = () => {
         </div>
       </div>
 
-      <div className="space-t-16 lg:space-t-28 container mx-auto pt-16 lg:pt-20">
+      <div className="space-t-16 lg:space-t-28 container p-4 mx-auto pt-16 lg:pt-20">
         <div className="relative mb-12 flex flex-col">
           <div className="flex flex-col justify-between space-y-6 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-2 ">
             <nav
@@ -743,7 +743,7 @@ const search = () => {
           </div>
         </div>
       </div>
-      <div className="container mx-auto">
+      <div className="container mx-auto p-4">
         {!filteredListings && <Loader />}
         {filteredListings?.length == 0 && (
           <div className="flex justify-center">
@@ -784,11 +784,11 @@ const search = () => {
               previousLabel="<"
               renderOnZeroPageCount={null}
               className="mt-[4rem] flex justify-center gap-3"
-              previousClassName="px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] hover:bg-neutral-100 cursor-pointer hover:border-neutral-200"
-              nextClassName="px-3 rounded-full flex items-center justify-center border h-[50px] w-[50px] hover:bg-neutral-100 cursor-pointer hover:border-neutral-200"
+              previousClassName={`px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] cursor-pointer ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
+              nextClassName={`px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] cursor-pointer ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
               activeClassName="bg-sky-600 border-sky-700 text-sky-100 hover:bg-sky-600 border"
               pageLinkClassName="p-3"
-              pageClassName="flex items-center justify-center rounded-full border w-[50px] h-[50px] hover:bg-neutral-100 hover:border-neutral-200 cursor-pointer"
+              pageClassName={`flex items-center justify-center rounded-full border w-[50px] h-[50px]  ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'} cursor-pointer`}
             />
 
             {/* Selection of items per page */}
@@ -896,3 +896,4 @@ const search = () => {
 }
 
 export default search
+
