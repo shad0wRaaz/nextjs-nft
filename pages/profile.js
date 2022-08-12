@@ -13,15 +13,18 @@ import { IconLoading } from '../components/icons/CustomIcons'
 import { QueryClient } from 'react-query'
 import axios from 'axios'
 import { getUnsignedImagePath } from '../fetchers/s3'
+import noProfileImage from '../assets/noProfileImage.png'
+import noBannerImage from '../assets/noBannerImage.png'
 
 const style = {
   wrapper: '',
   pageBanner: 'py-[4rem] mb-[2rem]',
   container:
     'container mx-auto p-3 pt-[2rem] px-[1.2rem] max-w-[700px] rounded-xl',
-  formWrapper: 'flex flex-wrap flex-col ',
+  formWrapper: 'flex flex-wrap flex-col gap-3',
   pageTitle: 'text-4xl font-bold text-center textGradBlue',
   input: 'm-2 outline-none p-3 border rounded-xl transition linear',
+  inputgroup: 'p-3 border rounded-xl transition linear',
   label: 'font-bold m-2 ',
   button:
     'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500',
@@ -55,8 +58,12 @@ const profile = () => {
   useEffect(async () => {
     if (!myUser) return
     setUserDoc({ ...myUser })
-    setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
-    setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
+    if(myUser.profileImage) {
+      setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
+    }
+    if(myUser.bannerImage){
+      setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
+    }
   }, [myUser])
 
   function previewImage(target) {
@@ -90,35 +97,38 @@ const profile = () => {
     setIsSaving(true)
     try {
       //saving profile image
-      console.log(address)
+      if(profile){
+        const formdata = new FormData()
+        formdata.append('profile', profile)
+        formdata.append('userAddress', address)
+  
+        const result = await axios.post(
+          'http://localhost:8080/api/saveS3Image',
+          formdata,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+      }
 
-      const formdata = new FormData()
-      formdata.append('profile', profile)
-      formdata.append('userAddress', address)
-
-      const result = await axios.post(
-        'http://localhost:8080/api/saveS3Image',
-        formdata,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
       //saving banner image
-      const bannerData = new FormData()
-      bannerData.append('banner', banner)
-      bannerData.append('userAddress', address)
-
-      const result2 = await axios.post(
-        'http://localhost:8080/api/saveS3Banner',
-        bannerData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
+      if(banner){
+        const bannerData = new FormData()
+        bannerData.append('banner', banner)
+        bannerData.append('userAddress', address)
+  
+        const result2 = await axios.post(
+          'http://localhost:8080/api/saveS3Banner',
+          bannerData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+      }
     } catch (error) {
       console.log(error)
     }
@@ -127,10 +137,12 @@ const profile = () => {
         .patch(address)
         .set({
           userName: userDoc.userName,
-          twitterHandle: userDoc.twitterHandle,
           biography: userDoc.biography,
-          igHandle: userDoc.igHandle,
-          fbhHandle: userDoc.fbhHandle,
+          twitterHandle: 'https://twitter.com/'.concat(userDoc.twitterHandle),
+          igHandle: 'https://instagram.com/'.concat(userDoc.igHandle),
+          fbhHandle: 'https://facebook.com/'.concat(userDoc.fbhHandle),
+          bannerImage: 'bannerImage-'.concat(address),
+          profileImage: 'profileImage-'.concat(address),
         })
         .commit()
         .then(() => {
@@ -144,8 +156,8 @@ const profile = () => {
   }
 
   // useEffect(() => {
-  //   console.log(userDoc)
-  // }, [userDoc])
+  //   console.log(profile)
+  // }, [profile])
   return (
     <div
       className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}
@@ -219,11 +231,11 @@ const profile = () => {
                     style={{ height: '200px', width: '300px' }}
                   >
                     {/* <img src={`${myUser.profileImage}`} id="pImage" /> */}
-                    <img
-                      src={profileImageUrl?.data?.url}
-                      id="pImage"
-                      className="w-full object-cover"
-                    />
+                      <img
+                        src={profileImageUrl ? profileImageUrl?.data?.url : noProfileImage.src}
+                        id="pImage"
+                        className="w-full object-cover"
+                      />
                     {/* <img
                       src={myUser?.profileImage ? myUser?.profileImage : ' '}
                     /> */}
@@ -246,11 +258,11 @@ const profile = () => {
                   /> */}
                   <p className={style.label}>Banner Address</p>
                   <div className={style.bannerImageContainer}>
-                    <img
-                      id="bImage"
-                      src={bannerImageUrl?.data?.url}
-                      className="w-full object-cover"
-                    />
+                      <img
+                        id="bImage"
+                        src={bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src}
+                        className="w-full object-cover"
+                      />
                   </div>
                   <input
                     id="bannerImg"
@@ -268,54 +280,87 @@ const profile = () => {
                     }
                   /> */}
                   <p className={style.label}>Twitter Link</p>
-                  <input
-                    type="text"
-                    className={
-                      dark
-                        ? style.input +
-                          ' border-slate-600 bg-slate-700 hover:bg-slate-600'
-                        : style.input +
-                          ' border-neutral-200 hover:bg-neutral-100 '
-                    }
-                    value={userDoc?.twitterHandle ? userDoc?.twitterHandle : ''}
-                    onChange={(e) =>
-                      setUserDoc({ ...userDoc, twitterHandle: e.target.value })
-                    }
-                  />
+                  <div className="flex w-full">
+                    <div className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600'
+                          : style.inputgroup +
+                            ' border-neutral-200 bg-neutral-100 '
+                      } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
+                      <span>https://twitter.com/</span>
+                    </div>
+                    <input
+                      type="text"
+                      className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600 w-full'
+                          : style.inputgroup +
+                            ' border-neutral-200 hover:bg-neutral-100 w-full'
+                      }
+                      value={userDoc?.twitterHandle ? userDoc?.twitterHandle : ''}
+                      onChange={(e) =>
+                        setUserDoc({ ...userDoc, twitterHandle: e.target.value })
+                      } style={{ borderTopLeftRadius : '0', borderBottomLeftRadius : '0', borderLeft: '0'}}
+                    />
+                  </div>
                   <p className={style.label}>Instagram Link</p>
-                  <input
-                    type="text"
-                    className={
-                      dark
-                        ? style.input +
-                          ' border-slate-600 bg-slate-700 hover:bg-slate-600'
-                        : style.input +
-                          ' border-neutral-200 hover:bg-neutral-100 '
-                    }
-                    value={userDoc?.igHandle ? userDoc?.igHandle : ''}
-                    onChange={(e) =>
-                      setUserDoc({ ...userDoc, igHandle: e.target.value })
-                    }
-                  />
+                  <div className="flex w-full">
+                    <div className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600'
+                          : style.inputgroup +
+                            ' border-neutral-200 bg-neutral-100 '
+                      } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
+                      <span>https://instagram.com/</span>
+                    </div>
+                    <input
+                      type="text"
+                      className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600 w-full'
+                          : style.inputgroup +
+                            ' border-neutral-200 hover:bg-neutral-100 w-full'
+                      }
+                      value={userDoc?.igHandle ? userDoc?.igHandle : ''}
+                      onChange={(e) =>
+                        setUserDoc({ ...userDoc, igHandle: e.target.value })
+                      } style={{ borderTopLeftRadius : '0', borderBottomLeftRadius : '0', borderLeft: '0'}}
+                    />
+                  </div>
                   <p className={style.label}>Facebook Link</p>
-                  <input
-                    type="text"
-                    className={
-                      dark
-                        ? style.input +
-                          ' border-slate-600 bg-slate-700 hover:bg-slate-600'
-                        : style.input +
-                          ' border-neutral-200 hover:bg-neutral-100 '
-                    }
-                    value={userDoc?.fbhHandle ? userDoc?.fbhHandle : ''}
-                    onChange={(e) =>
-                      setUserDoc({ ...userDoc, fbhHandle: e.target.value })
-                    }
-                  />
+                  <div className="flex w-full">
+                    <div className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600'
+                          : style.inputgroup +
+                            ' border-neutral-200 bg-neutral-100'
+                      } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
+                      <span>https://facebook.com/</span>
+                    </div>
+                    <input
+                      type="text"
+                      className={
+                        dark
+                          ? style.inputgroup +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600 w-full'
+                          : style.inputgroup +
+                            ' border-neutral-200 hover:bg-neutral-100 w-full'
+                      }
+                      value={userDoc?.fbhHandle ? userDoc?.fbhHandle : ''}
+                      onChange={(e) =>
+                        setUserDoc({ ...userDoc, fbhHandle: e.target.value })
+                      } style={{ borderTopLeftRadius : '0', borderBottomLeftRadius : '0', borderLeft: '0'}}
+                    />
+                  </div>
                   {isSaving ? (
                     <button
                       type="button"
-                      className={style.button + ' flex justify-center gap-2'}
+                      className={style.button + ' flex justify-center gap-2 ml-0'}
                       disabled
                     >
                       <IconLoading dark={'inbutton'} />
@@ -324,7 +369,7 @@ const profile = () => {
                   ) : (
                     <input
                       type="submit"
-                      className={style.button}
+                      className={style.button + ' ml-0'}
                       value="Save"
                     />
                   )}
