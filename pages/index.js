@@ -60,6 +60,8 @@ const Home = () => {
         _id: address,
         userName: 'Unnamed',
         walletAddress: address,
+        profileImage: 'profileImage-'.concat(address),
+        bannerImage: 'bannerImage-'.concat(address),
       }
 
       const result = await config.createIfNotExists(userDoc);

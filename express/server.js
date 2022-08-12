@@ -72,6 +72,7 @@ app.get('/api/getS3Image', async (req, res) => {
 
 app.post('/api/saveS3Image', upload.single('profile'), async (req, res) => {
   const address = req.body.userAddress
+  console.log(req.file.buffer)
   // const imageName = randomImageName() + '-' + req.file.originalname
   const imageName = 'profileImage-' + address
 

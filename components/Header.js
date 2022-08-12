@@ -791,7 +791,7 @@ const Header = () => {
                             <div className="relative h-[50px] w-[50px] rounded-full">
                               <img
                                 className="h-[50px] w-[50px] rounded-full object-cover "
-                                src={myProfileImage.data.url}
+                                src={myProfileImage?.data.url}
                               />
                             </div>
                             <div>

@@ -16,7 +16,8 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import GeneralDetails from '../../components/nft/GeneralDetails'
 import { useAddress, useNFTCollection } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-
+import BrowseByCategory from '../../components/BrowseByCategory'
+import RelatedNFTs from '../../components/RelatedNFTs'
 import {
   HiOutlineDocumentText,
   HiOutlineStar,
@@ -528,6 +529,8 @@ const Nft = () => {
           </div>
         </div>
       </main>
+      <RelatedNFTs collection={collectionData}/>
+      <BrowseByCategory />
       <Footer />
     </div>
   )
