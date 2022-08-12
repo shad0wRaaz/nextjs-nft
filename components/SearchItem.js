@@ -5,6 +5,7 @@ import { config } from '../lib/sanityClient'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
+import { RiTimerLine } from 'react-icons/ri'
 
 const SearchItem = ({ nftItem }) => {
   const [likers, setLikers] = useState([])
@@ -24,7 +25,7 @@ const SearchItem = ({ nftItem }) => {
   }, [nftItem])
 
   return (
-    <div className="group relative flex flex-col !border-0">
+    <div className={`group relative flex flex-col !border-0 shadow-sm rounded-3xl ${dark ? 'bg-slate-700': 'bg-white'}`}>
       <Link
         href={`/nfts/${BigNumber.from(nftItem.asset.id).toNumber()}?c=${
           nftItem.assetContractAddress
@@ -85,7 +86,7 @@ const SearchItem = ({ nftItem }) => {
             <div className="absolute inset-x-3 top-3 flex"></div>
           </div>
 
-          <div className="space-y-3 p-4 py-5">
+          <div className="space-y-3 p-8 py-5">
             {/* <div className="flex justify-between" style={{ display: 'hidden' }}>
               <div className="flex -space-x-1 ">
                 <div className="wil-avatar relative inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-white dark:ring-neutral-900">
@@ -136,7 +137,7 @@ const SearchItem = ({ nftItem }) => {
             <div className="flex items-end justify-between ">
               <div className="pt-3">
                 <div className="relative flex items-baseline rounded-lg border-2 border-green-500 py-1.5 px-2.5 text-sm font-semibold sm:text-base md:py-2 md:px-3.5 ">
-                  <span className={`absolute bottom-full -mx-1 block translate-y-1 p-1 ${dark ? 'bg-slate-900 text-slate-300' : 'bg-white text-neutral-500'} text-xs font-normal text-neutral-500`}>
+                  <span className={`absolute bottom-full -mx-1 block rounded-md translate-y-1 p-1 px-3 bg-green-500 text-xs font-normal text-neutral-100`}>
                     Price
                   </span>
 
@@ -148,23 +149,8 @@ const SearchItem = ({ nftItem }) => {
               </div>
 
               <div className={`flex items-center text-sm ${dark ? 'text-slate-500': 'text-neutral-500'}`}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  className="h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-
-                <span className={`ml-1 mt-0.5 ${dark ? 'text-slate-500': 'text-neutral-500'}`}>17 hours left</span>
+                <RiTimerLine className={dark ? 'text-slate-400' : 'text-neutral-500'}/>
+                <span className={`ml-1 mt-0.5 text-[0.8rem] ${dark ? 'text-slate-400': 'text-neutral-500'}`}>17 hours left</span>
               </div>
             </div>
           </div>
