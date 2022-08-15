@@ -147,12 +147,14 @@ const search = () => {
       })
     }
 
+    //filter according to category selected
     if (selectedCategory != 'all') {
       data = data.filter((item) => {
         return item.asset.properties.category == selectedCategory
       })
     }
 
+    //filter for price range
     data = data.filter((item) => {
       let itemPrice = item.buyoutPrice / DIVIDER
       return (
@@ -162,8 +164,24 @@ const search = () => {
       )
     })
 
-    setFilteredListings(data)
-  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory])
+    //filter according to chosen file type audio, video or image
+    const audioNFTs = data.filter((item) => item.asset.properties?.itemtype == "audio")
+    const videoNFTs = data.filter((item) => item.asset.properties?.itemtype == "video")
+    const imageNFTs = data.filter((item) => item.asset.properties?.itemtype != "audio" && item.asset.properties?.itemtype != "video")
+
+    let newFiltered = []
+
+    if(includeAudio){
+      newFiltered = [...newFiltered, ...audioNFTs]
+    }
+    if(includeVideo){
+      newFiltered = [...newFiltered, ...videoNFTs]
+    }
+    if(includeImage){
+      newFiltered = [...newFiltered, ...imageNFTs]
+    }
+    setFilteredListings(newFiltered)
+  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -769,13 +787,6 @@ const search = () => {
                   return <SearchItem key={id} nftItem={nftItem} />
                 }
               })}
-              {/* {activeListings?.map((nftItem, id) => {
-                if(nftItem.asset.name.includes(itemName)){
-                  return (
-                    <NFTItem key={id} nftItem={nftItem} />
-                  )
-                })
-              })} */}
             </div>
             <ReactPaginate
               breakLabel="..."
