@@ -1,27 +1,6 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../lib/sanityClient'
 
-// export const getNftsFromAllCollections =
-//   (signer) =>
-//   async ({ queryKey }) => {
-//     const [_, address] = queryKey
-
-//     const query = `*[_type == "nftCollection"] { contractAddress }`
-//     const collections = await config.fetch(query)
-
-//     if (!signer) return
-
-//     const sdk = new ThirdwebSDK(signer)
-
-//     const col = sdk.getNFTCollection(
-//       '0x2391285598FD07cA75Bded082F7f9Aee4417DCE9'
-//     )
-
-//     const nftss = await col.getAll()
-//     // console.log(nftss)
-//     return nftss
-//   }
-
 export const getAllNFTs =
   (rpcUrl) =>
   async ({ queryKey }) => {
