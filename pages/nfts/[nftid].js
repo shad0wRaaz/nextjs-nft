@@ -18,6 +18,7 @@ import { useAddress, useNFTCollection } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import RelatedNFTs from '../../components/RelatedNFTs'
+import { IconImage, IconVideo } from '../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
   HiOutlineStar,
@@ -26,6 +27,8 @@ import {
 } from 'react-icons/hi'
 import { BigNumber } from 'ethers'
 import { getAllNFTs } from '../../fetchers/Web3Fetchers'
+import { BsPause, BsPlay } from 'react-icons/bs'
+import { MdAudiotrack } from 'react-icons/md'
 const style = {
   wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
   container: `container p-6`,
@@ -60,6 +63,7 @@ const Nft = () => {
     likes: 0,
   })
   const [isLiked, setIsLiked] = useState(false)
+  const [playItem, setPlayItem] = useState(false)
 
   //Add or Remove Likes/Heart
   const addRemoveLike = async (
@@ -266,41 +270,52 @@ const Nft = () => {
               }
             >
               <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl">
-                <img
-                  src={selectedNft?.metadata?.image}
-                  className="h-full w-full object-cover"
-                />
+                {playItem && selectedNft?.metadata?.properties.itemtype == "video" && (
+                  <video className="w-full h-full" autoPlay loop>
+                    <source src={selectedNft?.metadata?.animation_url}/>
+                    Your browser does not support video tag. Upgrade your browser.
+                  </video>
+                )}
+                {playItem && selectedNft?.metadata?.properties.itemtype == "audio" && (
+                  <>
+                    <audio className="w-full h-full" autoPlay loop>
+                      <source src={selectedNft?.metadata?.animation_url}/>
+                      Your browser does not support video tag. Upgrade your browser.
+                    </audio>
+                    <img
+                      src={selectedNft?.metadata?.image}
+                      className="h-full w-full object-cover"
+                    />
+                  </>
+                )}
+                {!playItem && (
+                  <img
+                    src={selectedNft?.metadata?.image}
+                    className="h-full w-full object-cover"
+                  />
+                )}
               </div>
 
-              <div className="absolute  left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
-                <svg
-                  className="h-4 w-4 md:h-5 md:w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M12.53 20.4201H6.21C3.05 20.4201 2 18.3201 2 16.2101V7.79008C2 4.63008 3.05 3.58008 6.21 3.58008H12.53C15.69 3.58008 16.74 4.63008 16.74 7.79008V16.2101C16.74 19.3701 15.68 20.4201 12.53 20.4201Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                  <path
-                    d="M19.52 17.0999L16.74 15.1499V8.83989L19.52 6.88989C20.88 5.93989 22 6.51989 22 8.18989V15.8099C22 17.4799 20.88 18.0599 19.52 17.0999Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                  <path
-                    d="M11.5 11C12.3284 11 13 10.3284 13 9.5C13 8.67157 12.3284 8 11.5 8C10.6716 8 10 8.67157 10 9.5C10 10.3284 10.6716 11 11.5 11Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </svg>
+              <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
+                {selectedNft?.metadata?.properties?.itemtype == "image" && (<IconImage/>)}
+                {selectedNft?.metadata?.properties?.itemtype == "video" && (<IconVideo/>)}
+                {selectedNft?.metadata?.properties?.itemtype == "audio" && (<MdAudiotrack/>)}
               </div>
+
+              {playItem ? (
+                <div 
+                  className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
+                  onClick={() => setPlayItem(curVal => !curVal)}>
+                  <BsPause size={25} /> 
+                </div>
+              ) : (
+                <div 
+                className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
+                onClick={() => setPlayItem(curVal => !curVal)}>
+                  <BsPlay size={25}/>
+                </div>
+              )}
+              
 
               <button
                 className="absolute right-3 top-3 flex h-10 items-center justify-center rounded-full bg-black/50 px-3.5 text-white "

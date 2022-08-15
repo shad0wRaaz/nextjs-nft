@@ -71,6 +71,7 @@ const MakeOffer = ({
       },
     }
   )
+  console.log(selectedNft)
   // const newVolumeTraded =
   //   parseFloat(nftCollection.volumeTraded) +
   //   parseFloat(
@@ -79,8 +80,8 @@ const MakeOffer = ({
   // console.log(newVolumeTraded)
 
   const { mutate: addVolume } = useMutation(
-    ({ collectionAddress, newVolumeTraded }) =>
-      addVolumeTraded({ collectionAddress, newVolumeTraded }),
+    ({ address, volume }) =>
+      addVolumeTraded({ address, volume }),
     {
       onError: () => {
         toast.error('Error in adding Volume Traded.', errorToastStyle)
@@ -137,14 +138,21 @@ const MakeOffer = ({
       return
     }
     try {
-      const offer = {
-        listingId: listingId,
-        quantityDesired: 1,
-        currencyContractAddress:
-          NATIVE_TOKENS[ChainId.Mumbai]?.wrapped?.address?.toLowerCase(),
-        pricePerToken: '0.0001',
-      }
-      const tx = await module.direct.makeOffer(offer)
+      // const offer = {
+      //   listingId: listingId,
+      //   quantityDesired: 1,
+      //   currencyContractAddress:
+      //     NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,
+      //   pricePerToken: '0.0001',  
+      // }
+      console.log(listingId)
+      console.log(NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,)
+      const tx = await module.direct.makeOffer(
+        listingId,
+        1,
+        NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,
+        '2'
+      )
       console.log(tx)
     } catch (error) {
       console.error(error)
@@ -212,18 +220,31 @@ const MakeOffer = ({
       // console.log(tx)
 
       //add volume Traded
-      const newVolumeTraded =
-        parseFloat(nftCollection.volumeTraded) +
-        parseFloat(
-          listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice
-        )
-      addVolume({
-        collectionAddress: collectionAddress,
-        newVolumeTraded: newVolumeTraded,
+      // const newVolumeTraded =
+      //   parseFloat(nftCollection.volumeTraded) +
+      //   parseFloat(
+      //     listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice
+      //   )
+
+      const volume2Add = parseFloat(listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice)
+
+      //adding volume to Collection
+        addVolume({
+        address: collectionAddress,
+        volume: volume2Add,
       })
+
+      //adding volume to the user
+      addVolume({
+        address: address,
+        volume: volume2Add
+      })
+
+
       setBuyLoading(false)
       qc.invalidateQueries(['activities'])
       qc.invalidateQueries(['marketplace'])
+      
     } catch (error) {
       console.error(error)
       toastHandler.error(error.message, errorToastStyle)

@@ -92,11 +92,11 @@ export const changeShowUnlisted = async ({ collectionid, showUnlisted }) => {
     .commit()
 }
 export const addVolumeTraded = async ({
-  collectionAddress,
-  newVolumeTraded,
+  address,
+  volume,
 }) => {
   return await config
-    .patch(collectionAddress)
-    .set({ volumeTraded: newVolumeTraded })
+    .patch(address)
+    .inc({ volumeTraded: volume })
     .commit()
 }

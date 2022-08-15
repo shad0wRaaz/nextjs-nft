@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { config } from '../lib/sanityClient'
 import { useThemeContext } from '../contexts/ThemeContext'
 import Countdown from 'react-countdown'
-import { IconHeart, IconImage } from './icons/CustomIcons'
+import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
+import { MdAudiotrack } from 'react-icons/md'
 
 const NFTItem = ({ nftItem }) => {
   const [likers, setLikers] = useState([])
@@ -45,7 +46,8 @@ const NFTItem = ({ nftItem }) => {
           </div>
 
           <div className="absolute  bottom-2.5 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white md:h-9 md:w-9">
-            <IconImage />
+            {nftItem?.asset?.properties?.itemtype == "audio" ? <MdAudiotrack /> :
+            nftItem?.asset?.properties?.itemtype == "video" ? <IconVideo /> : <IconImage />}
           </div>
 
           <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">

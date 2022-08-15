@@ -7,10 +7,10 @@ import noProfileImage from '../../assets/noProfileImage.png'
 import { useAddress, useSigner } from '@thirdweb-dev/react'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
+import { AiOutlineFacebook, AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { CgUserList } from 'react-icons/cg'
 import { MdOutlineCollections } from 'react-icons/md'
-import { RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { RiFacebookBoxFill, RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { FiImage } from 'react-icons/fi'
 import CollectionCard from '../../components/CollectionCard'
 import { useThemeContext } from '../../contexts/ThemeContext'
@@ -192,7 +192,7 @@ const Collection = () => {
               <div className="mt-4 flex items-center space-x-3 sm:justify-center">
                 <div className="flex space-x-1.5">
                   <a
-                    href={myUser?.igHandle != '' ? myUser?.igHandle : ''}
+                    href={myUser?.igHandle != '' ? 'https://instagram.com/'.concat(myUser?.igHandle) : ''}
                     className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
                       dark
                         ? ' bg-slate-700 hover:bg-slate-600'
@@ -205,7 +205,7 @@ const Collection = () => {
                   </a>
                   <a
                     href={
-                      myUser?.twitterHandle != '' ? myUser?.twitterHandle : ''
+                      myUser?.twitterHandle != '' ? 'https://twitter.com/'.concat(myUser?.twitterHandle) : ''
                     }
                     className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
                       dark
@@ -217,98 +217,21 @@ const Collection = () => {
                   >
                     <AiOutlineTwitter fontSize="23px" />
                   </a>
-                </div>
-
-                <div className="h-5 border-l border-neutral-200"></div>
-                <div className="flex space-x-1.5">
-                  <div className="relative inline-block text-left">
-                    <button
-                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                        dark
-                          ? ' bg-slate-700 hover:bg-slate-600'
-                          : ' bg-neutral-100 hover:bg-neutral-200'
-                      } md:h-10 md:w-10 `}
-                      title="More"
-                      id="headlessui-menu-button-:r3e:"
-                      type="button"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
-                      <svg
-                        className="h-4 w-4 sm:h-5 sm:w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M16.44 8.8999C20.04 9.2099 21.51 11.0599 21.51 15.1099V15.2399C21.51 19.7099 19.72 21.4999 15.25 21.4999H8.73998C4.26998 21.4999 2.47998 19.7099 2.47998 15.2399V15.1099C2.47998 11.0899 3.92998 9.2399 7.46998 8.9099"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                        <path
-                          d="M12 15.0001V3.62012"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                        <path
-                          d="M15.35 5.85L12 2.5L8.65002 5.85"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className="">
-                    <div className="relative inline-block text-left">
-                      <button
-                        className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                          dark
-                            ? ' bg-slate-700 hover:bg-slate-600'
-                            : ' bg-neutral-100 hover:bg-neutral-200'
-                        } md:h-10 md:w-10 `}
-                        title="More"
-                        id="headlessui-menu-button-:r3f:"
-                        type="button"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <svg
-                          className="h-4 w-4 sm:h-5 sm:w-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10Z"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                          ></path>
-                          <path
-                            d="M19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10Z"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                          ></path>
-                          <path
-                            d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <div className="nc-NcModal"></div>
-                    <div className="nc-NcModal"></div>
-                    <div className="nc-NcModal"></div>
-                    <div className="nc-NcModal"></div>
-                  </div>
-                </div>
+                  <a
+                    href={
+                      myUser?.fbhHandle != '' ? 'https://facebook.com/'.concat(myUser?.fbhHandle) : ''
+                    }
+                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                      dark
+                        ? ' bg-slate-700 hover:bg-slate-600'
+                        : ' bg-neutral-100 hover:bg-neutral-200'
+                    } md:h-10 md:w-10`}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    <RiFacebookFill fontSize="23px" />
+                  </a>
+                </div>                
               </div>
             </div>
 
@@ -387,7 +310,7 @@ const Collection = () => {
                   } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                 >
                   <RiMoneyDollarCircleLine fontSize="30px" className="mb-2" />
-                  <span className="text-sm">Volume Traded</span>
+                  <span className="text-sm text-center">Volume Traded</span>
                   <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
                     {myCollections?.volumeTraded
                       ? parseFloat(myCollections?.volumeTraded).toFixed(4)

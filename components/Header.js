@@ -117,7 +117,7 @@ const Header = () => {
     myBannerImage,
     setMyBannerImage,
   } = useUserContext()
-  const [allowMarketRefetch, setAllowMarketRefetch] = useState()
+  // const [allowMarketRefetch, setAllowMarketRefetch] = useState()
   //getCollection Name from Sanity
 
   // const {
@@ -190,7 +190,7 @@ const Header = () => {
           // localStorage.setItem('activeListings', false)
         }
         //disable market refetching
-        setAllowMarketRefetch(false)
+        // setAllowMarketRefetch(false)
         // console.log(res)
       },
     }
@@ -236,6 +236,7 @@ const Header = () => {
       if (chain.id == '80001') {
         setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
         // setMarketplaceAddress('0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D----')
+        // setMarketplaceAddress('0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
         setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
       } else if (chain.id == '4') {
         setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
@@ -255,18 +256,18 @@ const Header = () => {
     }
   }, [activeChainId])
 
-  useEffect(() => {
-    try {
-      // const localMarketData = JSON.parse(localStorage.getItem('activeListings'))
-      if (!activeListings) {
-        setAllowMarketRefetch(true)
-      } else {
-        setAllowMarketRefetch(false)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [marketplaceAddress])
+  // useEffect(() => {
+  //   try {
+  //     // const localMarketData = JSON.parse(localStorage.getItem('activeListings'))
+  //     if (!activeListings) {
+  //       setAllowMarketRefetch(true)
+  //     } else {
+  //       setAllowMarketRefetch(false)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }, [marketplaceAddress])
 
   const handleDisconnect = () => {
     setIsLogged(false)
@@ -363,7 +364,7 @@ const Header = () => {
                     <Menu.Item>
                       {({ active }) => (
                         <button
-                          onClick={() => connectWithCoinbase}
+                          onClick={connectWithCoinbase}
                           className={`${
                             active ? 'bg-blue-500 ' : ''
                           } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
@@ -376,7 +377,7 @@ const Header = () => {
                     <Menu.Item>
                       {({ active }) => (
                         <button
-                          onClick={() => connectWithWalletConnect}
+                          onClick={connectWithWalletConnect}
                           className={`${
                             active ? 'bg-blue-500 ' : ''
                           } group flex w-full items-center rounded-md px-2 py-2 text-sm`}

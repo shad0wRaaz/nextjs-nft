@@ -62,6 +62,7 @@ const Home = () => {
         walletAddress: address,
         profileImage: 'profileImage-'.concat(address),
         bannerImage: 'bannerImage-'.concat(address),
+        volumeTraded: 0,
       }
 
       const result = await config.createIfNotExists(userDoc);

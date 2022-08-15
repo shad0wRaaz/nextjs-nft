@@ -64,6 +64,16 @@ function reducer(state, action) {
       return { ...state, image: action.payload.image }
     case 'CHANGE_DESCRIPTION':
       return { ...state, description: action.payload.description }
+    case 'CHANGE_AV':
+      return { ...state, animation_url: action.payload.animation_url }
+    case 'CHANGE_ITEMTYPE':
+      return { 
+        ...state, 
+        properties: {
+          ...state.properties, 
+          itemtype: action.payload.itemtype
+        }
+      }
     case 'CHANGE_EXTERNAL_LINK':
       return {
         ...state,
@@ -85,6 +95,7 @@ function reducer(state, action) {
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
+        animation_url: '',
         description: '',
         image: '',
         properties: {
@@ -96,7 +107,7 @@ function reducer(state, action) {
             },
           ],
           category: '',
-          itemtype: 'image',
+          itemtype: '',
         },
       }
     default:
@@ -104,9 +115,10 @@ function reducer(state, action) {
   }
 }
 
-const CreateNFT = () => {
+const CreateAVNFT = () => {
   const [state, dispatch] = useReducer(reducer, {
     name: '',
+    animation_url: '',
     description: '',
     image: '',
     properties: {
@@ -118,7 +130,7 @@ const CreateNFT = () => {
         },
       ],
       category: '',
-      itemtype: 'image',
+      itemtype: '',
     },
   })
 
@@ -201,7 +213,7 @@ const CreateNFT = () => {
   const handleSubmit = (e, toastHandler = toast) => {
     e.preventDefault()
 
-    if (state.name == '' || state.image == '') {
+    if (state.name == '' || state.image == '' || state.animation_url == '') {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
     }
@@ -228,7 +240,7 @@ const CreateNFT = () => {
         errorToastStyle
       )
     }
-    if(fileType != "image") {
+    if(fileType != "audio" && fileType != "video") {
       toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
       return
     }
@@ -302,14 +314,6 @@ const CreateNFT = () => {
           router.push(
             `/nfts/${tx.id.toString()}?c=${selectedCollection.contractAddress}`
           )
-          // router.push({
-          //   pathname: '/nfts/[tokenid]?c=[collectionAddress]',
-          //   query: {
-          //     tokenid: tx.id.toString(),
-          //     collectionAddress: selectedCollection.contractAddress,
-          //   },
-          // })
-          //${selectedCollection.contractAddress}`)
         } catch (error) {
           toastHandler.error(error.message, errorToastStyle)
           console.log(error.message)
@@ -399,9 +403,20 @@ const CreateNFT = () => {
     else if(Boolean(audioExtensionArray.find(item => item == fileExtension))) {setFileType('audio')}
     else if(Boolean(videoExtensionArray.find(item => item == fileExtension))) {setFileType('video')}
   }
-// useEffect(() => {
-//  console.log(state)
-// }, [state])
+
+  useEffect(() => {
+    if(!fileType) return
+    console.log(fileType)
+    dispatch({
+      type: 'CHANGE_ITEMTYPE',
+      payload: { itemtype: fileType }
+    })
+  }, [fileType])
+
+  useEffect(() => {
+  console.log(state)
+  }, [state])
+
   return (
     <div className={style.wrapper}>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -409,7 +424,7 @@ const CreateNFT = () => {
         <div className={style.container}>
           <h1 className={style.pageTitle}>
             <GoPackage className={style.contractItemIcon} />
-            Mint Image NFT
+            Mint Audio/Video NFT
           </h1>
           <form name="createNFTForm" onSubmit={handleSubmit}>
             <div className={style.formWrapper}>
@@ -427,8 +442,45 @@ const CreateNFT = () => {
                 }
               />
               <div className="flex justify-between gap-2">
+              <div className="w-[1/2]">
+                  <p className={style.label}>Audio/Video*</p>
+                  <p className={style.smallText}>
+                    Supported file types: MP3, MPEG, WAV, MPG, WEBM. Max size: 5MB
+                  </p>
+                  <div
+                    className={style.previewImage}
+                    style={{ height: '200px', width: '300px' }}
+                  >
+                    {isNaN(state.animation_url) && fileType == "video" && (
+                      <video id="itemVideo" width="300px" height="200px">
+                        <source src={state.animation_url}/>
+                        Your browser does not support video tag. Upgrade your browser.
+                      </video>
+                    )}
+                    {isNaN(state.animation_url) && fileType == "audio" && (
+                      <audio id="itemVideo" width="300px" height="200px" controls>
+                        <source src={state.animation_url}/>
+                        Your browser does not support audio tag. Upgrade your browser.
+                      </audio>
+                    )}
+                  </div>
+                  <div className="imageUploader mb-4 ml-3">
+                    <FileBase
+                      type="file"
+                      multiple={false}
+                      onDone={({ base64 }) => {
+                        checkFileType(base64)
+                        dispatch({
+                          type: 'CHANGE_AV',
+                          payload: { animation_url: base64 },
+                        })
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <div className="w-[1/2]">
-                  <p className={style.label}>Image *</p>
+                  <p className={style.label}>Cover Image*</p>
                   <p className={style.smallText}>
                     Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 5MB
                   </p>
@@ -446,7 +498,6 @@ const CreateNFT = () => {
                       type="file"
                       multiple={false}
                       onDone={({ base64 }) => {
-                        checkFileType(base64)
                         dispatch({
                           type: 'CHANGE_IMAGE',
                           payload: { image: base64 },
@@ -671,4 +722,4 @@ const CreateNFT = () => {
   )
 }
 
-export default CreateNFT
+export default CreateAVNFT

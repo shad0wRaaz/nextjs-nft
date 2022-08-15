@@ -8,11 +8,13 @@ import { HiCubeTransparent } from 'react-icons/hi'
 import { BsDroplet, BsDropletHalf } from 'react-icons/bs'
 import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateNFT from '../components/createNew/CreateNFT'
+import CreateAVNFT from '../components/createNew/CreateAVNFT'
 import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
 import CreateNFTDrop from '../components/createNew/CreateNFTDrop'
 import CreateEdition from '../components/createNew/CreateEdition'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { FiImage, FiVideo } from 'react-icons/fi'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -34,6 +36,8 @@ function reducer(state, action){
   switch (action.type) {
     case 'OPEN_NFT':
       return { isMenuOpened: true, canvasMenu: 'NFT'}
+    case 'OPEN_NFT_AUDIOVIDEO':
+      return {isMenuOpened: true, canvasMenu: 'NFT_AUDIOVIDEO'}
     case 'OPEN_NFT_COLLECTION':
       return { isMenuOpened: true, canvasMenu: 'NFT_COLLECTION'};
     case 'OPEN_NFT_DROP':
@@ -50,9 +54,51 @@ function reducer(state, action){
 const contracts = () => {
   const [state, dispatch] = useReducer(reducer, {isMenuOpened: false, canvasMenu: ''});
   const { dark } = useThemeContext();
+  const [showModal, setShowModal] = useState(true)
 
   return (
     <div className={dark ? 'darkBackground text-neutral-200': '' }>
+      {/* Modal window*/}
+      {showModal && (
+        <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl max-w-2xl z-50 relative overflow-hidden`}>
+            <div
+              className="absolute top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
+              onClick={() => setShowModal(false)}
+            >
+              <img
+                src="https://iconape.com/wp-content/png_logo_vector/cross-2.png"
+                className="h-3 w-3"
+              />
+            </div>
+            <h2 className="text-center font-bold text-2xl mb-[2rem]">Mint</h2>
+            <div className="w-full grid grid-cols-2 gap-[2rem]">
+              <div 
+                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                onClick={() => {
+                  setShowModal(curVal => !curVal)
+                  dispatch({ type: 'OPEN_NFT'})
+                }}
+                >
+                <FiImage size={40} className="mb-3"/>
+                <span>Image NFT</span>
+              </div>
+              <div 
+                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                onClick={() => {
+                  setShowModal(curVal => !curVal)
+                  dispatch({ type: 'OPEN_NFT_AUDIOVIDEO'})
+                }}
+                >
+                <FiVideo size={40} className="mb-3" />
+                <span>Audio/Video NFT</span>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
+      {/* End of Modal window*/}
       <OffCanvas
           width={850}
           transitionDuration={300}
@@ -69,7 +115,7 @@ const contracts = () => {
               </div>
               <div className={style.wrapper}>
                 <div className={style.contractsWrapper}>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT'})}>
+                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => setShowModal(curVal => !curVal)}>
                     <GoPackage className={style.contractItemIcon} />
                     <span className={style.contractTitle}>NFT</span>
                     <span className={style.contractDescription}>Your unique Non-fungible token</span>
@@ -109,6 +155,9 @@ const contracts = () => {
 
               {state.canvasMenu == "NFT" && 
                 <CreateNFT/>
+              }
+              {state.canvasMenu == "NFT_AUDIOVIDEO" && 
+                <CreateAVNFT />
               }
               {state.canvasMenu == "NFT_COLLECTION" && 
                 <CreateNFTCollection/>

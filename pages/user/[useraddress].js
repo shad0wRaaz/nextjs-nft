@@ -11,7 +11,7 @@ import Loader from '../../components/Loader'
 import { useMutation, useQuery } from 'react-query'
 import { MdOutlineCollections } from 'react-icons/md'
 import { BiUserPlus, BiUserCheck } from 'react-icons/bi'
-import { RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
 import noProfileImage from '../../assets/noProfileImage.png'
@@ -59,7 +59,6 @@ const User = () => {
   const [userData, setUserData] = useState()
   useEffect(async () => {
     if (!address) return
-    console.log('im here')
     setUserData(await getUser(address))
   }, [address])
   // const { data: userData, status: userStatus } = useQuery(
@@ -254,8 +253,8 @@ const User = () => {
                 <div className="flex space-x-1.5">
                   <a
                     href={
-                      userData?.instagramHandle != ''
-                        ? userData?.instagramHandle
+                      userData?.igHandle != ''
+                        ? 'https://instagram.com/'.concat(userData?.igHandle)
                         : ''
                     }
                     className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
@@ -271,7 +270,7 @@ const User = () => {
                   <a
                     href={
                       userData?.twitterHandle != ''
-                        ? userData?.twitterHandle
+                        ? 'https://twitter.com/'.concat(userData?.twitterHandle)
                         : ''
                     }
                     className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
@@ -283,6 +282,22 @@ const User = () => {
                     rel="noopener noreferrer nofollow"
                   >
                     <AiOutlineTwitter fontSize="23px" />
+                  </a>
+                  <a
+                    href={
+                      userData?.fbhHandle != ''
+                        ? 'https://facebook.com/'.concat(userData?.fbhHandle)
+                        : ''
+                    }
+                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                      dark
+                        ? ' bg-slate-700 hover:bg-slate-600'
+                        : ' bg-neutral-100 hover:bg-neutral-200'
+                    } md:h-10 md:w-10`}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    <RiFacebookFill fontSize="23px" />
                   </a>
                 </div>
               </div>
@@ -436,7 +451,7 @@ const User = () => {
                     }`}
                   />
                   <span
-                    className={`text-sm ${
+                    className={`text-sm text-center ${
                       dark ? 'text-neutral-200' : 'text-neutral-800'
                     }`}
                   >

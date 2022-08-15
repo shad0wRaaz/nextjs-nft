@@ -20,6 +20,7 @@ import { useUserContext } from '../../contexts/UserContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useQueryClient } from 'react-query'
 import axios from 'axios'
+import { IconLoading } from '../icons/CustomIcons'
 
 const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
@@ -166,7 +167,7 @@ const CreateNFTCollection = () => {
   const [isDeploying, setIsDeploying] = useState(false)
   const [deploy, setDeploy] = useState(false)
   const [categories, setCategories] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState()
   const [profileImage, setProfileImage] = useState()
   const [bannerImage, setBannerImage] = useState()
   const [profile, setProfile] = useState()
@@ -264,6 +265,15 @@ const CreateNFTCollection = () => {
               console.log(error)
             }
 
+            //increment number of collection in category
+            
+            const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`)
+            await config.patch(categoryId[0]._id)
+            .inc({totalCollection : 1})
+            .commit()
+            .catch((err) => {})
+            // await config.patch(res).
+
             queryClient.invalidateQueries('myCollections')
             //send out notification to all followers
             sendNotification({
@@ -314,7 +324,7 @@ const CreateNFTCollection = () => {
     if (
       form.itemName.value == '' ||
       form.primary_sale_recipient.value == '' ||
-      selectedCategory == ''
+      typeof selectedCategory == 'undefined'
     ) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
@@ -622,26 +632,7 @@ const CreateNFTCollection = () => {
                     style={{ pointerEvents: 'none', opacity: '0.8' }}
                     disabled
                   >
-                    <svg
-                      className="-ml-1 mr-3 inline h-5 w-5 animate-spin text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <IconLoading dark="inbutton" />
                     Deploying...
                   </button>
                 ) : (

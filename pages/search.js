@@ -60,6 +60,7 @@ const search = () => {
   const [includeHasOffers, setIncludeHasOffers] = useState()
   const [priceRange, setPriceRange] = useState([0, 100])
   const [sortAsc, setSortAsc] = useState(true)
+  // const [sortAlpha, setSortAlpha] = useState(false)
   const [filteredListings, setFilteredListings] = useState()
 
   //variables for pagination
@@ -238,8 +239,8 @@ const search = () => {
                   </button>
                 </li>
                 {categories.length > 0 &&
-                  categories.map((item) => (
-                    <li className="nc-NavItem relative" data-nc-id="NavItem">
+                  categories.map((item, index) => (
+                    <li key={index} className="nc-NavItem relative" data-nc-id="NavItem">
                       <button
                         className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
                           dark
@@ -682,11 +683,38 @@ const search = () => {
                   >
                     <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
                       <div className="px-1 py-1 ">
+                        {/* <Menu.Item>
+                          <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
+                            <div>
+                              <span className="block text-[17px]">
+                                Name from {sortAlpha ? 'A-Z' : 'Z-A'}
+                              </span>
+                            </div>
+                            <Switch
+                              checked={sortAlpha}
+                              onChange={() => {setSortAlpha((curVal) => !curVal);  setSortAsc((curVal) => !curVal)}}
+                              className={`${
+                                sortAlpha ? 'bg-blue-500' : 'bg-neutral-400'
+                              }
+                              relative inline-flex h-[29px] w-[65px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                            >
+                              <span className="sr-only">Use Setting</span>
+                              <span
+                                aria-hidden="true"
+                                className={`${
+                                  sortAlpha ? 'translate-x-9' : 'translate-x-0'
+                                }
+                                pointer-events-none inline-block h-[25px] w-[25px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                              />
+                            </Switch>
+                          </div>
+                        </Menu.Item> */}
+
                         <Menu.Item>
                           <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
                             <div>
                               <span className="block text-[17px]">
-                                Price Low - High
+                                Price {sortAsc ? 'Low - High' : 'High - Low'}
                               </span>
                             </div>
                             <Switch
@@ -695,7 +723,7 @@ const search = () => {
                               className={`${
                                 sortAsc ? 'bg-blue-500' : 'bg-neutral-400'
                               }
-                        relative inline-flex h-[29px] w-[65px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                              relative inline-flex h-[29px] w-[65px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                             >
                               <span className="sr-only">Use Setting</span>
                               <span
@@ -703,33 +731,7 @@ const search = () => {
                                 className={`${
                                   sortAsc ? 'translate-x-9' : 'translate-x-0'
                                 }
-                          pointer-events-none inline-block h-[25px] w-[25px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                              />
-                            </Switch>
-                          </div>
-                        </Menu.Item>
-                        <Menu.Item>
-                          <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
-                            <div>
-                              <span className="block text-[17px]">
-                                Price High - Low
-                              </span>
-                            </div>
-                            <Switch
-                              checked={!sortAsc}
-                              onChange={() => setSortAsc((curVal) => !curVal)}
-                              className={`${
-                                !sortAsc ? 'bg-blue-500' : 'bg-neutral-400'
-                              }
-                        relative inline-flex h-[29px] w-[65px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                            >
-                              <span className="sr-only">Use Setting</span>
-                              <span
-                                aria-hidden="true"
-                                className={`${
-                                  !sortAsc ? 'translate-x-9' : 'translate-x-0'
-                                }
-                          pointer-events-none inline-block h-[25px] w-[25px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                                pointer-events-none inline-block h-[25px] w-[25px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                               />
                             </Switch>
                           </div>

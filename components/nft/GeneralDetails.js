@@ -110,7 +110,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
         if (
           !res &&
           (selectedNft?.owner == '0x9a9817a85E5d54345323e381AC503F3BDC1f01f4' ||
-            selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D')
+            selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D' || selectedNft?.owner == '0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
         ) {
           setAuctionedItem(true)
         }

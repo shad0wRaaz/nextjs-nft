@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { config } from '../lib/sanityClient'
 import { useThemeContext } from '../contexts/ThemeContext'
 import Countdown from 'react-countdown'
-import { IconHeart, IconImage } from './icons/CustomIcons'
+import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
 import { useUserContext } from '../contexts/UserContext'
+import { MdAudiotrack } from 'react-icons/md'
 
 const style = {
   wrapper: `bg-[#1E293BEE] shadow-[inset_0_0_0_1px_rgb(255,255,255,0.1)] flex-auto max-w-[17rem] w-[17rem] h-[29rem] mb-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
@@ -37,6 +38,7 @@ const NFTCard = ({
   showUnlisted,
   creator,
 }) => {
+  console.log(nftItem)
   const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
   const { myUser } = useUserContext()
@@ -56,18 +58,6 @@ const NFTCard = ({
       setListedItem(listing)
     }
   }, [listings, nftItem])
-
-  // useEffect(() => {
-  //   if (!listedItem) return
-  //   if (Boolean(listedItem.reservePrice)) {
-  //     setIsAuctionItem(true)
-  //     // console.log(listedItem.reservePrice)
-  //     // console.log(listedItem.endTimeInEpochSeconds.toString())
-  //     // console.log(listedItem.startTimeInEpochSeconds.toString())
-  //     // console.log(listedItem)
-  //   }
-  // }, [listedItem])
-  // console.log(isAuctionItem)
 
   useEffect(() => {
     //getting NFT likes from Sanity
@@ -108,8 +98,9 @@ const NFTCard = ({
                 </div>
               </div>
 
-              <div className="absolute  bottom-2.5 right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white md:h-9 md:w-9">
-                <IconImage />
+              <div className="absolute  bottom-2.5 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white md:h-9 md:w-9">
+                {nftItem?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> :
+                nftItem?.metadata?.properties?.itemtype == "video" ? <IconVideo /> : <IconImage />}
               </div>
 
               <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
@@ -119,23 +110,6 @@ const NFTCard = ({
                     {likers?.likedBy?.length ? likers.likedBy.length : '0'}
                   </span>
                 </button>
-
-                {/* <div className="hidden md:flex -space-x-1.5">
-                  <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white ">
-                    <img className="absolute inset-0 w-full h-full object-cover rounded-full" src={nftItem.metadata.image} alt="John Doe"/>
-                    <span className="wil-avatar__name">J</span>
-                  </div>
-    
-                  <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white ">
-                    <img className="absolute inset-0 w-full h-full object-cover rounded-full" src={nftItem.metadata.image} alt="John Doe"/>
-                    <span className="wil-avatar__name">J</span>
-                  </div>
-    
-                  <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white ">
-                    <img className="absolute inset-0 w-full h-full object-cover rounded-full" src={nftItem.metadata.image} alt="John Doe"/>
-                    <span className="wil-avatar__name">J</span>
-                  </div>
-                </div> */}
               </div>
 
               {/* Remaining timer is currently disabled in every NFT card, performance issues */}

@@ -23,6 +23,7 @@ import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
 import { IconDisconnect } from '../../components/icons/CustomIcons'
+
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
@@ -59,18 +60,6 @@ const style = {
   errorTitle: 'block text-[1.5rem] mb-3',
 }
 
-// function reducer(state, action) {
-//   switch (action.type) {
-//     case 'SET_NFTS':
-//       return { ...state, nfts: action.payload.nfts }
-//     case 'SET_COLLECTIONS':
-//       return { ...state, collection: action.payload.collectionData }
-//     case 'SET_LISTINGS':
-//       return { ...state, listings: action.payload.listings }
-//     default:
-//       return state
-//   }
-// }
 
 const Collection = () => {
   const router = useRouter()
@@ -286,28 +275,31 @@ const Collection = () => {
                     }`}
                   ></div> */}
                   <div className="flex space-x-1.5">
-                    <div className="relative inline-block text-left">
-                      <a
-                        href={
-                          collectionData[0].external_link != ''
-                            ? collectionData[0].external_link
-                            : ''
-                        }
-                        className={`flex h-8 w-8 rotate-90 cursor-pointer items-center justify-center rounded-full ${
-                          dark
-                            ? ' bg-slate-700 hover:bg-slate-600'
-                            : ' bg-neutral-100 hover:bg-neutral-200'
-                        } md:h-10 md:w-10 `}
-                        title="External Link"
-                        id="headlessui-menu-button-:r3e:"
-                        type="button"
-                        target="_blank"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <IconDisconnect />
-                      </a>
-                    </div>
+                    {collectionData[0].external_link && collectionData[0].external_link != '' && (
+
+                      <div className="relative inline-block text-left">
+                        <a
+                          href={
+                            collectionData[0].external_link != ''
+                              ? collectionData[0].external_link
+                              : ''
+                          }
+                          className={`flex h-8 w-8 rotate-90 cursor-pointer items-center justify-center rounded-full ${
+                            dark
+                              ? ' bg-slate-700 hover:bg-slate-600'
+                              : ' bg-neutral-100 hover:bg-neutral-200'
+                          } md:h-10 md:w-10 `}
+                          title="External Link"
+                          id="headlessui-menu-button-:r3e:"
+                          type="button"
+                          target="_blank"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <IconDisconnect />
+                        </a>
+                      </div>
+                    )}
 
                     {/* <div className="">
                       <div className="relative inline-block text-left">

@@ -15,6 +15,7 @@ import axios from 'axios'
 import { getUnsignedImagePath } from '../fetchers/s3'
 import noProfileImage from '../assets/noProfileImage.png'
 import noBannerImage from '../assets/noBannerImage.png'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const style = {
   wrapper: '',
@@ -97,6 +98,31 @@ const profile = () => {
     setIsSaving(true)
     try {
       //saving profile image
+      
+      const files = document.getElementById('profileImg')
+      if (files.files.length > 0) {
+        var reader = new FileReader()
+        reader.readAsDataURL(files.files[0])
+        // console.log(files.files[0])
+        reader.onload = function (e) {
+          var image = new Image()
+          image.src = e.target.result
+          image.onload = async function () {
+            //upload to IPFS Function here
+            const sdk = new ThirdwebSDK()
+            // const fetch = await sdk.storage.fetch("ipfs://QmU2bj83u6hGRe9EXzqE5ZNMacD9zQLDiaqDt4omMHLxnC/")
+            const hash = await sdk.storage.upload(image.src)
+            console.log(hash)
+
+            const fetch = await sdk.storage.fetch(hash)
+            console.log(fetch)
+          }
+        }
+      } else {
+        // Not supported
+      }
+
+      
       if(profile){
         const formdata = new FormData()
         formdata.append('profile', profile)
@@ -138,9 +164,9 @@ const profile = () => {
         .set({
           userName: userDoc.userName,
           biography: userDoc.biography,
-          twitterHandle: 'https://twitter.com/'.concat(userDoc.twitterHandle),
-          igHandle: 'https://instagram.com/'.concat(userDoc.igHandle),
-          fbhHandle: 'https://facebook.com/'.concat(userDoc.fbhHandle),
+          twitterHandle: userDoc.twitterHandle,
+          igHandle: userDoc.igHandle,
+          fbhHandle: userDoc.fbhHandle,
           bannerImage: 'bannerImage-'.concat(address),
           profileImage: 'profileImage-'.concat(address),
         })
