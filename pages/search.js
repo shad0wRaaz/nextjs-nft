@@ -44,7 +44,7 @@ const style = {
     'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70',
 }
 
-const search = () => {
+const search = ({category}) => {
   const { dark } = useThemeContext()
   const [showFilter, setShowFilter] = useState(true)
   const { activeListings } = useMarketplaceContext()
@@ -95,14 +95,15 @@ const search = () => {
 
   useEffect(() => {
     const data = router.query
-    setItemName(data.n)
-    setIncludeImage(data.i === 'true' ? true : false)
-    setIncludeVideo(data.v === 'true' ? true : false)
-    setIncludeAudio(data.a === 'true' ? true : false)
-    setIncludeAuction(data.ac === 'true' ? true : false)
-    setIncludeDirect(data.d === 'true' ? true : false)
-    setIncludeHasOffers(data.h === 'true' ? true : false)
-    setPriceRange([data._r ? data._r : 0, data.r_ ? data.r_ : 100])
+    setItemName(data?.n)
+    setSelectedCategory(data?.c && data.c)
+    setIncludeImage(data?.i === 'true' ? true : false)
+    setIncludeVideo(data?.v === 'true' ? true : false)
+    setIncludeAudio(data?.a === 'true' ? true : false)
+    setIncludeAuction(data?.ac === 'true' ? true : false)
+    setIncludeDirect(data?.d === 'true' ? true : false)
+    setIncludeHasOffers(data?.h === 'true' ? true : false)
+    setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100])
   }, [router.query])
   const DIVIDER = BigNumber.from(10).pow(18)
 

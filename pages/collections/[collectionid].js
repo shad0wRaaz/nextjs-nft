@@ -18,11 +18,14 @@ import { Menu, Transition, Switch } from '@headlessui/react'
 import noProfileImage from '../../assets/noProfileImage.png'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { changeShowUnlisted } from '../../mutators/SanityMutators'
-import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
 import { IconDisconnect } from '../../components/icons/CustomIcons'
+import { config } from '../../lib/sanityClient'
+import { useQueryClient } from 'react-query'
+import { RiCloseFill } from 'react-icons/ri'
+import EditCollection from '../../components/EditCollection'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -77,7 +80,9 @@ const Collection = () => {
   const [showUnlisted, setShowUnlisted] = useState(false)
   const [profileImageUrl, setProfileImageUrl] = useState()
   const [bannerImageUrl, setBannerImageUrl] = useState()
-
+  const [showModal, setShowModal] = useState(false)
+  const [newCollectionData, setNewCollectionData] = useState()
+  const qc = useQueryClient()
   // const [state, dispatch] = useReducer(reducer, {
   //   collection: {},
   //   nfts: [],
@@ -97,6 +102,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
+        setNewCollectionData(res[0])
         setShowUnlisted(res[0]?.showUnlisted)
         ;(async () => {
           setProfileImageUrl(await getUnsignedImagePath(res[0].profileImage))
@@ -127,7 +133,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        console.log(res)
+        
       },
     }
   )
@@ -188,13 +194,33 @@ const Collection = () => {
     setShowUnlisted(!showUnlisted)
     updateShowListed(collectionid)
   }
+
+
+  
+
   useEffect(() => {
     // console.log(showUnlisted)
   }, [showUnlisted])
+
+ 
+
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       {/* {collectionStatus == 'loading' && <Loader />} */}
+      {showModal && (
+        <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl w-[55.5rem] h-[50rem] overflow-y-scroll z-50 relative`}>
+            <div
+              className="absolute top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
+              onClick={() => setShowModal(false)}
+            >
+              <RiCloseFill fontSize={25}/>
+            </div>
+            <EditCollection collection={newCollectionData} profileImageUrl={profileImageUrl?.data?.url} bannerImageUrl={bannerImageUrl?.data?.url}/>
+          </div>
+        </div>
+      )}
       {collectionStatus == 'success' && (
         <div className="w-full">
           <div className="relative h-96 w-full md:h-60 2xl:h-96">
@@ -300,50 +326,6 @@ const Collection = () => {
                         </a>
                       </div>
                     )}
-
-                    {/* <div className="">
-                      <div className="relative inline-block text-left">
-                        <button
-                          className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                            dark
-                              ? ' bg-slate-700 hover:bg-slate-600'
-                              : ' bg-neutral-100 hover:bg-neutral-200'
-                          } md:h-10 md:w-10 `}
-                          title="More"
-                          id="headlessui-menu-button-:r3f:"
-                          type="button"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                        >
-                          <svg
-                            className="h-4 w-4 sm:h-5 sm:w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            ></path>
-                            <path
-                              d="M19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            ></path>
-                            <path
-                              d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            ></path>
-                          </svg>
-                        </button>
-                      </div>
-
-                      <div className="nc-NcModal"></div>
-                      <div className="nc-NcModal"></div>
-                      <div className="nc-NcModal"></div>
-                      <div className="nc-NcModal"></div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -354,6 +336,27 @@ const Collection = () => {
                     <h2 className="inline-block text-2xl font-semibold sm:text-3xl lg:text-4xl">
                       {collectionData[0].name}
                     </h2>
+                    <span 
+                      className="relative block w-fit mt-3 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+                      onClick={() => {
+                        router.push({
+                          pathname: '/search',
+                          query: {
+                            c: collectionData[0].category,
+                            n: '',
+                            i: 'true',
+                            v: 'true',
+                            a: 'true',
+                            d: 'true',
+                            ac: 'true',
+                            h: 'true',
+                            _r: 0,
+                            r_: 100,
+                          },
+                        })
+                      }}>
+                      {collectionData[0].category}
+                    </span>
                     <span className="mt-4 block text-sm">
                       {collectionData[0].description}
                     </span>
@@ -382,12 +385,22 @@ const Collection = () => {
                           <Menu.Items
                             className={`${
                               dark ? 'bg-slate-700' : 'bg-white'
-                            } absolute right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                            } absolute p-4 right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
                           >
                             <div className="px-1 py-1 ">
                               <Menu.Item>
+                                {({active}) => (
+                                  <div 
+                                    className="flex w-full rounded-md p-2 text-sm cursor-pointer"
+                                    onClick={() => setShowModal(curVal => !curVal)}
+                                    >
+                                    Edit this Collection
+                                  </div>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
                                 {({ active }) => (
-                                  <button
+                                  <div
                                     className={`group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
                                   >
                                     Show Unlisted to Others
@@ -418,7 +431,7 @@ const Collection = () => {
                                           pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                                       />
                                     </Switch>
-                                  </button>
+                                  </div >
                                 )}
                               </Menu.Item>
                             </div>

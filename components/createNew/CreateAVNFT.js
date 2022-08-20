@@ -241,7 +241,7 @@ const CreateAVNFT = () => {
       )
     }
     if(fileType != "audio" && fileType != "video") {
-      toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
+      toastHandler.error("Audio or Video file is required.", errorToastStyle)
       return
     }
     // 0xFd7CFAA95Ad1a64081C43721A9398eb0a9165879 <- static use of nft collection address
@@ -391,20 +391,29 @@ const CreateAVNFT = () => {
   }
 
   const checkFileType = (base64) => {
-    let start = base64.indexOf('/') + 1
-    let end = base64.indexOf(';base64') - start
-    const fileExtension = base64.substr(start,end)
+    let start = base64.indexOf(':') + 1
+    let end = base64.indexOf('/') - start
+    const currentFileType = base64.substr(start,end)
+    console.log(currentFileType)
 
-    const imageExtensionArray = ['png', 'gif', 'jpg', 'jpeg', 'webp', 'avif', 'bmp', 'jfif']
-    const audioExtensionArray = ['mp3', 'ogg', 'm4a', 'm4p', 'tta', 'voc', 'wav', 'wma']
-    const videoExtensionArray = ['avi', 'mp4', 'mkv', 'vob', 'wmv', 'mpg', 'mpeg', 'mp2', 'mpe', 'amv', '3gp', 'flv', 'f4v', 'f4p', 'f4a', 'f4b', 'nsv', 'mov', 'webm']
+    if(currentFileType != "audio" && currentFileType != "video" != currentFileType != "image"){
+      toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
+      setFileType(undefined)
+      return
+    }
+    setFileType(currentFileType)
 
-    if(Boolean(imageExtensionArray.find(item => item == fileExtension))) {setFileType('image')}
-    else if(Boolean(audioExtensionArray.find(item => item == fileExtension))) {setFileType('audio')}
-    else if(Boolean(videoExtensionArray.find(item => item == fileExtension))) {setFileType('video')}
+    // const imageExtensionArray = ['png', 'gif', 'jpg', 'jpeg', 'webp', 'avif', 'bmp', 'jfif']
+    // const audioExtensionArray = ['mp3', 'ogg', 'm4a', 'm4p', 'tta', 'voc', 'wav', 'wma']
+    // const videoExtensionArray = ['avi', 'mp4', 'mkv', 'vob', 'wmv', 'mpg', 'mpeg', 'mp2', 'mpe', 'amv', '3gp', 'flv', 'f4v', 'f4p', 'f4a', 'f4b', 'nsv', 'mov', 'webm']
+
+    // if(Boolean(imageExtensionArray.find(item => item == fileExtension))) {setFileType('image')}
+    // else if(Boolean(audioExtensionArray.find(item => item == fileExtension))) {setFileType('audio')}
+    // else if(Boolean(videoExtensionArray.find(item => item == fileExtension))) {setFileType('video')}
   }
 
   useEffect(() => {
+    // console.log(fileType)
     if(!fileType) return
     console.log(fileType)
     dispatch({
@@ -413,9 +422,9 @@ const CreateAVNFT = () => {
     })
   }, [fileType])
 
-  useEffect(() => {
-  console.log(state)
-  }, [state])
+  // useEffect(() => {
+  // console.log(state)
+  // }, [state])
 
   return (
     <div className={style.wrapper}>

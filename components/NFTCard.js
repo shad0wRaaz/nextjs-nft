@@ -38,7 +38,6 @@ const NFTCard = ({
   showUnlisted,
   creator,
 }) => {
-  console.log(nftItem)
   const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
   const { myUser } = useUserContext()

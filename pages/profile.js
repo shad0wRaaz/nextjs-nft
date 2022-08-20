@@ -22,11 +22,11 @@ const style = {
   pageBanner: 'py-[4rem] mb-[2rem]',
   container:
     'container mx-auto p-3 pt-[2rem] px-[1.2rem] max-w-[700px] rounded-xl',
-  formWrapper: 'flex flex-wrap flex-col gap-3',
+  formWrapper: 'flex flex-wrap flex-col',
   pageTitle: 'text-4xl font-bold text-center textGradBlue',
   input: 'm-2 outline-none p-3 border rounded-xl transition linear',
   inputgroup: 'p-3 border rounded-xl transition linear',
-  label: 'font-bold m-2 ',
+  label: 'font-bold m-2 mt-6',
   button:
     'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500',
   profileImageContainer:
@@ -88,6 +88,7 @@ const profile = () => {
       // Not supported
     }
   }
+
   const handleSubmit = async (
     e,
     toastHandler = toast,
@@ -282,7 +283,7 @@ const profile = () => {
                       setUserDoc({ ...userDoc, profileImage: base64 })
                     }
                   /> */}
-                  <p className={style.label}>Banner Address</p>
+                  <p className={style.label}>Banner Image</p>
                   <div className={style.bannerImageContainer}>
                       <img
                         id="bImage"

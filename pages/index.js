@@ -7,11 +7,12 @@ import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
 import HowToInfo from '../components/HowToInfo'
 import { useAddress } from '@thirdweb-dev/react'
-import { UserProvider } from '../contexts/UserContext'
 import ExploreNFTs from '../components/ExploreNFTs'
+import { UserProvider } from '../contexts/UserContext'
 import TopCollections from '../components/TopCollections'
-import BrowseByCategory from '../components/BrowseByCategory'
 import { useThemeContext } from '../contexts/ThemeContext'
+import BrowseByCategory from '../components/BrowseByCategory'
+import SubscribeSection from '../components/SubscribeSection'
 
 const style = {
   wrapper: ``,
@@ -79,6 +80,7 @@ const Home = () => {
         <HowToInfo/>
         <ExploreNFTs/>
         <BrowseByCategory/>
+        <SubscribeSection />
         <Footer/>
       </div>
   )

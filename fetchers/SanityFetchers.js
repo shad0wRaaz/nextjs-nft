@@ -104,7 +104,8 @@ export const getNFTCollection =
         "allOwners": owners[]->,
         description,
         showUnlisted,
-        external_link
+        external_link,
+        category,
       }`
     const res = await config.fetch(query)
     return res

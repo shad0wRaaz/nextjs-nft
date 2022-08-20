@@ -32,6 +32,7 @@ import {
 } from '../../fetchers/SanityFetchers'
 import { useUserContext } from '../../contexts/UserContext'
 import { getUnsignedImagePath } from '../../fetchers/s3'
+import Report from '../Report'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -73,6 +74,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
   const [collectionProfile, setCollectionProfile] = useState()
   const [userProfile, setUserProfile] = useState()
   const [auctionedItem, setAuctionedItem] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['collection', router.query.c],
     getNFTCollection(),
@@ -222,6 +224,9 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
 
   return (
     <div className={dark ? ' text-neutral-200' : ''}>
+      {/* Modal window*/}
+      {showModal && <Report showModal={showModal} setShowModal={setShowModal} dark={dark} itemType="NFT" selectedNft={selectedNft} contractAddress={collectionAddress}/>}
+      {/* End of Modal window*/}
       <div
         className={
           dark
@@ -230,7 +235,25 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
         }
       >
         <div className="flex items-center justify-between">
-          <span className="relative inline-flex rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+        <span 
+          className="relative block w-fit mt-3 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+          onClick={() => {
+            router.push({
+              pathname: '/search',
+              query: {
+                c: collectionData[0].category,
+                n: '',
+                i: 'true',
+                v: 'true',
+                a: 'true',
+                d: 'true',
+                ac: 'true',
+                h: 'true',
+                _r: 0,
+                r_: 100,
+              },
+            })
+          }}>
             {nftCollection?.category}
           </span>
           <div className="flow-root">
@@ -503,7 +526,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                       <Menu.Item>
                         {({ active }) => (
                           <button
-                            onClick={cancelListing}
+                            onClick={() => setShowModal(true)}
                             className={`${
                               active
                                 ? dark
