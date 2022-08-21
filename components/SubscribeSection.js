@@ -9,18 +9,6 @@ import axios from 'axios'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0',
-    container: 'text-white browseWrapper p-[4rem] rounded-3xl ',
-    title: `font-bold text-[2rem] flex justify-between items-center text-center mb-[2rem]`,
-    contentWrapper:
-      'flex justify-center items-center flex-row flex-nowrap gap-[20px]',
-    content:
-      'bg-white p-[30px] rounded-xl flex justify-center flex-col items-center',
-    contentTitle: 'text-lg font-bold mb-2',
-    contentDescription: 'text-md px-[25px]',
-    collectionCard: 'm-[20px]  hover:opacity-90',
-    collectionCardName: 'font-bold cursor-pointer p-4 pl-0 flex gap-3',
-    imageContainer: 'h-[160px] w-[215px] rounded-3xl overflow-hidden relative',
-    controls: 'flex gap-4 text-slate-500 cursor-pointer transition',
   }
 
 const errorToastStyle = {
@@ -111,12 +99,14 @@ const SubscribeSection = () => {
                         type="email" 
                         className={`block w-full border ${dark ? ' border-slate-600 focus:ring-slate-500 bg-slate-700' : 'bg-white border-neutral-200 focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 '} rounded-full text-sm font-normal h-11 px-4 py-3`}
                         required=""  
-                        placeHolder="Enter your email"
+                        placeholder="Enter your email"
                         value={subscriberEmail}
                         onChange={(e) => setSubscriberEmail(e.target.value)}
                     />
-                    <button className="flex items-center justify-center rounded-full !leading-none disabled:bg-opacity-70 bg-sky-600 hover:bg-sky-700 text-neutral-50 absolute transform top-1/2 -translate-y-1/2 right-1  w-9 h-9  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-600 dark:focus:ring-offset-0" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" className="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    <button className="flex items-center justify-center rounded-full !leading-none disabled:bg-opacity-70 bg-blue-600 hover:bg-blue-700 text-neutral-50 absolute transform top-1/2 -translate-y-1/2 right-1  w-9 h-9  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-600 dark:focus:ring-offset-0" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
                     </button>
                 </form>
             </div>

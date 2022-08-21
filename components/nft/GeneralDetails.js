@@ -1,38 +1,39 @@
 import Link from 'next/link'
+import Report from '../Report'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { GiShare } from 'react-icons/gi'
-import { AiFillFire } from 'react-icons/ai'
-import { config } from '../../lib/sanityClient'
 import { ImHammer2 } from 'react-icons/im'
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
+import { AiFillFire } from 'react-icons/ai'
+import { useQueryClient } from 'react-query'
+import HelmetMetaData from '../HelmetMetaData'
+import { config } from '../../lib/sanityClient'
+import { useChainId } from '@thirdweb-dev/react'
+import { FacebookShareButton } from 'react-share'
+import { MdOutlineBugReport } from 'react-icons/md'
+import { Menu, Transition } from '@headlessui/react'
+import { getUnsignedImagePath } from '../../fetchers/s3'
+import { useUserContext } from '../../contexts/UserContext'
+import { useThemeContext } from '../../contexts/ThemeContext'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { RiShareBoxLine, RiCloseCircleLine, RiFireLine } from 'react-icons/ri'
 import {
   useAddress,
   useMarketplace,
   useNFTCollection,
 } from '@thirdweb-dev/react'
-import { MdOutlineBugReport } from 'react-icons/md'
-import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import { RiShareBoxLine, RiCloseCircleLine, RiFireLine } from 'react-icons/ri'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { useQueryClient } from 'react-query'
-import { useChainId } from '@thirdweb-dev/react'
 import {
   FiMoreVertical,
   FiFacebook,
   FiTwitter,
   FiInstagram,
 } from 'react-icons/fi'
-import { useThemeContext } from '../../contexts/ThemeContext'
 import { useQuery } from 'react-query'
 import {
   getUserContinuously,
   getNFTCollection,
 } from '../../fetchers/SanityFetchers'
-import { useUserContext } from '../../contexts/UserContext'
-import { getUnsignedImagePath } from '../../fetchers/s3'
-import Report from '../Report'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -221,9 +222,17 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
       }
     })()
   }
+console.log(router.pathname)
 
   return (
-    <div className={dark ? ' text-neutral-200' : ''}>
+    <div className={dark ? ' text-neutral-200' : 'text-black'}>
+      <HelmetMetaData 
+        title={selectedNft?.metadata.name}
+        description={selectedNft?.metadata.description}
+        image={selectedNft?.metadata.image}
+        contractAddress={collectionAddress}>
+          
+        </HelmetMetaData>
       {/* Modal window*/}
       {showModal && <Report showModal={showModal} setShowModal={setShowModal} dark={dark} itemType="NFT" selectedNft={selectedNft} contractAddress={collectionAddress}/>}
       {/* End of Modal window*/}
@@ -258,6 +267,20 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
           </span>
           <div className="flow-root">
             <div className="-my-1.5 flex gap-4 text-lg">
+            <FacebookShareButton className='w-full'>
+              {dark ? (
+                  <FiFacebook
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <FiFacebook
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )
+              }
+            </FacebookShareButton>
               {selectedNft?.metadata?.properties?.external_link ? (
                 <Link href={selectedNft?.metadata?.properties?.external_link}>
                   <a target="_blank" className=" scale-105 transition">
@@ -289,21 +312,33 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                     } rounded-2xl  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
                   >
                     <div className="p-3">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            className={`${
-                              active
-                                ? dark
-                                  ? ' bg-slate-600 text-neutral-100'
-                                  : 'bg-blue-500 text-white'
-                                : dark
-                                ? ' text-neutral-100'
-                                : 'text-gray-900'
-                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                          >
-                            {active ? (
-                              dark ? (
+                      
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={`${
+                                active
+                                  ? dark
+                                    ? ' bg-slate-600 text-neutral-100'
+                                    : 'bg-blue-500 text-white'
+                                  : dark
+                                  ? ' text-neutral-100'
+                                  : 'text-gray-900'
+                              } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                            >
+                              {active ? (
+                                dark ? (
+                                  <FiFacebook
+                                    className="mr-2 h-5 w-5"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <FiFacebook
+                                    className="mr-2 h-5 w-5"
+                                    color="#000000"
+                                  />
+                                )
+                              ) : dark ? (
                                 <FiFacebook
                                   className="mr-2 h-5 w-5"
                                   color="#ffffff"
@@ -313,22 +348,11 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                                   className="mr-2 h-5 w-5"
                                   color="#000000"
                                 />
-                              )
-                            ) : dark ? (
-                              <FiFacebook
-                                className="mr-2 h-5 w-5"
-                                color="#ffffff"
-                              />
-                            ) : (
-                              <FiFacebook
-                                className="mr-2 h-5 w-5"
-                                color="#000000"
-                              />
-                            )}
-                            Share on Facebook
-                          </button>
-                        )}
-                      </Menu.Item>
+                              )}
+                              Share on Facebook
+                            </button>
+                          )}
+                         </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
                           <button

@@ -13,6 +13,7 @@ import TopCollections from '../components/TopCollections'
 import { useThemeContext } from '../contexts/ThemeContext'
 import BrowseByCategory from '../components/BrowseByCategory'
 import SubscribeSection from '../components/SubscribeSection'
+import PopularAudioNFTs from '../components/PopularAudioNFTs'
 
 const style = {
   wrapper: ``,
@@ -81,6 +82,7 @@ const Home = () => {
         <ExploreNFTs/>
         <BrowseByCategory/>
         <SubscribeSection />
+        <PopularAudioNFTs />
         <Footer/>
       </div>
   )

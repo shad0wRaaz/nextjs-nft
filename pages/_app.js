@@ -7,6 +7,10 @@ import { ThemeProvider } from '../contexts/ThemeContext'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import appletouchicon from '../assets/favicon/apple-touch-icon.png'
+import icon32 from '../assets/favicon/favicon-32x32.png'
+import icon16 from '../assets/favicon/favicon-16x16.png'
+// import manifest from '../assets/favicon/site.webmanifest'
 
 const desiredChainId = ChainId.Mumbai
 const connectors = [
@@ -47,6 +51,10 @@ function MyApp({ Component, pageProps }) {
                     name="keywords"
                     content="nft, marketplace, nft marketplace, metamask, coinbase wallet, ethereum, matic, avalance, fantom, eth, avax, ftm"
                   />
+                  <link rel="apple-touch-icon" sizes="180x180" href={appletouchicon.src} key={'apple-touch-icon'} />
+                  <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
+                  <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
+                  {/* <link rel="manifest" href={manifest} key={'manifest'}></link> */}
                 </Head>
                 <Component {...pageProps} />
                 <ReactQueryDevtools />
