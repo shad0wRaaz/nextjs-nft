@@ -7,7 +7,7 @@ const HelmetMetaData = (props) => {
     let quote = props.quote !== undefined ? props.quote : "";
     let title = props.title !== undefined ? props.title : "Nuva NFT - A Multichain NFT Marketplace";
     let image = props.image !== undefined ? props.image : nuvanft.src;
-    let description = props.description !== undefined ? props.description  : "A multichain NFT Marketplace everyone has been waiting for.";
+    let description = props.description !== undefined ? props.description  : "Nuva Nft is one of the largest NFT marketplace out there in the defi market.";
     let hashtag = props.hashtag !== undefined ? props.hashtag : "#nuvanft";
 
   return (
@@ -36,7 +36,7 @@ const HelmetMetaData = (props) => {
         <meta property="og:image" content={image} />
         <meta content="image/*" property="og:image:type" />
         <meta property="og:url" content={currentUrl} />
-        <meta property="og:site_name" content="CampersTribe" />
+        <meta property="og:site_name" content="Nuva NFT" />
         <meta property="og:description" content={description} />    
     </Helmet>
   )

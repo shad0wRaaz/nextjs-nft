@@ -39,18 +39,6 @@ function MyApp({ Component, pageProps }) {
               <MarketplaceProvider>
                 <Head>
                   <title>Nuva NFT</title>
-                  <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1.0"
-                  />
-                  <meta
-                    name="description"
-                    content="Nuva Nft is one of the largest NFT marketplace out there in the defi market."
-                  />
-                  <meta
-                    name="keywords"
-                    content="nft, marketplace, nft marketplace, metamask, coinbase wallet, ethereum, matic, avalance, fantom, eth, avax, ftm"
-                  />
                   <link rel="apple-touch-icon" sizes="180x180" href={appletouchicon.src} key={'apple-touch-icon'} />
                   <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
                   <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
