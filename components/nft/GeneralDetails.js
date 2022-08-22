@@ -10,7 +10,7 @@ import { useQueryClient } from 'react-query'
 import HelmetMetaData from '../HelmetMetaData'
 import { config } from '../../lib/sanityClient'
 import { useChainId } from '@thirdweb-dev/react'
-import { FacebookShareButton } from 'react-share'
+import { FacebookShareButton, TwitterShareButton, } from 'react-share'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
 import { getUnsignedImagePath } from '../../fetchers/s3'
@@ -230,6 +230,7 @@ console.log(router.pathname)
         title={selectedNft?.metadata.name}
         description={selectedNft?.metadata.description}
         image={selectedNft?.metadata.image}
+        itemId={selectedNft?.metadata.id.toNumber()}
         contractAddress={collectionAddress}>
           
         </HelmetMetaData>
@@ -266,21 +267,47 @@ console.log(router.pathname)
             {nftCollection?.category}
           </span>
           <div className="flow-root">
-            <div className="-my-1.5 flex gap-4 text-lg">
-            <FacebookShareButton className='w-full'>
-              {dark ? (
-                  <FiFacebook
+            <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-1 px-4`}>
+              <FacebookShareButton className="hover:scale-125 transition">
+                {dark ? (
+                    <FiFacebook
+                      className="mr-2 h-5 w-5"
+                      color="#ffffff"
+                    />
+                  ) : (
+                    <FiFacebook
+                      className="mr-2 h-5 w-5"
+                      color="#000000"
+                    />
+                  )
+                }
+              </FacebookShareButton>
+              <TwitterShareButton className="hover:scale-125 transition">
+                {dark ? (
+                  <FiTwitter
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                  ) : (
+                    <FiTwitter
+                      className="mr-2 h-5 w-5"
+                      color="#000000"
+                    />
+                  )}
+              </TwitterShareButton>
+              <TwitterShareButton className="hover:scale-125 transition">
+                {dark ? (
+                  <FiInstagram
                     className="mr-2 h-5 w-5"
                     color="#ffffff"
                   />
                 ) : (
-                  <FiFacebook
+                  <FiInstagram
                     className="mr-2 h-5 w-5"
                     color="#000000"
                   />
-                )
-              }
-            </FacebookShareButton>
+                )}
+              </TwitterShareButton>
               {selectedNft?.metadata?.properties?.external_link ? (
                 <Link href={selectedNft?.metadata?.properties?.external_link}>
                   <a target="_blank" className=" scale-105 transition">
@@ -291,7 +318,7 @@ console.log(router.pathname)
                 <RiShareBoxLine />
               )}
 
-              <Menu as="div" className="relative inline-block">
+              {/* <Menu as="div" className="relative inline-block">
                 <div>
                   <Menu.Button className="transition hover:scale-125">
                     <GiShare />
@@ -436,12 +463,12 @@ console.log(router.pathname)
                     </div>
                   </Menu.Items>
                 </Transition>
-              </Menu>
+              </Menu> */}
 
               <Menu as="div" className="relative inline-block">
                 <div>
                   <Menu.Button className="transition hover:rotate-90">
-                    <FiMoreVertical />
+                    <FiMoreVertical className="mt-2" />
                   </Menu.Button>
                 </div>
                 <Transition
