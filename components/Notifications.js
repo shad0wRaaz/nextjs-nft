@@ -51,8 +51,10 @@ const Notifications = () => {
 
         const unresolved = res.map(async (item) => {
           const obj = { ...item }
-          const imgPath = await getUnsignedImagePath(item.from.profileImage)
-          obj['profileImage'] = imgPath?.data.url
+          if(item.from){
+            const imgPath = await getUnsignedImagePath(item.from.profileImage)
+            obj['profileImage'] = imgPath?.data.url
+          }
           return obj
         })
 
