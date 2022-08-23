@@ -222,7 +222,6 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
       }
     })()
   }
-console.log(router.pathname)
 
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
@@ -467,7 +466,7 @@ console.log(router.pathname)
 
               <Menu as="div" className="relative inline-block">
                 <div>
-                  <Menu.Button className="transition hover:rotate-90">
+                  <Menu.Button className="transition hover:scale-125">
                     <FiMoreVertical className="mt-2" />
                   </Menu.Button>
                 </div>
