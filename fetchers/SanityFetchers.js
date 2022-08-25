@@ -19,6 +19,13 @@ export const getUserContinuously =
     return res[0]
   }
 
+export const getReportActivities = () => async({queryKey}) => {
+  const[_, address] = queryKey
+  const query = `*[_type == "notifications" && contractAddress == "${address}" && itemid == "${address}"] {eventTitle, description}`
+  const res = await config.fetch(query)
+  return res[0]
+}
+
 export const getNotifications =
   () =>
   async ({ queryKey }) => {
