@@ -33,19 +33,39 @@ export const sendNotificationFrom = async ({
   contractAddress,
   type,
   followers,
+  eventTitle,
+  description,
+  itemID
 }) => {
+
   let link = ''
   let event = ''
+
   if (type == 'TYPE_ONE') {
     //this is create NFT Collection
     link = `/collections/${contractAddress}`
     event = 'Uploaded an NFT Collection'
   }
+  else if(type == 'TYPE_TWO'){}
+  else if(type == 'TYPE_THREE'){}
+  else if(type == 'TYPE_FOUR'){}
+  else if(type == 'TYPE_FIVE'){}
+  else if(type == 'TYPE_SIX'){
+    //this is Report NFT 
+    link = `/nfts/${itemID}?c=${contractAddress}`
+    event = 'Your NFT was reported...'
+  }
+  else if(type == 'TYPE_SEVEN'){
+    //this is Report Collection
+    link = `collections/${contractAddress}`
+    event = 'Your Collection was reported as...'
+  }
+  
   const to = [...followers]
   to.map(async (follower) => {
     const doc = {
       _type: 'notifications',
-      link: link,
+      link,
       from: {
         _type: 'reference',
         _ref: address,
@@ -54,10 +74,16 @@ export const sendNotificationFrom = async ({
         _type: 'reference',
         _ref: follower._ref,
       },
-      event: event,
+      event,
+      type,
+      contractAddress,
+      itemid: itemID.toString(),
+      eventTitle: eventTitle ? eventTitle : '',
+      description: description ? description: ''
     }
     await config.create(doc)
   })
+  
 }
 
 export const changeNFTOwner = async ({ address }) => {}
