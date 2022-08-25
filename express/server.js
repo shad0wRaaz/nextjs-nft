@@ -35,7 +35,7 @@ const s3 = new S3Client({
     accessKeyId: s3AccessKey,
     secretAccessKey: s3SecretKey,
   },
-  region: 'eu-west-2',
+  region: s3BucketRegion,
 })
 
 const config = sanityClient({
