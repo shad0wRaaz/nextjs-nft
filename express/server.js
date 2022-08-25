@@ -25,11 +25,6 @@ dotenv.config()
 const randomImageName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString('hex')
 
-// const s3BucketName = 'nuvanft'
-// const s3BucketRegion = 'eu-west-2'
-// const s3AccessKey = 'AKIA4B5XZ7FBATGSZFK6'
-// const s3SecretKey = '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'
-
 const s3BucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME
 const s3BucketRegion = process.env.NEXT_PUBLIC_AWS_BUCKET_REGION
 const s3AccessKey = process.env.NEXT_PUBLIC_AWS_ACCESS_KEY
