@@ -16,6 +16,7 @@ import noProfileImage from '../assets/noProfileImage.png'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { IconBell } from './icons/CustomIcons'
 import { getUnsignedImagePath } from '../fetchers/s3'
+import { GoReport } from 'react-icons/go'
 
 const style = {
   background: `icon hover:bg-neutral-100 p-2 pb-0 rounded-xl cursor-pointer z-20`,
@@ -178,12 +179,14 @@ const Notifications = () => {
                             } focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50`}
                           >
                             <div className="wil-avatar relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-gray-900 shadow-inner ring-1 ring-white sm:h-12 sm:w-12">
+                              {notification?.profileImage ? (
                               <img
                                 className="absolute inset-0 h-full w-full rounded-full object-cover"
-                                src={notification?.profileImage}
+                                src={notification.profileImage}
                                 alt="User"
-                              />
-                              <span className="wil-avatar__name">U</span>
+                              />) : (
+                                <GoReport fontSize={23}/>
+                              )}
                             </div>
                             <div className="ml-3 space-y-1 sm:ml-4">
                               <p className="text-sm font-medium ">

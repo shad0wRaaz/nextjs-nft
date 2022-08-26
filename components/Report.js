@@ -1,10 +1,12 @@
+import axios from 'axios'
+import { BigNumber } from 'ethers'
+import toast from 'react-hot-toast'
+import { BsCheck } from 'react-icons/bs'
+import { CgSelect } from 'react-icons/cg'
 import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
-import { CgSelect } from 'react-icons/cg'
-import { BsCheck } from 'react-icons/bs'
-import axios from 'axios'
-import toast from 'react-hot-toast'
-import { BigNumber } from 'ethers'
+import { useMutation } from 'react-query'
+import { sendNotificationFrom } from '../mutators/SanityMutators'
 
 const reportType = [
     { name: 'Explicit and Sensitive content' },
@@ -30,6 +32,19 @@ const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selec
     const [selected, setSelected] = useState(reportType[0])
     const [otherDescription, setOtherDescription] = useState()
     const itemID = selectedNft.metadata.id.toNumber()
+
+    const { mutate: sendNotification } = useMutation(
+        async ({ address, contractAddress, type, eventTitle, description }) =>
+          sendNotificationFrom({
+            address,
+            contractAddress,
+            type,
+            itemID,
+            followers: [{_ref: selectedNft?.owner}],
+            eventTitle,
+            description
+          })
+      )
     
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -44,12 +59,18 @@ const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selec
                             Item Contract Address: ${contractAddress} <br/>
                             Item Id: ${itemID} <br/>
                             Description: ${otherDescription} <br/><br/>
-                            Link to the Item: <a href="http://localhost:3000/nfts/${itemID}?c=${contractAddress}" target="_blank">Click here</a>
+                            Link to the Item: <a href="https://nuvanft.io/nfts/${itemID}?c=${contractAddress}" target="_blank">Click here</a>
                         </html>`,
           })
 
           //send notification to the owner
-
+          sendNotification({
+            contractAddress: contractAddress,
+            itemID: itemID,
+            type: 'TYPE_SIX',
+            eventTitle: selected.name,
+            description: otherDescription,
+          })
           toast.success('This item has been reported.',successToastStyle)
         setShowModal(false)
 
