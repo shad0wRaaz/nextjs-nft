@@ -2,15 +2,14 @@ import Link from 'next/link'
 import Report from '../Report'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { GiShare } from 'react-icons/gi'
 import { ImHammer2 } from 'react-icons/im'
 import { useState, Fragment } from 'react'
-import { AiFillFire } from 'react-icons/ai'
+import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { useQueryClient } from 'react-query'
 import HelmetMetaData from '../HelmetMetaData'
 import { config } from '../../lib/sanityClient'
 import { useChainId } from '@thirdweb-dev/react'
-import { FacebookShareButton, TwitterShareButton, } from 'react-share'
+import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
 import { getUnsignedImagePath } from '../../fetchers/s3'
@@ -18,6 +17,8 @@ import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { RiShareBoxLine, RiCloseCircleLine, RiFireLine } from 'react-icons/ri'
+import { TbBrandTelegram } from 'react-icons/tb'
+import { HiOutlineMail } from 'react-icons/hi'
 import {
   useAddress,
   useMarketplace,
@@ -243,9 +244,9 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             : 'space-y-5 border-b pb-9'
         }
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-3 items-center justify-between">
         <span 
-          className="relative block w-fit mt-3 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+          className="relative block w-fit rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
           onClick={() => {
             router.push({
               pathname: '/search',
@@ -267,7 +268,9 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
           </span>
           <div className="flow-root">
             <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-1 px-4`}>
-              <FacebookShareButton className="hover:scale-125 transition">
+              <FacebookShareButton className="hover:scale-125 transition"
+                quote={selectedNft?.metadata?.name}
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
                 {dark ? (
                     <FiFacebook
                       className="mr-2 h-5 w-5"
@@ -281,7 +284,8 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                   )
                 }
               </FacebookShareButton>
-              <TwitterShareButton className="hover:scale-125 transition">
+              <TwitterShareButton className="hover:scale-125 transition"
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
                 {dark ? (
                   <FiTwitter
                     className="mr-2 h-5 w-5"
@@ -294,19 +298,62 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                     />
                   )}
               </TwitterShareButton>
-              <TwitterShareButton className="hover:scale-125 transition">
+              <RedditShareButton className="hover:scale-150 transition scale-125"
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
                 {dark ? (
-                  <FiInstagram
+                  <AiOutlineReddit
                     className="mr-2 h-5 w-5"
                     color="#ffffff"
                   />
                 ) : (
-                  <FiInstagram
+                  <AiOutlineReddit
                     className="mr-2 h-5 w-5"
                     color="#000000"
                   />
                 )}
-              </TwitterShareButton>
+              </RedditShareButton>
+              <WhatsappShareButton className="hover:scale-125 transition"
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                {dark ? (
+                  <AiOutlineWhatsApp
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <AiOutlineWhatsApp
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </WhatsappShareButton>
+              <TelegramShareButton className="hover:scale-125 transition"
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                {dark ? (
+                  <TbBrandTelegram
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <TbBrandTelegram
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </TelegramShareButton>
+              <EmailShareButton className="hover:scale-125 transition"
+                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                {dark ? (
+                  <HiOutlineMail
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <HiOutlineMail
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </EmailShareButton>
               {selectedNft?.metadata?.properties?.external_link ? (
                 <Link href={selectedNft?.metadata?.properties?.external_link}>
                   <a target="_blank" className=" scale-105 transition">
@@ -316,153 +363,6 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
               ) : (
                 <RiShareBoxLine />
               )}
-
-              {/* <Menu as="div" className="relative inline-block">
-                <div>
-                  <Menu.Button className="transition hover:scale-125">
-                    <GiShare />
-                  </Menu.Button>
-                </div>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items
-                    className={`absolute right-0 z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 ${
-                      dark ? ' bg-slate-700' : ' bg-white'
-                    } rounded-2xl  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
-                  >
-                    <div className="p-3">
-                      
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={`${
-                                active
-                                  ? dark
-                                    ? ' bg-slate-600 text-neutral-100'
-                                    : 'bg-blue-500 text-white'
-                                  : dark
-                                  ? ' text-neutral-100'
-                                  : 'text-gray-900'
-                              } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {active ? (
-                                dark ? (
-                                  <FiFacebook
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <FiFacebook
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )
-                              ) : dark ? (
-                                <FiFacebook
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <FiFacebook
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )}
-                              Share on Facebook
-                            </button>
-                          )}
-                         </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            className={`${
-                              active
-                                ? dark
-                                  ? ' bg-slate-600 text-neutral-100'
-                                  : 'bg-blue-500 text-white'
-                                : dark
-                                ? ' text-neutral-100'
-                                : 'text-gray-900'
-                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                          >
-                            {active ? (
-                              dark ? (
-                                <FiTwitter
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <FiTwitter
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )
-                            ) : dark ? (
-                              <FiTwitter
-                                className="mr-2 h-5 w-5"
-                                color="#ffffff"
-                              />
-                            ) : (
-                              <FiTwitter
-                                className="mr-2 h-5 w-5"
-                                color="#000000"
-                              />
-                            )}
-                            Share on Twitter
-                          </button>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            className={`${
-                              active
-                                ? dark
-                                  ? ' bg-slate-600 text-neutral-100'
-                                  : 'bg-blue-500 text-white'
-                                : dark
-                                ? ' text-neutral-100'
-                                : 'text-gray-900'
-                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                          >
-                            {active ? (
-                              dark ? (
-                                <FiInstagram
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <FiInstagram
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )
-                            ) : dark ? (
-                              <FiInstagram
-                                className="mr-2 h-5 w-5"
-                                color="#ffffff"
-                              />
-                            ) : (
-                              <FiInstagram
-                                className="mr-2 h-5 w-5"
-                                color="#000000"
-                              />
-                            )}
-                            Share on Instagram
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu> */}
 
               <Menu as="div" className="relative inline-block">
                 <div>
@@ -480,7 +380,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                   leaveTo="transform opacity-0 scale-95"
                 >
                   <Menu.Items
-                    className={`absolute right-0 z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md ${
+                    className={`absolute -right-4 z-20 mt-2 w-60 p-4 origin-top-right divide-y divide-gray-100 rounded-2xl ${
                       dark
                         ? ' bg-slate-700 text-neutral-100'
                         : ' bg-white text-gray-900'
@@ -539,7 +439,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                                 active
                                   ? dark
                                     ? ' bg-slate-600 text-neutral-100'
-                                    : 'bg-blue-500 text-white'
+                                    : 'bg-neutral-100'
                                   : dark
                                   ? ' text-neutral-100'
                                   : 'text-gray-900'
@@ -581,7 +481,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                               active
                                 ? dark
                                   ? ' bg-slate-600 text-neutral-100'
-                                  : 'bg-blue-500 text-white'
+                                  : 'bg-neutral-100'
                                 : dark
                                 ? ' text-neutral-100'
                                 : 'text-gray-900'
