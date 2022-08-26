@@ -173,6 +173,7 @@ const CreateNFTCollection = () => {
             // await config.patch(res).
 
             queryClient.invalidateQueries('myCollections')
+            
             //send out notification to all followers
             sendNotification({
               address: myUser.walletAddress,
