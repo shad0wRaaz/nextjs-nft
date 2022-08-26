@@ -19,11 +19,11 @@ export const getUserContinuously =
     return res[0]
   }
 
-export const getReportActivities = () => async({queryKey}) => {
-  const[_, address] = queryKey
-  const query = `*[_type == "notifications" && contractAddress == "${address}" && itemid == "${address}"] {eventTitle, description}`
+export const getReportActivities = (itemid) => async({queryKey}) => {
+  const[_, collectionAddress] = queryKey
+  const query = `*[_type == "notifications" && contractAddress == "${collectionAddress}" && itemid == "${itemid}"] {_createdAt, eventTitle, description} | order(_createdAt desc)`
   const res = await config.fetch(query)
-  return res[0]
+  return res
 }
 
 export const getNotifications =
