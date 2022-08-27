@@ -140,7 +140,7 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
   return (
     <div>
         <h2 className="text-center font-bold text-xl mb-[2rem]">Update Collection's Metadata</h2>
-            <form name="editCollection" onSubmit={handleEdit}>
+            <form nameName="editCollection" onSubmit={handleEdit}>
               <div className="">
                 <div className={style.formRow}>
                   <p className={style.label}>Name</p>
@@ -227,7 +227,7 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
                       <input
                       id="profileImg"
                       type="file"
-                      class="ml-3"
+                      className="ml-3"
                       onChange={(e) => {
                         setProfile(e.target.files[0])
                         previewImage('profile')
