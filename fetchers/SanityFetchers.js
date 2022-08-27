@@ -106,7 +106,7 @@ export const getNFTCollection =
         createdBy,
         chainId,
         contractAddress,
-        "creator": createdBy->walletAddress,
+        "creator": createdBy->,
         name, floorPrice,
         "allOwners": owners[]->,
         description,
