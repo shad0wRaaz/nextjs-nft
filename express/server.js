@@ -40,7 +40,7 @@ const config = sanityClient({
   ignoreBrowserTokenWarning: true,
 })
 
-cron.schedule('*/30 * * * *', async() => {
+cron.schedule('*/60 * * * *', async() => {
   const options = {
     method: 'GET',
     url: `https://coinranking1.p.rapidapi.com/coins`,
@@ -68,7 +68,7 @@ cron.schedule('*/30 * * * *', async() => {
       const bnb = response.data.data.coins?.filter(item => item.symbol == "BNB")
   
       //save all prices in database
-      await config.patch('3cae3666-6292-4f72-b8b7-fba643c068bf')
+      await config.patch(process.env.NEXT_PUBLIC_SETTING_DOCUMENT_ID)
       .set({
         maticprice : Number(parseFloat(matic[0].price).toFixed(4)),
         ethprice : Number(parseFloat(eth[0].price).toFixed(4)),

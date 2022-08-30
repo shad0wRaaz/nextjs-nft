@@ -21,7 +21,7 @@ export const getUserContinuously =
 
 export const getReportActivities = (itemid) => async({queryKey}) => {
   const[_, collectionAddress] = queryKey
-  const query = `*[_type == "notifications" && contractAddress == "${collectionAddress}" && itemid == "${itemid}"] {_createdAt, eventTitle, description} | order(_createdAt desc)`
+  const query = `*[_type == "notifications" && contractAddress == "${collectionAddress}" && itemid == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`
   const res = await config.fetch(query)
   return res
 }
@@ -157,3 +157,8 @@ export const getAllOwners =
     const res = await config.fetch(query)
     return res
   }
+export const getCoinPrices = () => async () => {
+  const query = `*[_type == "settings"]{ethprice, maticprice, _updatedAt}`
+  const res = config.fetch(query)
+  return res
+}

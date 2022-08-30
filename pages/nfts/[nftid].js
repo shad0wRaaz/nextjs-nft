@@ -29,6 +29,7 @@ import { BigNumber } from 'ethers'
 import { getAllNFTs } from '../../fetchers/Web3Fetchers'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import { MdAudiotrack } from 'react-icons/md'
+import ReportActivity from '../../components/nft/ReportActivity'
 const style = {
   wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
   container: `container p-6`,
@@ -225,33 +226,10 @@ const Nft = () => {
       setIsLiked(0)
     }
   }, [metaDataFromSanity, address])
-
-  // useEffect(() => {
-  //   console.log(listingData)
-  // }, [listingData])
-  // useEffect(() => {
-  //   setListingData(
-  //     activeListings?.find(
-  //       (marketNft) =>
-  //         JSON.stringify(marketNft.asset?.id) ==
-  //           JSON.stringify(selectedNft?.metadata.id) &&
-  //         marketNft.assetContractAddress == collectionid
-  //     )
-  //   )
-  // }, [activeListings])
-
-  // useEffect(() => {
-
-  //   if (!listingData) return
-
-  //   if (Boolean(listingData.reservePrice)) {
-  //     setIsAuctionItem(true)
-  //   }
-  // }, [listingData])
-
-  // useEffect(() => {
-  //   console.log(selectedNft)
-  // }, [selectedNft])
+// console.log(listingData)
+  // console.log(new Date(listingData.secondsUntilEnd.toNumber() * 1000))
+  // console.log(new Date(listingData.startTimeInSeconds.toNumber() * 1000))
+  
 
   return (
     <div
@@ -297,25 +275,17 @@ const Nft = () => {
               </div>
 
               <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
-                {selectedNft?.metadata?.properties?.itemtype == "image" && (<IconImage/>)}
-                {selectedNft?.metadata?.properties?.itemtype == "video" && (<IconVideo/>)}
-                {selectedNft?.metadata?.properties?.itemtype == "audio" && (<MdAudiotrack/>)}
+                {selectedNft?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> : selectedNft?.metadata?.properties?.itemtype  == "video" ? <IconVideo /> : <IconImage />}
               </div>
 
-              {playItem ? (
-                <div 
-                  className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
-                  onClick={() => setPlayItem(curVal => !curVal)}>
-                  <BsPause size={25} /> 
+              {(selectedNft?.metadata?.properties?.itemtype == "audio" || selectedNft?.metadata?.properties?.itemtype == "video") && 
+                (<div 
+                    className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
+                    onClick={() => setPlayItem(curVal => !curVal)}>
+                    { playItem ? <BsPause size={25} /> : <BsPlay size={25}/> }
                 </div>
-              ) : (
-                <div 
-                className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
-                onClick={() => setPlayItem(curVal => !curVal)}>
-                  <BsPlay size={25}/>
-                </div>
-              )}
-              
+                )
+              }
 
               <button
                 className="absolute right-3 top-3 flex h-10 items-center justify-center rounded-full bg-black/50 px-3.5 text-white "
@@ -523,12 +493,14 @@ const Nft = () => {
               collectionAddress={collectionid}
               nftCollection={collectionData}
             />
-
-            <AuctionTimer
-              selectedNft={selectedNft}
-              listingData={listingData}
-              auctionItem={isAuctionItem}
-            />
+            
+            {listingData && listingData?.secondsUntilEnd.toNumber() != listingData?.startTimeInSeconds.toNumber() && (
+              <AuctionTimer
+                selectedNft={selectedNft}
+                listingData={listingData}
+                auctionItem={isAuctionItem}
+              />
+            )}
 
             <Purchase
               selectedNft={selectedNft}
@@ -541,6 +513,12 @@ const Nft = () => {
               collectionAddress={collectionid}
               selectedNft={selectedNft}
             />
+            {address && (
+              <ReportActivity
+                collectionAddress={collectionid}
+                selectedNft={selectedNft}
+              />
+            )}
           </div>
         </div>
       </main>

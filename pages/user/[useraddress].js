@@ -61,33 +61,7 @@ const User = () => {
     if (!address) return
     setUserData(await getUser(address))
   }, [address])
-  // const { data: userData, status: userStatus } = useQuery(
-  //   ['user', address],
-  //   getUserContinuously(),
-  //   {
-  //     enabled: Boolean(address),
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching user information. Refresh and try again',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: (user) => {
-  //       if (
-  //         user?.followers?.filter((u) => u._ref === myUser?.walletAddress)
-  //           .length > 0
-  //       ) {
-  //         setIsFollower(true)
-  //         console.log(isFollower)
-  //       }
-  //       setFollowerCount(user?.followers?.length)
-  //       ;(async () => {
-  //         setProfile(await getUnsignedImagePath(user.profileImage))
-  //         setBanner(await getUnsignedImagePath(user.bannerImage))
-  //       })()
-  //     },
-  //   }
-  // )
+  
   useEffect(() => {
     if (!userData) return
     if (
@@ -224,7 +198,7 @@ const User = () => {
           </div>
         </div>
 
-        <div className="container relative  mx-auto -mt-14 px-[1.2rem] lg:-mt-20">
+        <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
           <div
             className={`flex flex-col rounded-3xl ${
               dark ? 'darkGray' : 'bg-white'
@@ -469,8 +443,8 @@ const User = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-[4rem] px-[1.2rem]">
-        <h2 className="mb-[3rem] pt-[4rem] text-center text-3xl font-bold">
+      <div className="container mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+        <h2 className="mb-[3rem] lg:pt-[4rem] text-center text-3xl font-bold">
           {userData?.userName}'s Collections
         </h2>
 

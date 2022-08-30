@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { useAddress, useMarketplace } from '@thirdweb-dev/react'
-import Sell from './Sell'
 import axios from 'axios'
+import Sell from './Sell'
+import { BigNumber } from 'ethers'
+import toast from 'react-hot-toast'
+import { Bars } from 'svg-loaders-react'
+import { useEffect, useState } from 'react'
+import { useChainId } from '@thirdweb-dev/react'
 import { ChainId, NATIVE_TOKENS } from '@thirdweb-dev/sdk'
+import { useAddress, useMarketplace } from '@thirdweb-dev/react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
 import { saveTransaction, addVolumeTraded } from '../../mutators/SanityMutators'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useChainId } from '@thirdweb-dev/react'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { BigNumber } from 'ethers'
-import { Bars } from 'svg-loaders-react'
 
 const style = {
   button: `mr-8 flex items-center py-2 px-12 rounded-lg cursor-pointer`,
@@ -37,16 +38,15 @@ const MakeOffer = ({
   auctionItem,
 }) => {
   const { marketplaceAddress } = useMarketplaceContext()
-
+  const { coinPrices } = useSettingsContext()
   const marketPlaceModule = useMarketplace(marketplaceAddress)
   const chainId = useChainId()
   const address = useAddress()
   const queryClient = useQueryClient()
-  const [coinprice, setCoinPrice] = useState()
   const [buyLoading, setBuyLoading] = useState(false)
   const [bidLoading, setBidLoading] = useState(false)
-  const [coinuuid, setCoinuuid] = useState()
   const collectionAddress = nftCollection.contractAddress
+  const [coinMultiplier, setCoinMultiplier] = useState()
   const { mutate: mutateSaveTransaction } = useMutation(
     ({ transaction, collectionAddress, id, eventName, price, chainid }) =>
       saveTransaction({
@@ -71,13 +71,6 @@ const MakeOffer = ({
       },
     }
   )
-  console.log(selectedNft)
-  // const newVolumeTraded =
-  //   parseFloat(nftCollection.volumeTraded) +
-  //   parseFloat(
-  //     listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice
-  //   )
-  // console.log(newVolumeTraded)
 
   const { mutate: addVolume } = useMutation(
     ({ address, volume }) =>
@@ -89,39 +82,22 @@ const MakeOffer = ({
     }
   )
 
-  // console.log(selectedNft)
-  useEffect(() => {
-    ;(async () => {
-      if (!coinuuid) return
-      const options = {
-        method: 'GET',
-        url: `https://coinranking1.p.rapidapi.com/coin/${coinuuid}/price`,
-        params: { referenceCurrencyUuid: 'yhjMzLPhuIDl' },
-        headers: {
-          'X-RapidAPI-Host': process.env.NEXT_PUBLIC_RAPIDAPI_HOST,
-          'X-RapidAPI-Key': process.env.NEXT_PUBLIC_RAPIDAPI_KEY,
-        },
-      }
-      const response = await axios.request(options)
-      setCoinPrice(response.data.data.price)
-    })()
-  }, [coinuuid])
-
   useEffect(() => {
     if (!listingData) return
     //get currency symbol from market(listed) nft item
     if (listingData?.buyoutCurrencyValuePerToken.symbol == 'MATIC') {
-      setCoinuuid('uW2tk-ILY0ii')
+      setCoinMultiplier(coinPrices.maticprice)
     } else if (listingData?.buyoutCurrencyValuePerToken.symbol == 'ETH') {
-      setCoinuuid('razxDUgYGNAdQ')
+      setCoinMultiplier(coinPrices.ethprice)
     } else if (listingData?.buyoutCurrencyValuePerToken.symbol == 'FTX') {
-      setCoinuuid('NfeOYfNcl')
+      setCoinMultiplier(coinPrices.ftxprice)
     } else if (listingData?.buyoutCurrencyValuePerToken.symbol == 'AVAX') {
-      setCoinuuid('dvUj0CzDZ')
+      setCoinMultiplier(coinPrices.avaxprice)
     } else if (listingData?.buyoutCurrencyValuePerToken.symbol == 'BNB') {
-      setCoinuuid('WcwrkfNI4FUAe')
+      setCoinMultiplier(coinPrices.bnbprice)
     }
   }, [listingData])
+
 
   //function to make offer for nfts
   const makeAnOffer = async (
@@ -270,12 +246,12 @@ const MakeOffer = ({
               {listingData?.buyoutCurrencyValuePerToken?.displayValue}{' '}
               {listingData?.buyoutCurrencyValuePerToken?.symbol}
             </span>
-            {coinprice && (
+            {coinMultiplier && (
               <span className="text-lg text-neutral-400 sm:ml-5">
                 ( ≈ $
                 {parseFloat(
-                  listingData?.buyoutCurrencyValuePerToken?.displayValue *
-                    coinprice
+                  Number(listingData?.buyoutCurrencyValuePerToken?.displayValue) *
+                    coinMultiplier
                 ).toFixed(5)}
                 )
               </span>

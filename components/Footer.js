@@ -16,11 +16,11 @@ import { useThemeContext } from '../contexts/ThemeContext'
 const style = {
   partnerContainer:
     'container mx-auto bg-neutral-50 border-t border-neutral-200 p-[50px] text-center partnerContainer mt-[80px]',
-  bottomWrapper: 'md:p-[50px]',
+  bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
   bottomContainer:
     'm-auto justify-between flex flex-wrap container px-[1.2rem]',
   footerContainer:
-    'm-auto justify-between flex flex-wrap container pt-[2rem] px-[1.2rem] border-t',
+    'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
   header: 'font-bold text-lg mb-3',
   text: '',
   leftBox: 'lg:max-w-[50%] sm:max-w-[290px]',
@@ -106,16 +106,12 @@ const Footer = () => {
   }
 
   return (
-    <>
+    <div className={`${dark ? 'darkNavy': 'bg-neutral-100'}`}>
       {/* <div className={style.bottomContainer}>
         <h2 className={style.header}>Partners</h2>
       </div> */}
       <div
-        className={
-          dark
-            ? style.bottomWrapper + ' darkNavy text-neutral-100'
-            : style.bottomWrapper + '  bg-neutral-100 text-neutral-600'
-        }
+        className={style.bottomWrapper}
         style={{ marginTop: '120px', paddingTop: '80px' }}
       >
         <div className={style.bottomContainer}>
@@ -200,19 +196,15 @@ const Footer = () => {
         </div>
       </div>
       <div
-        className={
-          dark
-            ? style.bottomWrapper + ' darkNavy text-neutral-100'
-            : style.bottomWrapper + '  bg-neutral-100 text-neutral-600'
-        }
-      >
+        className={style.bottomWrapper}
+        >
         <div
           className={
             dark
               ? style.footerContainer + ' border-sky-400/20'
               : style.footerContainer + ' border-neutral-200'
           }
-        >
+          >
           <p className={style.copyright}>&copy; 2022 Meta Nuva Ltd.</p>
           <div className={style.footerLinksWrapper}>
             <Link href="/privacypolicy">
@@ -228,7 +220,7 @@ const Footer = () => {
                 Privacy Policy
               </a>
             </Link>
-            <Link href="/termsandconditions">
+            <Link href="/cookiepolicy">
               <a
                 className={
                   dark
@@ -238,13 +230,13 @@ const Footer = () => {
                 }
                 rel="noopener noreferrer"
               >
-                Terms of Use
+                Cookie Policy
               </a>
             </Link>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

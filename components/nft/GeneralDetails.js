@@ -364,46 +364,58 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                 <RiShareBoxLine />
               )}
 
-              <Menu as="div" className="relative inline-block">
-                <div>
-                  <Menu.Button className="transition hover:scale-125">
-                    <FiMoreVertical className="mt-2" />
-                  </Menu.Button>
-                </div>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items
-                    className={`absolute -right-4 z-20 mt-2 w-60 p-4 origin-top-right divide-y divide-gray-100 rounded-2xl ${
-                      dark
-                        ? ' bg-slate-700 text-neutral-100'
-                        : ' bg-white text-gray-900'
-                    } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+              {address && (
+                <Menu as="div" className="relative inline-block">
+                  <div>
+                    <Menu.Button className="transition hover:scale-125">
+                      <FiMoreVertical className="top-1 relative" />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
                   >
-                    <div className="p-1">
-                      {selectedNft?.owner == address && Boolean(listingData) && (
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              onClick={() => cancelListing()}
-                              className={`${
-                                active
-                                  ? dark
-                                    ? ' bg-slate-600 text-neutral-100'
-                                    : 'bg-blue-500 text-white'
-                                  : dark
-                                  ? ' text-neutral-100'
-                                  : 'text-gray-900'
-                              } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {active ? (
-                                dark ? (
+                    <Menu.Items
+                      className={`absolute -right-4 z-20 mt-2 w-60 p-4 origin-top-right divide-y divide-gray-100 rounded-2xl ${
+                        dark
+                          ? ' bg-slate-700 text-neutral-100'
+                          : ' bg-white text-gray-900'
+                      } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                    >
+                      <div className="p-1">
+                        {selectedNft?.owner == address && Boolean(listingData) && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                onClick={() => cancelListing()}
+                                className={`${
+                                  active
+                                    ? dark
+                                      ? ' bg-slate-600 text-neutral-100'
+                                      : 'bg-blue-500 text-white'
+                                    : dark
+                                    ? ' text-neutral-100'
+                                    : 'text-gray-900'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                {active ? (
+                                  dark ? (
+                                    <RiCloseCircleLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#ffffff"
+                                    />
+                                  ) : (
+                                    <RiCloseCircleLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#000000"
+                                    />
+                                  )
+                                ) : dark ? (
                                   <RiCloseCircleLine
                                     className="mr-2 h-5 w-5"
                                     color="#ffffff"
@@ -413,28 +425,59 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                                     className="mr-2 h-5 w-5"
                                     color="#000000"
                                   />
-                                )
-                              ) : dark ? (
-                                <RiCloseCircleLine
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <RiCloseCircleLine
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )}
-                              Cancel Direct Listing
-                            </button>
-                          )}
-                        </Menu.Item>
-                      )}
-                      {selectedNft?.owner == address && (
+                                )}
+                                Cancel Direct Listing
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )}
+                        {selectedNft?.owner == address && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                onClick={() => burn()}
+                                className={`${
+                                  active
+                                    ? dark
+                                      ? ' bg-slate-600 text-neutral-100'
+                                      : 'bg-neutral-100'
+                                    : dark
+                                    ? ' text-neutral-100'
+                                    : 'text-gray-900'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                {active ? (
+                                  dark ? (
+                                    <RiFireLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#ffffff"
+                                    />
+                                  ) : (
+                                    <RiFireLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#000000"
+                                    />
+                                  )
+                                ) : dark ? (
+                                  <RiFireLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <RiFireLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#000000"
+                                  />
+                                )}
+                                Burn this NFT
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )}
                         <Menu.Item>
                           {({ active }) => (
                             <button
-                              onClick={() => burn()}
+                              onClick={() => setShowModal(true)}
                               className={`${
                                 active
                                   ? dark
@@ -447,77 +490,36 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                             >
                               {active ? (
                                 dark ? (
-                                  <RiFireLine
+                                  <MdOutlineBugReport
                                     className="mr-2 h-5 w-5"
                                     color="#ffffff"
                                   />
                                 ) : (
-                                  <RiFireLine
+                                  <MdOutlineBugReport
                                     className="mr-2 h-5 w-5"
                                     color="#000000"
                                   />
                                 )
                               ) : dark ? (
-                                <RiFireLine
+                                <MdOutlineBugReport
                                   className="mr-2 h-5 w-5"
                                   color="#ffffff"
                                 />
                               ) : (
-                                <RiFireLine
+                                <MdOutlineBugReport
                                   className="mr-2 h-5 w-5"
                                   color="#000000"
                                 />
                               )}
-                              Burn this NFT
+                              Report this NFT
                             </button>
                           )}
                         </Menu.Item>
-                      )}
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={() => setShowModal(true)}
-                            className={`${
-                              active
-                                ? dark
-                                  ? ' bg-slate-600 text-neutral-100'
-                                  : 'bg-neutral-100'
-                                : dark
-                                ? ' text-neutral-100'
-                                : 'text-gray-900'
-                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                          >
-                            {active ? (
-                              dark ? (
-                                <MdOutlineBugReport
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <MdOutlineBugReport
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )
-                            ) : dark ? (
-                              <MdOutlineBugReport
-                                className="mr-2 h-5 w-5"
-                                color="#ffffff"
-                              />
-                            ) : (
-                              <MdOutlineBugReport
-                                className="mr-2 h-5 w-5"
-                                color="#000000"
-                              />
-                            )}
-                            Report this NFT
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              )}
             </div>
           </div>
         </div>

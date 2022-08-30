@@ -12,7 +12,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getUnsignedImagePath } from '../fetchers/s3'
 
 const style = {
-  wrapper: 'container p-[20px] text-center topCollectionWrapper',
+  wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem]',
   title: 'font-bold text-[2rem] mb-[2rem] grow text-center',
   collectionWrapper:
     'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',

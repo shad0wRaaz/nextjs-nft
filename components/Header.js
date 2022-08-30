@@ -23,7 +23,7 @@ import ThemeSwitcher from './ThemeSwitcher'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useUserContext } from '../contexts/UserContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { getMyCollections } from '../fetchers/SanityFetchers'
+import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
 import noProfileImage from '../assets/noProfileImage.png'
 import {
   useChainId,
@@ -48,6 +48,7 @@ import {
   IconProfile,
 } from './icons/CustomIcons'
 import { getUnsignedImagePath } from '../fetchers/s3'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapper: `container mx-auto w-full px-[1.2rem] py-[0.8rem] flex space-x-4 xl:space-x-[6rem]`,
@@ -87,6 +88,7 @@ const Header = () => {
     activeListings,
     setActiveListings,
   } = useMarketplaceContext()
+  const { setCoinPrices } = useSettingsContext()
   const connectWithMetamask = useMetamask()
   const connectWithCoinbase = useCoinbaseWallet()
   const connectWithWalletConnect = useWalletConnect()
@@ -117,31 +119,7 @@ const Header = () => {
     myBannerImage,
     setMyBannerImage,
   } = useUserContext()
-  // const [allowMarketRefetch, setAllowMarketRefetch] = useState()
-  //getCollection Name from Sanity
-
-  // const {
-  //   data: ownerData,
-  //   refetch: refetchUser,
-  //   status: ownerStatus,
-  // } = useQuery(['user', address], getUser(), {
-  //   staleTime: queryStaleTime,
-  //   enabled: false,
-  //   onError: () => {
-  //     toast.error('Error in getting Owner info.', errorToastStyle)
-  //   },
-  //   onSuccess: (data) => {
-  //     setMyUser(data)
-  //     setIsLogged(true)
-
-  //     try {
-  //       localStorage.setItem(`${data.walletAddress}`, JSON.stringify(data))
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   },
-  // })
-
+  
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['mycollections', address],
     getMyCollections(),
@@ -168,6 +146,20 @@ const Header = () => {
       },
     }
   )
+
+  const { data: coinData, status: coinStatus } = useQuery(
+    ['coinPrices'],
+    getCoinPrices(),
+    {
+      enabled: true,
+      onError : () => {
+        toast.error('Error getting latest price from cypto market.', errorToastStyle)
+      },
+      onSuccess: (res) => {
+        setCoinPrices(res[0])
+      }
+    }
+   ) 
 
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', marketplaceAddress],

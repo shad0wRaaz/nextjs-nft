@@ -7,6 +7,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { getReportActivities } from '../../fetchers/SanityFetchers'
 import moment from 'moment'
 import { RiTimerLine } from 'react-icons/ri'
+import Link from 'next/link'
 
 
 const style = {
@@ -24,7 +25,7 @@ const errorToastStyle = {
 }
 
 const ReportActivity = ({ collectionAddress, selectedNft }) => {
-    const [toggle, setToggle] = useState(false)
+    const [toggle, setToggle] = useState(true)
     const { dark } = useThemeContext()
     const { data:reportActivities, status } = useQuery(
         ['reportactivities', collectionAddress],
@@ -36,7 +37,7 @@ const ReportActivity = ({ collectionAddress, selectedNft }) => {
                 toast.error('Error fetching report activities', errorToastStyle)
             },
             onSuccess: (res) => {
-                console.log(res)
+              console.log(res)
             }            
         }
     )
@@ -85,7 +86,7 @@ const ReportActivity = ({ collectionAddress, selectedNft }) => {
                             <p className="py-1 px-3 text-sm text-neutral-400"><RiTimerLine className="inline-block" /> <span className="inline-block">{moment(report._createdAt).fromNow()}</span></p>
                         </div>
                         <p className="pb-3 px-3 text-sm">{report.description}</p>
-                        
+                        <p className="text-sm opacity-80 italic">Reported By: <Link href={`/user/${report.from.walletAddress}`}>{report.from.userName}</Link></p>
                     </div>
                 </div>
             ))}

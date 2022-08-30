@@ -21,11 +21,12 @@ import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
-import { IconDisconnect } from '../../components/icons/CustomIcons'
-import { config } from '../../lib/sanityClient'
+import { IconDollar } from '../../components/icons/CustomIcons'
 import { useQueryClient } from 'react-query'
 import { RiCloseFill } from 'react-icons/ri'
 import EditCollection from '../../components/EditCollection'
+import { TbEdit } from 'react-icons/tb'
+import { CgWebsite } from 'react-icons/cg'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -56,7 +57,7 @@ const style = {
   statName: `text-sm w-full text-center mt-1`,
   description: `text-white text-md w-max-1/4 flex-wrap my-2`,
   nftwrapper:
-    'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
+    'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 relative  lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]',
   nftwrapper_old: `flex flex-wrap justify-center mb-[4rem] gap-[40px] sm:p-[2rem] md:p-[4rem] pt-[6rem] nftWrapper`,
   errorBox:
     'border rounded-xl p-[2rem] mx-auto text-center lg:w-[44vw] md:w-[80vw] sm:w-full max-w-[700px]',
@@ -82,6 +83,7 @@ const Collection = () => {
   const [bannerImageUrl, setBannerImageUrl] = useState()
   const [showModal, setShowModal] = useState(false)
   const [newCollectionData, setNewCollectionData] = useState()
+  const [creatorProfileImage, setCreatorProfileImage] = useState()
   const qc = useQueryClient()
   // const [state, dispatch] = useReducer(reducer, {
   //   collection: {},
@@ -102,9 +104,11 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
+        console.log(res)
         setNewCollectionData(res[0])
         setShowUnlisted(res[0]?.showUnlisted)
         ;(async () => {
+          setCreatorProfileImage(await getUnsignedImagePath(res[0].creator.profileImage))
           setProfileImageUrl(await getUnsignedImagePath(res[0].profileImage))
           setBannerImageUrl(await getUnsignedImagePath(res[0].bannerImage))
         })()
@@ -235,7 +239,7 @@ const Collection = () => {
             </div>
           </div>
 
-          <div className="container relative  mx-auto -mt-14 lg:-mt-20">
+          <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
             <div
               className={`flex flex-col rounded-3xl ${
                 dark ? 'darkGray' : 'bg-white'
@@ -260,71 +264,30 @@ const Collection = () => {
                 </div>
 
                 <div className="mt-4 flex items-center space-x-3 sm:justify-center">
-                  {/* <div className="flex space-x-1.5">
-                    <a
-                      href={
-                        collectionData[0].instagramHandle != ''
-                          ? collectionData[0].instagramHandle
-                          : ''
-                      }
-                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                        dark
-                          ? ' bg-slate-700 hover:bg-slate-600'
-                          : ' bg-neutral-100 hover:bg-neutral-200'
-                      } md:h-10 md:w-10`}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                    >
-                      <AiOutlineInstagram fontSize="23px" />
-                    </a>
-                    <a
-                      href={
-                        collectionData[0].twitterHandle != ''
-                          ? collectionData[0].twitterHandle
-                          : ''
-                      }
-                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                        dark
-                          ? ' bg-slate-700 hover:bg-slate-600'
-                          : ' bg-neutral-100 hover:bg-neutral-200'
-                      } md:h-10 md:w-10`}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                    >
-                      <AiOutlineTwitter fontSize="23px" />
-                    </a>
-                  </div>
-
-                  <div
-                    className={`h-5 border-l ${
-                      dark ? ' bg-slate-700' : ' bg-neutral-100'
-                    }`}
-                  ></div> */}
-                  <div className="flex space-x-1.5">
+                  <div className="flex flex-col justify-center space-x-1.5">
                     {collectionData[0].external_link && collectionData[0].external_link != '' && (
-
-                      <div className="relative inline-block text-left">
-                        <a
-                          href={
-                            collectionData[0].external_link != ''
-                              ? collectionData[0].external_link
-                              : ''
-                          }
-                          className={`flex h-8 w-8 rotate-90 cursor-pointer items-center justify-center rounded-full ${
-                            dark
-                              ? ' bg-slate-700 hover:bg-slate-600'
-                              : ' bg-neutral-100 hover:bg-neutral-200'
-                          } md:h-10 md:w-10 `}
-                          title="External Link"
-                          id="headlessui-menu-button-:r3e:"
-                          type="button"
-                          target="_blank"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                        >
-                          <IconDisconnect />
-                        </a>
-                      </div>
+                        <div className="relative inline-block text-center justify-center flex">
+                          <a
+                            href={
+                              collectionData[0].external_link != ''
+                                ? collectionData[0].external_link
+                                : ''
+                            }
+                            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                              dark
+                                ? ' bg-slate-700 hover:bg-slate-600'
+                                : ' bg-neutral-100 hover:bg-neutral-200'
+                            } md:h-10 md:w-10 `}
+                            title="External Link"
+                            id="headlessui-menu-button-:r3e:"
+                            type="button"
+                            target="_blank"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                          >
+                            <CgWebsite fontSize={20}/>
+                          </a>
+                        </div>                      
                     )}
                   </div>
                 </div>
@@ -336,30 +299,83 @@ const Collection = () => {
                     <h2 className="inline-block text-2xl font-semibold sm:text-3xl lg:text-4xl">
                       {collectionData[0].name}
                     </h2>
-                    <span 
-                      className="relative block w-fit mt-3 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
-                      onClick={() => {
-                        router.push({
-                          pathname: '/search',
-                          query: {
-                            c: collectionData[0].category,
-                            n: '',
-                            i: 'true',
-                            v: 'true',
-                            a: 'true',
-                            d: 'true',
-                            ac: 'true',
-                            h: 'true',
-                            _r: 0,
-                            r_: 100,
-                          },
-                        })
-                      }}>
-                      {collectionData[0].category}
-                    </span>
-                    <span className="mt-4 block text-sm">
-                      {collectionData[0].description}
-                    </span>
+                    
+                    <div className="flex lg:gap-3 flex-wrap ">
+                      <div className={`border border-t-0 border-l-0 border-b-0 ${dark ? 'lg:border-r-sky-700/30' : 'lg:border-r-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
+                        <span 
+                          className="relative block w-fit mt-3 rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+                          onClick={() => {
+                          router.push({
+                            pathname: '/search',
+                            query: {
+                              c: collectionData[0].category,
+                              n: '',
+                              i: 'true',
+                              v: 'true',
+                              a: 'true',
+                              d: 'true',
+                              ac: 'true',
+                              h: 'true',
+                              _r: 0,
+                              r_: 100,
+                            },
+                          })
+                          }}>
+                            {collectionData[0].category}
+                        </span>
+
+                        <Link href={`/user/${newCollectionData?.creator?.walletAddress}`}>
+                          <div className="flex my-4">
+                            <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
+                              {creatorProfileImage && (
+                                <img
+                                  className="absolute inset-0 h-full w-full rounded-full object-cover"
+                                  src={creatorProfileImage?.data?.url}
+                                  alt="test"
+                                />
+                              )}
+                            </div>
+
+                            <span className="ml-2.5 flex cursor-pointer flex-col">
+                              <span className="text-sm">Creator</span>
+                              <span className="flex items-center font-medium">
+                                <span>{newCollectionData.creator.userName}</span>
+                                <span className="ml-1">
+                                  <svg
+                                    className="h-4 w-4"
+                                    viewBox="0 0 17 17"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M7.66691 2.62178C8.12691 2.22845 8.88025 2.22845 9.34691 2.62178L10.4002 3.52845C10.6002 3.70178 10.9736 3.84178 11.2402 3.84178H12.3736C13.0802 3.84178 13.6602 4.42178 13.6602 5.12845V6.26178C13.6602 6.52178 13.8002 6.90178 13.9736 7.10178L14.8802 8.15512C15.2736 8.61512 15.2736 9.36845 14.8802 9.83512L13.9736 10.8884C13.8002 11.0884 13.6602 11.4618 13.6602 11.7284V12.8618C13.6602 13.5684 13.0802 14.1484 12.3736 14.1484H11.2402C10.9802 14.1484 10.6002 14.2884 10.4002 14.4618L9.34691 15.3684C8.88691 15.7618 8.13358 15.7618 7.66691 15.3684L6.61358 14.4618C6.41358 14.2884 6.04025 14.1484 5.77358 14.1484H4.62025C3.91358 14.1484 3.33358 13.5684 3.33358 12.8618V11.7218C3.33358 11.4618 3.19358 11.0884 3.02691 10.8884L2.12691 9.82845C1.74025 9.36845 1.74025 8.62178 2.12691 8.16178L3.02691 7.10178C3.19358 6.90178 3.33358 6.52845 3.33358 6.26845V5.12178C3.33358 4.41512 3.91358 3.83512 4.62025 3.83512H5.77358C6.03358 3.83512 6.41358 3.69512 6.61358 3.52178L7.66691 2.62178Z"
+                                      fill="#38BDF8"
+                                      stroke="#38BDF8"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    ></path>
+                                    <path
+                                      d="M6.08691 8.98833L7.69358 10.6017L10.9136 7.375"
+                                      stroke="white"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    ></path>
+                                  </svg>
+                                </span>
+                              </span>
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+
+                      <div className="py-4 md:ml-4">
+                        <span className="block text-sm">
+                          {collectionData[0].description}
+                        </span>
+                      </div>
+                    </div>
+                    
                   </div>
 
                   {/* this option is only available if the user is creator of this collection */}
@@ -391,10 +407,20 @@ const Collection = () => {
                               <Menu.Item>
                                 {({active}) => (
                                   <div 
-                                    className="flex w-full rounded-md p-2 text-sm cursor-pointer"
+                                    className={`flex w-full rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
                                     onClick={() => setShowModal(curVal => !curVal)}
                                     >
-                                    Edit this Collection
+                                    <TbEdit fontSize={20} className="ml-[4px]"/> <span className="ml-1">Edit Collection Metadata</span>
+                                  </div>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({active}) => (
+                                  <div 
+                                    className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
+                                    onClick={() => setShowModal(curVal => !curVal)}
+                                    >
+                                    <IconDollar className="" /> <span className="ml-1">Update Payment Settings</span>
                                   </div>
                                 )}
                               </Menu.Item>
@@ -439,7 +465,7 @@ const Collection = () => {
                         </Transition>
                       </Menu>
                     </div>
-                  )}
+                  )} 
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 xl:mt-8 xl:gap-6">
@@ -505,7 +531,7 @@ const Collection = () => {
         </div>
       )}
 
-      <div className="mt-[5rem] ">
+      <div className="mt-[5rem]">
         {nftStatus == 'loading' && <Loader />}
         {nftStatus == 'success' && nftData.length == 0 && (
           <div

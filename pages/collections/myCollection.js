@@ -165,7 +165,7 @@ const Collection = () => {
           </div>
         </div>
 
-        <div className="container relative  mx-auto -mt-14 lg:-mt-20">
+        <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
           <div
             className={`flex flex-col rounded-3xl ${
               dark ? 'darkGray' : 'bg-white'
@@ -384,7 +384,7 @@ const Collection = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-[4rem]">
+      <div className="container mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
         {showType == 'collection' && (
           <>
             {myCollections && myCollections?.length > 0 && (

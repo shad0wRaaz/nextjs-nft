@@ -1,13 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { HiArrowSmRight } from 'react-icons/hi'
-import { HiArrowSmLeft } from 'react-icons/hi'
+import { HiArrowSmRight, HiArrowSmLeft } from 'react-icons/hi'
 import React, { useEffect, useState, useRef } from 'react'
 import { config } from '../lib/sanityClient'
 import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
-  wrapper: 'container mx-auto p-[20px] mt-0',
+  wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-0',
   container: 'text-white browseWrapper p-[4rem] rounded-3xl ',
   title: `font-bold text-[2rem] flex justify-between items-center text-center mb-[2rem]`,
   contentWrapper:

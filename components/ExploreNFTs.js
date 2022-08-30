@@ -9,7 +9,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { BigNumber } from 'ethers'
 
 const style = {
-  wrapper: 'container p-[20px] mx-auto py-[100px] text-center exploreWrapper',
+  wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem]',
   title: 'font-bold text-[2rem] mb-[2rem]',
   collectionWrapper: 'flex justify-center flex-row flex-wrap gap-[40px]',
   collection:

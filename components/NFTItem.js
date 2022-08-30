@@ -75,7 +75,7 @@ const NFTItem = ({ nftItem }) => {
               </div>
             </div> */}
           </div>
-          {Boolean(nftItem?.secondsUntilEnd) && (
+          {nftItem && nftItem.startTimeInSeconds?.toNumber() != nftItem.secondsUntilEnd?.toNumber() && (
             <div className="absolute top-[-1px] right-[-1px] flex items-center">
               <svg
                 className={`w-44 ${
@@ -98,14 +98,7 @@ const NFTItem = ({ nftItem }) => {
                 <span className="block font-semibold md:text-lg">
                   {
                     <Countdown
-                      date={
-                        Date.now() +
-                        (BigNumber.from(nftItem.secondsUntilEnd).toNumber() -
-                          BigNumber.from(
-                            nftItem.startTimeInSeconds
-                          ).toNumber()) *
-                          1000
-                      }
+                      date={nftItem.secondsUntilEnd?.toNumber() * 1000}
                     />
                   }
                 </span>

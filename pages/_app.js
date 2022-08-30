@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import { ThirdwebProvider, ChainId } from '@thirdweb-dev/react'
 import { SearchProvider } from '../contexts/SearchContext'
+import { SettingsProvider } from '../contexts/SettingsContext'
 import { UserProvider } from '../contexts/UserContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
@@ -44,7 +45,9 @@ function MyApp({ Component, pageProps }) {
                   <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
                   {/* <link rel="manifest" href={manifest} key={'manifest'}></link> */}
                 </Head>
-                <Component {...pageProps} />
+                <SettingsProvider>
+                  <Component {...pageProps} />
+                </SettingsProvider>
                 <ReactQueryDevtools />
               </MarketplaceProvider>
             </QueryClientProvider>

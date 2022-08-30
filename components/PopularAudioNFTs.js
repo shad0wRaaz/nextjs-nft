@@ -24,7 +24,7 @@ const PopularAudioNFTs = () => {
         setTopTwoNFTItems(topItems) //First two Audio Items
         setOtherThreeNFTItems(otherItems) //Another three Audio Items
     }, [activeListings])
-    console.log(otherThreeNFTItems)
+    // console.log(otherThreeNFTItems)
 
   return (
     <div className={dark ? 'darkGray' : 'bg-neutral-100'}>
@@ -33,7 +33,7 @@ const PopularAudioNFTs = () => {
                 <div className="relative flex flex-col sm:flex-row sm:items-end justify-between mb-1">
                     <div className="max-w-2xl mb-8">
                         <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold">Popular Audio NFTs</h2>
-                        <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click on music icon and enjoy NTF music or audio </span>
+                        <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click on music icon and enjoy NFT music or audio </span>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-6 gap-6 2xl:gap-8">
@@ -43,14 +43,14 @@ const PopularAudioNFTs = () => {
                         </Link>
                     ))}
                 
-                <div className="grid grid-rows-3 gap-6 xl:gap-8 sm:col-span-6 xl:col-span-2">
-                    {otherThreeNFTItems.length > 0 && otherThreeNFTItems.map(item => (
-                        <AudioNFTCardCompact nft={item} key={item.id} />
-                    ))}
+                    <div className="grid grid-rows-3 gap-6 xl:gap-8 sm:col-span-6 xl:col-span-2">
+                        {otherThreeNFTItems.length > 0 && otherThreeNFTItems.map(item => (
+                            <AudioNFTCardCompact nft={item} key={item.id} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
   )
 }

@@ -18,6 +18,7 @@ import { useMutation } from 'react-query'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useQueryClient } from 'react-query'
 import { NATIVE_TOKENS } from '@thirdweb-dev/sdk'
+import { useThemeContext } from '../../contexts/ThemeContext'
 
 const style = {
   canvasMenu:
@@ -45,6 +46,7 @@ const successToastStyle = {
 }
 
 const Sell = ({ selectedNft, collectionAddress }) => {
+  const { dark } = useThemeContext()
   const address = useAddress()
   const queryClient = useQueryClient()
   const { marketplaceAddress } = useMarketplaceContext()
@@ -71,9 +73,9 @@ const Sell = ({ selectedNft, collectionAddress }) => {
     }
   }, [chainid])
 
-  useEffect(() => {
-    console.log(currency)
-  }, [currency])
+  // useEffect(() => {
+  //   console.log(currency)
+  // }, [currency])
   //   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
   // )
   //   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
@@ -136,17 +138,17 @@ const Sell = ({ selectedNft, collectionAddress }) => {
       toastHandler.error('Listing currency not chosen.', errorToastStyle)
       return
     }
-    if (!listingDuration) {
-      toastHandler.error('Listing duration not set.', errorToastStyle)
-      return
-    }
-    if (listingDuration <= 0) {
-      toastHandler.error(
-        'Listing duration cannot be negative or zero.',
-        errorToastStyle
-      )
-      return
-    }
+    // if (!listingDuration) {
+    //   toastHandler.error('Listing duration not set.', errorToastStyle)
+    //   return
+    // }
+    // if (listingDuration <= 0) {
+    //   toastHandler.error(
+    //     'Listing duration cannot be negative or zero.',
+    //     errorToastStyle
+    //   )
+    //   return
+    // }
     // console.log(ethers.utils.parseUnits(listingPrice,18).toString());
     setIsLoading(true)
     const listing = {
@@ -320,7 +322,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
             </div>
           </OffCanvasBody>
 
-          <OffCanvasMenu className={style.canvasMenu}>
+          <OffCanvasMenu className={dark ? style.canvasMenu + 'border border-l-4 border-slate-700' : style.canvasMenu}>
             {address && (
               <>
                 <button
@@ -367,8 +369,9 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                     </div>
 
                     <div className="pt-4">
-                      <p className={style.label}>Duration*</p>
-                      <div className="flex flex-col items-center">
+                      <p className={style.label}>Duration</p>
+                      <p className={style.smallText}>List this NFT for only selected period of time</p>
+                      <div className="flex flex-col items-center mt-4">
                         <div className="relative w-full">
                           <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
                             From:
@@ -393,7 +396,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                             selected={startDate}
                             minDate={new Date()}
                             onChange={(date) => setStartDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-[6.5rem] text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                           />
                         </div>
                         <div className="relative mt-4 w-full">
@@ -420,7 +423,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                             selected={endDate}
                             minDate={startDate}
                             onChange={(date) => setEndDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-[6.5rem] text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                           />
                         </div>
                       </div>
@@ -487,6 +490,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
 
                     <div className="pt-4">
                       <p className={style.label}>Duration*</p>
+                      <p className={style.smallText}>List this NFT for only specified period of time.</p>
                       <div className="flex flex-col items-center">
                         <div className="relative w-full">
                           <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
@@ -512,7 +516,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                             selected={startAuctionDate}
                             minDate={new Date()}
                             onChange={(date) => setAuctionStartDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-[6.5rem] text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                           />
                         </div>
                         <div className="relative mt-4 w-full">
@@ -539,7 +543,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                             selected={endAuctionDate}
                             minDate={startAuctionDate}
                             onChange={(date) => setAuctionEndDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-[6.5rem] text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                           />
                         </div>
                       </div>

@@ -1,18 +1,14 @@
 import { CgSandClock } from 'react-icons/cg'
 import Countdown from 'react-countdown'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { useEffect, useState } from 'react'
-import { BigNumber } from 'ethers'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useState } from 'react'
 
 const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
   const { dark } = useThemeContext()
-  const { activeListings } = useMarketplaceContext()
   const [localListingData, setLocalListingData] = useState()
-  // console.log(listingData)
-  // console.log(
-  //   new Date(BigNumber.from(listingData?.endTimeInEpochSeconds).toNumber())
-  // )
+  console.log('Start Time:', new Date(listingData?.startTimeInSeconds.toNumber() * 1000))
+  console.log('End Time:', listingData?.secondsUntilEnd.toNumber() * 1000)
+  console.log('Now Time',  (listingData?.secondsUntilEnd.toNumber() * 1000) - new Date().getTime())
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
       //do something
@@ -67,22 +63,26 @@ const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
             <div className="flex space-x-5 sm:space-x-10">
               {!auctionItem && Boolean(listingData.secondsUntilEnd) && (
                 <Countdown
-                  date={
-                    Date.now() +
-                    (BigNumber.from(
-                      listingData
-                        ? listingData.secondsUntilEnd
-                        : localListingData.secondsUntilEnd
-                    ).toNumber() -
-                      BigNumber.from(
-                        listingData
-                          ? listingData.startTimeInSeconds
-                          : localListingData.startTimeInSeconds
-                      ).toNumber()) *
-                      1000
-                  }
+                  date={listingData.secondsUntilEnd.toNumber() * 1000}
                   renderer={renderer}
                 />
+                // <Countdown
+                //   date={
+                //     Date.now() +
+                //     (BigNumber.from(
+                //       listingData
+                //         ? listingData.secondsUntilEnd
+                //         : localListingData.secondsUntilEnd
+                //     ).toNumber() -
+                //       BigNumber.from(
+                //         listingData
+                //           ? listingData.startTimeInSeconds
+                //           : localListingData.startTimeInSeconds
+                //       ).toNumber()) *
+                //       1000
+                //   }
+                //   renderer={renderer}
+                // />
               )}
 
               {/* {auctionItem && Boolean(listingData.endTimeInEpochSeconds) && (

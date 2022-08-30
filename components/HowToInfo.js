@@ -7,7 +7,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
   wrapper:
-    'container mx-auto p-[20px] py-[100px] text-center text-white howToWrapper',
+    'container text-center text-white mx-auto lg:p-[8rem] p-[2rem]',
   title: `font-bold text-[2rem] mb-[2.2rem] px-[3rem]`,
   contentWrapper:
     'howToContentContainer relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4',

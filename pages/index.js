@@ -13,6 +13,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import BrowseByCategory from '../components/BrowseByCategory'
 import SubscribeSection from '../components/SubscribeSection'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
+import PopularVideoNFTs from '../components/PopularVideoNFTs'
 
 const style = {
   wrapper: ``,
@@ -80,8 +81,9 @@ const Home = () => {
         <HowToInfo/>
         <ExploreNFTs/>
         <BrowseByCategory/>
-        <SubscribeSection />
+        <PopularVideoNFTs />
         <PopularAudioNFTs />
+        <SubscribeSection />
         <Footer/>
       </div>
   )

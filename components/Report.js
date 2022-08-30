@@ -7,6 +7,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { useMutation } from 'react-query'
 import { sendNotificationFrom } from '../mutators/SanityMutators'
+import { useAddress } from '@thirdweb-dev/react'
 
 const reportType = [
     { name: 'Explicit and Sensitive content' },
@@ -29,6 +30,7 @@ const style = {
 }
 
 const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selectedNft}) => {
+    const address = useAddress()
     const [selected, setSelected] = useState(reportType[0])
     const [otherDescription, setOtherDescription] = useState()
     const itemID = selectedNft.metadata.id.toNumber()
@@ -56,6 +58,7 @@ const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selec
                             Dear Admin,<br/>
                             ${prefix} ${itemType} has been reported. 
                             <br/><br/>Report Type: ${selected.name} <br/> 
+                            Reported by: ${address} <br/>
                             Item Contract Address: ${contractAddress} <br/>
                             Item Id: ${itemID} <br/>
                             Description: ${otherDescription} <br/><br/>
@@ -65,11 +68,13 @@ const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selec
 
           //send notification to the owner
           sendNotification({
+            address,
             contractAddress: contractAddress,
             itemID: itemID,
             type: 'TYPE_SIX',
             eventTitle: selected.name,
             description: otherDescription,
+            from : address
           })
           toast.success('This item has been reported.',successToastStyle)
         setShowModal(false)
