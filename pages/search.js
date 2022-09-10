@@ -105,6 +105,7 @@ const search = ({category}) => {
     setIncludeHasOffers(data?.h === 'true' ? true : false)
     setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100])
   }, [router.query])
+
   const DIVIDER = BigNumber.from(10).pow(18)
 
   const handleSubmit = (e) => {
@@ -113,13 +114,15 @@ const search = ({category}) => {
 
   useEffect(() => {
     if (!activeListings) return
-    if (router.query._r) return
+    if (!router.query._r) return
+    console.log('im here')
 
-    let minPrice = activeListings[0].buyoutPrice / DIVIDER
+    let minPrice = parseInt(activeListings[0].buyoutPrice.hex,16) / DIVIDER
     let maxPrice = minPrice
+    
 
     for (let i = 0; i < activeListings.length; i++) {
-      let currentPrice = activeListings[i].buyoutPrice
+      let currentPrice = parseInt(activeListings[i].buyoutPrice.hex, 16)
 
       let buyPrice = currentPrice / DIVIDER
 
@@ -140,11 +143,11 @@ const search = ({category}) => {
     //sort item according to their price in selected order
     if (sortAsc) {
       data = activeListings.sort(function (a, b) {
-        return a.buyoutPrice / DIVIDER - b.buyoutPrice / DIVIDER
+        return (parseInt(a.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(b.buyoutPrice.hex, 16) / DIVIDER)
       })
     } else {
       data = activeListings.sort(function (a, b) {
-        return b.buyoutPrice / DIVIDER - a.buyoutPrice / DIVIDER
+        return (parseInt(b.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(a.buyoutPrice.hex, 16) / DIVIDER)
       })
     }
 
@@ -157,7 +160,7 @@ const search = ({category}) => {
 
     //filter for price range
     data = data.filter((item) => {
-      let itemPrice = item.buyoutPrice / DIVIDER
+      let itemPrice = parseInt(item.buyoutPrice.hex, 16) / DIVIDER
       return (
         item.asset.name.toLowerCase().includes(itemName?.toLowerCase()) &&
         parseFloat(priceRange[0]) < itemPrice &&

@@ -77,7 +77,9 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
-const Header = () => {
+const Header = ({listedItems}) => {
+  
+  
   const {
     setMarketplaceAddress,
     marketplaceAddress,
@@ -160,6 +162,11 @@ const Header = () => {
       }
     }
    ) 
+    useEffect(() => {
+      if(!listedItems) return
+        // setActiveListings(JSON.parse(listedItems))
+        console.log('i am here')
+    }, [listedItems])
 
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', marketplaceAddress],
@@ -171,10 +178,14 @@ const Header = () => {
           'Error fetching marketplace data. Refresh and try again.',
           errorToastStyle
         )
+        // localStorage.setItem('activeListings', false)
+
       },
       onSuccess: (res) => {
         setActiveListings(res)
+        
         //save in local storage too
+        // console.log(res)
         try {
           // localStorage.setItem('activeListings', JSON.stringify(res))
         } catch (error) {
@@ -284,6 +295,7 @@ const Header = () => {
           </div>
         </div>
       </Link>
+      
       <div
         className={
           dark
@@ -945,3 +957,4 @@ const Header = () => {
 }
 
 export default Header
+

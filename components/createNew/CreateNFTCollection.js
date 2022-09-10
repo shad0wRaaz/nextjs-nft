@@ -104,25 +104,27 @@ const CreateNFTCollection = () => {
         toast.error(error.message, errorToastStyle)
       },
       onSuccess: async (res, form, toastHandler = toast) => {
+        const itemID = res.concat(chain.toString())
+
         const collectionDoc = {
           _type: 'nftCollection',
-          _id: res,
+          _id: itemID,
           name: form.itemName.value,
           contractAddress: res,
           description: form.itemDescription.value,
-          profileImage: 'profileImage-'.concat(res),
+          profileImage: 'profileImage-'.concat(itemID),
           chainId: chain.toString(),
           createdBy: {
             _type: 'reference',
             _ref: address,
           },
           external_link: form.external_link.value,
-          bannerImage: 'bannerImage-'.concat(res),
+          bannerImage: 'bannerImage-'.concat(itemID),
           volumeTraded: 0,
           floorPrice: 0,
           category: selectedCategory,
         }
-        // config.delete({query: `*[_type == "nftCollection" && _id=="${collectionAddress}"]`})
+        
         const result = await config
           .createIfNotExists(collectionDoc)
           .then(async () => {
@@ -131,7 +133,7 @@ const CreateNFTCollection = () => {
               if (profile) {
                 const formdata = new FormData()
                 formdata.append('profile', profile)
-                formdata.append('userAddress', res)
+                formdata.append('userAddress', itemID)
 
                 await axios.post(
                   'http://localhost:8080/api/saveS3Image',
@@ -147,7 +149,7 @@ const CreateNFTCollection = () => {
               if (banner) {
                 const bannerData = new FormData()
                 bannerData.append('banner', banner)
-                bannerData.append('userAddress', res)
+                bannerData.append('userAddress', itemID)
 
                 await axios.post(
                   'http://localhost:8080/api/saveS3Banner',

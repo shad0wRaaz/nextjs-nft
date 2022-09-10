@@ -6,9 +6,10 @@ import { useState } from 'react'
 const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
   const { dark } = useThemeContext()
   const [localListingData, setLocalListingData] = useState()
-  console.log('Start Time:', new Date(listingData?.startTimeInSeconds.toNumber() * 1000))
-  console.log('End Time:', listingData?.secondsUntilEnd.toNumber() * 1000)
-  console.log('Now Time',  (listingData?.secondsUntilEnd.toNumber() * 1000) - new Date().getTime())
+  // console.log('Start Time:', new Date(listingData?.startTimeInSeconds.toNumber() * 1000))
+  console.log('End Time:', parseInt(listingData.secondsUntilEnd.hex, 16))
+  console.log('Now Time', Date.now())
+  // console.log('Now Time',  (listingData?.secondsUntilEnd.toNumber() * 1000) - new Date().getTime())
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
       //do something
@@ -61,9 +62,9 @@ const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
               </span>
             </div>
             <div className="flex space-x-5 sm:space-x-10">
-              {!auctionItem && Boolean(listingData.secondsUntilEnd) && (
+              {!auctionItem && Boolean(listingData.secondsUntilEnd) && (parseInt(listingData.secondsUntilEnd.hex,16) * 1000 > Date.now()) && (
                 <Countdown
-                  date={listingData.secondsUntilEnd.toNumber() * 1000}
+                  date={parseInt(listingData.secondsUntilEnd.hex, 16) * 1000}
                   renderer={renderer}
                 />
                 // <Countdown

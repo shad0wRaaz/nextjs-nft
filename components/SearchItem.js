@@ -7,6 +7,7 @@ import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
 import { RiTimerLine } from 'react-icons/ri'
 import { MdAudiotrack } from 'react-icons/md'
+import Countdown from 'react-countdown'
 
 const SearchItem = ({ nftItem }) => {
   const [likers, setLikers] = useState([])
@@ -80,11 +81,16 @@ const SearchItem = ({ nftItem }) => {
                   </div>
                 </div>
 
-                <div className={`flex items-center text-right text-sm ${dark ? 'text-slate-500': 'text-neutral-500'}`}>
-                  <span className={`ml-1 mt-0.5 text-[0.8rem] ${dark ? 'text-slate-400': 'text-neutral-500'}`}>
-                    <RiTimerLine className={dark ? 'text-slate-400 inline' : 'text-neutral-500 inline'}/> 17h left
-                  </span>
-                </div>
+                {/* {nftItem && (parseInt(nftItem.startTimeInSeconds?.hex, 16) != parseInt(nftItem.secondsUntilEnd?.hex, 16)) && (
+                  <div className={`flex items-center text-right text-sm ${dark ? 'text-slate-500': 'text-neutral-500'}`}>
+                    <span className={`ml-1 -mt-0.5 mr-1 text-[0.8rem] ${dark ? 'text-slate-400': 'text-neutral-500'}`}>
+                      <RiTimerLine className={dark ? 'text-slate-400 inline' : 'text-neutral-500 inline'}/> 
+                    </span>
+                    <Countdown
+                        date={parseInt(nftItem.secondsUntilEnd?.hex, 16) * 1000}
+                      /> <span className={`ml-1`}>left</span>
+                  </div>
+                )} */}
               </div>
             </div>
           </div>

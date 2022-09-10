@@ -1,5 +1,6 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../lib/sanityClient'
+import axios from 'axios'
 
 export const getAllNFTs =
   (rpcUrl) =>
@@ -14,20 +15,27 @@ export const getAllNFTs =
     const filtered = res.filter((nft) => nft.owner != "0x0000000000000000000000000000000000000000")
     return filtered
   }
-
-export const getActiveListings =
+export const getActiveListings = 
   (rpcUrl) =>
-  async ({ queryKey }) => {
+  async ({queryKey}) => {
     const [_, marketplaceId] = queryKey
-    
-    try {
-      if (!marketplaceId) return
-      const sdk = new ThirdwebSDK(rpcUrl)
-      const marketplace = sdk.getMarketplace(marketplaceId)
-      const res = await marketplace.getAllListings()
-      return res
-    } catch (error) {}
+    const result = await axios.get('http://localhost:8080/api/getAllListings')
+
+    return result.data
   }
+// export const getActiveListings =
+//   (rpcUrl) =>
+//   async ({ queryKey }) => {
+//     const [_, marketplaceId] = queryKey
+    
+//     try {
+//       if (!marketplaceId) return
+//       const sdk = new ThirdwebSDK(rpcUrl)
+//       const marketplace = sdk.getMarketplace(marketplaceId)
+//       const res = await marketplace.getAllListings()
+//       return res
+//     } catch (error) {}
+//   }
 
 export const getAuctionItems =
   (rpcUrl) =>

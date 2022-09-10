@@ -12,7 +12,9 @@ import crypto from 'crypto'
 import sanityClient from '@sanity/client'
 import cron from 'node-cron'
 import axios from 'axios'
-
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import * as fs from 'fs'
+import Redis from 'ioredis'
 
 const app = express()
 app.use(
@@ -20,6 +22,11 @@ app.use(
     origin: ['http://localhost:3000', 'https://nuvanft.io'],
   })
 )
+
+const redis = new Redis({
+  host: process.env.NEXT_PUBLIC_REDIS_URL,
+  port: process.env.NEXT_PUBLIC_REDIS_PORT
+})
 
 dotenv.config() 
 
@@ -107,9 +114,8 @@ app.get('/api/getS3Image', async (req, res) => {
 })
 
 app.post('/api/saveS3Image', upload.single('profile'), async (req, res) => {
-  console.log(process.env.NEXT_PUBLIC_AWS_BUCKET_REGION)
   const address = req.body.userAddress
-  console.log(req.file.buffer)
+  // console.log(req.file.buffer)
   const imageName = 'profileImage-' + address
 
   const params = {
@@ -140,6 +146,56 @@ app.post('/api/saveS3Banner', upload.single('banner'), async (req, res) => {
 
   await s3.send(command)
   res.send({})
+})
+
+app.get('/api/getAllListings', async (req, res) => {
+  let cache = await redis.get("cache")
+  cache = JSON.parse(cache)
+  let result = {}
+  if(cache) {
+    return res.status(200).json(cache)
+  } else {
+    //get data from blockchain
+    const sdk = new ThirdwebSDK('mumbai')
+    const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+    const listedItems = await marketplace.getAllListings()
+
+    redis.set("cache", JSON.stringify(listedItems))
+
+    return res.status(200).json(listedItems)
+  }
+  // try {
+  //   cache = fs.readFileSync('listings.txt', 'utf8')
+  //   console.log('file present')
+    
+  //   //if there is no data, then fetch from blockchain
+  //   if(cache.length < 1){
+  //     const sdk = new ThirdwebSDK('mumbai')
+  //     const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //     const listedItems = await marketplace.getAllListings()
+  //     fs.writeFileSync('listings.txt', listedItems);
+  //     cache = listedItems
+  //   }
+
+  // }catch(err) {
+  //   console.log('file not present')
+  //   console.log(err)
+    
+  //   const sdk = new ThirdwebSDK('mumbai')
+  //   const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //   const listedItems = JSON.stringify(await marketplace.getAllListings())
+    
+  //   // const vol = Volume.fromJSON({'/data': JSON.stringify(listedItems)})
+  //   fs.writeFileSync('listings.txt', listedItems);
+    
+  //   // // cache = fs.readFileSync('/listings.txt', 'utf8')
+  //   // ufs.use(fs).use(vol)
+  //   // cache = ufs.readFileSync('/data')
+  //   // console.log(cache)
+    
+  //   cache = listedItems
+  // }
+  // res.send(cache).status(200)
 })
 
 app.listen(8080, () => console.log('listening on 8080'))

@@ -36,16 +36,17 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
     const { rpcUrl } = useMarketplaceContext()
     const [isLoading, setIsLoading] = useState(false)
     const [newCollectionData, setNewCollectionData] = useState(collection)
-
+// console.log(collection)
     const { mutate: updateMetadata } = useMutation(
         () => updateCollectionMetaData({newCollectionData, rpcUrl}),
         {
           onSuccess:  (toastHandler = toast) => {
+            const itemID = collection.contractAddress.concat(collection.chainId)
             if(!newCollectionData) return
             setIsLoading(true)
             ;(async() => {
               await config
-              .patch(newCollectionData.contractAddress)
+              .patch(itemID)
               .set({
                 name: newCollectionData.name,
                 description: newCollectionData.description,
@@ -57,7 +58,7 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
                 if(profile){
                   const formdata = new FormData()
                   formdata.append('profile', profile)
-                  formdata.append('userAddress', collection.contractAddress)
+                  formdata.append('userAddress', itemID)
             
                   const result = await axios.post(
                     'http://localhost:8080/api/saveS3Image',
@@ -74,7 +75,7 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
                 if(banner){
                   const bannerData = new FormData()
                   bannerData.append('banner', banner)
-                  bannerData.append('userAddress', collection.contractAddress)
+                  bannerData.append('userAddress', itemID)
             
                   const result2 = await axios.post(
                     'http://localhost:8080/api/saveS3Banner',
@@ -140,7 +141,7 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
   return (
     <div>
         <h2 className="text-center font-bold text-xl mb-[2rem]">Update Collection's Metadata</h2>
-            <form nameName="editCollection" onSubmit={handleEdit}>
+            <form name="editCollection" onSubmit={handleEdit}>
               <div className="">
                 <div className={style.formRow}>
                   <p className={style.label}>Name</p>

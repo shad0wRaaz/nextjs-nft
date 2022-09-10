@@ -175,6 +175,7 @@ body::-webkit-scrollbar-thumb,
 
 /* End of Hero Carousel CSS */
 
+
 @media screen and (min-width: 768px) {
   .mobileMenu {
     display: none;

@@ -267,7 +267,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             {nftCollection?.category}
           </span>
           <div className="flow-root">
-            <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-1 px-4`}>
+            <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
               <FacebookShareButton className="hover:scale-125 transition"
                 quote={selectedNft?.metadata?.name}
                 url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
@@ -365,7 +365,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
               )}
 
               {address && (
-                <Menu as="div" className="relative inline-block">
+                <Menu as="div" className="relative inline-block -top-[5px] leading-[12px]">
                   <div>
                     <Menu.Button className="transition hover:scale-125">
                       <FiMoreVertical className="top-1 relative" />
@@ -524,7 +524,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
           </div>
         </div>
 
-        <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
+        <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl mt-[2rem]">
           {selectedNft?.metadata?.name}
         </h2>
 

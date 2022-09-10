@@ -2,7 +2,7 @@ import { config } from '../lib/sanityClient'
 
 export const getUser = async (address) => {
   const query = `*[_type == "users" && walletAddress == "${address}"] {
-      bannerImage, biography, fbhHandle, followers, following, igHandle, profileImage, twitterHandle, userName, walletAddress, _createdAt
+      bannerImage, volumeTraded, biography, fbhHandle, followers, following, igHandle, profileImage, twitterHandle, userName, walletAddress, _createdAt
     }`
   const res = await config.fetch(query)
   return res[0]
@@ -137,7 +137,7 @@ export const getCollectedNFTs =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "nftItem" && ownedBy->walletAddress == "${address}"]{...}`
+    const query = `*[_type == "nftItem" && ownedBy->walletAddress == "${address}" && createdBy->walletAddress != "${address}"]{...}`
     const res = await config.fetch(query)
     return res
   }

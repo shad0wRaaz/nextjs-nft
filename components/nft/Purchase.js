@@ -202,7 +202,7 @@ const MakeOffer = ({
       //     listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice
       //   )
 
-      const volume2Add = parseFloat(listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice)
+      const volume2Add = parseFloat(listingData?.buyoutCurrencyValuePerToken?.displayValue * coinMultiplier)
 
       //adding volume to Collection
         addVolume({

@@ -85,7 +85,7 @@ const PopularVideoNFTs = () => {
             <div className="navigation-wrapper">
                 <div ref={sliderRef} className="keen-slider py-4">
                     {topVideoItems && topVideoItems?.map((nft, index) => <VideoNFTCard key={index} nft={nft} />)}
-                    <div className="relative flex flex-col group keen-slider__slide h-full shadow-md rounded-3xl bg-neutral-50">
+                    {/* <div className="relative flex flex-col group keen-slider__slide h-full shadow-md rounded-3xl bg-neutral-50">
                         <div className="relative rounded-3xl overflow-hidden">
                             <div className="">
                                 <div className="flex h-full w-full aspect-video flex-col z-0 items-center justify-center">
@@ -111,7 +111,7 @@ const PopularVideoNFTs = () => {
                             }}>
                             <a className="absolute inset-0 shadow-md" href="" draggable="true"></a>
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
                 
             </div>

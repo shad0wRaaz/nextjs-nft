@@ -62,7 +62,7 @@ const HeroSearch = () => {
           </div>
 
           <div className="searchfields relative flex">
-            <Menu as="div" className="relative inline-block text-left">
+            <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
                   <div className="text-neutral-300 dark:text-neutral-400">
@@ -88,7 +88,7 @@ const HeroSearch = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
+                <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full sm:max-w-full md:max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
                   <div className="px-1 py-1 ">
                     <Menu.Item>
                       <div className="mb-3 font-bold">Choose Item Type</div>
@@ -181,7 +181,7 @@ const HeroSearch = () => {
           </div>
 
           <div className="searchfields relative flex">
-            <Menu as="div" className="relative inline-block text-left">
+            <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
                   <div className="text-neutral-300 dark:text-neutral-400">
@@ -308,7 +308,7 @@ const HeroSearch = () => {
           </div>
 
           <div className="searchfields relative flex">
-            <Menu as="div" className="relative inline-block text-left">
+            <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
                   <div className="text-neutral-300 dark:text-neutral-400">

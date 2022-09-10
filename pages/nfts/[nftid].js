@@ -494,7 +494,7 @@ const Nft = () => {
               nftCollection={collectionData}
             />
             
-            {listingData && listingData?.secondsUntilEnd.toNumber() != listingData?.startTimeInSeconds.toNumber() && (
+            {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
               <AuctionTimer
                 selectedNft={selectedNft}
                 listingData={listingData}

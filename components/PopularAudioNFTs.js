@@ -38,9 +38,7 @@ const PopularAudioNFTs = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-6 gap-6 2xl:gap-8">
                     {topTwoNFTItems.length > 1 && topTwoNFTItems.map(item => (
-                        <Link href="/contracts">
-                            <AudioNFTCard nft={item} key={item.id} />
-                        </Link>
+                        <AudioNFTCard nft={item} key={item.id}/>
                     ))}
                 
                     <div className="grid grid-rows-3 gap-6 xl:gap-8 sm:col-span-6 xl:col-span-2">

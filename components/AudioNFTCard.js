@@ -16,29 +16,29 @@ const AudioNFTCard = ({nft}) => {
     useEffect(() => {
         if(!nft) return
         ;(async(sanityClient = config) => {
-            const query = `*[_type == "nftItem" && contractAddress == "${nft.assetContractAddress}" && id=="${nft.asset.id.toNumber()}"]{likedBy[]->}`
+            const query = `*[_type == "nftItem" && contractAddress == "${nft.assetContractAddress}" && id=="${parseInt(nft.asset.id?.hex, 16)}"]{likedBy[]->}`
             const res = await sanityClient.fetch(query)
             setLikers(res[0]?.likedBy)
         })()
     }, [nft])
 
     //get Images for all Likers
-    useEffect(() => {
-        return
+    // useEffect(() => {
+    //     return
 
-        const profileArray = likers.map(users => users.profileImage)
-        let imageArray = []
+    //     const profileArray = likers.map(users => users.profileImage)
+    //     let imageArray = []
 
-        //getting only few likers
-        ;(async() => {
-            for(let i = 0; i <=4 ; i++){
-                if(profileArray[i]){
-                    imageArray.push(await getUnsignedImagePath(profileArray[i]))
-                }
-            }
-        })()    
-        setLikersProfile(imageArray)
-    }, [likers])
+    //     //getting only few likers
+    //     ;(async() => {
+    //         for(let i = 0; i <=4 ; i++){
+    //             if(profileArray[i]){
+    //                 imageArray.push(await getUnsignedImagePath(profileArray[i]))
+    //             }
+    //         }
+    //     })()    
+    //     setLikersProfile(imageArray)
+    // }, [likers])
     
   return (
     <div className="relative group sm:col-span-3 xl:col-span-2 cursor-pointer">
@@ -83,10 +83,10 @@ const AudioNFTCard = ({nft}) => {
                     </div>
                 </div>
             </div>
-            <Link passHref
-                href={`/nfts/${nft.asset.id.toNumber()}?c=${nft.assetContractAddress}`}
-                >
-                    <a className={`block p-5 mt-5 ${dark ? 'bg-slate-700' : 'bg-white'} shadow-xl rounded-3xl rounded-tl-none`}>
+            
+                    <a 
+                    className={`block p-5 mt-5 ${dark ? 'bg-slate-700' : 'bg-white'} shadow-xl rounded-3xl rounded-tl-none`}
+                    href={`/nfts/${parseInt(nft.asset.id?.hex, 16)}?c=${nft.assetContractAddress}`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-semibold">{nft.asset.name}</h2>
                             <div className="flex -space-x-1.5 hover:-space-x-0.5 transition duration-300">
@@ -105,10 +105,10 @@ const AudioNFTCard = ({nft}) => {
                                     <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} {nft.buyoutCurrencyValuePerToken.symbol}</span>
                                 </div>
                             </div>
-                            <span className="block text-neutral-500 dark:text-neutral-400 text-xs">21 in stock</span>
+                            {/* <span className="block text-neutral-500 dark:text-neutral-400 text-xs">21 in stock</span> */}
                         </div>
                     </a>
-            </Link>
+            
         </div>
     </div>
   )

@@ -312,9 +312,10 @@ const Collection = () => {
                   <RiMoneyDollarCircleLine fontSize="30px" className="mb-2" />
                   <span className="text-sm text-center">Volume Traded</span>
                   <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
-                    {myCollections?.volumeTraded
+                    {/* {myCollections?.volumeTraded
                       ? parseFloat(myCollections?.volumeTraded).toFixed(4)
-                      : 0}
+                      : 0} */}
+                      ${myUser?.volumeTraded ? Number(myUser.volumeTraded).toFixed(4) : 0 }
                   </span>
                 </div>
               </div>

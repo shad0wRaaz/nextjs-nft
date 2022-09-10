@@ -14,6 +14,7 @@ import BrowseByCategory from '../components/BrowseByCategory'
 import SubscribeSection from '../components/SubscribeSection'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
 import PopularVideoNFTs from '../components/PopularVideoNFTs'
+import axios from 'axios'
 
 const style = {
   wrapper: ``,
@@ -25,27 +26,8 @@ const style = {
 const errorToastStyle = {style: {background: '#ef4444',padding: '16px',color: '#fff',},iconTheme: {primary: '#ffffff',secondary: '#ef4444',},}
 const successToastStyle = {style: {background: '#10B981',padding: '16px',color: '#fff',},iconTheme: {primary: '#ffffff',secondary: '#10B981',},}
 
-// export const getStaticProps = async (sanityClient = config) => {
-//   try{
-//     const query = `*[_type == "nftCollection"] {
-//       name, contractAddress
-//     }`
-//     // const res = await fetch('https://jsonplaceholder.typicode.com/users');
-//     const res = await sanityClient.fetch(query);
-//     const data = await res.json();
-  
-//     return {
-//       props: { collections: data },
-//     }
-//   }
-//   catch(err){
-//     return {
-//       props : { collections: err.message }
-//     }
-//   }
-// }
-
-const Home = () => {
+const Home = ({listedItems}) => {
+  // console.log(listedItems)
   const address = useAddress();
   const { dark } = useThemeContext();
   const welcomeUser = (userName, toastHandler = toast) => {
@@ -74,7 +56,7 @@ const Home = () => {
 
   return (
       <div className={ dark ? 'darkBackground text-neutral-200': '' }>
-        <Header />
+        <Header/>
         <HeroCarousel/>
         <HeroSearch />
         <TopCollections/>
@@ -87,6 +69,16 @@ const Home = () => {
         <Footer/>
       </div>
   )
+}
+export async function getStaticProps() {
+  // const allListings = await axios.get('http://localhost:8080/api/getAllListings')
+  return {
+    props: {
+      listedItems: 'test'
+    },
+    revalidate: 300 /*re fetch in every 300 seconds*/
+
+  }
 }
 
 export default Home

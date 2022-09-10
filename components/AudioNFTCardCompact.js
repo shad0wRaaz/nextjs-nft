@@ -9,7 +9,7 @@ const AudioNFTCardCompact = ({nft}) => {
     const [play, setPlay] = useState(false)
   return (
     <div className={`relative flex justify-between p-2 space-x-2 rounded-3xl ${dark ? 'bg-slate-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
-        <Link href={`/nfts/${nft.asset.id.toNumber()}?c=${nft.assetContractAddress}`} passHref>
+        <Link href={`/nfts/${parseInt(nft.asset.id?.hex, 16)}?c=${nft.assetContractAddress}`} passHref>
             <a className="flex-grow flex space-x-4">
                 <div className="relative w-16 sm:w-24">
                     <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg">
