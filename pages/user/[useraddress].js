@@ -1,6 +1,6 @@
 import moment from 'moment'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
@@ -26,7 +26,7 @@ import {
   getUserContinuously,
   getUser,
 } from '../../fetchers/SanityFetchers'
-import { getUnsignedImagePath } from '../../fetchers/s3'
+import { getUnsignedImagePath, getWeb3ImagePath } from '../../fetchers/s3'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -57,6 +57,7 @@ const User = () => {
   const [banner, setBanner] = useState()
   const [userCollections, setUserCollections] = useState([])
   const [userData, setUserData] = useState()
+  const bannerRef = useRef()
   useEffect(async () => {
     if (!address) return
     setUserData(await getUser(address))
@@ -77,7 +78,8 @@ const User = () => {
       setBanner(await getUnsignedImagePath(userData.bannerImage))
     })()
   }, [userData, address])
-
+  
+  
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['mycollections', address],
     getMyCollections(),
@@ -176,11 +178,33 @@ const User = () => {
     }
     mutateFollower({ creator: address, admirer: myUser.walletAddress })
   }
+
+  useEffect(() => {
+    ;(async() => {
+      
+      console.log(await getWeb3ImagePath('QmRgm5x1fhezfiBcmkFN5afuSnZsNzhF6e4D87rXa7ntki/0'))
+    })()
+  }, [])
+
+    //parallax scrolling effect in banner
+    useEffect(() => {
+      const handleScroll = event => {
+        if(!bannerRef.current) return
+        bannerRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
+      };
+  
+      window.addEventListener('scroll', handleScroll);
+  
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, [])
+
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       <div className="w-full">
-        <div className="relative h-60 w-full md:h-60 2xl:h-96">
+        <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="nc-NcImage absolute inset-0">
             {banner ? (
               <img
@@ -199,11 +223,11 @@ const User = () => {
         </div>
 
         <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
-          <div
-            className={`flex flex-col rounded-3xl ${
-              dark ? 'darkGray' : 'bg-white'
-            } p-5 shadow-xl md:flex-row md:rounded-[40px] lg:px-[5rem] lg:py-8`}
-          >
+        <div
+              className={`flex flex-col rounded-3xl ${
+                dark ? 'darkGray/30 border border-sky-700/30' : 'bg-white/30'
+              } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
+            >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
               <div className="w-40 sm:w-48 md:w-56 xl:w-60">
                 <div className=" aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl">
@@ -225,54 +249,63 @@ const User = () => {
 
               <div className="mt-4 flex items-center space-x-3 sm:justify-center">
                 <div className="flex space-x-1.5">
-                  <a
-                    href={
-                      userData?.igHandle != ''
-                        ? 'https://instagram.com/'.concat(userData?.igHandle)
-                        : ''
-                    }
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <AiOutlineInstagram fontSize="23px" />
-                  </a>
-                  <a
-                    href={
-                      userData?.twitterHandle != ''
-                        ? 'https://twitter.com/'.concat(userData?.twitterHandle)
-                        : ''
-                    }
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <AiOutlineTwitter fontSize="23px" />
-                  </a>
-                  <a
-                    href={
-                      userData?.fbhHandle != ''
-                        ? 'https://facebook.com/'.concat(userData?.fbhHandle)
-                        : ''
-                    }
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <RiFacebookFill fontSize="23px" />
-                  </a>
+                  {userData?.igHandle != null && (
+                    <a
+                      href={
+                        userData?.igHandle != ''
+                          ? 'https://instagram.com/'.concat(userData?.igHandle)
+                          : ''
+                      }
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <AiOutlineInstagram fontSize="23px" />
+                    </a>
+                  )}
+                  
+                  {userData?.twitterHandle != null && (
+                    <a
+                      href={
+                        userData?.twitterHandle != ''
+                          ? 'https://twitter.com/'.concat(userData?.twitterHandle)
+                          : ''
+                      }
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <AiOutlineTwitter fontSize="23px" />
+                    </a>
+                  )}
+
+                  {userData?.fbhHandle != null && (
+                    <a
+                      href={
+                        userData?.fbhHandle != ''
+                          ? 'https://facebook.com/'.concat(userData?.fbhHandle)
+                          : ''
+                      }
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <RiFacebookFill fontSize="23px" />
+                    </a>
+
+                  )}
                 </div>
               </div>
             </div>
