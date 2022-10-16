@@ -82,7 +82,7 @@ const search = ({category}) => {
   }
 
   useEffect(() => {
-    console.log(activeListings)
+    // console.log(activeListings)
   }, [activeListings])
 
   useEffect(async () => {
@@ -96,7 +96,7 @@ const search = ({category}) => {
   useEffect(() => {
     const data = router.query
     setItemName(data?.n)
-    setSelectedCategory(data?.c && data.c)
+    setSelectedCategory(data?.c ? data.c : 'all')
     setIncludeImage(data?.i === 'true' ? true : false)
     setIncludeVideo(data?.v === 'true' ? true : false)
     setIncludeAudio(data?.a === 'true' ? true : false)
@@ -115,7 +115,7 @@ const search = ({category}) => {
   useEffect(() => {
     if (!activeListings) return
     if (!router.query._r) return
-    console.log('im here')
+    
 
     let minPrice = parseInt(activeListings[0].buyoutPrice.hex,16) / DIVIDER
     let maxPrice = minPrice
@@ -184,6 +184,10 @@ const search = ({category}) => {
     if(includeImage){
       newFiltered = [...newFiltered, ...imageNFTs]
     }
+    // console.log(newFiltered)
+    //This filter will filter out all nfts that does not have tokenid. Only Old NFTs do not have tokenid.
+    newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null)
+
     setFilteredListings(newFiltered)
   }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage])
 
@@ -239,12 +243,9 @@ const search = ({category}) => {
       <div className="space-t-16 lg:space-t-28 container p-4 mx-auto pt-16 lg:pt-20">
         <div className="relative mb-12 flex flex-col">
           <div className="flex flex-col justify-between space-y-6 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-2 ">
-            <nav
-              className="hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base"
-              data-nc-id="Nav"
-            >
-              <ul className="flex  sm:space-x-2">
-                <li className="nc-NavItem relative">
+            <nav className="hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base">
+              <ul className="flex sm:space-x-2">
+                <li className="relative">
                   <button
                     className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
                       dark
@@ -262,7 +263,7 @@ const search = ({category}) => {
                 </li>
                 {categories.length > 0 &&
                   categories.map((item, index) => (
-                    <li key={index} className="nc-NavItem relative" data-nc-id="NavItem">
+                    <li key={index} className="relative" data-nc-id="NavItem">
                       <button
                         className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
                           dark
@@ -318,7 +319,7 @@ const search = ({category}) => {
                     >
                       <IconWallet />
                       <span className="ml-2">
-                        {priceRange[0]} ETH - {priceRange[1]} ETH
+                        {priceRange[0]} - {priceRange[1]}
                       </span>
                       <span className="bg-primary-500 ml-3 flex h-4 w-4 flex-shrink-0 cursor-pointer items-center justify-center rounded-full">
                         <BsChevronDown />
