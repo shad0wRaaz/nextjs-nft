@@ -3,30 +3,30 @@ import { SMTPClient } from 'emailjs'
 export default async function handler(req, res) {
   const { email, emailBody, subjectText } = req.body
 
-  //   const client = new SMTPClient({
-  //     user: 'noreply@metanuva.com',
-  //     password: 'London@2022',
-  //     host: 'smtp.gmail.com',
-  //     port: 465,
-  //     ssl: true,
-  //     tls: true,
-  //     timeout: 50000,
-  //   })
-  const client = new SMTPClient({
-    user: process.env.NEXT_PUBLIC_EMAIL,
-    password: process.env.NEXT_PUBLIC_PASSWORD,
-    host: process.env.NEXT_PUBLIC_SMTP,
-    port: 587,
-    ssl: false,
-    tls: true,
-    timeout: 50000,
-  })
+    const client = new SMTPClient({
+      user: 'noreply@metanuva.com',
+      password: 'hijsediaqdkfgwnv',
+      host: 'smtp.gmail.com',
+      port: 587,
+      ssl: false,
+      tls: true,
+      timeout: 50000,
+    })
+  // const client = new SMTPClient({
+  //   user: process.env.NEXT_PUBLIC_EMAIL,
+  //   password: process.env.NEXT_PUBLIC_PASSWORD,
+  //   host: process.env.NEXT_PUBLIC_SMTP,
+  //   port: 587,
+  //   ssl: false,
+  //   tls: true,
+  //   timeout: 50000,
+  // })
 
   try {
     const message = await client.sendAsync({
       text: emailBody,
       attachment: [{ data: emailBody, alternative: true }],
-      from: 'no-reply@metanuva.com',
+      from: 'noreply@metanuva.com',
       to: email,
       subject: subjectText,
     })

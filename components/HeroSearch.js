@@ -317,7 +317,7 @@ const HeroSearch = () => {
 
                   <div className="flex-grow">
                     <span className="block min-w-[130px] text-left font-semibold xl:text-lg">
-                      {priceRange[0]}ETH ~ {priceRange[1]}ETH
+                      {priceRange[0]} ~ {priceRange[1]}
                     </span>
                     <span className="mt-1 block text-left text-sm font-light leading-none text-neutral-400 ">
                       Price Range

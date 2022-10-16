@@ -13,8 +13,10 @@ import sanityClient from '@sanity/client'
 import cron from 'node-cron'
 import axios from 'axios'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import * as fs from 'fs'
 import Redis from 'ioredis'
+import { Web3Storage, getFilesFromPath } from 'web3.storage'
+import { v4 as uuidv4 } from 'uuid'
+import { useMarketplace } from '@thirdweb-dev/react'
 
 const app = express()
 app.use(
@@ -47,10 +49,14 @@ const config = sanityClient({
   ignoreBrowserTokenWarning: true,
 })
 
-cron.schedule('*/60 * * * *', async() => {
+const web3Client = new Web3Storage({ 
+  token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY
+})
+
+cron.schedule('*/120 * * * *', async() => {
   const options = {
     method: 'GET',
-    url: `https://coinranking1.p.rapidapi.com/coins`,
+    url: process.env.NEXT_PUBLIC_COINAPI_URL,
     params: { 
       referenceCurrencyUuid: 'yhjMzLPhuIDl',
       timePeriod: '24h',
@@ -61,8 +67,8 @@ cron.schedule('*/60 * * * *', async() => {
       offset: '0'
      },
     headers: {
-      'X-RapidAPI-Host': process.env.NEXT_PUBLIC_RAPIDAPI_HOST,
-      'X-RapidAPI-Key': process.env.NEXT_PUBLIC_RAPIDAPI_KEY,
+      'X-RapidAPI-Host': process.env.NEXT_PUBLIC_COINAPI_HOST,
+      'X-RapidAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY,
     },
   }
   try{
@@ -101,6 +107,54 @@ const randomImageName = (bytes = 32) =>
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
+// app.get('/api/getMarketEvents', async (req, res) =>{
+//   // const marketplaceAddress = req.query.marketplaceAddress
+//   // const eventType = req.query.eventType
+//   const eventType = 'NewOffer'
+//   //get data from blockchain
+//   const sdk = new ThirdwebSDK(process.env.NEXT_PUBLIC_POLYGON_RPC_URL)
+//   const marketplace = sdk.getMarketplace(process.env.NEXT_PUBLIC_MARKETPLACE_ID)
+
+
+//   const events = await marketplace.events.getEvents(eventType)
+  
+//   return res.status(200).json(JSON.stringify(events))
+// })
+
+app.post('/api/saveImageToWeb3', async (req, res) => {
+  const file = req.body.image
+  console.log(file)
+
+  const ext = file.name.split('.').pop()
+  const fileName = `${uuidv4()}.${ext}`
+  const newFile = new File([file], fileName, {type: file.type})
+  // const cid = await web3Client.put([newFile, {
+  //   name: fileName
+  // }])
+
+  // const imageURI = `https://${cid}.ipfs.dweb.link/${fileName}`
+  const imageURI = `https://w3s.link/ipfs/cid/${fileName}`
+  return res.status(200).send({ imageURI })
+})
+
+app.get('/api/getImageFromWeb3', async(req, res) => {
+  const cid = req.query.cid
+  const returnFile = await web3Client.get(cid)
+  console.log(returnFile)
+  return res.status(200).send(`https://w3s.link/ipfs/${cid}`)
+
+  const result = await web3Client.get(cid)
+  if(!result) {
+    return res.status(200).json('Not Found')
+  }else {
+    console.log(result)
+    // const files = await res.files()
+    // for(const file of files){
+    //   console.log(file.cid, file.path, file.size)
+    // }
+    return res.status(200).send({ result })
+  }
+})
 
 app.get('/api/getS3Image', async (req, res) => {
   const params = {
@@ -148,54 +202,79 @@ app.post('/api/saveS3Banner', upload.single('banner'), async (req, res) => {
   res.send({})
 })
 
+app.get('/api/updateListings', async (req, res) => {
+  //get data from blockchain
+  const sdk = new ThirdwebSDK(process.env.NEXT_PUBLIC_POLYGON_RPC_URL)
+  const marketplace = sdk.getMarketplace(process.env.NEXT_PUBLIC_MARKETPLACE_ID)
+  const listedItems = await marketplace.getActiveListings()
+
+  redis.del("cache")
+  redis.set("cache", JSON.stringify(listedItems))
+  
+  return res.status(200).json(listedItems)
+})
+
 app.get('/api/getAllListings', async (req, res) => {
   let cache = await redis.get("cache")
   cache = JSON.parse(cache)
-  let result = {}
-  if(cache) {
-    return res.status(200).json(cache)
-  } else {
-    //get data from blockchain
-    const sdk = new ThirdwebSDK('mumbai')
-    const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-    const listedItems = await marketplace.getAllListings()
+  
+  return res.status(200).json(cache)
+})
 
-    redis.set("cache", JSON.stringify(listedItems))
-
-    return res.status(200).json(listedItems)
+app.get('/api/latestCollection', async (req, res) => {
+  var latestcollections
+  if(await redis.get("latestcollections") != null) {
+    latestcollections = await redis.get("latestcollections")
+    return res.status(200).json(latestcollections)
+  }else {
+    const query = `*[_type == "nftCollection"] | order(_createdAt desc) {
+      "id": _id,
+      name, 
+      category, 
+      contractAddress,
+      profileImage,
+      bannerImage,
+      description,
+      chainId,
+      floorPrice,
+      volumeTraded,
+      "creator": createdBy->userName,
+      "creatorAddress" : createdBy->walletAddress,
+      "allOwners" : owners[]->
+  }`
+  latestcollections = await config.fetch(query)
+  redis.set("latestcollections", JSON.stringify(latestcollections))
+  return res.status(200).json(JSON.stringify(latestcollections))
   }
-  // try {
-  //   cache = fs.readFileSync('listings.txt', 'utf8')
-  //   console.log('file present')
-    
-  //   //if there is no data, then fetch from blockchain
-  //   if(cache.length < 1){
-  //     const sdk = new ThirdwebSDK('mumbai')
-  //     const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //     const listedItems = await marketplace.getAllListings()
-  //     fs.writeFileSync('listings.txt', listedItems);
-  //     cache = listedItems
-  //   }
+})
 
-  // }catch(err) {
-  //   console.log('file not present')
-  //   console.log(err)
-    
-  //   const sdk = new ThirdwebSDK('mumbai')
-  //   const marketplace = sdk.getMarketplace('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //   const listedItems = JSON.stringify(await marketplace.getAllListings())
-    
-  //   // const vol = Volume.fromJSON({'/data': JSON.stringify(listedItems)})
-  //   fs.writeFileSync('listings.txt', listedItems);
-    
-  //   // // cache = fs.readFileSync('/listings.txt', 'utf8')
-  //   // ufs.use(fs).use(vol)
-  //   // cache = ufs.readFileSync('/data')
-  //   // console.log(cache)
-    
-  //   cache = listedItems
-  // }
-  // res.send(cache).status(200)
+app.get('/api/topTradedCollections', async( req, res) => {
+  var topCollections
+  if(await redis.get("toptradedcollections") != null) {
+    topCollections = await redis.get("toptradedcollections")
+    return res.status(200).json(topCollections)    
+  }
+  else{
+    const query = `*[_type == "nftCollection"] | order(volumeTraded desc) {
+      "id": _id,
+      name, 
+      category, 
+      contractAddress,
+      profileImage,
+      bannerImage,
+      description,
+      _createdAt,
+      chainId,
+      floorPrice,
+      volumeTraded,
+      "creator": createdBy->userName,
+      "creatorAddress" : createdBy->walletAddress,
+      "allOwners" : owners[]->
+  }`
+  topCollections = await config.fetch(query)
+  redis.set("toptradedcollections", 900, JSON.stringify(topCollections))
+  return res.status(200).json(JSON.stringify(topCollections))
+  }
 })
 
 app.listen(8080, () => console.log('listening on 8080'))

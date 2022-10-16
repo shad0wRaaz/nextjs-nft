@@ -15,6 +15,7 @@ import CreateEdition from '../components/createNew/CreateEdition'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { FiImage, FiVideo } from 'react-icons/fi'
+import { v4 as uuidv4 } from 'uuid'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -55,6 +56,8 @@ const contracts = () => {
   const [state, dispatch] = useReducer(reducer, {isMenuOpened: false, canvasMenu: ''});
   const { dark } = useThemeContext();
   const [showModal, setShowModal] = useState(true)
+  const nftId = uuidv4() //for image nft
+  const nftAVId = uuidv4() //for audio/video nft
 
   return (
     <div className={dark ? 'darkBackground text-neutral-200': '' }>
@@ -153,11 +156,11 @@ const contracts = () => {
                 <MdClose fontSize="30px"/>
               </button>
 
-              {state.canvasMenu == "NFT" && 
-                <CreateNFT/>
+              {state.canvasMenu == "NFT" &&
+                <CreateNFT uuid={nftId}/>
               }
               {state.canvasMenu == "NFT_AUDIOVIDEO" && 
-                <CreateAVNFT />
+                <CreateAVNFT uuid={nftAVId}/>
               }
               {state.canvasMenu == "NFT_COLLECTION" && 
                 <CreateNFTCollection/>

@@ -22,6 +22,7 @@ const SearchBar = () => {
     ;(async (sanityClient = config) => {
       const query = `*[_type == "nftCollection"] {
         name,
+        _id,
         contractAddress,
         
       }`
@@ -40,6 +41,10 @@ const SearchBar = () => {
               .replace(/\s+/g, '')
               .includes(query.toLowerCase().replace(/\s+/g, '')) ||
             collection.contractAddress
+            .toLowerCase()
+            .replace(/\s+/g, '')
+            .includes(query.toLowerCase().replace(/\s+/g, '')) ||
+            collection._id
               .toLowerCase()
               .replace(/\s+/g, '')
               .includes(query.toLowerCase().replace(/\s+/g, ''))
@@ -127,7 +132,7 @@ const SearchBar = () => {
                   >
                     {({ selected, active }) => (
                       <a
-                        href={`/collections/${collectionArray.contractAddress}`}
+                        href={`/collections/${collectionArray._id}`}
                         className="cursor-pointer"
                       >
                         {/* <img

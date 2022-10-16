@@ -32,21 +32,21 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
-const ItemActivity = ({ collectionAddress, selectedNft }) => {
+const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
+  
   const [toggle, setToggle] = useState(true)
   const { dark } = useThemeContext()
-  const { queryStaleTime } = useUserContext()
 
   const { data: activityData, status } = useQuery(
     ['activities', collectionAddress],
-    getActivities(selectedNft?.metadata.id.toString()),
+    getActivities(metaDataFromSanity?._id),
     {
-      enabled: Boolean(selectedNft?.metadata.id),
+      enabled: Boolean(metaDataFromSanity?._id),
       onError: () => {
         toast.error('Cannot fetch Item activities', errorToastStyle)
       },
       onSuccess: (res) => {
-        // console.log(res)
+        //  console.log(res)
       },
     }
   )

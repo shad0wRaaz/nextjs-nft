@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { useCallback, useMemo, useState } from 'react'
 import Loader from './Loader'
 import { useQuery } from 'react-query'
 import { toast } from 'react-hot-toast'
@@ -62,6 +61,9 @@ const CollectionByCategory = ({ categoryName }) => {
           errorToastStyle
         )
       },
+      onSuccess:(res) => {
+        console.log(res)
+      }
     }
   )
 
@@ -79,6 +81,7 @@ const CollectionByCategory = ({ categoryName }) => {
         updatedData.map((coll, id) => (
           <CollectionCard
             key={id}
+            id={coll._id}
             name={coll.name}
             contractAddress={coll.contractAddress}
             profileImage={coll.profileImage}

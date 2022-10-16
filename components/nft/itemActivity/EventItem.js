@@ -1,7 +1,7 @@
 import Moment from 'react-moment'
 import Link from 'next/link'
 import { useThemeContext } from '../../../contexts/ThemeContext'
-import { IconPolygon, IconEthereum } from '../../icons/CustomIcons'
+import { IconPolygon, IconEthereum, IconBNB } from '../../icons/CustomIcons'
 
 const style = {
   event: `p-2 py-4 text-sm text-center`,
@@ -13,30 +13,53 @@ const style = {
   accent: `text-neutral-900`,
 }
 
+const chainIcon = {
+  '97': <IconBNB width="1.3rem" height="1.3rem" />,
+  '80001': <IconPolygon width="1.3rem" height="1.3rem" />,
+  '5': <IconEthereum width="1.3rem" height="1.3rem" />,
+  '4': <IconEthereum width="1.3rem" height="1.3rem" />
+}
+const chainExplorer = {
+  '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
+  '80001': process.env.NEXT_PUBLIC_EXPLORER_MUMBAI,
+  '5': process.env.NEXT_PUBLIC_EXPLORER_GOERLI,
+  '4': process.env.NEXT_PUBLIC_EXPLORER_RINKEBY,
+  '1': process.env.NEXT_PUBLIC_EXPLORER_MAINNET,
+}
+const pillcolor = {
+  'Mint' : ' bg-lime-300 text-lime-700',
+  'List' : ' bg-indigo-300 text-indigo-700',
+  'Auction' : ' bg-orange-300 text-orange-700',
+  'Buy': ' bg-green-300 text-green-700',
+  'Delist': ' bg-grey-300 text-grey-700',
+  'Burn': ' bg-red-300 text-red-700',
+  'Bid': ' bg-amber-300 text-amber-700',
+}
+
 const EventItem = ({ event }) => {
   const { dark } = useThemeContext()
-  let pillColor
-  if (event.event == 'Mint') {
-    pillColor = ' bg-amber-300 text-amber-700'
-  }
-  if (event.event == 'List' || event.event == 'Auction') {
-    pillColor = ' bg-indigo-300 text-indigo-700'
-  }
-  if (event.event == 'Buy') {
-    pillColor = ' bg-green-300 text-green-700'
-  }
-  if (event.event == 'Delist') {
-    pillColor = ' bg-indigo-300 text-indigo-700'
-  }
-  if (event.event == 'Burn') {
-    pillColor = ' bg-red-300 text-red-700'
-  }
-  let explorerLink
-  if (!event.transactionHash) {
-    explorerLink = '#'
-  } else {
-    explorerLink = `https://mumbai.polygonscan.com/tx/${event.transactionHash}`
-  }
+  // let pillColor
+  // if (event.event == 'Mint') {
+  //   pillColor = ' bg-amber-300 text-amber-700'
+  // }
+  // if (event.event == 'List' || event.event == 'Auction') {
+  //   pillColor = ' bg-indigo-300 text-indigo-700'
+  // }
+  // if (event.event == 'Buy') {
+  //   pillColor = ' bg-green-300 text-green-700'
+  // }
+  // if (event.event == 'Delist') {
+  //   pillColor = ' bg-indigo-300 text-indigo-700'
+  // }
+  // if (event.event == 'Burn') {
+  //   pillColor = ' bg-red-300 text-red-700'
+  // }
+  // let explorerLink
+  // if (!event.transactionHash) {
+  //   explorerLink = '#'
+  // } else {
+  //   explorerLink = `https://mumbai.polygonscan.com/tx/${event.transactionHash}`
+  // }
 
   return (
     <tr
@@ -46,8 +69,8 @@ const EventItem = ({ event }) => {
     >
       <td className={style.event}>
         <div className={style.eventIcon}>
-          <div className={style.eventName + pillColor}>
-            <Link href={explorerLink}>
+          <div className={style.eventName + pillcolor[event.event]}>
+            <Link href={`${chainExplorer[event.chainId]}${event.transactionHash}`}>
               <a target="_blank">{event.event}</a>
             </Link>
           </div>

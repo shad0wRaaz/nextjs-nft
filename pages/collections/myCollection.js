@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import moment from 'moment'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -36,6 +36,7 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+
 const style = {
   nftwrapper:
     'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
@@ -50,6 +51,7 @@ const Collection = () => {
   const signer = useSigner()
   const address = useAddress()
   const { dark } = useThemeContext()
+  const bannerRef = useRef()
   const {
     myUser,
     queryCacheTime,
@@ -151,11 +153,25 @@ const Collection = () => {
     }
   }, [address])
 
+  //parallax scrolling effect in banner
+  useEffect(() => {
+    const handleScroll = event => {
+      if(!bannerRef.current) return
+      bannerRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [])
+
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       <div className="w-full">
-        <div className="relative h-60 w-full md:h-60 2xl:h-96">
+        <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="nc-NcImage absolute inset-0" data-nc-id="NcImage">
             <img
               src={myBannerImage ? myBannerImage.data.url : noBannerImage.src}
@@ -166,11 +182,11 @@ const Collection = () => {
         </div>
 
         <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
-          <div
-            className={`flex flex-col rounded-3xl ${
-              dark ? 'darkGray' : 'bg-white'
-            } p-8 shadow-xl md:flex-row md:rounded-[40px]`}
-          >
+        <div
+              className={`flex flex-col rounded-3xl ${
+                dark ? 'darkGray/30' : 'bg-white/30'
+              } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
+            >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
               <div className="w-40 sm:w-48 md:w-56 xl:w-60">
                 <div
@@ -394,6 +410,7 @@ const Collection = () => {
                   <CollectionCard
                     key={id}
                     name={coll.name}
+                    id={coll._id}
                     contractAddress={coll.contractAddress}
                     profileImage={coll.profileImage}
                     bannerImage={coll.bannerImage}

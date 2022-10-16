@@ -54,13 +54,13 @@ export const IconVideo = () => {
     </svg>
   )
 }
-export const IconHeart = () => {
+export const IconHeart = ({color}) => {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
       <path
         d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z"
         stroke="currentColor"
-        fill="#ef4444"
+        fill={color}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -514,6 +514,7 @@ export const IconPolygon = ({ width, height }) => {
       width={width ? width : '15'}
       height={height ? height : '15'}
       viewBox="0 0 40 40"
+      className="mr-2 inline-block" 
     >
       <g>
         <path
@@ -524,17 +525,37 @@ export const IconPolygon = ({ width, height }) => {
     </svg>
   )
 }
-export const IconEthereum = () => {
+export const IconBNB = ({ width, height }) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 2500 2500" 
+      focusable="false" 
+      className="mr-2 inline-block" 
+      width={width ? width : '15'} 
+      height={height ? height: '15'}
+      >
+        <g id="Layer_2" data-name="Layer 2">
+          <g id="Layer_1-2" data-name="Layer 1">
+            <path fill="#f3ba2f" d="M764.48 1050.52 1250 565l485.75 485.73 282.5-282.5L1250 0 482 768l282.49 282.5M0 1250l282.51-282.55L565 1249.94l-282.51 282.51Zm764.48 199.51L1250 1935l485.74-485.72 282.65 282.35-.14.15L1250 2500l-768-768-.4-.4 282.91-282.12M1935 1250.12l282.51-282.51L2500 1250.1l-282.5 282.51Z"></path>
+            <path fill="#f3ba2f" d="M1536.52 1249.85h.12L1250 963.19 1038.13 1175l-24.34 24.35-50.2 50.21-.4.39.4.41L1250 1536.81l286.66-286.66.14-.16-.26-.14"></path>
+          </g>
+        </g>
+      </svg>
+  )
+}
+export const IconEthereum = ({ width, height }) => {
   return (
     <svg
-      width="20px"
-      height="20px"
+    width={width ? width : '20'}
+    height={height ? height : '20'}
       shapeRendering="geometricPrecision"
       textRendering="geometricPrecision"
       imageRendering="optimizeQuality"
       fillRule="evenodd"
       clipRule="evenodd"
       viewBox="0 0 784.37 1277.39"
+      className="mr-2 inline-block" 
     >
       <g id="Layer_x0020_1">
         <g id="_1421394342400">

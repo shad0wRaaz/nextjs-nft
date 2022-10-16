@@ -45,6 +45,7 @@ const Notifications = () => {
         toast.error('Error in getting notifications', errorToastStyle)
       },
       onSuccess: async (res) => {
+        
         const checkNotification = res.filter((n) => n.status != true)
         if (checkNotification?.length > 0) {
           setIsNotification(true)
@@ -170,7 +171,7 @@ const Notifications = () => {
                         <Menu.Item>
                           <a
                             id={id}
-                            href={notification.link}
+                            href={notification.type == "TYPE_SIX" ? `/nfts/${notification.item?._ref}` : notification.type == "TYPE_ONE" ? `/collections/${notification.item?._ref}` : '#'}
                             onClick={() => markedRead(notification._id)}
                             className={`relative flex rounded-lg p-2 pr-4 transition duration-150 ease-in-out ${
                               dark

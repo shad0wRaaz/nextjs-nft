@@ -33,7 +33,7 @@ const VideoNFTCard = ({nft}) => {
                         </video>
                     )}
                     {!play && (
-                        <Image src={nft.asset.image} objectFit="cover" layout="fill" className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl overflow-hidden transition-transform duration-300 ease-in-out" alt="nc-imgs"/>
+                        <img src={nft.asset.image} className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl overflow-hidden transition-transform duration-300 ease-in-out" alt={nft.asset.name}/>
                     )}
                 </div>
             </div>

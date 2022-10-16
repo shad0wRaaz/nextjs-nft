@@ -92,6 +92,11 @@ function reducer(state, action) {
         ...state,
         properties: { ...state.properties, category: action.payload.category },
       }
+    case 'ADD_TOKENID':
+    return {
+      ...state,
+      properties: { ...state.properties, tokenid: action.payload.tokenid }
+    }
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
@@ -108,6 +113,7 @@ function reducer(state, action) {
           ],
           category: '',
           itemtype: '',
+          tokenid: '',
         },
       }
     default:
@@ -115,7 +121,8 @@ function reducer(state, action) {
   }
 }
 
-const CreateAVNFT = () => {
+const CreateAVNFT = ({uuid}) => {
+
   const [state, dispatch] = useReducer(reducer, {
     name: '',
     animation_url: '',
@@ -131,12 +138,10 @@ const CreateAVNFT = () => {
       ],
       category: '',
       itemtype: '',
+      tokenid: '',
     },
   })
 
-  // useEffect(() => {
-  //   console.log(state);
-  // }, [state])
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()
@@ -144,6 +149,16 @@ const CreateAVNFT = () => {
   // const [fileType, setFileType] = useState('image')
   const connectWithMetamask = useMetamask()
   const { myCollections, setMyCollections } = useUserContext()
+  const [thisChainCollection, setThisChainCollection] = useState([])
+
+  useEffect(() => {
+    //get only collection from this currently connected chain to show in Collection Selection Area
+    if(!myCollections) return
+    if(!chainid) return
+    let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
+    setThisChainCollection(tempCollection)
+  }, [myCollections, chainid])
+
   const [
     {
       data: { chain, chains },
@@ -196,6 +211,14 @@ const CreateAVNFT = () => {
     if (myCollections) return
     fetchSanityCollectionData()
   }, [address])
+
+  useEffect(() => {
+    if(!uuid) return
+    dispatch({
+      type: 'ADD_TOKENID',
+      payload: { tokenid: uuid}
+    })
+  }, [uuid])
 
   useEffect(() => {
     const sdk = new ThirdwebSDK(signer)
@@ -255,25 +278,19 @@ const CreateAVNFT = () => {
           const receipt = tx.receipt
           const tokenId = tx.id
 
-          // console.log(tx)
-          // console.log(receipt)
-          // console.log(tokenId)
-
-          setIsMinting(false)
-
-          toastHandler.success('NFT minted successfully', successToastStyle)
-          dispatch({ type: 'CLEAR_OUT_ALL' })
-
           //save NFT data into Sanity
           const nftItem = {
             _type: 'nftItem',
-            _id: selectedCollection.contractAddress.concat(tx.id.toString()),
+            _id: uuid,
             id: tx.id.toString(),
-            contractAddress: selectedCollection.contractAddress,
+            collection: {
+              _ref: selectedCollection._id,
+              _type: 'reference'
+            },
             listed: false,
             chainId: chainid,
-            createdBy: { _ref: address },
-            ownedBy: { _ref: address },
+            createdBy: { _ref: address, _type: 'reference' },
+            ownedBy: { _ref: address, _type: 'reference' },
             featured: false,
             name: state.name,
           }
@@ -282,7 +299,7 @@ const CreateAVNFT = () => {
             .then()
             .catch((err) => {
               toastHandler.error(
-                'Error saving NFT data. Contact administrator.',
+                'Error saving NFT data. Please contact administrator.',
                 errorToastStyle
               )
             })
@@ -291,10 +308,10 @@ const CreateAVNFT = () => {
           const transactionData = {
             _type: 'activities',
             _id: receipt.transactionHash,
+            nftItem: { _ref: uuid, _type: 'reference'},
             transactionHash: receipt.transactionHash,
             from: receipt.from,
             to: receipt.to,
-            contractAddress: selectedCollection.contractAddress,
             tokenid: tx.id.toString(),
             event: 'Mint',
             price: '-',
@@ -306,17 +323,22 @@ const CreateAVNFT = () => {
             .then()
             .catch((err) => {
               toastHandler.error(
-                'Error saving NFT data. Contact administrator.',
+                'Error saving NFT Transaction data. Please contact administrator.',
                 errorToastStyle
               )
             })
 
+          setIsMinting(false)
+
+          toastHandler.success('NFT minted successfully', successToastStyle)
+          dispatch({ type: 'CLEAR_OUT_ALL' })
+
           router.push(
-            `/nfts/${tx.id.toString()}?c=${selectedCollection.contractAddress}`
+            `/nfts/${uuid}`
           )
         } catch (error) {
           toastHandler.error(error.message, errorToastStyle)
-          console.log(error.message)
+          // console.log(error.message)
           setIsMinting(false)
         }
       })()
@@ -395,7 +417,7 @@ const CreateAVNFT = () => {
     let start = base64.indexOf(':') + 1
     let end = base64.indexOf('/') - start
     const currentFileType = base64.substr(start,end)
-    console.log(currentFileType)
+    // console.log(currentFileType)
 
     if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
       toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
@@ -408,7 +430,7 @@ const CreateAVNFT = () => {
   useEffect(() => {
     // console.log(fileType)
     if(!fileType) return
-    console.log(fileType)
+    // console.log(fileType)
     dispatch({
       type: 'CHANGE_ITEMTYPE',
       payload: { itemtype: fileType }
@@ -523,17 +545,17 @@ const CreateAVNFT = () => {
                     type: 'CHANGE_DESCRIPTION',
                     payload: { description: e.target.value },
                   })
-                  console.log(e.target.value)
+                  // console.log(e.target.value)
                 }}
               ></textarea>
 
               <p className={style.label}>Collection*</p>
               <p className={style.smallText}>
-                Select your collection where this NFT will be minted.
+              Select your collection where this NFT will be minted. Only Collections from currently connected chain are shown.
               </p>
               <div className="ml-[2rem] flex w-full px-4 py-4">
                 <div className="mx-auto w-full">
-                  {myCollections?.length > 0 ? (
+                  {thisChainCollection?.length > 0 ? (
                     <RadioGroup
                       value={selectedCollection}
                       onChange={(e) => {
@@ -545,7 +567,7 @@ const CreateAVNFT = () => {
                         Server size
                       </RadioGroup.Label>
                       <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2">
-                        {myCollections?.map((collection) => (
+                        {thisChainCollection?.map((collection) => (
                           <RadioGroup.Option
                             key={collection.name}
                             value={collection}

@@ -3,7 +3,7 @@ import Report from '../Report'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { ImHammer2 } from 'react-icons/im'
-import { useState, Fragment } from 'react'
+import { useState, Fragment, useEffect } from 'react'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { useQueryClient } from 'react-query'
 import HelmetMetaData from '../HelmetMetaData'
@@ -19,6 +19,8 @@ import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { RiShareBoxLine, RiCloseCircleLine, RiFireLine } from 'react-icons/ri'
 import { TbBrandTelegram } from 'react-icons/tb'
 import { HiOutlineMail } from 'react-icons/hi'
+import { updateListings } from '../../fetchers/Web3Fetchers'
+import axios from 'axios'
 import {
   useAddress,
   useMarketplace,
@@ -62,11 +64,10 @@ const style = {
   divider: `border border-white border-slate-700 border-r-1`,
 }
 
-const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
-  const collectionAddress = nftCollection.contractAddress
+const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
   const { queryStaleTime } = useUserContext()
   const { marketplaceAddress } = useMarketplaceContext()
-  const contract = useNFTCollection(collectionAddress)
+  // const contract = useNFTCollection(collectionAddress)
   const market = useMarketplace(marketplaceAddress)
   const queryClient = useQueryClient()
   const { dark } = useThemeContext()
@@ -77,26 +78,51 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
   const [userProfile, setUserProfile] = useState()
   const [auctionedItem, setAuctionedItem] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  const { data: collectionData, status: collectionStatus } = useQuery(
-    ['collection', router.query.c],
-    getNFTCollection(),
-    {
-      staleTime: queryStaleTime,
-      enabled: Boolean(router.query.c),
-      onError: () => {
-        toast.error(
-          'Error fetching collection data. Refresh and try again.',
-          errorToastStyle
-        )
-      },
-      onSuccess: (res) => {
-        ;(async () => {
-          setCollectionProfile(await getUnsignedImagePath(res[0].profileImage))
-        })()
-      },
-    }
-  )
+  
+  // const { data: collectionData, status: collectionStatus } = useQuery(
+  //   ['collection', router.query.c],
+  //   getNFTCollection(),
+  //   {
+  //     staleTime: queryStaleTime,
+  //     enabled: false && Boolean(router.query.c),
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching collection data. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess: (res) => {
+  //       console.log(res)
+  //       ;(async () => {
+  //         setCollectionProfile(await getUnsignedImagePath(res[0]?.profileImage))
+  //       })()
+  //     },
+  //   }
+  // )
 
+  //get collection profile image
+  useEffect(() => {
+    if(!metaDataFromSanity) return
+    ;(async()=>{
+      setCollectionProfile(await getUnsignedImagePath(metaDataFromSanity?.collection?.profileImage))
+    })()
+  }, [metaDataFromSanity])
+
+  // //get owner profile image
+  // useEffect(() => {
+  //   if(!selectedNft) return
+
+  //   //check if the item is in auction, if in auction, owner will be marketplace
+  //   if(selectedNft?.owner == '0x9a9817a85E5d54345323e381AC503F3BDC1f01f4' || selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D' || selectedNft?.owner == '0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599') {
+  //     setAuctionedItem(true)
+  //     return
+  //   }
+
+  //   ;(async()=>{
+  //     setUserProfile(await getUnsignedImagePath(selectedNft.owner))
+  //   })()
+  // }, [selectedNft])
+  
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
     ['user', selectedNft?.owner],
@@ -107,9 +133,6 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
         toast.error('Error in getting Owner info.', errorToastStyle)
       },
       onSuccess: (res) => {
-        ;(async () => {
-          setUserProfile(await getUnsignedImagePath(res?.profileImage))
-        })()
         //check if the item is in auction, if in auction, owner will be marketplace
         if (
           !res &&
@@ -117,10 +140,16 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D' || selectedNft?.owner == '0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
         ) {
           setAuctionedItem(true)
+          return
         }
+        
+        ;(async () => {
+          setUserProfile(await getUnsignedImagePath(res?.profileImage))
+        })()
       },
     }
   )
+
   const burn = (e, sanityClient = config, toastHandler = toast) => {
     if (Boolean(listingData)) {
       toastHandler.error(
@@ -186,16 +215,21 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             successToastStyle
           )
 
+              //update listing data
+          ;(async() => {
+            await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+          })()
+
           //saving transaction in sanity
           const transactionData = {
             _type: 'activities',
             _id: tx.receipt.transactionHash,
             transactionHash: tx.receipt.transactionHash,
             from: tx.receipt.from,
-            contractAddress: collectionAddress,
             tokenid: selectedNft.metadata.id.toString(),
             to: tx.receipt.to,
             event: 'Delist',
+            nftItem: { _ref: selectedNft.metadata.properties.tokenid, _type: 'reference'},
             price: '-',
             chainId: chainid,
             dateStamp: new Date(),
@@ -224,18 +258,28 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
     })()
   }
 
+ console.log(selectedNft)
+
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
       <HelmetMetaData 
         title={selectedNft?.metadata.name}
         description={selectedNft?.metadata.description}
         image={selectedNft?.metadata.image}
-        itemId={selectedNft?.metadata.id.toNumber()}
-        contractAddress={collectionAddress}>
+        tokenId={selectedNft?.metadata?.properties?.tokenid}
+        contractAddress={metaDataFromSanity?.collection?.contractAddress}>
           
         </HelmetMetaData>
       {/* Modal window*/}
-      {showModal && <Report showModal={showModal} setShowModal={setShowModal} dark={dark} itemType="NFT" selectedNft={selectedNft} contractAddress={collectionAddress}/>}
+      {showModal &&  
+        <Report 
+          showModal={showModal} 
+          setShowModal={setShowModal} 
+          dark={dark} 
+          itemType="NFT" 
+          selectedNft={selectedNft} 
+          metaDataFromSanity={ metaDataFromSanity }
+        />}
       {/* End of Modal window*/}
       <div
         className={
@@ -251,7 +295,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             router.push({
               pathname: '/search',
               query: {
-                c: collectionData[0].category,
+                c: metaDataFromSanity?.collection.category,
                 n: '',
                 i: 'true',
                 v: 'true',
@@ -264,13 +308,13 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
               },
             })
           }}>
-            {nftCollection?.category}
+            { metaDataFromSanity?.collection?.category }
           </span>
           <div className="flow-root">
             <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
               <FacebookShareButton className="hover:scale-125 transition"
                 quote={selectedNft?.metadata?.name}
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                     <FiFacebook
                       className="mr-2 h-5 w-5"
@@ -285,7 +329,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                 }
               </FacebookShareButton>
               <TwitterShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                   <FiTwitter
                     className="mr-2 h-5 w-5"
@@ -299,7 +343,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                   )}
               </TwitterShareButton>
               <RedditShareButton className="hover:scale-150 transition scale-125"
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                   <AiOutlineReddit
                     className="mr-2 h-5 w-5"
@@ -313,7 +357,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                 )}
               </RedditShareButton>
               <WhatsappShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                   <AiOutlineWhatsApp
                     className="mr-2 h-5 w-5"
@@ -327,7 +371,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                 )}
               </WhatsappShareButton>
               <TelegramShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                   <TbBrandTelegram
                     className="mr-2 h-5 w-5"
@@ -341,7 +385,7 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
                 )}
               </TelegramShareButton>
               <EmailShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${selectedNft?.metadata?.id.toNumber()  }?c=${collectionAddress}`}>
+                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
                 {dark ? (
                   <HiOutlineMail
                     className="mr-2 h-5 w-5"
@@ -531,12 +575,12 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
         <div className="flex flex-col-reverse gap-5 space-y-4 text-sm sm:flex-row sm:items-center sm:space-y-0 sm:space-x-8">
           <div className="flex items-center">
             <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white dark:ring-neutral-900">
-              {nftCollection && (
-                <Link href={`/collections/${router.query.c}`}>
+              {metaDataFromSanity && (
+                <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}>
                   <img
                     className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
                     src={collectionProfile?.data.url}
-                    alt={nftCollection?.name}
+                    alt={metaDataFromSanity?.collection?.name}
                   />
                 </Link>
               )}
@@ -546,8 +590,8 @@ const GeneralDetails = ({ selectedNft, listingData, nftCollection }) => {
             <span className="ml-2.5 flex flex-col">
               <span className="text-sm">Collection</span>
               <span className="flex items-center font-medium">
-                <Link href={`/collections/${router.query.c}`}>
-                  <span className="cursor-pointer">{nftCollection?.name}</span>
+                <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}>
+                  <span className="cursor-pointer">{metaDataFromSanity?.collection?.name}</span>
                 </Link>
                 <span className="ml-1">
                   <svg className="h-4 w-4" viewBox="0 0 17 17" fill="none">

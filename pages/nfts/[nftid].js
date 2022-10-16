@@ -18,18 +18,18 @@ import { useAddress, useNFTCollection } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import RelatedNFTs from '../../components/RelatedNFTs'
-import { IconImage, IconVideo } from '../../components/icons/CustomIcons'
+import { IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
   HiOutlineStar,
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi'
-import { BigNumber } from 'ethers'
 import { getAllNFTs } from '../../fetchers/Web3Fetchers'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import { MdAudiotrack } from 'react-icons/md'
 import ReportActivity from '../../components/nft/ReportActivity'
+import ItemOffers from '../../components/nft/ItemOffers'
 const style = {
   wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
   container: `container p-6`,
@@ -45,24 +45,43 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+const chainIcon = {
+  '97': <IconBNB width="1.3rem" height="1.3rem" />,
+  '80001': <IconPolygon width="1.3rem" height="1.3rem" />,
+  '5': <IconEthereum width="1.3rem" height="1.3rem" />,
+  '4': <IconEthereum width="1.3rem" height="1.3rem" />
+}
+const chainName = {
+  '80001': 'Mumbai',
+  '97': 'Binance Smart Chain Testnet',
+  '4': 'Rinkeby',
+  '137': 'Polygon',
+  '5': 'Goerli',
+}
+const rpcChains = {
+  '80001': process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL,
+  '97': process.env.NEXT_PUBLIC_INFURA_TBNB_URL,
+  '4': process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL,
+  '137': process.env.NEXT_PUBLIC_INFURA_POLYGON_URL,
+  '5': process.env.NEXT_PUBLIC_INFURA_GOERLI_URL,
+}
 
 const Nft = () => {
   const { dark } = useThemeContext()
-  const { queryStaleTime } = useUserContext()
   const { activeListings, rpcUrl, setRpcUrl } = useMarketplaceContext()
   const address = useAddress()
   const [selectedNft, setSelectedNft] = useState()
   const [listingData, setListingData] = useState() //this will hold current or selected listing nft
   const [isAuctionItem, setIsAuctionItem] = useState(false) //identify for auctioned item
+
   const router = useRouter()
-  const collectionid = router.query.c
-  const collection = useNFTCollection(collectionid)
+  const nftId = router.query.nftid
+  const tokenid = router.query.nftid
+  // const collectionContractAddress = ""
+  // const collection = useNFTCollection(collectionContractAddress)
+
   const [collectionData, setCollectionData] = useState('')
-  const [metaDataFromSanity, setMetadataFromSanity] = useState({
-    likedBy: [],
-    views: 0,
-    likes: 0,
-  })
+  const [metaDataFromSanity, setMetadataFromSanity] = useState()
   const [isLiked, setIsLiked] = useState(false)
   const [playItem, setPlayItem] = useState(false)
 
@@ -141,45 +160,31 @@ const Nft = () => {
 
   //get Collection Data from Sanity
   useEffect(() => {
-    if (!collectionid) return //get NFT Items' meta data
+    if (!tokenid) return //get NFT Items' meta data
     ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && contractAddress == "${collectionid}" && id == "${router.query.nftid.toString()}"] {
-          views, likedBy, likes, transactionHashes, _id
+      const query = `*[_type == "nftItem" && _id == "${tokenid}"] {
+          views, likedBy, likes, _id, chainId, id, name,
+          ownedBy->,
+          createdBy->,
+          collection->
         }`
       const result = await sanityClient.fetch(query)
-      setMetadataFromSanity(result[0])
+      
 
-      //get collection data
-      const query2 = `*[_type == "nftCollection" && contractAddress == "${collectionid}"] {
-        profileImage,
-        bannerImage,
-        volumeTraded,
-        createdBy,
-        category,
-        chainId,
-        contractAddress,
-        "creator": createdBy->walletAddress,
-        name, floorPrice,
-        "allOwners": owners[]->,
-        description,
-        showUnlisted,
-        }`
-      await sanityClient.fetch(query2).then((data) => {
-        setCollectionData(data[0])
-        if (data[0].chainId == '4') {
-          setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-        } else if (data[0].chainId == '80001') {
-          setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
-        }
-      })
+      setMetadataFromSanity(result[0])
+      setCollectionData(result[0].collection)
+
+      setRpcUrl(rpcChains[result[0]?.collection?.chainId])
+        // console.log(chainName[result[0]?.collection.chainId])
+      
     })()
-  }, [collectionid])
+  }, [tokenid])
 
   const { data: nftData, status: nftStatus } = useQuery(
-    ['allnftss', collectionid],
+    ['allnftss', metaDataFromSanity?.collection?.contractAddress],
     getAllNFTs(rpcUrl),
     {
-      enabled: Boolean(collectionid) && Boolean(rpcUrl),
+      enabled: Boolean(metaDataFromSanity?.collection?.contractAddress) && Boolean(rpcUrl),
       onError: () => {
         toast.error(
           'Error fetching NFts. Refresh and try again.',
@@ -187,9 +192,11 @@ const Nft = () => {
         )
       },
       onSuccess: (res) => {
+
         const selectedNftItem = res.find(
-          (nft) => nft.metadata.id.toString() == router.query.nftid.toString()
+          (nft) => nft.metadata.properties.tokenid == router.query.nftid
         )
+        console.log(selectedNftItem)
         setSelectedNft(selectedNftItem)
 
         if (activeListings) {
@@ -197,7 +204,7 @@ const Nft = () => {
             (marketNft) =>
               JSON.stringify(marketNft.asset?.id) ==
                 JSON.stringify(selectedNftItem?.metadata.id) &&
-              marketNft.assetContractAddress == collectionid
+              marketNft.assetContractAddress == metaDataFromSanity?.collection?.contractAddress
           )
           setListingData(listingItem)
 
@@ -209,11 +216,10 @@ const Nft = () => {
     }
   )
 
+
   useEffect(() => {
-    if (!address) {
-      setIsLiked(false)
-      return
-    }
+    setIsLiked(false)
+    if (!address) return
     //check if current user has liked this NFT or not and set isLiked state accordingly
     if (metaDataFromSanity?.likedBy?.length > 0) {
       const amILiker = metaDataFromSanity.likedBy.find(
@@ -223,12 +229,10 @@ const Nft = () => {
         setIsLiked(true)
       }
     } else {
-      setIsLiked(0)
+      setIsLiked(false)
     }
   }, [metaDataFromSanity, address])
-// console.log(listingData)
-  // console.log(new Date(listingData.secondsUntilEnd.toNumber() * 1000))
-  // console.log(new Date(listingData.startTimeInSeconds.toNumber() * 1000))
+
   
 
   return (
@@ -291,20 +295,7 @@ const Nft = () => {
                 className="absolute right-3 top-3 flex h-10 items-center justify-center rounded-full bg-black/50 px-3.5 text-white "
                 onClick={addRemoveLike}
               >
-                <svg
-                  className="h-5 w-5 hover:animate-ping"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z"
-                    stroke="currentColor"
-                    fill={isLiked ? '#ef4444' : ''}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </svg>
+                <IconHeart color={isLiked ? '#ef4444' : ''} />
                 {metaDataFromSanity?.likedBy?.length > 0 ? (
                   <span className="ml-2 text-sm">
                     {millify(metaDataFromSanity?.likedBy?.length)}
@@ -434,20 +425,21 @@ const Nft = () => {
                         <div className="flex flex-row justify-between">
                           <span>Contract Address</span>
                           <span className="line-clamp-1 text-base">
-                            {collectionid?.slice(0, 7)}...
-                            {collectionid?.slice(-5)}
+                            {metaDataFromSanity?.collection?.contractAddress?.slice(0, 7)}...
+                            {metaDataFromSanity?.collection?.contractAddress?.slice(-5)}
                           </span>
                         </div>
                         <div className="flex flex-row justify-between py-4">
                           <span>Token ID</span>
                           <span className="line-clamp-1 text-base">
-                            {selectedNft?.metadata?.id.toString()}
+                            {selectedNft?.metadata?.properties.tokenid}
                           </span>
                         </div>
                         <div className="flex flex-row justify-between">
                           <span>Blockchain</span>
                           <span className="line-clamp-1 text-base">
-                            Polygon
+                            {chainIcon[metaDataFromSanity?.collection?.chainId]}
+                            {chainName[metaDataFromSanity?.collection?.chainId]}
                           </span>
                         </div>
                       </div>
@@ -469,7 +461,7 @@ const Nft = () => {
                       <div className="flex items-center gap-1 font-bold">
                         <HiOutlineQuestionMarkCircle fontSize={18} />
                         <span className="text-lg">
-                          About {collectionData.name}
+                          About { metaDataFromSanity?.collection?.name }
                         </span>
                       </div>
                       <BiChevronUp
@@ -479,7 +471,7 @@ const Nft = () => {
                       />
                     </Disclosure.Button>
                     <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                      {collectionData.description}
+                      { metaDataFromSanity?.collection?.description }
                     </Disclosure.Panel>
                   </>
                 )}
@@ -490,33 +482,39 @@ const Nft = () => {
             <GeneralDetails
               selectedNft={selectedNft}
               listingData={listingData}
-              collectionAddress={collectionid}
-              nftCollection={collectionData}
-            />
-            
-            {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
-              <AuctionTimer
-                selectedNft={selectedNft}
-                listingData={listingData}
-                auctionItem={isAuctionItem}
+              metaDataFromSanity={ metaDataFromSanity }
               />
-            )}
+            
+            {/* {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
+              <AuctionTimer
+              selectedNft={selectedNft}
+              listingData={listingData}
+              auctionItem={isAuctionItem}
+              />
+              )} */}
 
             <Purchase
               selectedNft={selectedNft}
               listingData={listingData}
-              nftCollection={collectionData}
+              nftCollection={metaDataFromSanity?.collection}
               auctionItem={isAuctionItem}
-            />
+              />
+            <ItemOffers
+              selectedNft={selectedNft}
+              listingData={listingData}
+              metaDataFromSanity={metaDataFromSanity}
+              />
 
             <ItemActivity
-              collectionAddress={collectionid}
+              collectionAddress={metaDataFromSanity?.collection?.contractAddress}
               selectedNft={selectedNft}
-            />
+              metaDataFromSanity={ metaDataFromSanity }
+              />
             {address && (
               <ReportActivity
-                collectionAddress={collectionid}
+                collectionAddress={metaDataFromSanity?.collection?.contractAddress}
                 selectedNft={selectedNft}
+                metaDataFromSanity={ metaDataFromSanity }
               />
             )}
           </div>

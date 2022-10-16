@@ -30,20 +30,19 @@ export const deleteNotifications = async (address) => {
 
 export const sendNotificationFrom = async ({
   address,
-  contractAddress,
   type,
+  itemID,
   followers,
   eventTitle,
   description,
-  itemID
 }) => {
-
+console.log(followers)
   let link = ''
   let event = ''
 
   if (type == 'TYPE_ONE') {
     //this is create NFT Collection
-    link = `/collections/${contractAddress}`
+    link = `/collections/${itemID}`
     event = 'Uploaded an NFT Collection'
   }
   else if(type == 'TYPE_TWO'){}
@@ -52,48 +51,54 @@ export const sendNotificationFrom = async ({
   else if(type == 'TYPE_FIVE'){}
   else if(type == 'TYPE_SIX'){
     //this is Report NFT 
-    link = `/nfts/${itemID}?c=${contractAddress}`
+    link = `/nfts/${itemID}`
     event = 'Your NFT was reported...'
   }
   else if(type == 'TYPE_SEVEN'){
     //this is Report Collection
-    link = `collections/${contractAddress}`
+    link = `collections/${itemID}`
     event = 'Your Collection was reported as...'
   }
   
-  const to = [...followers]
-  to.map(async (follower) => {
-    const doc = {
-      _type: 'notifications',
-      link,
-      from: {
-        _type: 'reference',
-        _ref: address,
-      },
-      to: {
-        _type: 'reference',
-        _ref: follower._ref,
-      },
-      event,
-      type,
-      contractAddress,
-      itemid: itemID.toString(),
-      eventTitle: eventTitle ? eventTitle : '',
-      description: description ? description: ''
-    }
-    await config.create(doc)
-  })
+
+  if(followers != null){
+    const to = [...followers]
+    to?.map(async (follower) => {
+      const doc = {
+        _type: 'notifications',
+        item: { 
+          _ref: itemID, 
+          _type: 'reference'
+        },
+        from: {
+          _type: 'reference',
+          _ref: address,
+        },
+        to: {
+          _type: 'reference',
+          _ref: follower._ref,
+        },
+        event,
+        type,
+        eventTitle: eventTitle ? eventTitle : '',
+        description: description ? description: ''
+      }
+      await config.create(doc)
+    })
+  } else{
+    console.log('0 Followers. Notification not sent.')
+  }
   
 }
 
 export const changeNFTOwner = async ({ address }) => {}
 export const saveTransaction = async ({
   transaction,
-  collectionAddress,
   id,
   eventName,
   price,
   chainid,
+  itemid,
 }) => {
   const receipt = transaction.receipt
   const doc = {
@@ -102,7 +107,7 @@ export const saveTransaction = async ({
     transactionHash: receipt.transactionHash,
     from: receipt.from,
     to: receipt.to,
-    contractAddress: collectionAddress,
+    nftItem: { _ref: itemid, _type: 'reference' },
     tokenid: id,
     event: eventName,
     price: price,
@@ -118,11 +123,11 @@ export const changeShowUnlisted = async ({ collectionid, showUnlisted }) => {
     .commit()
 }
 export const addVolumeTraded = async ({
-  address,
+  id,
   volume,
 }) => {
   return await config
-    .patch(address)
+    .patch(id)
     .inc({ volumeTraded: volume })
     .commit()
 }

@@ -29,22 +29,21 @@ const style = {
     button: 'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-4 ml-0 font-bold max-w-[12rem] ease-linear transition duration-500',
 }
 
-const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selectedNft}) => {
+const Report = ({showModal, setShowModal, dark, itemType, selectedNft, metaDataFromSanity}) => {
     const address = useAddress()
     const [selected, setSelected] = useState(reportType[0])
     const [otherDescription, setOtherDescription] = useState()
-    const itemID = selectedNft.metadata.id.toNumber()
+    const itemID = metaDataFromSanity?._id
 
     const { mutate: sendNotification } = useMutation(
-        async ({ address, contractAddress, type, eventTitle, description }) =>
+        async ({ address, type, itemID, eventTitle, description }) =>
           sendNotificationFrom({
             address,
-            contractAddress,
             type,
             itemID,
             followers: [{_ref: selectedNft?.owner}],
             eventTitle,
-            description
+            description,
           })
       )
     
@@ -59,22 +58,21 @@ const Report = ({showModal, setShowModal, dark, itemType, contractAddress, selec
                             ${prefix} ${itemType} has been reported. 
                             <br/><br/>Report Type: ${selected.name} <br/> 
                             Reported by: ${address} <br/>
-                            Item Contract Address: ${contractAddress} <br/>
+                            NFT Collection: ${metaDataFromSanity?.collection?.name} <br/>
                             Item Id: ${itemID} <br/>
                             Description: ${otherDescription} <br/><br/>
-                            Link to the Item: <a href="https://nuvanft.io/nfts/${itemID}?c=${contractAddress}" target="_blank">Click here</a>
+                            Link to the Item: <a href="https://nuvanft.io/nfts/${itemID}" target="_blank">Click here</a>
                         </html>`,
           })
 
           //send notification to the owner
           sendNotification({
             address,
-            contractAddress: contractAddress,
-            itemID: itemID,
             type: 'TYPE_SIX',
+            itemID: itemID,
+            address : address,
             eventTitle: selected.name,
             description: otherDescription,
-            from : address
           })
           toast.success('This item has been reported.',successToastStyle)
         setShowModal(false)

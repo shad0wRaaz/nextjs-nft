@@ -38,18 +38,20 @@ const RelatedNFTs = ({collection}) => {
           randomItems.push(filtered[idx])
           filtered.splice(idx,1) //remove selected item from the array so it wont be selected again
         }
+
+        //removing undefined elements from the array
+        const noUndefined = randomItems.filter((item) => item != undefined)
         
-        if(randomItems.length > 0) {
-          setRelatedItems(randomItems)
+        if(noUndefined.length > 0) {
+          setRelatedItems(noUndefined)
         }
       }
     }
 
-
   return (
     <div className={style.container}>
       <div className={style.nftContainer.concat(dark ? ' bg-slate-800': ' bg-slate-100')}>
-        <h2 className={style.headTitle}>More NFTs from {collection.name}</h2>
+        <h2 className={style.headTitle}>More NFTs from {collection?.name}</h2>
         <div className={style.divider.concat(dark ? ' bg-slate-700/40' : ' bg-slate-300')}></div>
         <div className={style.nftWrapper}>
           {!relatedItems || relatedItems.length == 0 && ('No NFTs available')}

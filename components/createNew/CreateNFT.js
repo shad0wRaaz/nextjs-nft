@@ -82,6 +82,11 @@ function reducer(state, action) {
         ...state,
         properties: { ...state.properties, category: action.payload.category },
       }
+    case 'ADD_TOKENID':
+      return {
+        ...state,
+        properties: { ...state.properties, tokenid: action.payload.tokenid }
+      }
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
@@ -97,6 +102,7 @@ function reducer(state, action) {
           ],
           category: '',
           itemtype: 'image',
+          tokenid: '',
         },
       }
     default:
@@ -104,7 +110,8 @@ function reducer(state, action) {
   }
 }
 
-const CreateNFT = () => {
+const CreateNFT = ({uuid}) => {
+  
   const [state, dispatch] = useReducer(reducer, {
     name: '',
     description: '',
@@ -119,19 +126,26 @@ const CreateNFT = () => {
       ],
       category: '',
       itemtype: 'image',
+      tokenid: '',
     },
   })
 
-  // useEffect(() => {
-  //   console.log(state);
-  // }, [state])
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()
   const [fileType, setFileType] = useState()
-  // const [fileType, setFileType] = useState('image')
   const connectWithMetamask = useMetamask()
-  const { myCollections, setMyCollections } = useUserContext()
+  const { myCollections } = useUserContext()
+  const [thisChainCollection, setThisChainCollection] = useState([])
+  
+  useEffect(() => {
+    //get only collection from this currently connected chain to show in Collection Selection Area
+    if(!myCollections) return
+    if(!chainid) return
+    let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
+    setThisChainCollection(tempCollection)
+  }, [myCollections, chainid])
+
   const [
     {
       data: { chain, chains },
@@ -185,6 +199,15 @@ const CreateNFT = () => {
     fetchSanityCollectionData()
   }, [address])
 
+
+  useEffect(() => {
+    if(!uuid) return
+    dispatch({
+      type: 'ADD_TOKENID',
+      payload: { tokenid: uuid}
+    })
+  }, [uuid])
+
   useEffect(() => {
     const sdk = new ThirdwebSDK(signer)
     setNftCollection(sdk.getNFTCollection(selectedCollection.contractAddress))
@@ -209,8 +232,6 @@ const CreateNFT = () => {
       !urlPatternValidation(state.properties.external_link) &&
       state.properties.external_link !== ''
     ) {
-      console.log(state.properties.external_link)
-      console.log(urlPatternValidation(state.properties.external_link))
       toastHandler.error('External link is not valid.', errorToastStyle)
       return
     }
@@ -227,95 +248,97 @@ const CreateNFT = () => {
         'Error in minting. Cannot find NFT Collection',
         errorToastStyle
       )
+      return
     }
     if(fileType != "image") {
       toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
       return
     }
-    else {
-      ;(async (sanityClient = config) => {
-        try {
-          setIsMinting(true)
+    
+    ;(async (sanityClient = config) => {
+      try {
+        setIsMinting(true)        
 
-          const tx = await nftCollection.mintTo(address, state)
 
-          const receipt = tx.receipt
-          const tokenId = tx.id
+        const tx = await nftCollection.mintTo(address, state)
 
-          // console.log(tx)
-          // console.log(receipt)
-          // console.log(tokenId)
+        const receipt = tx.receipt
 
-          setIsMinting(false)
-
-          toastHandler.success('NFT minted successfully', successToastStyle)
-          dispatch({ type: 'CLEAR_OUT_ALL' })
-
-          //save NFT data into Sanity
-          const nftItem = {
-            _type: 'nftItem',
-            _id: selectedCollection.contractAddress.concat(tx.id.toString()),
-            id: tx.id.toString(),
-            contractAddress: selectedCollection.contractAddress,
-            listed: false,
-            chainId: chainid,
-            createdBy: { _ref: address },
-            ownedBy: { _ref: address },
-            featured: false,
-            name: state.name,
-          }
-          await sanityClient
-            .createIfNotExists(nftItem)
-            .then()
-            .catch((err) => {
-              toastHandler.error(
-                'Error saving NFT data. Contact administrator.',
-                errorToastStyle
-              )
-            })
-
-          //save Transaction Data into Sanity
-          const transactionData = {
-            _type: 'activities',
-            _id: receipt.transactionHash,
-            transactionHash: receipt.transactionHash,
-            from: receipt.from,
-            to: receipt.to,
-            contractAddress: selectedCollection.contractAddress,
-            tokenid: tx.id.toString(),
-            event: 'Mint',
-            price: '-',
-            chainId: chainid,
-            dateStamp: new Date(),
-          }
-          await sanityClient
-            .createIfNotExists(transactionData)
-            .then()
-            .catch((err) => {
-              toastHandler.error(
-                'Error saving NFT data. Contact administrator.',
-                errorToastStyle
-              )
-            })
-
-          router.push(
-            `/nfts/${tx.id.toString()}?c=${selectedCollection.contractAddress}`
-          )
-          // router.push({
-          //   pathname: '/nfts/[tokenid]?c=[collectionAddress]',
-          //   query: {
-          //     tokenid: tx.id.toString(),
-          //     collectionAddress: selectedCollection.contractAddress,
-          //   },
-          // })
-          //${selectedCollection.contractAddress}`)
-        } catch (error) {
-          toastHandler.error(error.message, errorToastStyle)
-          console.log(error.message)
-          setIsMinting(false)
+        
+        //save NFT data into Sanity
+        const nftItem = {
+          _type: 'nftItem',
+          _id: uuid,
+          id: tx.id.toString(),
+          collection: { 
+            _ref: selectedCollection._id, 
+            _type: 'reference'
+          },
+          listed: false,
+          chainId: chainid,
+          createdBy: { 
+            _ref: address, 
+            _type: 'reference' 
+          },
+          ownedBy: { 
+            _ref: address, 
+            _type: 'reference' 
+          },
+          featured: false,
+          name: state.name,
         }
-      })()
-    }
+        
+        await sanityClient
+          .createIfNotExists(nftItem)
+          .then()
+          .catch((err) => {
+            console.error(err)
+            toastHandler.error(
+              'Error saving NFT data. Please contact administrator.',
+              errorToastStyle
+            )
+          })
+          
+
+        //save Transaction Data into Sanity
+        const transactionData = {
+          _type: 'activities',
+          _id: receipt.transactionHash,
+          nftItem: { _ref: uuid, _type: 'reference' },
+          transactionHash: receipt.transactionHash,
+          from: receipt.from,
+          to: receipt.to,
+          tokenid: tx.id.toString(),
+          event: 'Mint',
+          price: '-',
+          chainId: chainid,
+          dateStamp: new Date(),
+        }
+        
+        await sanityClient
+          .createIfNotExists(transactionData)
+          .then()
+          .catch((err) => {
+            toastHandler.error(
+              'Error saving NFT Transaction data. Please contact administrator.',
+              errorToastStyle
+            )
+          })
+        
+        setIsMinting(false)
+
+        toastHandler.success('NFT minted successfully', successToastStyle)
+        dispatch({ type: 'CLEAR_OUT_ALL' })
+        
+        router.push(
+          `/nfts/${uuid}`
+        )
+      } catch (error) {
+        toastHandler.error(error.message, errorToastStyle)
+        console.log(error.message)
+        setIsMinting(false)
+      }
+    })()
   }
 
   //handling input change
@@ -389,7 +412,6 @@ const CreateNFT = () => {
     let start = base64.indexOf(':') + 1
     let end = base64.indexOf('/') - start
     const currentFileType = base64.substr(start,end)
-    console.log(currentFileType)
 
     if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
       toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
@@ -398,7 +420,7 @@ const CreateNFT = () => {
     }
     setFileType(currentFileType)
   }
-    
+  
   return (
     <div className={style.wrapper}>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -467,17 +489,16 @@ const CreateNFT = () => {
                     type: 'CHANGE_DESCRIPTION',
                     payload: { description: e.target.value },
                   })
-                  console.log(e.target.value)
                 }}
               ></textarea>
 
               <p className={style.label}>Collection*</p>
               <p className={style.smallText}>
-                Select your collection where this NFT will be minted.
+                Select your collection where this NFT will be minted. Only Collections from currently connected chain are shown.
               </p>
               <div className="ml-[2rem] flex w-full px-4 py-4">
                 <div className="mx-auto w-full">
-                  {myCollections?.length > 0 ? (
+                  {thisChainCollection?.length > 0 ? (
                     <RadioGroup
                       value={selectedCollection}
                       onChange={(e) => {
@@ -489,7 +510,7 @@ const CreateNFT = () => {
                         Server size
                       </RadioGroup.Label>
                       <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2">
-                        {myCollections?.map((collection) => (
+                        {thisChainCollection?.map((collection) => (
                           <RadioGroup.Option
                             key={collection.name}
                             value={collection}
@@ -563,7 +584,7 @@ const CreateNFT = () => {
                   ) : (
                     <div className="flex items-center justify-center gap-2 rounded-xl bg-[#ef4444] p-4 text-center text-white">
                       <BiError className="text-white" fontSize={20} />
-                      Collection not found. Create an NFT Collection first.
+                      Collection not found in this chain. Create an NFT Collection first.
                     </div>
                   )}
                 </div>

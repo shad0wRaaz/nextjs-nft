@@ -21,6 +21,9 @@ import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useQueryClient } from 'react-query'
 import axios from 'axios'
 import { IconLoading } from '../icons/CustomIcons'
+import { v4 as uuidv4 } from 'uuid'
+
+const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
 const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
@@ -104,7 +107,7 @@ const CreateNFTCollection = () => {
         toast.error(error.message, errorToastStyle)
       },
       onSuccess: async (res, form, toastHandler = toast) => {
-        const itemID = res.concat(chain.toString())
+        const itemID = uuidv4();
 
         const collectionDoc = {
           _type: 'nftCollection',
@@ -125,7 +128,7 @@ const CreateNFTCollection = () => {
           category: selectedCategory,
         }
         
-        const result = await config
+        await config
           .createIfNotExists(collectionDoc)
           .then(async () => {
             try {
@@ -136,7 +139,7 @@ const CreateNFTCollection = () => {
                 formdata.append('userAddress', itemID)
 
                 await axios.post(
-                  'http://localhost:8080/api/saveS3Image',
+                  `${HOST}/api/saveS3Image`,
                   formdata,
                   {
                     headers: {
@@ -152,7 +155,7 @@ const CreateNFTCollection = () => {
                 bannerData.append('userAddress', itemID)
 
                 await axios.post(
-                  'http://localhost:8080/api/saveS3Banner',
+                  `${HOST}/api/saveS3Banner`,
                   bannerData,
                   {
                     headers: {
@@ -180,6 +183,7 @@ const CreateNFTCollection = () => {
             sendNotification({
               address: myUser.walletAddress,
               contractAddress: res,
+              id: itemID,
               type: 'TYPE_ONE',
             })
 
@@ -188,7 +192,7 @@ const CreateNFTCollection = () => {
               successToastStyle
             )
           })
-        router.push('/collections/myCollection')
+        router.push(`/collections/${itemID}`)
       },
     }
   )
@@ -244,7 +248,6 @@ const CreateNFTCollection = () => {
       toastHandler.error('Error in deploying NFT collection', errorToastStyle)
       return
     } else {
-      console.log('Starting to deploy NFT Collection')
 
       // setIsDeploying(true)
       mutate(form)
@@ -513,28 +516,30 @@ const CreateNFTCollection = () => {
 
               <p className={style.subHeading}>Network/Chain Setting</p>
               <p className={style.smallText} style={{ marginBottom: '1rem' }}>
-                Select which chain this collection should be deployed on.
+                The NFT Collection will be deployed on following network/chain.
               </p>
+              
+              <div className="flex justify-between">
+                {/* <p className={style.label}>Network/Chain : {network[0].data.chain.name}</p> */}
+                <input
+                  type="text"
+                  className={style.input + ' grow'}
+                  name="itemBlockchain"
+                  disabled
+                  value={ network[0].data.chain.name}
+                ></input>
+              </div>
 
-              <p className={style.label}>Network/Chain</p>
-              <input
-                type="text"
-                className={style.input}
-                name="itemBlockchain"
-                disabled
-                value={network[0].data.chain.name}
-              ></input>
-
-              <div className="flex">
+              <div className="flex mt-4">
                 {isLoading ? (
                   <button
                     type="button"
-                    className={style.button}
+                    className={style.button + ' flex gap-2'}
                     style={{ pointerEvents: 'none', opacity: '0.8' }}
                     disabled
                   >
                     <IconLoading dark="inbutton" />
-                    Deploying...
+                   Deploying...
                   </button>
                 ) : (
                   <input

@@ -1,4 +1,7 @@
 import { config } from '../lib/sanityClient'
+import axios from 'axios'
+
+const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' :'http://localhost:8080'
 
 export const getUser = async (address) => {
   const query = `*[_type == "users" && walletAddress == "${address}"] {
@@ -21,7 +24,7 @@ export const getUserContinuously =
 
 export const getReportActivities = (itemid) => async({queryKey}) => {
   const[_, collectionAddress] = queryKey
-  const query = `*[_type == "notifications" && contractAddress == "${collectionAddress}" && itemid == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`
+  const query = `*[_type == "notifications" && item._ref == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`
   const res = await config.fetch(query)
   return res
 }
@@ -40,6 +43,7 @@ export const getNFTCollectionsByCategory =
   async ({ queryKey }) => {
     const [_, categoryName] = queryKey
     const query = `*[_type == "nftCollection" && category == "${categoryName}"] {
+        _id,
         name, 
         category, 
         contractAddress,
@@ -62,6 +66,7 @@ export const getMyCollections =
   async ({ queryKey }) => {
     const [_, address] = queryKey
     const query = `*[_type == "nftCollection" && createdBy->walletAddress == "${address}" ] {
+        _id,
         profileImage,
         bannerImage,
         volumeTraded,
@@ -70,36 +75,24 @@ export const getMyCollections =
         contractAddress,
         "creator": createdBy->userName,
         "creatorAddress" : createdBy->walletAddress,
-        name, floorPrice
+        name, 
+        floorPrice,
       }`
     const res = await config.fetch(query)
     return res
   }
 
 export const getTopTradedNFTCollections = () => async () => {
-  const query = `*[_type == "nftCollection"][0...12] | order(volumeTraded desc) {
-        name, 
-        category, 
-        contractAddress,
-        profileImage,
-        bannerImage,
-        description,
-        chainId,
-        floorPrice,
-        volumeTraded,
-        "creator": createdBy->userName,
-        "creatorAddress" : createdBy->walletAddress,
-        "allOwners" : owners[]->
-    }`
-  const res = await config.fetch(query)
-  return res
+  const collections = await axios.get(`${HOST}/api/topTradedCollections`)
+    return JSON.parse(collections.data)
 }
 
 export const getNFTCollection =
   () =>
   async ({ queryKey }) => {
     const [_, collectionid] = queryKey
-    const query = `*[_type == "nftCollection" && contractAddress == "${collectionid}" ] {
+    const query = `*[_type == "nftCollection" && _id == "${collectionid}" ] {
+        _id,
         profileImage,
         bannerImage,
         volumeTraded,
@@ -121,7 +114,8 @@ export const getActivities =
   (tokenid) =>
   async ({ queryKey }) => {
     const [_, collectionAddress] = queryKey
-    const query = `*[_type == "activities" && contractAddress == "${collectionAddress}" && tokenid == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
+    // const query = `*[_type == "activities" && contractAddress == "${collectionAddress}" && tokenid == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
+    const query = `*[_type == "activities" && nftItem._ref == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
     const res = await config.fetch(query)
     return res
   }

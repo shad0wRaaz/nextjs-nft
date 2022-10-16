@@ -3,7 +3,8 @@ import { Fragment } from 'react'
 import { HiChevronDown } from 'react-icons/hi'
 import maticLogo from '../../assets/matic.png'
 
-export default function CoinSelection() {
+export default function CoinSelection({chainid}) {
+  
   return (
     <div className="">
       <Menu as="div" className="relative inline-block text-left">

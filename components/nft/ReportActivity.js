@@ -24,20 +24,20 @@ const errorToastStyle = {
     iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
 }
 
-const ReportActivity = ({ collectionAddress, selectedNft }) => {
+const ReportActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
     const [toggle, setToggle] = useState(true)
     const { dark } = useThemeContext()
     const { data:reportActivities, status } = useQuery(
-        ['reportactivities', collectionAddress],
-        getReportActivities(selectedNft?.metadata.id.toString()),
+        ['reportactivities', metaDataFromSanity?._id],
+        getReportActivities(metaDataFromSanity?._id),
         {
-            enabled: Boolean(selectedNft?.metadata.id),
+            enabled: Boolean(metaDataFromSanity?._id),
             onError: (error) => {
                 console.log(error)
                 toast.error('Error fetching report activities', errorToastStyle)
             },
             onSuccess: (res) => {
-              console.log(res)
+              //  console.log(res)
             }            
         }
     )
@@ -78,10 +78,10 @@ const ReportActivity = ({ collectionAddress, selectedNft }) => {
         <div className={style.reportWrapper}>
             {status == "success" && reportActivities.length == 0 && (<div className="text-center">No Reported Activities</div>)}
             {status == "success" && reportActivities.length > 0 && reportActivities?.map((report, index) => (
-                <div className={`flex flex-row gap-3 py-2 border border-t-0 border-l-0 border-r-0 ${dark ? 'border-b-sky-700/30' : 'border-b-neutral-200'}`}>
+                <div className={`flex flex-row gap-3 py-2 border border-t-0 border-l-0 border-r-0 ${dark ? 'border-b-sky-700/30' : 'border-b-neutral-200'}`} key={index}>
                     <div className="text-sm py-1">{index + 1}.</div>
                     <div className="flex-grow">
-                        <div class="flex justify-between">
+                        <div className="flex justify-between">
                             <p className="rounded-lg py-1 text-sm px-3 w-fit bg-red-100 border-red-200 text-red-500">{report.eventTitle}</p>
                             <p className="py-1 px-3 text-sm text-neutral-400"><RiTimerLine className="inline-block" /> <span className="inline-block">{moment(report._createdAt).fromNow()}</span></p>
                         </div>

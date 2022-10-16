@@ -7,23 +7,45 @@ import Countdown from 'react-countdown'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
 import { MdAudiotrack } from 'react-icons/md'
+import { useAddress } from '@thirdweb-dev/react'
 
 const NFTItem = ({ nftItem }) => {
-  const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
+  const [isLiked, setIsLiked] = useState(false)
+  const address = useAddress()
+  const [nftData, settNftData] = useState()
 
   useEffect(() => {
-    //getting NFT likes from Sanity
+    
+    //getting NFT likes and ID of NFT from Sanity
     ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && contractAddress == "${
-        nftItem.assetContractAddress
-      }" && id == "${BigNumber.from(nftItem.asset.id).toNumber()}"] {
+      const query = `*[_type == "nftItem" && _id == "${nftItem.asset.properties?.tokenid}"] {
+        _id,
         likedBy
       }`
       const res = await sanityClient.fetch(query)
-      setLikers(res[0])
+      settNftData(res[0])
+      
     })()
   }, [nftItem])
+
+  useEffect(() => {
+    setIsLiked(false)
+    if(!nftData || !address) return
+
+    if(nftData.likedBy != null){
+      const likersArray = nftData.likedBy
+
+      const amILiker = likersArray.find(
+        (user) => user._ref == address
+      )
+      if (amILiker) {
+        setIsLiked(true)
+      }
+    } else {
+      setIsLiked(false)
+    }
+  }, [address])
 
   return (
     <div
@@ -32,9 +54,7 @@ const NFTItem = ({ nftItem }) => {
       } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl`}
     >
       <Link
-        href={`/nfts/${BigNumber.from(nftItem.asset.id).toNumber()}?c=${
-          nftItem.assetContractAddress
-        }`}
+      href={`/nfts/${nftItem.asset.properties?.tokenid}`}
       >
         <div className="relative flex-shrink-0 cursor-pointer">
           <div className="aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
@@ -52,9 +72,9 @@ const NFTItem = ({ nftItem }) => {
 
           <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
             <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
-              <IconHeart />
+            <IconHeart color={isLiked ? '#ef4444' : ''} />
               <span className="ml-2 text-sm">
-                {likers?.likedBy?.length ? likers.likedBy.length : '0'}
+                {nftData?.likedBy?.length ? nftData.likedBy.length : '0'}
               </span>
             </button>
 

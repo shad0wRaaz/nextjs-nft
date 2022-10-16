@@ -79,7 +79,6 @@ const successToastStyle = {
 
 const Header = ({listedItems}) => {
   
-  
   const {
     setMarketplaceAddress,
     marketplaceAddress,
@@ -98,6 +97,7 @@ const Header = ({listedItems}) => {
   const disconnectWallet = useDisconnect()
   const router = useRouter()
   const activeChainId = useChainId()
+  // console.log(rpcUrl)
 
   const [
     {
@@ -162,11 +162,7 @@ const Header = ({listedItems}) => {
       }
     }
    ) 
-    useEffect(() => {
-      if(!listedItems) return
-        // setActiveListings(JSON.parse(listedItems))
-        console.log('i am here')
-    }, [listedItems])
+
 
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', marketplaceAddress],
@@ -183,18 +179,6 @@ const Header = ({listedItems}) => {
       },
       onSuccess: (res) => {
         setActiveListings(res)
-        
-        //save in local storage too
-        // console.log(res)
-        try {
-          // localStorage.setItem('activeListings', JSON.stringify(res))
-        } catch (error) {
-          console.log(error)
-          // localStorage.setItem('activeListings', false)
-        }
-        //disable market refetching
-        // setAllowMarketRefetch(false)
-        // console.log(res)
       },
     }
   )
@@ -230,47 +214,31 @@ const Header = ({listedItems}) => {
     }
   }, [address])
 
-  // useEffect(() => {
-  //   console.log(myProfileImage)
-  // }, [myProfileImage])
-
-  useEffect(() => {
-    if (activeChainId) {
-      if (chain.id == '80001') {
-        setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
-        // setMarketplaceAddress('0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D----')
-        // setMarketplaceAddress('0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
-        setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-      } else if (chain.id == '4') {
-        setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-        setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-      }
-      // console.log('connected')
-    } else {
-      // console.log('not connected')
-      if (selectedChain in ['Polygon', 'Mumbai']) {
-        setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
-        // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-        setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-      } else if (selectedChain in ['Ethereum', 'Rinkeby']) {
-        setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-        setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-      }
-    }
-  }, [activeChainId])
 
   // useEffect(() => {
-  //   try {
-  //     // const localMarketData = JSON.parse(localStorage.getItem('activeListings'))
-  //     if (!activeListings) {
-  //       setAllowMarketRefetch(true)
-  //     } else {
-  //       setAllowMarketRefetch(false)
+  //   if (activeChainId) {
+  //     if (chain.id == '80001') {
+  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
+  //       // setMarketplaceAddress('0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D----')
+  //       // setMarketplaceAddress('0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
+  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //     } else if (chain.id == '4') {
+  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
+  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
   //     }
-  //   } catch (error) {
-  //     console.log(error)
+  //     // console.log('connected')
+  //   } else {
+  //     // console.log('not connected')
+  //     if (selectedChain in ['Polygon', 'Mumbai']) {
+  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
+  //       // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //     } else if (selectedChain in ['Ethereum', 'Rinkeby']) {
+  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
+  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  //     }
   //   }
-  // }, [marketplaceAddress])
+  // }, [activeChainId])
 
   const handleDisconnect = () => {
     setIsLogged(false)
@@ -290,9 +258,9 @@ const Header = ({listedItems}) => {
       <Link href="/">
         <div className={style.logoContainer} style={{ marginLeft: 0 }}>
           <img src={nuvanftLogo.src} height={55} width={90} />
-          <div className={style.logoText}>
+          {/* <div className={style.logoText}>
             <p className={dark ? 'text-neutral-100' : ''}>NUVA NFT</p>
-          </div>
+          </div> */}
         </div>
       </Link>
       
@@ -428,7 +396,7 @@ const Header = ({listedItems}) => {
                               className="mr-2"
                               fontSize="20px"
                             />{' '}
-                            My Collections
+                            My NFTs/Collections
                           </a>
                         </div>
                       )}
@@ -653,7 +621,7 @@ const Header = ({listedItems}) => {
         {address && isLogged && (
           <>
             <Link href="/collections/myCollection">
-              <div className={style.headerItem}>My Collections</div>
+              <div className={style.headerItem}>My NFTs/Collections</div>
             </Link>
             <Link href="/contracts">
               <div className={style.headerItem}>Create</div>

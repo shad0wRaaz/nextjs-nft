@@ -24,14 +24,14 @@ const PopularVideoNFTs = () => {
                 perView: 3,
                 spacing: 30,
             },
-            breakpoints : {
-                '(max-width: 767px)': {
-                    slides: {
-                        perView: 1,
-                        spacing: 15,
-                    }
-                }
-            },
+            // breakpoints : {
+            //     '(max-width: 767px)': {
+            //         slides: {
+            //             perView: 1,
+            //             spacing: 15,
+            //         }
+            //     }
+            // },
             initial: 0,
             slideChanged(slider) {
                 setCurrentSlide(slider.track.details.rel)
@@ -44,12 +44,12 @@ const PopularVideoNFTs = () => {
 
     useEffect(() => {
         if(!activeListings) return
-        const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video")
+        const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video" && item.asset.properties?.tokenid != null)
         setTopVideoItems(videoItems)
     }, [activeListings])
 
   return (
-    <div className="container mx-auto lg:p-[8rem] p-[2rem] mt-0 lg:pt-0">
+    <div className="container mx-auto lg:p-[8rem] p-[2rem] mt-0">
         <div className="relative">
             <div className="relative flex flex-col sm:flex-row sm:items-end justify-between md:mb-8 gap-4">
                 <div className="max-w-2xl">

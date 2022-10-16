@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
@@ -27,6 +28,7 @@ import { RiCloseFill } from 'react-icons/ri'
 import EditCollection from '../../components/EditCollection'
 import { TbEdit } from 'react-icons/tb'
 import { CgWebsite } from 'react-icons/cg'
+import millify from 'millify'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -85,11 +87,7 @@ const Collection = () => {
   const [newCollectionData, setNewCollectionData] = useState()
   const [creatorProfileImage, setCreatorProfileImage] = useState()
   const qc = useQueryClient()
-  // const [state, dispatch] = useReducer(reducer, {
-  //   collection: {},
-  //   nfts: [],
-  //   listings: [],
-  // })
+  const bannerRef = useRef()
 
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['collection', collectionid],
@@ -104,35 +102,41 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        console.log(res)
-        setNewCollectionData(res[0])
-        setShowUnlisted(res[0]?.showUnlisted)
-        ;(async () => {
-          setCreatorProfileImage(await getUnsignedImagePath(res[0].creator.profileImage))
-          setProfileImageUrl(await getUnsignedImagePath(res[0].profileImage))
-          setBannerImageUrl(await getUnsignedImagePath(res[0].bannerImage))
-        })()
-
-        if (res[0].chainId == '80001') {
-          setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
+        if(res){
+          setNewCollectionData(res[0])
+          setShowUnlisted(res[0]?.showUnlisted)
+          ;(async () => {
+            setCreatorProfileImage(await getUnsignedImagePath(res[0]?.creator.profileImage))
+            setProfileImageUrl(await getUnsignedImagePath(res[0]?.profileImage))
+            setBannerImageUrl(await getUnsignedImagePath(res[0]?.bannerImage))
+          })()
+  
           setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-        } else if (res[0].chainId == '4') {
-          setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-          setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+  
+          if (res[0]?.chainId == '80001') {
+            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL)
+          } else if (res[0]?.chainId == '4') {
+            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
+          } else if (res[0]?.chainId == '5') {
+            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_GOERLI_URL)
+          } else if (res[0]?.chainId == '97') {
+            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_TBNB_URL)
+          }
         }
       },
     }
   )
 
   const { data: nftData, status: nftStatus } = useQuery(
-    ['allnftss', collectionid],
+    ['allnftss', newCollectionData?.contractAddress],
     getAllNFTs(rpcUrl),
     {
       staleTime: queryStaleTime,
-      enabled: Boolean(collectionData) && Boolean(rpcUrl),
-      onError: () => {
+      enabled: Boolean(rpcUrl) && Boolean(newCollectionData?._id),
+      onError: (error) => {
+        console.log(error)
         toast.error(
-          'Error fetching NFts. Refresh and try again.',
+          'Error fetching NFTs. Refresh and try again.',
           errorToastStyle
         )
       },
@@ -160,14 +164,17 @@ const Collection = () => {
     ['owners', collectionid],
     getAllOwners(),
     {
+      enabled: Boolean(newCollectionData?._id),
       onError: () => {
         toast.error('Error in getting owner info', errorToastStyle)
       },
       onSuccess: (res) => {
         // console.log(collectionid)
         //getting unique owners of NFT (not collection) from the all owner data result
-        const unique = [...new Set(res.map((item) => item.ownedBy._ref))]
-        setOwners(unique)
+        if(res){
+          const unique = [...new Set(res.map((item) => item.ownedBy._ref))]
+          setOwners(unique)
+        }
       },
     }
   )
@@ -206,6 +213,19 @@ const Collection = () => {
     // console.log(showUnlisted)
   }, [showUnlisted])
 
+  //parallax scrolling effect in banner
+  useEffect(() => {
+    const handleScroll = event => {
+      if(!bannerRef.current) return
+      bannerRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [])
  
 
   return (
@@ -228,13 +248,13 @@ const Collection = () => {
       {collectionStatus == 'success' && (
         <div className="w-full">
           <div className="relative h-96 w-full md:h-60 2xl:h-96">
-            <div className="nc-NcImage absolute inset-0" data-nc-id="NcImage">
+            <div className="nc-NcImage absolute inset-0" ref={bannerRef}>
               <img
                 src={
                   bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src
                 }
                 className="h-full w-full object-cover"
-                alt={collectionData[0].name}
+                alt={collectionData[0]?.name}
               />
             </div>
           </div>
@@ -242,8 +262,8 @@ const Collection = () => {
           <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
             <div
               className={`flex flex-col rounded-3xl ${
-                dark ? 'darkGray' : 'bg-white'
-              } p-8 shadow-xl md:flex-row md:rounded-[40px]`}
+                dark ? 'darkGray/30' : 'bg-white/30'
+              } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
                 <div className="w-40 sm:w-48 md:w-56 xl:w-60">
@@ -258,14 +278,14 @@ const Collection = () => {
                           : noProfileImage.src
                       }
                       className="h-full w-full object-cover"
-                      alt={collectionData[0].name}
+                      alt={collectionData[0]?.name}
                     />
                   </div>
                 </div>
 
                 <div className="mt-4 flex items-center space-x-3 sm:justify-center">
                   <div className="flex flex-col justify-center space-x-1.5">
-                    {collectionData[0].external_link && collectionData[0].external_link != '' && (
+                    {collectionData[0]?.external_link && collectionData[0]?.external_link != '' && (
                         <div className="relative inline-block text-center justify-center flex">
                           <a
                             href={
@@ -297,7 +317,8 @@ const Collection = () => {
                 <div className="flex w-full justify-between">
                   <div>
                     <h2 className="inline-block text-2xl font-semibold sm:text-3xl lg:text-4xl">
-                      {collectionData[0].name}
+                      {!newCollectionData && 'Unknown NFT Collection'}
+                      {collectionData[0]?.name}
                     </h2>
                     
                     <div className="flex lg:gap-3 flex-wrap ">
@@ -321,7 +342,7 @@ const Collection = () => {
                             },
                           })
                           }}>
-                            {collectionData[0].category}
+                            {collectionData[0]?.category}
                         </span>
 
                         <Link href={`/user/${newCollectionData?.creator?.walletAddress}`}>
@@ -339,7 +360,7 @@ const Collection = () => {
                             <span className="ml-2.5 flex cursor-pointer flex-col">
                               <span className="text-sm">Creator</span>
                               <span className="flex items-center font-medium">
-                                <span>{newCollectionData.creator.userName}</span>
+                                <span>{newCollectionData?.creator.userName}</span>
                                 <span className="ml-1">
                                   <svg
                                     className="h-4 w-4"
@@ -371,7 +392,7 @@ const Collection = () => {
 
                       <div className="py-4 md:ml-4">
                         <span className="block text-sm">
-                          {collectionData[0].description}
+                          {collectionData[0]?.description}
                         </span>
                       </div>
                     </div>
@@ -379,7 +400,7 @@ const Collection = () => {
                   </div>
 
                   {/* this option is only available if the user is creator of this collection */}
-                  {collectionData[0]?.createdBy._ref ==
+                  {newCollectionData && collectionData[0]?.createdBy._ref ==
                     myUser?.walletAddress && (
                     <div>
                       <Menu as="div" className="relative inline-block">
@@ -478,7 +499,7 @@ const Collection = () => {
                   >
                     <span className="text-sm">Floor Price</span>
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                      ${collectionData[0].floorPrice}
+                      ${collectionData[0]?.floorPrice}
                     </span>
                     <span className="mt-1 text-xs">total</span>
                   </div>
@@ -492,7 +513,7 @@ const Collection = () => {
                   >
                     <span className="text-sm">Volume</span>
                     <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
-                      ${parseFloat(collectionData[0].volumeTraded).toFixed(4)}
+                      ${millify(collectionData[0]?.volumeTraded)}
                     </span>
                     <span className="mt-1 text-xs">total</span>
                   </div>
@@ -540,11 +561,13 @@ const Collection = () => {
             }
           >
             <h2 className={style.errorTitle}>No NFT Minted yet.</h2>
-            <Link href="/contracts">
-              <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center font-bold text-white">
-                Mint NFT
-              </button>
-            </Link>
+            {collectionData[0]?.createdBy._ref == myUser?.walletAddress && (
+              <Link href="/contracts">
+                <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center font-bold text-white">
+                  Mint NFT
+                </button>
+              </Link>
+            )}
           </div>
         )}
       </div>
@@ -553,15 +576,15 @@ const Collection = () => {
         {nftStatus == 'success' &&
           nftData.length > 0 &&
           nftData.map((nftItem, id) => (
+            nftItem?.metadata?.properties?.tokenid ? (
             <NFTCard
               key={id}
               nftItem={nftItem}
-              title={collectionData[0].name}
+              title={collectionData[0]?.name}
               listings={activeListings}
-              collectionAddress={collectionid}
               showUnlisted={showUnlisted}
-              creator={collectionData[0].createdBy}
-            />
+              creator={collectionData[0]?.createdBy}
+            />) : ''
           ))}
       </div>
       <Footer />

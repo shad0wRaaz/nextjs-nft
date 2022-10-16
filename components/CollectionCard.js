@@ -5,7 +5,7 @@ import Image from 'next/image'
 import noBannerImage from '../assets/noBannerImage.png'
 import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { IconEthereum, IconPolygon } from './icons/CustomIcons'
+import { IconEthereum, IconPolygon, IconBNB } from './icons/CustomIcons'
 import { getUnsignedImagePath } from '../fetchers/s3'
 
 const style = {
@@ -19,7 +19,14 @@ const style = {
   title: 'cursor-pointer text-center text-lg font-bold relative textGradBlue',
   description: 'cursor-pointer relative px-4 text-md text-center',
 }
+const chainIcon = {
+  '97': <IconBNB width="1.0rem" height="1.0rem" />,
+  '80001': <IconPolygon width="1.0rem" height="1.0rem" />,
+  '5': <IconEthereum width="1.0rem" height="1.0rem" />,
+  '4': <IconEthereum width="1.0rem" height="1.0rem" />
+}
 const CollectionCard = ({
+  id,
   name,
   description,
   contractAddress,
@@ -35,7 +42,7 @@ const CollectionCard = ({
   const { dark } = useThemeContext()
 
   return (
-    <Link href={`/collections/${contractAddress}`}>
+    <Link href={`/collections/${id}`}>
       <div
         className={
           dark
@@ -116,9 +123,10 @@ const CollectionCard = ({
         <div className="mt-4 flex justify-between p-2 text-sm">
           <div className="">
             <p className="mb-1">Floor Price</p>
-            <p className="flex items-center justify-start gap-1">
-              {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
-              {chainId == '1' || (chainId == '4' && <IconEthereum />)}
+            <p className="flex items-center justify-start">
+              {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
+              {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
+              {chainIcon[chainId]}
               {floorPrice}
             </p>
           </div>

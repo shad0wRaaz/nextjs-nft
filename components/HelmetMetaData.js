@@ -3,8 +3,8 @@ import { Helmet } from 'react-helmet'
 import nuvanft from '../assets/nuvanft.png'
 
 const HelmetMetaData = (props) => {
-    let itemId = props.itemId !== undefined ? props.itemId : ""
-    let currentUrl = "http://nuvanft.io/nfts/" + itemId + "?c=" + props.contractAddress;
+    let tokenId = props.tokenId !== undefined ? props.tokenId : ""
+    let currentUrl = "http://nuvanft.io/nfts/" + tokenId;
     let quote = props.quote !== undefined ? props.quote : "";
     let title = props.title !== undefined ? props.title : "Nuva NFT - A Multichain NFT Marketplace";
     let image = props.image !== undefined ? props.image : nuvanft.src;

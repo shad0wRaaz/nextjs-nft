@@ -7,6 +7,7 @@ import avalancelogo from '../assets/avalance.png'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { BigNumber } from 'ethers'
+import React, { useEffect, useState } from 'react'
 
 const style = {
   wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem]',
@@ -30,9 +31,18 @@ const ExploreNFTs = () => {
   const { activeListings, selectedChain, setSelectedChain } =
     useMarketplaceContext()
 
+  const [filteredListings, setFilteredListings] = useState([])
+
+  useEffect(() => {
+    //only show latest 8 NFTs
+    if(!activeListings) return
+    setFilteredListings([...activeListings].reverse().slice(0, 8))
+  }, [activeListings])
+  // console.log(filteredListings)
+
   return (
     <div className={style.wrapper}>
-      <h2 className={style.title}>Explore NFTs</h2>
+      <h2 className={style.title}>Latest NFTs</h2>
 
       <div className="container mx-auto mb-[4rem] flex justify-center">
         <div
@@ -99,23 +109,27 @@ const ExploreNFTs = () => {
         </div>
       </div>
 
-      {activeListings?.length == 0 && (
+      {filteredListings?.length == 0 && (
         <div>
           <span>No NFTs are available.</span>
         </div>
       )}
 
-      {activeListings?.length > 0 && (
+      {filteredListings?.length > 0 && (
         <div className={style.nftwrapper}>
-          {activeListings?.map((nftItem, id) => (
-            <NFTItem key={id} nftItem={nftItem} />
+          {filteredListings?.map((nftItem, id) => (
+            <React.Fragment key={id}>
+              {nftItem.asset.properties?.tokenid && (
+                <NFTItem key={id} nftItem={nftItem} />
+              )}
+            </React.Fragment>
           ))}
         </div>
       )}
 
       <div className="mt-8 flex justify-center pt-8">
         <Link href="/browse">
-          <div className={style.button}>Browse</div>
+          <div className={style.button}>Browse NFT Collections</div>
         </Link>
       </div>
     </div>

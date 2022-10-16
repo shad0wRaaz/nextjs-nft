@@ -36,17 +36,18 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
     const { rpcUrl } = useMarketplaceContext()
     const [isLoading, setIsLoading] = useState(false)
     const [newCollectionData, setNewCollectionData] = useState(collection)
-// console.log(collection)
+    console.log(collection)
+
     const { mutate: updateMetadata } = useMutation(
         () => updateCollectionMetaData({newCollectionData, rpcUrl}),
         {
           onSuccess:  (toastHandler = toast) => {
-            const itemID = collection.contractAddress.concat(collection.chainId)
+            
             if(!newCollectionData) return
             setIsLoading(true)
             ;(async() => {
               await config
-              .patch(itemID)
+              .patch(newCollectionData._id)
               .set({
                 name: newCollectionData.name,
                 description: newCollectionData.description,
@@ -55,13 +56,17 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
               })
               .commit()
               .then(async () => {
+                
+                const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
+
                 if(profile){
                   const formdata = new FormData()
                   formdata.append('profile', profile)
-                  formdata.append('userAddress', itemID)
-            
+                  formdata.append('userAddress', newCollectionData._id)
+                  
+
                   const result = await axios.post(
-                    'http://localhost:8080/api/saveS3Image',
+                    `${HOST}/api/saveS3Image`,
                     formdata,
                     {
                       headers: {
@@ -75,10 +80,10 @@ const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
                 if(banner){
                   const bannerData = new FormData()
                   bannerData.append('banner', banner)
-                  bannerData.append('userAddress', itemID)
+                  bannerData.append('userAddress', newCollectionData._id)
             
                   const result2 = await axios.post(
-                    'http://localhost:8080/api/saveS3Banner',
+                    `${HOST}/api/saveS3Banner`,
                     bannerData,
                     {
                       headers: {

@@ -27,6 +27,7 @@ import {
   getUser,
 } from '../../fetchers/SanityFetchers'
 import { getUnsignedImagePath, getWeb3ImagePath } from '../../fetchers/s3'
+import millify from 'millify'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -65,6 +66,7 @@ const User = () => {
   
   useEffect(() => {
     if (!userData) return
+    
     if (
       userData?.followers?.filter((u) => u._ref === myUser?.walletAddress)
         .length > 0
@@ -465,8 +467,8 @@ const User = () => {
                     Volume Traded
                   </span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {collectionData?.volumeTraded
-                      ? collectionData?.volumeTraded
+                    ${userData?.volumeTraded
+                      ? millify(userData?.volumeTraded)
                       : 0}
                   </span>
                 </div>
@@ -488,6 +490,7 @@ const User = () => {
               <CollectionCard
                 key={id}
                 name={coll.name}
+                id={coll._id}
                 contractAddress={coll.contractAddress}
                 profileImage={coll.profileImage}
                 bannerImage={coll.bannerImage}

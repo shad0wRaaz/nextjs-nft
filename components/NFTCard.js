@@ -32,9 +32,7 @@ const style = {
 
 const NFTCard = ({
   nftItem,
-  title,
   listings,
-  collectionAddress,
   showUnlisted,
   creator,
 }) => {
@@ -48,9 +46,8 @@ const NFTCard = ({
     if (!listings) return
     const listing = listings.find(
       (listing) =>
-        JSON.stringify(listing.asset.id) ==
-          JSON.stringify(nftItem.metadata.id) &&
-        listing.assetContractAddress == collectionAddress
+        JSON.stringify(listing.asset.properties.tokenid) ==
+          JSON.stringify(nftItem.metadata.properties.tokenid)
     )
     // console.log(listing);
     if (Boolean(listing)) {
@@ -61,11 +58,15 @@ const NFTCard = ({
   useEffect(() => {
     //getting NFT likes from Sanity
     ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && contractAddress == "${collectionAddress}" && id == "${nftItem.metadata.id.toString()}"] {
-        likedBy, "totalLikers": count(likedBy)
-      }`
-      const res = await sanityClient.fetch(query)
-      setLikers(res[0])
+      if (nftItem?.metadata?.properties?.tokenid != null){
+        const query = `*[_type == "nftItem" && _id == "${nftItem.metadata.properties.tokenid}"] {
+          likedBy, "totalLikers": count(likedBy)
+        }`
+
+        const res = await sanityClient.fetch(query)
+
+        setLikers(res[0])
+      }
     })()
   }, [nftItem])
 
@@ -82,7 +83,7 @@ const NFTCard = ({
           } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl`}
         >
           <Link
-            href={`/nfts/${nftItem.metadata.id.toString()}?c=${collectionAddress}`}
+            href={ nftItem?.metadata?.properties?.tokenid ? `/nfts/${nftItem?.metadata?.properties?.tokenid}` : "#"}
           >
             <div className="relative flex-shrink-0 cursor-pointer">
               <div>

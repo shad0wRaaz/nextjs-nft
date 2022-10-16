@@ -19,6 +19,7 @@ import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useQueryClient } from 'react-query'
 import { NATIVE_TOKENS } from '@thirdweb-dev/sdk'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import axios from 'axios'
 
 const style = {
   canvasMenu:
@@ -45,7 +46,7 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
-const Sell = ({ selectedNft, collectionAddress }) => {
+const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
   const { dark } = useThemeContext()
   const address = useAddress()
   const queryClient = useQueryClient()
@@ -73,13 +74,6 @@ const Sell = ({ selectedNft, collectionAddress }) => {
     }
   }, [chainid])
 
-  // useEffect(() => {
-  //   console.log(currency)
-  // }, [currency])
-  //   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-  // )
-  //   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-  // )
   const [listingDuration, setListingDuration] = useState('')
   const [auctionDuration, setAuctionDuration] = useState('')
   const [startDate, setStartDate] = useState()
@@ -88,14 +82,14 @@ const Sell = ({ selectedNft, collectionAddress }) => {
   const [endAuctionDate, setAuctionEndDate] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const { mutate: mutateSaveTransaction } = useMutation(
-    ({ transaction, collectionAddress, id, eventName, price, chainid }) =>
+    ({ transaction, id, eventName, price, chainid, itemid }) =>
       saveTransaction({
         transaction,
-        collectionAddress,
         id,
         eventName,
         price,
         chainid,
+        itemid,
       }),
     {
       onError: () => {
@@ -138,45 +132,40 @@ const Sell = ({ selectedNft, collectionAddress }) => {
       toastHandler.error('Listing currency not chosen.', errorToastStyle)
       return
     }
-    // if (!listingDuration) {
-    //   toastHandler.error('Listing duration not set.', errorToastStyle)
-    //   return
-    // }
-    // if (listingDuration <= 0) {
-    //   toastHandler.error(
-    //     'Listing duration cannot be negative or zero.',
-    //     errorToastStyle
-    //   )
-    //   return
-    // }
-    // console.log(ethers.utils.parseUnits(listingPrice,18).toString());
+
     setIsLoading(true)
     const listing = {
       //NFT Collection Contract Address
       assetContractAddress: collectionAddress,
       tokenId: selectedNft.metadata.id.toString(),
       startTimestamp: new Date(),
-      listingDurationInSeconds: Number(listingDuration),
+      listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
       currencyContractAddress: NATIVE_TOKEN_ADDRESS,
       buyoutPricePerToken: listingPrice,
     }
     // console.log(listing);
+    
     try {
       const tx = await module.direct.createListing(listing)
 
       //saving transaction data
       mutateSaveTransaction({
         transaction: tx,
-        collectionAddress: collectionAddress,
         id: selectedNft.metadata.id.toString(),
         eventName: 'List',
+        itemid: selectedNft.metadata.properties.tokenid,
         price: listingPrice,
         chainid: chainid,
       })
 
       queryClient.invalidateQueries(['activities'])
       queryClient.invalidateQueries(['marketplace'])
+
+      //update listing data
+      ;(async() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+      })()
 
       toastHandler.success(
         'NFT successfully listed in the marketplace.',
@@ -207,25 +196,14 @@ const Sell = ({ selectedNft, collectionAddress }) => {
       toastHandler.error('Listing currency not chosen.', errorToastStyle)
       return
     }
-    if (!auctionDuration) {
-      toastHandler.error('Listing duration not set.', errorToastStyle)
-      return
-    }
-    if (auctionDuration <= 0) {
-      toastHandler.error(
-        'Listing duration cannot be negative or zero.',
-        errorToastStyle
-      )
-      return
-    }
-    // console.log(ethers.utils.parseUnits(listingPrice,18).toString());
+    
     setIsLoading(true)
     const auction = {
       //NFT Collection Contract Address
       assetContractAddress: collectionAddress,
       tokenId: selectedNft.metadata.id.toString(),
       startTimestamp: new Date(),
-      listingDurationInSeconds: Number(listingDuration),
+      listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
       currencyContractAddress: currency,
       buyoutPricePerToken: buyoutPrice,
@@ -241,35 +219,27 @@ const Sell = ({ selectedNft, collectionAddress }) => {
         successToastStyle
       )
 
-      // console.log(tx)
-      // console.log(receipt)
-      // console.log(newListingId)
-
       //saving transaction data
       mutateSaveTransaction({
         transaction: tx,
-        collectionAddress: collectionAddress,
         id: selectedNft.metadata.id.toString(),
         eventName: 'Auction',
+        itemid: selectedNft.metadata.properties.tokenid,
         price: buyoutPrice,
         chainid: chainid,
       })
 
-      //saving transaction data
-      const transactionData = {
-        _type: 'activities',
-        _id: receipt.transactionHash,
-        transactionHash: receipt.transactionHash,
-        from: receipt.from,
-        to: receipt.to,
-        event: 'Auction',
-        price: buyoutPrice,
-        chainId: chainid,
-      }
+      queryClient.invalidateQueries(['activities'])
+      queryClient.invalidateQueries(['marketplace'])
 
+      setAuctionEndDate('')
       setAuctionDuration('')
       setAuctionStartDate('')
-      setAuctionEndDate('')
+
+      //update listing data
+      ;(async() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+      })()
 
       // window.location.reload(false); //refresh the page
     } catch (error) {
@@ -356,7 +326,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                     <div className="">
                       <p className={style.label}>Price*</p>
                       <div className="flex flex-row items-center gap-5">
-                        <CoinSelection />
+                        <CoinSelection chainid={nftCollection.chainId} />
                         <input
                           className={style.input}
                           style={{ margin: '0' }}
@@ -491,7 +461,7 @@ const Sell = ({ selectedNft, collectionAddress }) => {
                     <div className="pt-4">
                       <p className={style.label}>Duration*</p>
                       <p className={style.smallText}>List this NFT for only specified period of time.</p>
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center mt-4">
                         <div className="relative w-full">
                           <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
                             From:

@@ -12,6 +12,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
 import { saveTransaction, addVolumeTraded } from '../../mutators/SanityMutators'
+import { updateActiveListings } from '../../fetchers/Web3Fetchers'
 
 const style = {
   button: `mr-8 flex items-center py-2 px-12 rounded-lg cursor-pointer`,
@@ -45,17 +46,19 @@ const MakeOffer = ({
   const queryClient = useQueryClient()
   const [buyLoading, setBuyLoading] = useState(false)
   const [bidLoading, setBidLoading] = useState(false)
-  const collectionAddress = nftCollection.contractAddress
+  const [offerLoading, setOfferLoading] = useState(false)
+  const collectionAddress = nftCollection?.contractAddress
   const [coinMultiplier, setCoinMultiplier] = useState()
+
   const { mutate: mutateSaveTransaction } = useMutation(
-    ({ transaction, collectionAddress, id, eventName, price, chainid }) =>
+    ({ transaction, id, eventName, price, chainid, itemid }) =>
       saveTransaction({
         transaction,
-        collectionAddress,
         id,
         eventName,
         price,
         chainid,
+        itemid,
       }),
     {
       onError: () => {
@@ -73,8 +76,8 @@ const MakeOffer = ({
   )
 
   const { mutate: addVolume } = useMutation(
-    ({ address, volume }) =>
-      addVolumeTraded({ address, volume }),
+    ({ id, volume }) =>
+      addVolumeTraded({ id, volume }),
     {
       onError: () => {
         toast.error('Error in adding Volume Traded.', errorToastStyle)
@@ -113,6 +116,7 @@ const MakeOffer = ({
       )
       return
     }
+    if(!listingData) return
     try {
       // const offer = {
       //   listingId: listingId,
@@ -123,21 +127,23 @@ const MakeOffer = ({
       // }
       console.log(listingId)
       console.log(NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,)
+      setOfferLoading(true)
       const tx = await module.direct.makeOffer(
         listingId,
         1,
         NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,
-        '2'
+        '1'
       )
       console.log(tx)
+      setOfferLoading(false)
     } catch (error) {
       console.error(error)
       toastHandler.error('Error in placing an offer..', errorToastStyle)
+      setOfferLoading(false)
     }
   }
   const bidItem = async (
     listingId = listingData.id.toString(),
-    quantityDesired = 1,
     module = marketPlaceModule,
     toastHandler = toast,
     qc = queryClient
@@ -154,11 +160,28 @@ const MakeOffer = ({
     try {
       setBidLoading(true)
       // await module.setBidBufferBps(500) //bid buffer, next bid must be at least 5% higher than the current bid
-      const tx = await module.auction.makeBid(listingId, 0.05)
+
+      const biddingPrice = 0.36
+      const tx = await module.auction.makeBid(listingId, biddingPrice)
       toastHandler.success('Bid successful.', successToastStyle)
+      
+      //save transaction
+      mutateSaveTransaction({
+        transaction: tx,
+        id: selectedNft.metadata.id.toString(),
+        eventName: 'Bid',
+        itemid: selectedNft.metadata.properties.tokenid,
+        price: biddingPrice.toString(),
+        chainid: chainId,
+      })
+      setBidLoading(false)
+      qc.invalidateQueries(['activities'])
+      qc.invalidateQueries(['marketplace'])
+
       console.log(tx)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
+      toastHandler.error(error.message, errorToastStyle)
       setBidLoading(false)
     }
   }
@@ -168,51 +191,46 @@ const MakeOffer = ({
     module = marketPlaceModule,
     toastHandler = toast,
     qc = queryClient
-  ) => {
-    if (!address) {
-      toastHandler.error(
-        'Wallet not connected. Connect wallet first.',
-        errorToastStyle
-      )
-      return
-    }
+    ) => {
+      if (!address) {
+        toastHandler.error(
+          'Wallet not connected. Connect wallet first.',
+          errorToastStyle
+          )
+          return
+        }
     try {
+      console.log(listingId)
       setBuyLoading(true)
+
+      const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16)
+      const divider = BigNumber.from(10).pow(18)
+      const buyOutPrice = bigNumberPrice / divider
+    
       const tx = await module.direct.buyoutListing(listingId, quantityDesired)
       toastHandler.success('NFT purchase successful.', successToastStyle)
 
-      const bigNumberPrice = listingData.buyoutPrice
-      const divider = BigNumber.from(10).pow(18)
-      const buyOutPrice = bigNumberPrice / divider
-
       mutateSaveTransaction({
         transaction: tx,
-        collectionAddress: collectionAddress,
         id: selectedNft.metadata.id.toString(),
         eventName: 'Buy',
+        itemid: selectedNft.metadata.properties.tokenid,
         price: buyOutPrice.toString(),
         chainid: chainId,
       })
       // console.log(tx)
 
-      //add volume Traded
-      // const newVolumeTraded =
-      //   parseFloat(nftCollection.volumeTraded) +
-      //   parseFloat(
-      //     listingData?.buyoutCurrencyValuePerToken?.displayValue * coinprice
-      //   )
-
-      const volume2Add = parseFloat(listingData?.buyoutCurrencyValuePerToken?.displayValue * coinMultiplier)
-
+      const volume2Add = parseFloat(buyOutPrice * coinMultiplier)
+      
       //adding volume to Collection
-        addVolume({
-        address: collectionAddress,
+      addVolume({
+        id: nftCollection?._id,
         volume: volume2Add,
       })
 
       //adding volume to the user
       addVolume({
-        address: address,
+        id: address,
         volume: volume2Add
       })
 
@@ -220,6 +238,11 @@ const MakeOffer = ({
       setBuyLoading(false)
       qc.invalidateQueries(['activities'])
       qc.invalidateQueries(['marketplace'])
+
+      //update listing data
+      ;(async() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+      })()
       
     } catch (error) {
       console.error(error)
@@ -233,7 +256,9 @@ const MakeOffer = ({
       toastHandler.error('Error in saving NFT data. Contact administrator.')
     }
   }
-  console.log(listingData)
+
+
+  // console.log(listingData)
   return (
     <div className="pb-9 pt-14">
       {Boolean(listingData) && (
@@ -268,7 +293,7 @@ const MakeOffer = ({
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-center">
           <div className="relative flex flex-1 flex-col items-baseline justify-center rounded-xl border-2 border-red-500 p-6 sm:flex-row">
             <span className="text-xl font-semibold text-red-500 xl:text-xl">
-              Not Listed
+              Not in Sale
             </span>
           </div>
         </div>
@@ -279,6 +304,7 @@ const MakeOffer = ({
           <Sell
             selectedNft={selectedNft}
             collectionAddress={collectionAddress}
+            nftCollection={nftCollection}
           />
         )}
 
@@ -298,15 +324,21 @@ const MakeOffer = ({
                 <span className="ml-2.5">Buy</span>
               </div>
             )}
-
-            <div
-              className="relative inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base "
-              onClick={() => makeAnOffer()}
-            >
-              <IconOffer />
-
-              <span className="ml-2.5"> Make offer</span>
-            </div>
+            {offerLoading ? (
+              <div className="relative inline-flex h-auto flex-1 cursor-wait items-center justify-center rounded-xl border border-neutral-2000 bg-white px-4 py-3 text-sm font-medium text-neutral-700  transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
+                <IconLoading />
+                <span className="ml-2.5">Processing...</span>
+              </div>
+              ):(
+              <div
+                className="relative inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base "
+                onClick={() => makeAnOffer()}
+              >
+                <IconOffer />
+  
+                <span className="ml-2.5"> Make offer</span>
+              </div>  
+            )}
           </>
         )}
 
