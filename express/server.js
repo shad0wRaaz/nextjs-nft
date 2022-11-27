@@ -221,6 +221,18 @@ app.get('/api/getAllListings', async (req, res) => {
   return res.status(200).json(cache)
 })
 
+app.get('/api/getLatestNfts', async (req, res) => {
+  
+  let cache = await redis.get("cache")
+  let allArr = JSON.parse(cache)
+
+  let nftQuantity = req.query.quantity
+  let latestNfts = allArr.slice(-nftQuantity)
+  let sortedNfts = latestNfts.reverse()
+  
+  return res.status(200).json(sortedNfts)
+})
+
 app.get('/api/latestCollection', async (req, res) => {
   var latestcollections
   if(await redis.get("latestcollections") != null) {

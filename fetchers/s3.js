@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const HOST = process.env.NODE_ENV === 'production' ? 'http://nuvanft.io:8080' : 'http://localhost:8080'
+const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
 
 //get image path from Amazon S3

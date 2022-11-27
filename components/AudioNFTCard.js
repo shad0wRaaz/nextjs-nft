@@ -6,39 +6,22 @@ import { BsFillPlayFill, BsPause } from 'react-icons/bs'
 import { getUnsignedImagePath } from '../fetchers/s3'
 import Link from 'next/link'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { RiContactsBookLine } from 'react-icons/ri'
 
 const AudioNFTCard = ({nft}) => {
     const { dark } = useThemeContext()
     const [play,setPlay] = useState(false)
     const [likers, setLikers] = useState([])
-    const [likersProfile, setLikersProfile] = useState([])
-
+    // const [likersProfile, setLikersProfile] = useStat    e([])
+    // console.log(nft)
     useEffect(() => {
         if(!nft) return
         ;(async(sanityClient = config) => {
-            const query = `*[_type == "nftItem" && contractAddress == "${nft.assetContractAddress}" && id=="${parseInt(nft.asset.id?.hex, 16)}"]{likedBy[]->}`
+            const query = `*[_type == "nftItem" && _id == "${nft.asset.properties?.tokenid}"]{likedBy[]->}`
             const res = await sanityClient.fetch(query)
             setLikers(res[0]?.likedBy)
         })()
     }, [nft])
-
-    //get Images for all Likers
-    // useEffect(() => {
-    //     return
-
-    //     const profileArray = likers.map(users => users.profileImage)
-    //     let imageArray = []
-
-    //     //getting only few likers
-    //     ;(async() => {
-    //         for(let i = 0; i <=4 ; i++){
-    //             if(profileArray[i]){
-    //                 imageArray.push(await getUnsignedImagePath(profileArray[i]))
-    //             }
-    //         }
-    //     })()    
-    //     setLikersProfile(imageArray)
-    // }, [likers])
     
   return (
     <div className="relative group sm:col-span-3 xl:col-span-2 cursor-pointer">
@@ -50,7 +33,9 @@ const AudioNFTCard = ({nft}) => {
                         Your browser does not support video tag. Upgrade your browser.
                     </audio>
                 )}
-                <Image src={nft.asset.image} objectFit="cover" layout="fill" className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl transition-transform duration-300 ease-in-out" alt="nc-imgs"/>
+                <a href={`/nfts/${nft.asset.properties?.tokenid}`}>
+                    <Image src={nft.asset.image} objectFit="cover" layout="fill" className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl transition-transform duration-300 ease-in-out" alt="nc-imgs"/>
+                </a>
             </div>
         </div>
         <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
@@ -86,17 +71,17 @@ const AudioNFTCard = ({nft}) => {
             
                     <a 
                     className={`block p-5 mt-5 ${dark ? 'bg-slate-700' : 'bg-white'} shadow-xl rounded-3xl rounded-tl-none`}
-                    href={`/nfts/${parseInt(nft.asset.id?.hex, 16)}?c=${nft.assetContractAddress}`}>
+                    href={`/nfts/${nft.asset.properties?.tokenid}`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-semibold">{nft.asset.name}</h2>
-                            <div className="flex -space-x-1.5 hover:-space-x-0.5 transition duration-300">
+                            {/* <div className="flex -space-x-1.5 hover:-space-x-0.5 transition duration-300">
                                 {likersProfile && likersProfile?.map((likers) => (
                                     <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-800">
                                         <img className="absolute inset-0 w-full h-full object-cover rounded-full" src={likers?.data?.url} alt="NFT Likers" />
                                         <span className="wil-avatar__name">J</span>
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                         <div className="w-full mt-1.5 flex justify-between items-end ">
                             <div className="pt-3">

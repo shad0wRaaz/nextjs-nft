@@ -39,7 +39,7 @@ import maticlogo from '../assets/matic.png'
 import bsclogo from '../assets/bsc.png'
 import avalancelogo from '../assets/avalance.png'
 import { QueryClient, useQuery, useQueryClient } from 'react-query'
-import { getActiveListings, getAuctionItems } from '../fetchers/Web3Fetchers'
+import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { getUser } from '../fetchers/SanityFetchers'
 import {
   IconDisconnect,
@@ -88,6 +88,7 @@ const Header = ({listedItems}) => {
     setSelectedChain,
     activeListings,
     setActiveListings,
+    setLatestNfts
   } = useMarketplaceContext()
   const { setCoinPrices } = useSettingsContext()
   const connectWithMetamask = useMetamask()
@@ -163,6 +164,21 @@ const Header = ({listedItems}) => {
     }
    ) 
 
+   const { data: latestNfts, status: latestNftsStatus } = useQuery(
+    ['latestNfts'],
+    getLatestNfts(4),
+    {
+      enabled: Boolean(marketplaceAddress),
+      onError: () => {
+        toast.error('Error fetching latest NFT data. Refresh and try again.'),
+        errorToastStyle
+      },
+      onSuccess: (res) => {
+        // console.log(res)
+        setLatestNfts(res);
+      },
+    }
+   )
 
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', marketplaceAddress],

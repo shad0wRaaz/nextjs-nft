@@ -34,7 +34,7 @@ const PopularAudioNFTs = () => {
         })
         const updatedList = Promise.all(tempList).then(
             (res) => { 
-                console.log(res)
+                // console.log(res)
             })
 
         if(audioItems.length < 2) {

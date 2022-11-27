@@ -70,16 +70,16 @@ const Home = ({listedItems}) => {
       </div>
   )
 }
-export async function getStaticProps() {
-  // const allListings = await axios.get('http://localhost:8080/api/getAllListings')
-  return {
-    props: {
-      listedItems: 'test'
-    },
-    revalidate: 300 /*re fetch in every 300 seconds*/
+// export async function getStaticProps() {
+//   // const allListings = await axios.get('http://localhost:8080/api/getAllListings')
+//   return {
+//     props: {
+//       listedItems: 'test'
+//     },
+//     revalidate: 300 /*re fetch in every 300 seconds*/
 
-  }
-}
+//   }
+// }
 
 export default Home
 

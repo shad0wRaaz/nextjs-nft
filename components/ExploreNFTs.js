@@ -28,16 +28,14 @@ const style = {
 
 const ExploreNFTs = () => {
   const { dark } = useThemeContext()
-  const { activeListings, selectedChain, setSelectedChain } =
+  const { activeListings, selectedChain, setSelectedChain, latestNfts } =
     useMarketplaceContext()
-
-  const [filteredListings, setFilteredListings] = useState([])
 
   useEffect(() => {
     //only show latest 8 NFTs
-    if(!activeListings) return
-    setFilteredListings([...activeListings].reverse().slice(0, 8))
-  }, [activeListings])
+    if(!latestNfts) return
+    console.log(latestNfts)
+  }, [latestNfts])
   // console.log(filteredListings)
 
   return (
@@ -109,15 +107,15 @@ const ExploreNFTs = () => {
         </div>
       </div>
 
-      {filteredListings?.length == 0 && (
+      {latestNfts?.length == 0 && (
         <div>
           <span>No NFTs are available.</span>
         </div>
       )}
 
-      {filteredListings?.length > 0 && (
+      {latestNfts?.length > 0 && (
         <div className={style.nftwrapper}>
-          {filteredListings?.map((nftItem, id) => (
+          {latestNfts?.map((nftItem, id) => (
             <React.Fragment key={id}>
               {nftItem.asset.properties?.tokenid && (
                 <NFTItem key={id} nftItem={nftItem} />

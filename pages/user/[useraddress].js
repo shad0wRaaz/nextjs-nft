@@ -184,7 +184,7 @@ const User = () => {
   useEffect(() => {
     ;(async() => {
       
-      console.log(await getWeb3ImagePath('QmRgm5x1fhezfiBcmkFN5afuSnZsNzhF6e4D87rXa7ntki/0'))
+      // console.log(await getWeb3ImagePath('QmRgm5x1fhezfiBcmkFN5afuSnZsNzhF6e4D87rXa7ntki/0'))
     })()
   }, [])
 

@@ -196,7 +196,7 @@ const Nft = () => {
         const selectedNftItem = res.find(
           (nft) => nft.metadata.properties.tokenid == router.query.nftid
         )
-        console.log(selectedNftItem)
+
         setSelectedNft(selectedNftItem)
 
         if (activeListings) {

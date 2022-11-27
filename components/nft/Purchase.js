@@ -161,7 +161,7 @@ const MakeOffer = ({
       setBidLoading(true)
       // await module.setBidBufferBps(500) //bid buffer, next bid must be at least 5% higher than the current bid
 
-      const biddingPrice = 0.36
+      const biddingPrice = 0.4
       const tx = await module.auction.makeBid(listingId, biddingPrice)
       toastHandler.success('Bid successful.', successToastStyle)
       

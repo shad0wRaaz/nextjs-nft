@@ -4,13 +4,12 @@ import nuvanft from '../assets/nuvanft.png'
 
 const HelmetMetaData = (props) => {
     let tokenId = props.tokenId !== undefined ? props.tokenId : ""
-    let currentUrl = "http://nuvanft.io/nfts/" + tokenId;
+    let currentUrl = "https://nuvanft.io/nfts/" + tokenId;
     let quote = props.quote !== undefined ? props.quote : "";
     let title = props.title !== undefined ? props.title : "Nuva NFT - A Multichain NFT Marketplace";
     let image = props.image !== undefined ? props.image : nuvanft.src;
     let description = props.description !== undefined ? props.description  : "Nuva Nft is one of the largest NFT marketplace out there in the defi market.";
     let hashtag = props.hashtag !== undefined ? props.hashtag : "#nuvanft";
-
   return (
     <Helmet>
         <title>{title} - Nuva NFT</title>

@@ -64,9 +64,9 @@ const ItemOffers = ({selectedNft, metaDataFromSanity, listingData}) => {
 
         const unres = updatedItemEvents.map(async (e) => {
           const obj = { ...e }
-          console.log(obj)
+
           const userImg = await getUnsignedImagePath('profileImage-' + e.data.offeror)
-          console.log(userImg)
+
           obj['profileImage'] = userImg?.data.url
           return obj
         })
@@ -76,9 +76,9 @@ const ItemOffers = ({selectedNft, metaDataFromSanity, listingData}) => {
       }
     }
   )
-useEffect(() => {
-  console.log(itemEvents)
-}, [itemEvents])
+// useEffect(() => {
+//   console.log(itemEvents)
+// }, [itemEvents])
   
 
   return (
@@ -115,7 +115,7 @@ useEffect(() => {
       {!toggle && (
         <table className="w-full sm:overflow-scroll pb-8">
           <tbody>
-            {!listingData || itemEvents.length == 0 && (
+            {!listingData || itemEvents?.length == 0 && (
               <tr>
                 <td colSpan="5" className="p-4 text-center">
                   <span className="text-md">No Offers found.</span>

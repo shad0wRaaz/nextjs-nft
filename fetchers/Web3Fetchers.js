@@ -25,6 +25,15 @@ export const getAllNFTs =
     return filtered
   }
   
+export const getLatestNfts = (qty) => async () => {
+  const result = await axios.get(`${HOST}/api/getLatestNfts`,
+  {
+    params: { quantity: qty}
+  })
+
+  return result.data
+
+}
 export const getActiveListings = 
   (rpcUrl) =>
   async ({queryKey}) => {

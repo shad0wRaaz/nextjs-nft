@@ -258,8 +258,6 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
     })()
   }
 
- console.log(selectedNft)
-
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
       <HelmetMetaData 
