@@ -166,7 +166,7 @@ const Header = ({listedItems}) => {
 
    const { data: latestNfts, status: latestNftsStatus } = useQuery(
     ['latestNfts'],
-    getLatestNfts(4),
+    getLatestNfts(8),
     {
       enabled: Boolean(marketplaceAddress),
       onError: () => {

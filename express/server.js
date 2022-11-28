@@ -267,7 +267,7 @@ app.get('/api/topTradedCollections', async( req, res) => {
     return res.status(200).json(topCollections)    
   }
   else{
-    const query = `*[_type == "nftCollection"] | order(volumeTraded desc) {
+    const query = `*[_type == "nftCollection"][0..7] | order(volumeTraded desc) {
       "id": _id,
       name, 
       category, 
@@ -284,6 +284,7 @@ app.get('/api/topTradedCollections', async( req, res) => {
       "allOwners" : owners[]->
   }`
   topCollections = await config.fetch(query)
+  redis.del("toptradedcollections")
   redis.set("toptradedcollections", 900, JSON.stringify(topCollections))
   return res.status(200).json(JSON.stringify(topCollections))
   }
