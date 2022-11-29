@@ -17,6 +17,8 @@ import Redis from 'ioredis'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import { v4 as uuidv4 } from 'uuid'
 import { useMarketplace } from '@thirdweb-dev/react'
+import bodyParser from 'body-parser'
+
 
 const app = express()
 app.use(
@@ -24,6 +26,11 @@ app.use(
     origin: ['http://localhost:3000', 'https://nuvanft.io'],
   })
 )
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 const redis = new Redis({
   host: process.env.NEXT_PUBLIC_REDIS_URL,
@@ -53,7 +60,7 @@ const web3Client = new Web3Storage({
   token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY
 })
 
-cron.schedule('*/120 * * * *', async() => {
+cron.schedule('*/500 * * * *', async() => {
   const options = {
     method: 'GET',
     url: process.env.NEXT_PUBLIC_COINAPI_URL,
@@ -76,7 +83,6 @@ cron.schedule('*/120 * * * *', async() => {
       // console.log(response.data)
       const matic = response.data.data.coins?.filter(item => item.symbol == "MATIC")
       const eth = response.data.data.coins?.filter(item => item.symbol == "ETH")
-      const ftx = response.data.data.coins?.filter(item => item.symbol == "FTT")
       const avax = response.data.data.coins?.filter(item => item.symbol == "AVAX")
       const bnb = response.data.data.coins?.filter(item => item.symbol == "BNB")
   
@@ -85,7 +91,6 @@ cron.schedule('*/120 * * * *', async() => {
       .set({
         maticprice : Number(parseFloat(matic[0].price).toFixed(4)),
         ethprice : Number(parseFloat(eth[0].price).toFixed(4)),
-        ftxprice : Number(parseFloat(ftx[0].price).toFixed(4)),
         avaxprice : Number(parseFloat(avax[0].price).toFixed(4)),
         bnbprice : Number(parseFloat(bnb[0].price).toFixed(4)),
       })
@@ -288,6 +293,22 @@ app.get('/api/topTradedCollections', async( req, res) => {
   redis.set("toptradedcollections", 900, JSON.stringify(topCollections))
   return res.status(200).json(JSON.stringify(topCollections))
   }
+})
+app.post('/api/savenft', async(req, res) => {
+  const nftId = req.body.id
+  const nftData = req.body.nftData
+
+  if(await redis.get(nftId) == null) {
+    redis.set(nftId, JSON.stringify(nftData))
+    return res.status(200).json(nftData)
+  } else {
+    return res.status(200).json("Duplicate id. NFT data not saved.")
+  }
+})
+app.get('/api/nft/:id', async (req, res) => {
+  const nftId = req.params.id
+  const nftData = await redis.get(nftId)
+  res.status(200).json(nftData)
 })
 
 app.listen(8080, () => console.log('listening on 8080'))
