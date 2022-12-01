@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { CgProfile } from 'react-icons/cg'
 import { HiChevronDown } from 'react-icons/hi'
 import { TiLink } from 'react-icons/ti'
 import nuvanftLogo from '../assets/nuvanft.png'
@@ -13,10 +11,6 @@ import { Menu, Transition } from '@headlessui/react'
 import { useState, useEffect, Fragment } from 'react'
 import SearchBar from './SearchBar'
 import { HiMenu } from 'react-icons/hi'
-import MetaMask from '../assets/metamask.svg'
-import Coinbase from '../assets/coinbase.svg'
-import Walletconnect from '../assets/walletconnect.svg'
-import Emailwallet from '../assets/emailwallet.svg'
 import { useRouter } from 'next/router'
 import Notifications from './Notifications'
 import ThemeSwitcher from './ThemeSwitcher'
@@ -24,27 +18,19 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useUserContext } from '../contexts/UserContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
-import noProfileImage from '../assets/noProfileImage.png'
-import {
-  useChainId,
-  useAddress,
-  useNetwork,
-  useMetamask,
-  useDisconnect,
-  useCoinbaseWallet,
-  useWalletConnect, ConnectWallet
-} from '@thirdweb-dev/react'
+import { useAddress, useNetwork, useDisconnect, ConnectWallet } from '@thirdweb-dev/react'
 import ethereumlogo from '../assets/ethereum.png'
 import maticlogo from '../assets/matic.png'
 import bsclogo from '../assets/bsc.png'
+import { config } from '../lib/sanityClient'
 import avalancelogo from '../assets/avalance.png'
 import { QueryClient, useQuery, useQueryClient } from 'react-query'
 import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { getUser } from '../fetchers/SanityFetchers'
 import {
-  IconDisconnect,
-  IconHelp,
+  IconImage,
   IconMagnifier,
+  IconOffer,
   IconProfile,
 } from './icons/CustomIcons'
 import { getUnsignedImagePath } from '../fetchers/s3'
@@ -91,13 +77,9 @@ const Header = ({listedItems}) => {
     setLatestNfts
   } = useMarketplaceContext()
   const { setCoinPrices } = useSettingsContext()
-  const connectWithMetamask = useMetamask()
-  const connectWithCoinbase = useCoinbaseWallet()
-  const connectWithWalletConnect = useWalletConnect()
   const address = useAddress()
   const disconnectWallet = useDisconnect()
   const router = useRouter()
-  const activeChainId = useChainId()
   // console.log(rpcUrl)
 
   const [
@@ -112,16 +94,17 @@ const Header = ({listedItems}) => {
   const [isLogged, setIsLogged] = useState(false)
   const { dark } = useThemeContext()
   const {
-    myUser,
     setMyUser,
-    queryStaleTime,
-    queryCacheTime,
-    myProfileImage,
     setMyProfileImage,
     setMyCollections,
     myBannerImage,
     setMyBannerImage,
   } = useUserContext()
+  // const welcomeUser = (userName, toastHandler = toast) => {
+  //   toastHandler.success(
+  //     `Welcome back ${userName != 'Unnamed' ? `${userName}` : ''} !`, successToastStyle
+  //   )
+  // }
   
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['mycollections', address],
@@ -207,28 +190,33 @@ const Header = ({listedItems}) => {
     },[error])
 
   useEffect(() => {
-    
     if (!address) {
       setIsLogged(false)
       return
     }
-    // console.log(myUser)
+    ;(async () => {
+      const userDoc = {
+        _type: 'users',
+        _id: address,
+        userName: 'Unnamed',
+        walletAddress: address,
+        profileImage: 'profileImage-'.concat(address),
+        bannerImage: 'bannerImage-'.concat(address),
+        volumeTraded: 0,
+      }
 
-    if (address) {
-      ;(async() => {
-        const user = await getUser(address)
-        setMyUser(user)
-        // console.log(user.profileImage)
-        if (user?.profileImage) {
-          setMyProfileImage(await getUnsignedImagePath(user.profileImage))
-        }
-        if (user?.bannerImage) {
-          setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
-        }
-        // queryclient.invalidateQueries('notification')
-        setIsLogged(true)
-      })()
-    }
+      //saves new user if not present otherwise returns the user data
+      const user = await config.createIfNotExists(userDoc);
+      setMyUser(user)
+      if (user?.profileImage) {
+        setMyProfileImage(await getUnsignedImagePath(user.profileImage))
+      }
+      if (user?.bannerImage) {
+        setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
+      }
+      // queryclient.invalidateQueries('notification')
+      setIsLogged(true)
+    })()
   }, [address])
 
   const handleDisconnect = () => {
@@ -612,19 +600,61 @@ const Header = ({listedItems}) => {
 
         {address && isLogged && (
           <>
-            <Link href="/collections/myCollection">
-              <div className={style.headerItem}>My NFTs/Collections</div>
-            </Link>
-            <Link href="/contracts">
-              <div className={style.headerItem}>Create</div>
-            </Link>
-            <div className="flex flex-row items-center gap-4 px-3">
+            <Menu as="div" className="relative inline-block text-left">
+                <Menu.Button className="px-5 py-3">
+                  Quick Links
+                </Menu.Button>
+                <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
+                  <Menu.Items className={` ${
+                    dark
+                      ? 'divide-sky-400/20 bg-slate-700 text-white'
+                      : ' divide-gray-100 bg-white'
+                  } absolute right-0 mt-2 w-64 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}>
+                    <div className="px-1 py-1 flex flex-col text-left">
+                      <Menu.Item>
+                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
+                          <Link href="/collections/myCollection">
+                            <div className="flex gap-2 items-center">
+                              <IconImage/> My NFTs
+                            </div>
+                          </Link>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
+                          <Link href="/collections/myCollection" >
+                            <div className="flex gap-2 items-center">
+                              <IconOffer/> My Collections
+                            </div>
+                          </Link>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
+                          <Link href="/profile" >
+                            <div className="flex gap-2 items-center">
+                              <IconProfile/> My Profile
+                            </div>
+                          </Link>
+                        </div>
+                      </Menu.Item>
+                    </div>
+                      
+                  </Menu.Items>
+              </Transition>
+            </Menu>
+            <div className="flex flex-row items-center gap-4 px-5 pl-0">
               <ThemeSwitcher />
               <Notifications />
             </div>
+            <div className={`rounded-md border cursor-pointer border-slate-${dark ? '500' :'300'} px-5 py-3 bg-slate-${dark ? '600' : '100'} hover:bg-slate-${dark ? '500' : '200'}`}>
+              <Link href="/contracts">
+                <div className={style.headerItem}>Create</div>
+              </Link>
+            </div>
           </>
         )}
-        <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" />
+        <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className="rounded-xxl ml-4" />
         {/* <div className="z-10 px-4 text-right">
           <Menu as="div" className="relative inline-block text-left">
             <div>
@@ -653,7 +683,7 @@ const Header = ({listedItems}) => {
               leave="transition ease-in duration-75"
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
-            >
+              >
               <Menu.Items
                 className={` ${
                   dark
