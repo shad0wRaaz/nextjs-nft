@@ -32,7 +32,7 @@ import {
   useMetamask,
   useDisconnect,
   useCoinbaseWallet,
-  useWalletConnect,
+  useWalletConnect, ConnectWallet
 } from '@thirdweb-dev/react'
 import ethereumlogo from '../assets/ethereum.png'
 import maticlogo from '../assets/matic.png'
@@ -65,7 +65,7 @@ const style = {
   walletAddress:
     'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
   balance:
-    'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 font-bold gradBlue hover:bg-200',
+    'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
 }
 
 const errorToastStyle = {
@@ -204,11 +204,10 @@ const Header = ({listedItems}) => {
     (toastHandler = toast) => {
       if (!error) return
       toastHandler.error(error.message, errorToastStyle)
-    },
-    [error]
-  )
+    },[error])
 
-  useEffect(async () => {
+  useEffect(() => {
+    
     if (!address) {
       setIsLogged(false)
       return
@@ -216,45 +215,21 @@ const Header = ({listedItems}) => {
     // console.log(myUser)
 
     if (address) {
-      const user = await getUser(address)
-      setMyUser(user)
-      // console.log(user.profileImage)
-      if (user?.profileImage) {
-        setMyProfileImage(await getUnsignedImagePath(user.profileImage))
-      }
-      if (user?.bannerImage) {
-        setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
-      }
-      queryclient.invalidateQueries('notification')
-      setIsLogged(true)
+      ;(async() => {
+        const user = await getUser(address)
+        setMyUser(user)
+        // console.log(user.profileImage)
+        if (user?.profileImage) {
+          setMyProfileImage(await getUnsignedImagePath(user.profileImage))
+        }
+        if (user?.bannerImage) {
+          setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
+        }
+        // queryclient.invalidateQueries('notification')
+        setIsLogged(true)
+      })()
     }
   }, [address])
-
-
-  // useEffect(() => {
-  //   if (activeChainId) {
-  //     if (chain.id == '80001') {
-  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
-  //       // setMarketplaceAddress('0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D----')
-  //       // setMarketplaceAddress('0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
-  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //     } else if (chain.id == '4') {
-  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //     }
-  //     // console.log('connected')
-  //   } else {
-  //     // console.log('not connected')
-  //     if (selectedChain in ['Polygon', 'Mumbai']) {
-  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_POLYGON_URL)
-  //       // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //     } else if (selectedChain in ['Ethereum', 'Rinkeby']) {
-  //       setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-  //       setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  //     }
-  //   }
-  // }, [activeChainId])
 
   const handleDisconnect = () => {
     setIsLogged(false)
@@ -311,7 +286,7 @@ const Header = ({listedItems}) => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items
-              className={`absolute right-0 mt-2 w-64 origin-top-right divide-y ${
+              className={`absolute right-0 mt-2 w-56 origin-top-right divide-y ${
                 dark
                   ? ' divide-slate-600 bg-slate-700 text-neutral-100'
                   : ' divide-gray-100 bg-white'
@@ -332,68 +307,69 @@ const Header = ({listedItems}) => {
                   )}
                 </Menu.Item>
                 {!isLogged && (
-                  <>
-                    <div className="mb-2 border-t border-neutral-200 pt-3 pl-2 text-sm font-bold">
-                      CONNECT WALLET WITH
-                    </div>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          onClick={connectWithMetamask}
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        >
-                          <img src={MetaMask.src} className="mr-2 h-[25px]" />
-                          Metamask
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          onClick={connectWithCoinbase}
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        >
-                          <img src={Coinbase.src} className="mr-2 h-[25px]" />
-                          Coinbase Wallet
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          onClick={connectWithWalletConnect}
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        >
-                          <img
-                            src={Walletconnect.src}
-                            className="mr-2 w-[23px]"
-                          />
-                          Wallet Connect
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        >
-                          <img
-                            src={Emailwallet.src}
-                            className="mr-2 w-[23px]"
-                          />
-                          Email Wallet
-                        </button>
-                      )}
-                    </Menu.Item>
-                  </>
+                  <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" />
+                  // <>
+                  //   <div className="mb-2 border-t border-neutral-200 pt-3 pl-2 text-sm font-bold">
+                  //     CONNECT WALLET WITH
+                  //   </div>
+                  //   <Menu.Item>
+                  //     {({ active }) => (
+                  //       <button
+                  //         onClick={connectWithMetamask}
+                  //         className={`${
+                  //           active ? 'bg-blue-500 ' : ''
+                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  //       >
+                  //         <img src={MetaMask.src} className="mr-2 h-[25px]" />
+                  //         Metamask
+                  //       </button>
+                  //     )}
+                  //   </Menu.Item>
+                  //   <Menu.Item>
+                  //     {({ active }) => (
+                  //       <button
+                  //         onClick={connectWithCoinbase}
+                  //         className={`${
+                  //           active ? 'bg-blue-500 ' : ''
+                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  //       >
+                  //         <img src={Coinbase.src} className="mr-2 h-[25px]" />
+                  //         Coinbase Wallet
+                  //       </button>
+                  //     )}
+                  //   </Menu.Item>
+                  //   <Menu.Item>
+                  //     {({ active }) => (
+                  //       <button
+                  //         onClick={connectWithWalletConnect}
+                  //         className={`${
+                  //           active ? 'bg-blue-500 ' : ''
+                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  //       >
+                  //         <img
+                  //           src={Walletconnect.src}
+                  //           className="mr-2 w-[23px]"
+                  //         />
+                  //         Wallet Connect
+                  //       </button>
+                  //     )}
+                  //   </Menu.Item>
+                  //   <Menu.Item>
+                  //     {({ active }) => (
+                  //       <button
+                  //         className={`${
+                  //           active ? 'bg-blue-500 ' : ''
+                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  //       >
+                  //         <img
+                  //           src={Emailwallet.src}
+                  //           className="mr-2 w-[23px]"
+                  //         />
+                  //         Email Wallet
+                  //       </button>
+                  //     )}
+                  //   </Menu.Item>
+                  // </>
                 )}
                 {isLogged && (
                   <>
@@ -648,8 +624,8 @@ const Header = ({listedItems}) => {
             </div>
           </>
         )}
-
-        <div className="z-10 px-4 text-right">
+        <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" />
+        {/* <div className="z-10 px-4 text-right">
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <Menu.Button className={style.balance}>
@@ -662,9 +638,10 @@ const Header = ({listedItems}) => {
                     <HiChevronDown className="ml-2" />
                   </>
                 ) : (
-                  <>
-                    Connect Wallet <HiChevronDown className="ml-2" />
-                  </>
+                  <ConnectWallet accentColor="#f213a4" colorMode="dark" />
+                  // <>
+                  //   Connect Wallet <HiChevronDown className="ml-2" />
+                  // </>
                 )}
               </Menu.Button>
             </div>
@@ -934,7 +911,7 @@ const Header = ({listedItems}) => {
               </Menu.Items>
             </Transition>
           </Menu>
-        </div>
+        </div> */}
       </div>
     </div>
   )

@@ -22,7 +22,6 @@ const PopularAudioNFTs = () => {
     useEffect(() => {
         if(!activeListings) return
         const audioItems = activeListings.filter(item => item.asset.properties?.itemtype == "audio" && item.asset.properties?.tokenid != null)
-        // console.log(audioItems)
         const tempList = audioItems.map(async (item) => {
             var obj = { ...item }
             const query = `*[_type == "nftItem" && _id == "${item.metadata?.properties.tokenid}"] {
@@ -34,7 +33,6 @@ const PopularAudioNFTs = () => {
         })
         const updatedList = Promise.all(tempList).then(
             (res) => { 
-                // console.log(res)
             })
 
         if(audioItems.length < 2) {
@@ -47,7 +45,6 @@ const PopularAudioNFTs = () => {
             setOtherThreeNFTItems(otherItems) //Another three Audio Items
         }
     }, [activeListings])
-    // console.log(topTwoNFTItems)
 
   return (
     <div className={dark ? 'darkGray' : 'bg-neutral-100'}>
@@ -59,7 +56,7 @@ const PopularAudioNFTs = () => {
                         <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click on music icon and enjoy NFT music or audio </span>
                     </div>
                     <div 
-                        className="text-sm rounded-full cursor-pointer gradBlue py-2 px-4 text-neutral-100" 
+                        className="text-sm rounded-full cursor-pointer gradBlue py-2 px-4 text-neutral-100 max-w-fit mb-4 m-sm-auto" 
                         onClick={() => {
                             router.push({
                             pathname: '/search',

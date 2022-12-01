@@ -1,19 +1,15 @@
 import Image from 'next/image'
-import toast from 'react-hot-toast'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { config } from '../lib/sanityClient'
 import { BsFillPlayFill, BsPause } from 'react-icons/bs'
-import { getUnsignedImagePath } from '../fetchers/s3'
-import Link from 'next/link'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { RiContactsBookLine } from 'react-icons/ri'
+
 
 const AudioNFTCard = ({nft}) => {
     const { dark } = useThemeContext()
     const [play,setPlay] = useState(false)
     const [likers, setLikers] = useState([])
-    // const [likersProfile, setLikersProfile] = useStat    e([])
-    // console.log(nft)
+
     useEffect(() => {
         if(!nft) return
         ;(async(sanityClient = config) => {
@@ -34,7 +30,7 @@ const AudioNFTCard = ({nft}) => {
                     </audio>
                 )}
                 <a href={`/nfts/${nft.asset.properties?.tokenid}`}>
-                    <Image src={nft.asset.image} objectFit="cover" layout="fill" className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl transition-transform duration-300 ease-in-out" alt="nc-imgs"/>
+                    <img src={nft.asset.image} className="object-cover w-full h-full group-hover:scale-[1.03] rounded-3xl transition-transform duration-300 ease-in-out" alt=""/>
                 </a>
             </div>
         </div>

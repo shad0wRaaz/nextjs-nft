@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { config } from '../lib/sanityClient'
-import Image from 'next/image'
 import { BsFillPlayFill, BsPause } from 'react-icons/bs'
 import Link from 'next/link'
 import Countdown from 'react-countdown'
@@ -59,19 +57,19 @@ const VideoNFTCard = ({nft}) => {
                 <div className="ml-2 flex items-center space-x-3 hidden">
                     <div className="hidden sm:flex -space-x-1 ">
                         <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-4.36899b28c72dc4bc41a9.png" alt="John Doe"/>
+                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
                             <span className="wil-avatar__name">J</span>
                         </div>
                         <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-7.c88583919650f636b191.png" alt="John Doe"/>
+                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
                             <span className="wil-avatar__name">J</span>
                         </div>
                         <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-5.b1088376a574bcedc983.png" alt="John Doe"/>
+                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
                             <span className="wil-avatar__name">J</span>
                         </div>
                         <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-10.93048ca791076288cf69.png" alt="John Doe"/>
+                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
                             <span className="wil-avatar__name">J</span>
                         </div>
                     </div>

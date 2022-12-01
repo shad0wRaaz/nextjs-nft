@@ -31,11 +31,11 @@ const ExploreNFTs = () => {
   const { activeListings, selectedChain, setSelectedChain, latestNfts } =
     useMarketplaceContext()
 
-  useEffect(() => {
+  // useEffect(() => {
     //only show latest 8 NFTs
-    if(!latestNfts) return
-    console.log(latestNfts)
-  }, [latestNfts])
+    // if(!latestNfts) return
+    // console.log(latestNfts)
+  // }, [latestNfts])
   // console.log(filteredListings)
 
   return (

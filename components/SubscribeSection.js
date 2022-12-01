@@ -8,7 +8,7 @@ import axios from 'axios'
 
 
 const style = {
-    wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
+    wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[4rem]  pb-0 mt-0',
   }
 
 const errorToastStyle = {
