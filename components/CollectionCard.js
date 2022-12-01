@@ -16,7 +16,7 @@ const style = {
   bannerImage: '',
   profile:
     'cursor-pointer rounded-full overflow-hidden ring ring-white relative mx-auto top-[-25px] h-[70px] w-[70px] mb-[2rem]',
-  title: 'cursor-pointer text-center text-lg font-bold relative textGradBlue',
+  title: 'cursor-pointer text-center text-md relative textGradBlue',
   description: 'cursor-pointer relative px-4 text-md text-center',
 }
 const chainIcon = {
@@ -111,7 +111,7 @@ const CollectionCard = ({
           <p className={style.creator}>
             by
             <Link href={`/user/${creatorAddress}`}>
-              <span className="textGradBlue cursor-pointer font-bold hover:text-sky-500">
+              <span className="textGradBlue cursor-pointer hover:text-sky-500">
                 {' '}
                 {creator}
               </span>
