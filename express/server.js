@@ -28,6 +28,7 @@ app.use(
 )
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+var globalActiveListings = []
 
 // parse application/json
 app.use(bodyParser.json())
@@ -56,9 +57,7 @@ const config = sanityClient({
   ignoreBrowserTokenWarning: true,
 })
 
-const web3Client = new Web3Storage({ 
-  token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY
-})
+const web3Client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY })
 
 cron.schedule('*/500 * * * *', async() => {
   const options = {
@@ -128,11 +127,18 @@ const upload = multer({ storage: storage })
 
 app.post('/api/saveImageToWeb3', async (req, res) => {
   const file = req.body.image
-  console.log(file)
+  const path = req.body.path
+  console.log(path)
+  
+  
+  const fileWithPath = await getFilesFromPath(path)
+  const cid = await web3Client.put(fileWithPath)
+  console.log(cid)
+  return res.status(200).json(cid)    
 
-  const ext = file.name.split('.').pop()
-  const fileName = `${uuidv4()}.${ext}`
-  const newFile = new File([file], fileName, {type: file.type})
+  // const ext = file.name.split('.').pop()
+  // const fileName = `${uuidv4()}.${ext}`
+  // const newFile = new File([file], fileName, {type: file.type})
   // const cid = await web3Client.put([newFile, {
   //   name: fileName
   // }])
@@ -145,7 +151,7 @@ app.post('/api/saveImageToWeb3', async (req, res) => {
 app.get('/api/getImageFromWeb3', async(req, res) => {
   const cid = req.query.cid
   const returnFile = await web3Client.get(cid)
-  console.log(returnFile)
+  // console.log(returnFile)
   return res.status(200).send(`https://w3s.link/ipfs/${cid}`)
 
   const result = await web3Client.get(cid)
@@ -215,15 +221,19 @@ app.get('/api/updateListings', async (req, res) => {
 
   redis.del("cache")
   redis.set("cache", JSON.stringify(listedItems))
-  
+  globalActiveListings = listedItems
   return res.status(200).json(listedItems)
+})
+
+app.get('/api/getAllNfts', async(req, res) => {
+
 })
 
 app.get('/api/getAllListings', async (req, res) => {
   let cache = await redis.get("cache")
-  cache = JSON.parse(cache)
-  
-  return res.status(200).json(cache)
+  globalActiveListings = JSON.parse(cache)
+  // console.log(globalActiveListings)
+  return res.status(200).json(globalActiveListings)
 })
 
 app.get('/api/getLatestNfts', async (req, res) => {
@@ -290,7 +300,7 @@ app.get('/api/topTradedCollections', async( req, res) => {
   }`
   topCollections = await config.fetch(query)
   redis.del("toptradedcollections")
-  redis.set("toptradedcollections", 900, JSON.stringify(topCollections))
+  redis.set("toptradedcollections", JSON.stringify(topCollections))
   return res.status(200).json(JSON.stringify(topCollections))
   }
 })
@@ -307,8 +317,16 @@ app.post('/api/savenft', async(req, res) => {
 })
 app.get('/api/nft/:id', async (req, res) => {
   const nftId = req.params.id
-  const nftData = await redis.get(nftId)
-  res.status(200).json(nftData)
+  let result = []
+  await redis.get("cache").then((res) =>{
+    // console.log(res)
+    result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
+  })
+  if(result.length > 0) {
+    res.status(200).json(JSON.stringify(result[0]))
+  }else {
+    res.status(200).json("NFT data not found")
+  }
 })
 
 app.listen(8080, () => console.log('listening on 8080'))

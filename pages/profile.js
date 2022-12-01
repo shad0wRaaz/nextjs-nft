@@ -56,15 +56,18 @@ const profile = () => {
   const [profileImageUrl, setProfileImageUrl] = useState()
   const [bannerImageUrl, setBannerImageUrl] = useState()
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!myUser) return
-    setUserDoc({ ...myUser })
-    if(myUser.profileImage) {
-      setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
-    }
-    if(myUser.bannerImage){
-      setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
-    }
+
+    ;(async () => {
+      setUserDoc({ ...myUser })
+      if(myUser.profileImage) {
+        setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
+      }
+      if(myUser.bannerImage){
+        setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
+      }
+    })()
   }, [myUser])
 
   function previewImage(target) {
@@ -182,9 +185,6 @@ const profile = () => {
     setIsSaving(false)
   }
 
-  // useEffect(() => {
-  //   console.log(profile)
-  // }, [profile])
   return (
     <div
       className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}
@@ -387,7 +387,7 @@ const profile = () => {
                   {isSaving ? (
                     <button
                       type="button"
-                      className={style.button + ' flex justify-center gap-2 ml-0'}
+                      className={style.button + ' flex justify-center gap-2 ml-0 mt-8'}
                       disabled
                     >
                       <IconLoading dark={'inbutton'} />
@@ -396,7 +396,7 @@ const profile = () => {
                   ) : (
                     <input
                       type="submit"
-                      className={style.button + ' ml-0'}
+                      className={style.button + ' ml-0 mt-8'}
                       value="Save"
                     />
                   )}

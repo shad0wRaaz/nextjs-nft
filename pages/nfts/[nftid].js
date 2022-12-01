@@ -30,6 +30,8 @@ import { BsPause, BsPlay } from 'react-icons/bs'
 import { MdAudiotrack } from 'react-icons/md'
 import ReportActivity from '../../components/nft/ReportActivity'
 import ItemOffers from '../../components/nft/ItemOffers'
+import axios from 'axios'
+
 const style = {
   wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
   container: `container p-6`,
@@ -75,7 +77,6 @@ const Nft = () => {
   const [isAuctionItem, setIsAuctionItem] = useState(false) //identify for auctioned item
 
   const router = useRouter()
-  const nftId = router.query.nftid
   const tokenid = router.query.nftid
   // const collectionContractAddress = ""
   // const collection = useNFTCollection(collectionContractAddress)
@@ -177,6 +178,13 @@ const Nft = () => {
       setRpcUrl(rpcChains[result[0]?.collection?.chainId])
         // console.log(chainName[result[0]?.collection.chainId])
       
+    })()
+
+    ;(async() => {
+      axios.get(`http://localhost:8080/api/nft/${tokenid}`).then(res => {
+        console.log(res)
+        // console.log(JSON.parse(res.data))
+      })
     })()
   }, [tokenid])
 
