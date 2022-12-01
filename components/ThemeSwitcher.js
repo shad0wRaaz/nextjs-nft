@@ -12,7 +12,6 @@ const ThemeSwitcher = () => {
     localStorage.setItem('theme', JSON.stringify(dark))
   }, [])
   return (
-    <div>
       <div
         className={
           dark
@@ -23,7 +22,6 @@ const ThemeSwitcher = () => {
       >
         {dark ? <IconMoon /> : <IconSun />}
       </div>
-    </div>
   )
 }
 
