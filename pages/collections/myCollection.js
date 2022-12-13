@@ -106,7 +106,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        // console.log(res)
+        console.log(res)
       },
     }
   )
@@ -304,19 +304,7 @@ const Collection = () => {
                   </span>
                 </div>
 
-                <div
-                  className={`${
-                    dark
-                      ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                >
-                  <CgUserList fontSize="30px" className="mb-2" />
-                  <span className="text-sm">Followers</span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {myUser?.followers?.length ? myUser.followers.length : '0'}
-                  </span>
-                </div>
+                
 
                 <div
                   className={`${
@@ -334,6 +322,20 @@ const Collection = () => {
                       ${myUser?.volumeTraded ? Number(myUser.volumeTraded).toFixed(4) : 0 }
                   </span>
                 </div>
+                <div
+                  className={`${
+                    dark
+                      ? ' border border-sky-400/20'
+                      : ' border border-neutral-50'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                >
+                  <CgUserList fontSize="30px" className="mb-2" />
+                  <span className="text-sm">Followers</span>
+                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                    {myUser?.followers?.length ? myUser.followers.length : '0'}
+                  </span>
+                </div>
+
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { getActivities } from '../../fetchers/SanityFetchers'
 import toast from 'react-hot-toast'
 const style = {
-  wrapper: `w-full mt-8 border rounded-xl overflow-hidden`,
+  wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
   title: `px-6 py-4 flex items-center cursor-pointer`,
   titleLeft: `flex-1 flex items-center text-md font-bold`,
   titleIcon: `text-2xl mr-2`,
@@ -34,11 +34,11 @@ const successToastStyle = {
 
 const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
   
-  const [toggle, setToggle] = useState(true)
+  const [toggle, setToggle] = useState(false)
   const { dark } = useThemeContext()
 
   const { data: activityData, status } = useQuery(
-    ['activities', collectionAddress],
+    ['activities', metaDataFromSanity?._id],
     getActivities(metaDataFromSanity?._id),
     {
       enabled: Boolean(metaDataFromSanity?._id),
@@ -84,71 +84,73 @@ const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) =>
         </div>
       </div>
       {!toggle && (
-        <table className="w-full sm:overflow-scroll">
-          <thead>
-            <tr>
-              <th
-                className={`border-y ${
-                  dark ? 'border-slate-700' : 'border-neutral-200'
-                } p-4 text-sm font-normal`}
-              >
-                Event
-              </th>
-              <th
-                className={`border-y ${
-                  dark ? 'border-slate-700' : 'border-neutral-200'
-                } p-4 text-sm font-normal`}
-              >
-                Price
-              </th>
-              <th
-                className={`border-y ${
-                  dark ? 'border-slate-700' : 'border-neutral-200'
-                } p-4 text-sm font-normal`}
-              >
-                From
-              </th>
-              <th
-                className={`border-y ${
-                  dark ? 'border-slate-700' : 'border-neutral-200'
-                } p-4 text-sm font-normal`}
-              >
-                To
-              </th>
-              <th
-                className={`border-y ${
-                  dark ? 'border-slate-700' : 'border-neutral-200'
-                } p-4 text-sm font-normal`}
-              >
-                Date
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {status == 'loading' && (
+        <div className="w-full overflow-auto max-h-[28rem]">
+          <table className="w-full sm:overflow-scroll">
+            <thead>
               <tr>
-                <td colSpan="5">{<Loader />}</td>
+                <th
+                  className={`border-y ${
+                    dark ? 'border-slate-700' : 'border-neutral-200'
+                  } p-4 text-sm font-normal`}
+                >
+                  Event
+                </th>
+                <th
+                  className={`border-y ${
+                    dark ? 'border-slate-700' : 'border-neutral-200'
+                  } p-4 text-sm font-normal`}
+                >
+                  Price
+                </th>
+                <th
+                  className={`border-y ${
+                    dark ? 'border-slate-700' : 'border-neutral-200'
+                  } p-4 text-sm font-normal`}
+                >
+                  From
+                </th>
+                <th
+                  className={`border-y ${
+                    dark ? 'border-slate-700' : 'border-neutral-200'
+                  } p-4 text-sm font-normal`}
+                >
+                  To
+                </th>
+                <th
+                  className={`border-y ${
+                    dark ? 'border-slate-700' : 'border-neutral-200'
+                  } p-4 text-sm font-normal`}
+                >
+                  Date
+                </th>
               </tr>
-            )}
+            </thead>
 
-            {status == 'success' && activityData.length == 0 && (
-              <tr>
-                <td colSpan="5" className="p-4 text-center">
-                  <span className="text-sm">No activities recorded.</span>
-                </td>
-              </tr>
-            )}
+            <tbody>
+              {status == 'loading' && (
+                <tr>
+                  <td colSpan="5">{<Loader />}</td>
+                </tr>
+              )}
 
-            {status == 'success' && activityData.length > 0 && (
-              <>
-                {activityData?.map((event, id) => (
-                  <EventItem key={id} event={event} />
-                ))}
-              </>
-            )}
-          </tbody>
-        </table>
+              {status == 'success' && activityData.length == 0 && (
+                <tr>
+                  <td colSpan="5" className="p-4 text-center">
+                    <span className="text-sm">No activities recorded.</span>
+                  </td>
+                </tr>
+              )}
+
+              {status == 'success' && activityData.length > 0 && (
+                <>
+                  {activityData?.map((event, id) => (
+                    <EventItem key={id} event={event} />
+                  ))}
+                </>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

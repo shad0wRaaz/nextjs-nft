@@ -1,42 +1,30 @@
+import axios from 'axios'
 import Link from 'next/link'
 import Report from '../Report'
 import toast from 'react-hot-toast'
+import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { ImHammer2 } from 'react-icons/im'
-import { useState, Fragment, useEffect } from 'react'
-import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { useQueryClient } from 'react-query'
 import HelmetMetaData from '../HelmetMetaData'
+import { HiOutlineMail } from 'react-icons/hi'
 import { config } from '../../lib/sanityClient'
+import { useAddress } from '@thirdweb-dev/react'
 import { useChainId } from '@thirdweb-dev/react'
-import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
+import { TbBrandTelegram } from 'react-icons/tb'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
+import { useState, Fragment, useEffect } from 'react'
 import { getUnsignedImagePath } from '../../fetchers/s3'
 import { useUserContext } from '../../contexts/UserContext'
-import { useThemeContext } from '../../contexts/ThemeContext'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { RiShareBoxLine, RiCloseCircleLine, RiFireLine } from 'react-icons/ri'
-import { TbBrandTelegram } from 'react-icons/tb'
-import { HiOutlineMail } from 'react-icons/hi'
 import { updateListings } from '../../fetchers/Web3Fetchers'
-import axios from 'axios'
-import {
-  useAddress,
-  useMarketplace,
-  useNFTCollection,
-} from '@thirdweb-dev/react'
-import {
-  FiMoreVertical,
-  FiFacebook,
-  FiTwitter,
-  FiInstagram,
-} from 'react-icons/fi'
-import { useQuery } from 'react-query'
-import {
-  getUserContinuously,
-  getNFTCollection,
-} from '../../fetchers/SanityFetchers'
+import { useThemeContext } from '../../contexts/ThemeContext'
+import { getUserContinuously } from '../../fetchers/SanityFetchers'
+import { FiMoreVertical, FiFacebook, FiTwitter } from 'react-icons/fi'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { RiShareBoxLine, RiCloseCircleLine, RiFireLine, RiAuctionLine } from 'react-icons/ri'
+import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
+import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -64,11 +52,10 @@ const style = {
   divider: `border border-white border-slate-700 border-r-1`,
 }
 
-const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
+const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) => {
   const { queryStaleTime } = useUserContext()
   const { marketplaceAddress } = useMarketplaceContext()
-  // const contract = useNFTCollection(collectionAddress)
-  const market = useMarketplace(marketplaceAddress)
+  const market = ''
   const queryClient = useQueryClient()
   const { dark } = useThemeContext()
   const address = useAddress()
@@ -78,7 +65,8 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
   const [userProfile, setUserProfile] = useState()
   const [auctionedItem, setAuctionedItem] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  
+  const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`
+
   // const { data: collectionData, status: collectionStatus } = useQuery(
   //   ['collection', router.query.c],
   //   getNFTCollection(),
@@ -108,36 +96,18 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
     })()
   }, [metaDataFromSanity])
 
-  // //get owner profile image
-  // useEffect(() => {
-  //   if(!selectedNft) return
-
-  //   //check if the item is in auction, if in auction, owner will be marketplace
-  //   if(selectedNft?.owner == '0x9a9817a85E5d54345323e381AC503F3BDC1f01f4' || selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D' || selectedNft?.owner == '0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599') {
-  //     setAuctionedItem(true)
-  //     return
-  //   }
-
-  //   ;(async()=>{
-  //     setUserProfile(await getUnsignedImagePath(selectedNft.owner))
-  //   })()
-  // }, [selectedNft])
-  
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
-    ['user', selectedNft?.owner],
+    ['user', nftContractData?.owner],
     getUserContinuously(),
     {
-      enabled: Boolean(selectedNft),
+      enabled: Boolean(nftContractData) && Boolean(nftContractData.owner != "0x0000000000000000000000000000000000000000"),
       onError: () => {
         toast.error('Error in getting Owner info.', errorToastStyle)
       },
       onSuccess: (res) => {
         //check if the item is in auction, if in auction, owner will be marketplace
-        if (
-          !res &&
-          (selectedNft?.owner == '0x9a9817a85E5d54345323e381AC503F3BDC1f01f4' ||
-            selectedNft?.owner == '0x75c169b13A35e1424EC22E099e30cE9E01cF4E3D' || selectedNft?.owner == '0xBfEf2Cd3362E51Ff4C21E2Bd0253292f86DeF599')
+        if (!res && (nftContractData?.owner == marketplaceAddress)
         ) {
           setAuctionedItem(true)
           return
@@ -160,7 +130,7 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
     }
     ;(async () => {
       try {
-        const tx = await contract.burn(selectedNft.metadata.id.toString())
+        const tx = await contract.burn(nftContractData.metadata.id.toString())
 
         //saving transaction in sanity
         const transactionData = {
@@ -169,7 +139,7 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
           transactionHash: tx.receipt.transactionHash,
           from: tx.receipt.from,
           contractAddress: collectionAddress,
-          tokenid: selectedNft.metadata.id.toString(),
+          tokenid: nftContractData.metadata.id.toString(),
           to: tx.receipt.to,
           event: 'Burn',
           price: '-',
@@ -226,10 +196,10 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
             _id: tx.receipt.transactionHash,
             transactionHash: tx.receipt.transactionHash,
             from: tx.receipt.from,
-            tokenid: selectedNft.metadata.id.toString(),
+            tokenid: nftContractData.metadata.id.toString(),
             to: tx.receipt.to,
             event: 'Delist',
-            nftItem: { _ref: selectedNft.metadata.properties.tokenid, _type: 'reference'},
+            nftItem: { _ref: nftContractData.metadata.properties.tokenid, _type: 'reference'},
             price: '-',
             chainId: chainid,
             dateStamp: new Date(),
@@ -261,10 +231,10 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
       <HelmetMetaData 
-        title={selectedNft?.metadata.name}
-        description={selectedNft?.metadata.description}
-        image={selectedNft?.metadata.image}
-        tokenId={selectedNft?.metadata?.properties?.tokenid}
+        title={nftContractData?.metadata?.name}
+        description={nftContractData?.metadata?.description}
+        image={nftContractData?.metadata?.image}
+        tokenId={nftContractData?.metadata?.properties?.tokenid}
         contractAddress={metaDataFromSanity?.collection?.contractAddress}>
           
         </HelmetMetaData>
@@ -275,20 +245,17 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
           setShowModal={setShowModal} 
           dark={dark} 
           itemType="NFT" 
-          selectedNft={selectedNft} 
+          nftContractData={nftContractData} 
           metaDataFromSanity={ metaDataFromSanity }
         />}
       {/* End of Modal window*/}
-      <div
-        className={
-          dark
-            ? 'space-y-5 border-b border-slate-800 pb-9'
-            : 'space-y-5 border-b pb-9'
-        }
-      >
-        <div className="flex flex-wrap gap-3 items-center justify-between">
-        <span 
+      <div className="space-y-5">
+        <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
+          {nftContractData?.metadata?.name}
+        </h1>
+        <div 
           className="relative block w-fit rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+          style={{ marginTop: '10px'}}
           onClick={() => {
             router.push({
               pathname: '/search',
@@ -307,268 +274,7 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
             })
           }}>
             { metaDataFromSanity?.collection?.category }
-          </span>
-          <div className="flow-root">
-            <div className={`-my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
-              <FacebookShareButton className="hover:scale-125 transition"
-                quote={selectedNft?.metadata?.name}
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                    <FiFacebook
-                      className="mr-2 h-5 w-5"
-                      color="#ffffff"
-                    />
-                  ) : (
-                    <FiFacebook
-                      className="mr-2 h-5 w-5"
-                      color="#000000"
-                    />
-                  )
-                }
-              </FacebookShareButton>
-              <TwitterShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                  <FiTwitter
-                    className="mr-2 h-5 w-5"
-                    color="#ffffff"
-                  />
-                  ) : (
-                    <FiTwitter
-                      className="mr-2 h-5 w-5"
-                      color="#000000"
-                    />
-                  )}
-              </TwitterShareButton>
-              <RedditShareButton className="hover:scale-150 transition scale-125"
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                  <AiOutlineReddit
-                    className="mr-2 h-5 w-5"
-                    color="#ffffff"
-                  />
-                ) : (
-                  <AiOutlineReddit
-                    className="mr-2 h-5 w-5"
-                    color="#000000"
-                  />
-                )}
-              </RedditShareButton>
-              <WhatsappShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                  <AiOutlineWhatsApp
-                    className="mr-2 h-5 w-5"
-                    color="#ffffff"
-                  />
-                ) : (
-                  <AiOutlineWhatsApp
-                    className="mr-2 h-5 w-5"
-                    color="#000000"
-                  />
-                )}
-              </WhatsappShareButton>
-              <TelegramShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                  <TbBrandTelegram
-                    className="mr-2 h-5 w-5"
-                    color="#ffffff"
-                  />
-                ) : (
-                  <TbBrandTelegram
-                    className="mr-2 h-5 w-5"
-                    color="#000000"
-                  />
-                )}
-              </TelegramShareButton>
-              <EmailShareButton className="hover:scale-125 transition"
-                url={`https://nuvanft.io/nfts/${metaDataFromSanity?._id}`}>
-                {dark ? (
-                  <HiOutlineMail
-                    className="mr-2 h-5 w-5"
-                    color="#ffffff"
-                  />
-                ) : (
-                  <HiOutlineMail
-                    className="mr-2 h-5 w-5"
-                    color="#000000"
-                  />
-                )}
-              </EmailShareButton>
-              {selectedNft?.metadata?.properties?.external_link ? (
-                <Link href={selectedNft?.metadata?.properties?.external_link}>
-                  <a target="_blank" className=" scale-105 transition">
-                    <RiShareBoxLine className="cursor-pointer transition hover:scale-125" />
-                  </a>
-                </Link>
-              ) : (
-                <RiShareBoxLine />
-              )}
-
-              {address && (
-                <Menu as="div" className="relative inline-block -top-[5px] leading-[12px]">
-                  <div>
-                    <Menu.Button className="transition hover:scale-125">
-                      <FiMoreVertical className="top-1 relative" />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items
-                      className={`absolute -right-4 z-20 mt-2 w-60 p-4 origin-top-right divide-y divide-gray-100 rounded-2xl ${
-                        dark
-                          ? ' bg-slate-700 text-neutral-100'
-                          : ' bg-white text-gray-900'
-                      } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
-                    >
-                      <div className="p-1">
-                        {selectedNft?.owner == address && Boolean(listingData) && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={() => cancelListing()}
-                                className={`${
-                                  active
-                                    ? dark
-                                      ? ' bg-slate-600 text-neutral-100'
-                                      : 'bg-blue-500 text-white'
-                                    : dark
-                                    ? ' text-neutral-100'
-                                    : 'text-gray-900'
-                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                              >
-                                {active ? (
-                                  dark ? (
-                                    <RiCloseCircleLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#ffffff"
-                                    />
-                                  ) : (
-                                    <RiCloseCircleLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#000000"
-                                    />
-                                  )
-                                ) : dark ? (
-                                  <RiCloseCircleLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <RiCloseCircleLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )}
-                                Cancel Direct Listing
-                              </button>
-                            )}
-                          </Menu.Item>
-                        )}
-                        {selectedNft?.owner == address && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={() => burn()}
-                                className={`${
-                                  active
-                                    ? dark
-                                      ? ' bg-slate-600 text-neutral-100'
-                                      : 'bg-neutral-100'
-                                    : dark
-                                    ? ' text-neutral-100'
-                                    : 'text-gray-900'
-                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                              >
-                                {active ? (
-                                  dark ? (
-                                    <RiFireLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#ffffff"
-                                    />
-                                  ) : (
-                                    <RiFireLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#000000"
-                                    />
-                                  )
-                                ) : dark ? (
-                                  <RiFireLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <RiFireLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )}
-                                Burn this NFT
-                              </button>
-                            )}
-                          </Menu.Item>
-                        )}
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              onClick={() => setShowModal(true)}
-                              className={`${
-                                active
-                                  ? dark
-                                    ? ' bg-slate-600 text-neutral-100'
-                                    : 'bg-neutral-100'
-                                  : dark
-                                  ? ' text-neutral-100'
-                                  : 'text-gray-900'
-                              } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {active ? (
-                                dark ? (
-                                  <MdOutlineBugReport
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <MdOutlineBugReport
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )
-                              ) : dark ? (
-                                <MdOutlineBugReport
-                                  className="mr-2 h-5 w-5"
-                                  color="#ffffff"
-                                />
-                              ) : (
-                                <MdOutlineBugReport
-                                  className="mr-2 h-5 w-5"
-                                  color="#000000"
-                                />
-                              )}
-                              Report this NFT
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              )}
-            </div>
           </div>
-        </div>
-
-        <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl mt-[2rem]">
-          {selectedNft?.metadata?.name}
-        </h2>
 
         <div className="flex flex-col-reverse gap-5 space-y-4 text-sm sm:flex-row sm:items-center sm:space-y-0 sm:space-x-8">
           <div className="flex items-center">
@@ -625,8 +331,8 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
             {ownerStatus == 'success' ? (
               !ownerData ? (
                 auctionedItem ? (
-                  <div className="flex items-center justify-center gap-2 rounded-xl bg-indigo-500 p-2 px-4 text-white">
-                    <ImHammer2 /> <span>This item is on Auction</span>
+                  <div className="flex items-center justify-center gap-2 rounded-lg bg-pink-500 p-2 px-4 text-white">
+                    <RiAuctionLine className="text-xl" /> <span>This item is on Auction</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">
@@ -681,6 +387,267 @@ const GeneralDetails = ({ selectedNft, listingData, metaDataFromSanity }) => {
             )}
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-3 items-center justify-between">
+          <div className="flow-root">
+            <div className={`my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
+              <div className="text-sm hidden md:block">
+                Share this NFT:
+              </div>
+              <FacebookShareButton className="hover:scale-125 transition"
+                quote={nftContractData?.metadata?.name}
+                url={shareURL}>
+                {dark ? (
+                    <FiFacebook
+                      className="mr-2 h-5 w-5"
+                      color="#ffffff"
+                    />
+                  ) : (
+                    <FiFacebook
+                      className="mr-2 h-5 w-5"
+                      color="#000000"
+                    />
+                  )
+                }
+              </FacebookShareButton>
+              <TwitterShareButton className="hover:scale-125 transition"
+                url={shareURL}>
+                {dark ? (
+                  <FiTwitter
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                  ) : (
+                    <FiTwitter
+                      className="mr-2 h-5 w-5"
+                      color="#000000"
+                    />
+                  )}
+              </TwitterShareButton>
+              <RedditShareButton className="hover:scale-150 transition scale-125"
+                url={shareURL}>
+                {dark ? (
+                  <AiOutlineReddit
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <AiOutlineReddit
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </RedditShareButton>
+              <WhatsappShareButton className="hover:scale-125 transition"
+                url={shareURL}>
+                {dark ? (
+                  <AiOutlineWhatsApp
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <AiOutlineWhatsApp
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </WhatsappShareButton>
+              <TelegramShareButton className="hover:scale-125 transition"
+                url={shareURL}>
+                {dark ? (
+                  <TbBrandTelegram
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <TbBrandTelegram
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </TelegramShareButton>
+              <EmailShareButton className="hover:scale-125 transition"
+                url={shareURL}>
+                {dark ? (
+                  <HiOutlineMail
+                    className="mr-2 h-5 w-5"
+                    color="#ffffff"
+                  />
+                ) : (
+                  <HiOutlineMail
+                    className="mr-2 h-5 w-5"
+                    color="#000000"
+                  />
+                )}
+              </EmailShareButton>
+              {nftContractData?.metadata?.properties?.external_link ? (
+                <Link href={nftContractData?.metadata?.properties?.external_link}>
+                  <a target="_blank" className=" scale-105 transition">
+                    <RiShareBoxLine className="cursor-pointer transition hover:scale-125" />
+                  </a>
+                </Link>
+              ) : (
+                <RiShareBoxLine />
+              )}
+
+              {address && (
+                <Menu as="div" className="relative inline-block -top-[5px] leading-[12px]">
+                  <div>
+                    <Menu.Button className="transition hover:scale-125">
+                      <FiMoreVertical className="top-1 relative" />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      className={`absolute -right-4 z-20 mt-2 w-60 p-4 origin-top-right divide-y divide-gray-100 rounded-2xl ${
+                        dark
+                          ? ' bg-slate-700 text-neutral-100'
+                          : ' bg-white text-gray-900'
+                      } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                    >
+                      <div className="p-1">
+                        {/* {nftContractData?.owner == address && Boolean(listingData) && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={`${
+                                  active
+                                    ? dark
+                                      ? ' bg-slate-600 text-neutral-100'
+                                      : 'bg-blue-500 text-white'
+                                    : dark
+                                    ? ' text-neutral-100'
+                                    : 'text-gray-900'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                {active ? (
+                                  dark ? (
+                                    <RiCloseCircleLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#ffffff"
+                                    />
+                                  ) : (
+                                    <RiCloseCircleLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#000000"
+                                    />
+                                  )
+                                ) : dark ? (
+                                  <RiCloseCircleLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <RiCloseCircleLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#000000"
+                                  />
+                                )}
+                                Cancel Direct Listing
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )}
+                        {nftContractData?.owner == address && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={`${
+                                  active
+                                    ? dark
+                                      ? ' bg-slate-600 text-neutral-100'
+                                      : 'bg-neutral-100'
+                                    : dark
+                                    ? ' text-neutral-100'
+                                    : 'text-gray-900'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                {active ? (
+                                  dark ? (
+                                    <RiFireLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#ffffff"
+                                    />
+                                  ) : (
+                                    <RiFireLine
+                                      className="mr-2 h-5 w-5"
+                                      color="#000000"
+                                    />
+                                  )
+                                ) : dark ? (
+                                  <RiFireLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <RiFireLine
+                                    className="mr-2 h-5 w-5"
+                                    color="#000000"
+                                  />
+                                )}
+                                Burn this NFT
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )} */}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => setShowModal(true)}
+                              className={`${
+                                active
+                                  ? dark
+                                    ? ' bg-slate-600 text-neutral-100'
+                                    : 'bg-neutral-100'
+                                  : dark
+                                  ? ' text-neutral-100'
+                                  : 'text-gray-900'
+                              } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                            >
+                              {active ? (
+                                dark ? (
+                                  <MdOutlineBugReport
+                                    className="mr-2 h-5 w-5"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <MdOutlineBugReport
+                                    className="mr-2 h-5 w-5"
+                                    color="#000000"
+                                  />
+                                )
+                              ) : dark ? (
+                                <MdOutlineBugReport
+                                  className="mr-2 h-5 w-5"
+                                  color="#ffffff"
+                                />
+                              ) : (
+                                <MdOutlineBugReport
+                                  className="mr-2 h-5 w-5"
+                                  color="#000000"
+                                />
+                              )}
+                              Report this NFT
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* if item is auction listed */}

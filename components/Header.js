@@ -63,24 +63,22 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
-const Header = ({listedItems}) => {
+const Header = () => {
   
   const {
-    setMarketplaceAddress,
     marketplaceAddress,
-    setRpcUrl,
     rpcUrl,
-    selectedChain,
     setSelectedChain,
     activeListings,
     setActiveListings,
-    setLatestNfts
+    setLatestNfts,
+    marketContract,
   } = useMarketplaceContext()
   const { setCoinPrices } = useSettingsContext()
   const address = useAddress()
   const disconnectWallet = useDisconnect()
   const router = useRouter()
-  // console.log(rpcUrl)
+  
 
   const [
     {

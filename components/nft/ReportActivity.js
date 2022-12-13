@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 
 const style = {
-    wrapper: `w-full mt-8 border rounded-xl overflow-hidden`,
+    wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
     title: `px-6 py-4 flex items-center cursor-pointer`,
     titleLeft: `flex-1 flex items-center text-md font-bold`,
     titleIcon: `text-2xl mr-2`,

@@ -1,34 +1,34 @@
 import Link from 'next/link'
+import millify from 'millify'
 import Image from 'next/image'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
+import { TbEdit } from 'react-icons/tb'
 import React, { useState } from 'react'
 import { useMutation } from 'react-query'
+import { CgWebsite } from 'react-icons/cg'
 import { FiSettings } from 'react-icons/fi'
 import { Fragment, useEffect } from 'react'
 import Loader from '../../components/Loader'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { useQueryClient } from 'react-query'
+import { RiCloseFill } from 'react-icons/ri'
 import NFTCard from '../../components/NFTCard'
 import { getUnsignedImagePath } from '../../fetchers/s3'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
 import { Menu, Transition, Switch } from '@headlessui/react'
+import EditCollection from '../../components/EditCollection'
 import noProfileImage from '../../assets/noProfileImage.png'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { IconDollar } from '../../components/icons/CustomIcons'
 import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
-import { IconDollar } from '../../components/icons/CustomIcons'
-import { useQueryClient } from 'react-query'
-import { RiCloseFill } from 'react-icons/ri'
-import EditCollection from '../../components/EditCollection'
-import { TbEdit } from 'react-icons/tb'
-import { CgWebsite } from 'react-icons/cg'
-import millify from 'millify'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -111,7 +111,7 @@ const Collection = () => {
             setBannerImageUrl(await getUnsignedImagePath(res[0]?.bannerImage))
           })()
   
-          setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
+          // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
   
           if (res[0]?.chainId == '80001') {
             setRpcUrl(process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL)
@@ -141,7 +141,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        
+        console.log(res);
       },
     }
   )

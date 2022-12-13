@@ -599,7 +599,9 @@ export const IconEthereum = ({ width, height }) => {
 export const IconLoading = (props) => {
   if (props.dark || props.dark == 'inbutton') {
     return <Bars fill="#ffffff" width="20px" height="20px" />
-  } else {
+  } else if(props.color) {
+    return <Bars fill={props.color} width="20px" height="20px" />
+  }else {
     return <Bars fill="#000000" width="20px" height="20px" />
   }
 }

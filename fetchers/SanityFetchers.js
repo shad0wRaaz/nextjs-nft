@@ -113,7 +113,7 @@ export const getNFTCollection =
 export const getActivities =
   (tokenid) =>
   async ({ queryKey }) => {
-    const [_, collectionAddress] = queryKey
+    // const [_, collectionAddress] = queryKey
     // const query = `*[_type == "activities" && contractAddress == "${collectionAddress}" && tokenid == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
     const query = `*[_type == "activities" && nftItem._ref == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
     const res = await config.fetch(query)

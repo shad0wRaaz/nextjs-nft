@@ -9,12 +9,11 @@ import Header from '../../components/Header'
 import { Disclosure } from '@headlessui/react'
 import { config } from '../../lib/sanityClient'
 import Purchase from '../../components/nft/Purchase'
-import { useUserContext } from '../../contexts/UserContext'
 import ItemActivity from '../../components/nft/ItemActivity'
 import AuctionTimer from '../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import GeneralDetails from '../../components/nft/GeneralDetails'
-import { useAddress, useNFTCollection } from '@thirdweb-dev/react'
+import { useAddress, useContract } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import RelatedNFTs from '../../components/RelatedNFTs'
@@ -25,12 +24,12 @@ import {
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi'
-import { getAllNFTs } from '../../fetchers/Web3Fetchers'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import { MdAudiotrack } from 'react-icons/md'
 import ReportActivity from '../../components/nft/ReportActivity'
 import ItemOffers from '../../components/nft/ItemOffers'
-import axios from 'axios'
+
+import BurnCancel from '../../components/nft/BurnCancel'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
@@ -68,24 +67,29 @@ const rpcChains = {
   '5': process.env.NEXT_PUBLIC_INFURA_GOERLI_URL,
 }
 
-const Nft = () => {
+const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
+const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 'http://localhost:3000' 
+
+const Nft = (props) => {
+  const {nftContractData, metaDataFromSanity, listingData } = props;
+
   const { dark } = useThemeContext()
-  const { activeListings, rpcUrl, setRpcUrl } = useMarketplaceContext()
+
   const address = useAddress()
-  const [selectedNft, setSelectedNft] = useState()
-  const [listingData, setListingData] = useState() //this will hold current or selected listing nft
-  const [isAuctionItem, setIsAuctionItem] = useState(false) //identify for auctioned item
+
+  let isAuctionItem = false;
+  if(listingData?.reservePrice) {
+    isAuctionItem = true;
+  }
 
   const router = useRouter()
   const tokenid = router.query.nftid
-  // const collectionContractAddress = ""
-  // const collection = useNFTCollection(collectionContractAddress)
 
-  const [collectionData, setCollectionData] = useState('')
-  const [metaDataFromSanity, setMetadataFromSanity] = useState()
+
+
   const [isLiked, setIsLiked] = useState(false)
   const [playItem, setPlayItem] = useState(false)
-
+  
   //Add or Remove Likes/Heart
   const addRemoveLike = async (
     e,
@@ -94,7 +98,7 @@ const Nft = () => {
   ) => {
     if (!address) {
       toastHandler.error(
-        'Connected wallet is required before sending a like to an NFT.',
+        'Wallet not connected.',
         errorToastStyle
       )
       return
@@ -160,70 +164,86 @@ const Nft = () => {
   }
 
   //get Collection Data from Sanity
-  useEffect(() => {
-    if (!tokenid) return //get NFT Items' meta data
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && _id == "${tokenid}"] {
-          views, likedBy, likes, _id, chainId, id, name,
-          ownedBy->,
-          createdBy->,
-          collection->
-        }`
-      const result = await sanityClient.fetch(query)
+  // useEffect(() => {
+  //   if (!tokenid) return //get NFT Items' meta data
+  //   ;(async (sanityClient = config, marketplace = marketContract) => {
+  //     // console.log(await marketData.getListing(1))
+  //     const query = `*[_type == "nftItem" && _id == "${tokenid}"] {
+  //         views, filepath, likedBy, likes, _id, chainId, listingid, id, name,
+  //         ownedBy->,
+  //         createdBy->,
+  //         collection->
+  //       }`
+  //     const result = await sanityClient.fetch(query)
+
+  //     setMetadataFromSanity(result[0])
+  //     setCollectionData(result[0].collection)
+
+  //     setRpcUrl(rpcChains[result[0]?.collection?.chainId])
       
+  //       //get nft data from contract
+  //       const sdk = new ThirdwebSDK(rpcUrl);
+  //       const contract = await sdk.getContract(result[0].collection.contractAddress, "nft-collection");
+  //       const nft = await contract.get(result[0].id)
+  //       setNftContractData(nft)
 
-      setMetadataFromSanity(result[0])
-      setCollectionData(result[0].collection)
+  //       //get listing data of the nft from contract
+  //       //market id: 0x0bFc480e8e9D391a0A601ed5B54151D3e526BACd
 
-      setRpcUrl(rpcChains[result[0]?.collection?.chainId])
-        // console.log(chainName[result[0]?.collection.chainId])
-      
-    })()
+  //       // if(result[0].listingid != ""){
 
-    ;(async() => {
-      axios.get(`http://localhost:8080/api/nft/${tokenid}`).then(res => {
-        console.log(res)
-        // console.log(JSON.parse(res.data))
-      })
-    })()
-  }, [tokenid])
+  //       // await axios
+  //       //           .get(`${HOST}/api/nft/${tokenid}`)
+  //       //           .then((res) => { 
+  //       //             const data = res.data;
+  //       //             setListingData(data)
 
-  const { data: nftData, status: nftStatus } = useQuery(
-    ['allnftss', metaDataFromSanity?.collection?.contractAddress],
-    getAllNFTs(rpcUrl),
-    {
-      enabled: Boolean(metaDataFromSanity?.collection?.contractAddress) && Boolean(rpcUrl),
-      onError: () => {
-        toast.error(
-          'Error fetching NFts. Refresh and try again.',
-          errorToastStyle
-        )
-      },
-      onSuccess: (res) => {
+  //       //             if (Boolean(data?.reservePrice)) {
+  //       //               setIsAuctionItem(true)
+  //       //             }
 
-        const selectedNftItem = res.find(
-          (nft) => nft.metadata.properties.tokenid == router.query.nftid
-        )
+  //       //           });
+          
+  //       // }
 
-        setSelectedNft(selectedNftItem)
+  //   })()
+  // }, [tokenid])
 
-        if (activeListings) {
-          const listingItem = activeListings?.find(
-            (marketNft) =>
-              JSON.stringify(marketNft.asset?.id) ==
-                JSON.stringify(selectedNftItem?.metadata.id) &&
-              marketNft.assetContractAddress == metaDataFromSanity?.collection?.contractAddress
-          )
-          setListingData(listingItem)
+  // const { data: nftData, status: nftStatus } = useQuery(
+  //   ['allnftss', metaDataFromSanity?.collection?.contractAddress],
+  //   getAllNFTs(rpcUrl),
+  //   {
+  //     enabled: Boolean(metaDataFromSanity?.collection?.contractAddress) && Boolean(rpcUrl) && false,
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching NFTs. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess: (res) => {
 
-          if (Boolean(listingItem?.reservePrice)) {
-            setIsAuctionItem(true)
-          }
-        }
-      },
-    }
-  )
+  //       const selectedNftItem = res.find(
+  //         (nft) => nft.metadata.properties.tokenid == router.query.nftid
+  //       )
 
+  //       setSelectedNft(selectedNftItem)
+
+  //       if (activeListings) {
+  //         const listingItem = activeListings?.find(
+  //           (marketNft) =>
+  //             JSON.stringify(marketNft.asset?.id) ==
+  //               JSON.stringify(selectedNftItem?.metadata.id) &&
+  //             marketNft.assetContractAddress == metaDataFromSanity?.collection?.contractAddress
+  //         )
+  //         setListingData(listingItem)
+
+  //         if (Boolean(listingItem?.reservePrice)) {
+  //           setIsAuctionItem(true)
+  //         }
+  //       }
+  //     },
+  //   }
+  // )
 
   useEffect(() => {
     setIsLiked(false)
@@ -253,44 +273,48 @@ const Nft = () => {
           <div className="space-y-8">
             <div
               className={
-                selectedNft?.owner.toString() ==
+                nftContractData?.owner?.toString() ==
                 '0x0000000000000000000000000000000000000000'
                   ? 'disabled pointer-none relative opacity-50'
                   : 'relative'
               }
             >
               <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl">
-                {playItem && selectedNft?.metadata?.properties.itemtype == "video" && (
+                {playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
                   <video className="w-full h-full" autoPlay loop>
-                    <source src={selectedNft?.metadata?.animation_url}/>
+                    <source src={nftContractData?.metadata?.animation_url}/>
                     Your browser does not support video tag. Upgrade your browser.
                   </video>
                 )}
-                {playItem && selectedNft?.metadata?.properties.itemtype == "audio" && (
+                {playItem && nftContractData?.metadata?.properties.itemtype == "audio" && (
                   <>
                     <audio className="w-full h-full" autoPlay loop>
-                      <source src={selectedNft?.metadata?.animation_url}/>
+                      <source src={nftContractData?.metadata?.animation_url}/>
                       Your browser does not support video tag. Upgrade your browser.
                     </audio>
                     <img
-                      src={selectedNft?.metadata?.image}
+                      src={nftContractData?.metadata?.image}
                       className="h-full w-full object-cover"
                     />
                   </>
                 )}
                 {!playItem && (
                   <img
-                    src={selectedNft?.metadata?.image}
+                    src={nftContractData?.metadata?.image}
                     className="h-full w-full object-cover"
                   />
+                  // <img
+                  //   src={selectedNft?.metadata?.image}
+                  //   className="h-full w-full object-cover"
+                  // />
                 )}
               </div>
 
               <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
-                {selectedNft?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> : selectedNft?.metadata?.properties?.itemtype  == "video" ? <IconVideo /> : <IconImage />}
+                {nftContractData?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> : nftContractData?.metadata?.properties?.itemtype  == "video" ? <IconVideo /> : <IconImage />}
               </div>
 
-              {(selectedNft?.metadata?.properties?.itemtype == "audio" || selectedNft?.metadata?.properties?.itemtype == "video") && 
+              {(nftContractData?.metadata?.properties?.itemtype == "audio" || nftContractData?.metadata?.properties?.itemtype == "video") && 
                 (<div 
                     className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
                     onClick={() => setPlayItem(curVal => !curVal)}>
@@ -314,6 +338,12 @@ const Nft = () => {
               </button>
             </div>
 
+            <GeneralDetails
+              nftContractData={nftContractData}
+              listingData={listingData}
+              metaDataFromSanity={ metaDataFromSanity }
+              />
+
             <div className="mt-4 w-full rounded-2xl">
               <Disclosure>
                 {({ open }) => (
@@ -336,7 +366,7 @@ const Nft = () => {
                       />
                     </Disclosure.Button>
                     <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                      {selectedNft?.metadata?.description}
+                      {nftContractData?.metadata?.description}
                     </Disclosure.Panel>
                   </>
                 )}
@@ -363,44 +393,49 @@ const Nft = () => {
                       />
                     </Disclosure.Button>
                     <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
-                      {selectedNft?.metadata?.properties?.traits?.map(
+                      {nftContractData?.metadata?.properties?.traits?.map(
                         (props, id) => (
-                          <div
-                            className={`w-[130px] rounded-xl border border-solid ${
-                              dark
-                                ? 'border-slate-600 bg-slate-700'
-                                : 'border-sky-300 bg-sky-100'
-                            } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
-                            key={id}
-                          >
-                            <p
-                              className={
+                          <>
+                            {props.propertyKey != "" ? (
+
+                            <div
+                              className={`w-[130px] rounded-xl border border-solid ${
                                 dark
-                                  ? 'text-sm font-bold text-neutral-200'
-                                  : 'text-sm font-bold text-sky-400'
-                              }
+                                  ? 'border-slate-600 bg-slate-700'
+                                  : 'border-sky-300 bg-sky-100'
+                              } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
+                              key={id}
                             >
-                              {props.propertyKey}
-                            </p>
-                            <p
-                              className={
-                                dark ? 'text-neutral-100' : 'text-sky-500'
-                              }
-                            >
-                              {props.propertyValue}
-                            </p>
-                            <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
-                              <span
-                                className={`w-fit rounded-md ${
+                              <p
+                                className={
                                   dark
-                                    ? ' border border-slate-500 px-2 text-neutral-50'
-                                    : 'border border-sky-300 px-2 text-sky-500'
-                                }`}
+                                    ? 'text-sm font-bold text-neutral-200'
+                                    : 'text-sm font-bold text-sky-400'
+                                }
                               >
-                                100% Match
-                              </span>
-                            </p>
-                          </div>
+                                {props.propertyKey}
+                              </p>
+                              <p
+                                className={
+                                  dark ? 'text-neutral-100' : 'text-sky-500'
+                                }
+                              >
+                                {props.propertyValue}
+                              </p>
+                              <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
+                                <span
+                                  className={`w-fit rounded-md ${
+                                    dark
+                                      ? ' border border-slate-500 px-2 text-neutral-50'
+                                      : 'border border-sky-300 px-2 text-sky-500'
+                                  }`}
+                                >
+                                  100% Match
+                                </span>
+                              </p>
+                            </div>
+                            ) : (<span className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No properties defined.</span>)}
+                          </>
                         )
                       )}
                     </Disclosure.Panel>
@@ -430,20 +465,26 @@ const Nft = () => {
                     </Disclosure.Button>
                     <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
                       <div>
-                        <div className="flex flex-row justify-between">
+                        <div className="flex flex-row justify-between py-2">
                           <span>Contract Address</span>
                           <span className="line-clamp-1 text-base">
                             {metaDataFromSanity?.collection?.contractAddress?.slice(0, 7)}...
                             {metaDataFromSanity?.collection?.contractAddress?.slice(-5)}
                           </span>
                         </div>
-                        <div className="flex flex-row justify-between py-4">
+                        <div className="flex flex-row justify-between py-2">
                           <span>Token ID</span>
                           <span className="line-clamp-1 text-base">
-                            {selectedNft?.metadata?.properties.tokenid}
+                            {nftContractData?.metadata?.properties?.tokenid}
                           </span>
                         </div>
-                        <div className="flex flex-row justify-between">
+                        <div className="flex flex-row justify-between py-2">
+                          <span>Token Standard</span>
+                          <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
+                            {nftContractData?.type}
+                          </span>
+                        </div>
+                        <div className="flex flex-row justify-between py-2">
                           <span>Blockchain</span>
                           <span className="line-clamp-1 text-base">
                             {chainIcon[metaDataFromSanity?.collection?.chainId]}
@@ -487,11 +528,6 @@ const Nft = () => {
             </div>
           </div>
           <div className="border-t-2 border-neutral-200 pt-10 lg:border-t-0 lg:pt-0 xl:pl-10">
-            <GeneralDetails
-              selectedNft={selectedNft}
-              listingData={listingData}
-              metaDataFromSanity={ metaDataFromSanity }
-              />
             
             {/* {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
               <AuctionTimer
@@ -502,33 +538,38 @@ const Nft = () => {
               )} */}
 
             <Purchase
-              selectedNft={selectedNft}
+              nftContractData={nftContractData}
               listingData={listingData}
               nftCollection={metaDataFromSanity?.collection}
               auctionItem={isAuctionItem}
               />
             <ItemOffers
-              selectedNft={selectedNft}
+              selectedNft={nftContractData}
               listingData={listingData}
               metaDataFromSanity={metaDataFromSanity}
               />
 
             <ItemActivity
               collectionAddress={metaDataFromSanity?.collection?.contractAddress}
-              selectedNft={selectedNft}
+              selectedNft={nftContractData}
               metaDataFromSanity={ metaDataFromSanity }
               />
             {address && (
               <ReportActivity
                 collectionAddress={metaDataFromSanity?.collection?.contractAddress}
-                selectedNft={selectedNft}
+                selectedNft={nftContractData}
                 metaDataFromSanity={ metaDataFromSanity }
               />
             )}
+            <BurnCancel 
+              nftContractData={nftContractData} 
+              listingData={listingData} 
+              collectionAddress={metaDataFromSanity?.collection?.contractAddress}
+              />
           </div>
         </div>
       </main>
-      <RelatedNFTs collection={collectionData}/>
+      <RelatedNFTs collection={metaDataFromSanity.collection} listingData={listingData} />
       <BrowseByCategory />
       <Footer />
     </div>
@@ -536,3 +577,26 @@ const Nft = () => {
 }
 
 export default Nft
+
+export async function getServerSideProps(context){
+  const { query } = context;
+
+  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`);
+  const nftdata = await response.json();
+
+  const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
+  console.log(query.nftid)
+  const sanityData = await response2.json();
+
+  const collectionAddress = sanityData.collection?.contractAddress;
+  const response3 = await fetch(`${HOST}/api/nft/contract/${collectionAddress}/${sanityData.id}`);
+  const nftcontractdata = await response3.json();
+
+  return {
+    props: {
+      listingData: nftdata,
+      metaDataFromSanity: sanityData,
+      nftContractData: nftcontractdata,
+    }
+  }
+}

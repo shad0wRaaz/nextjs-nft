@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router'
+import axios from 'axios'
 import FileBase from 'react-file-base64'
+import { useRef } from 'react'
 import { BiError } from 'react-icons/bi'
 import { GoPackage } from 'react-icons/go'
 import { RadioGroup } from '@headlessui/react'
@@ -7,12 +9,11 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
-import noProfileImage from '../../assets/noProfileImage.png'
+import { v4 as uuidv4 } from 'uuid'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
 import {
   useAddress,
-  useNFTCollection,
   useMetamask,
   useChainId,
   useNetwork,
@@ -39,13 +40,18 @@ const style = {
   button:
     'gradBlue flex gap-2 justify-center rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
   previewImage:
-    'relative mr-[1rem] h-[200px] w-[300px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-400',
+    'relative mr-[1rem] h-[200px] w-[300px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-500 flex items-center justify-center',
   notConnectedWrapper: 'flex justify-center items-center h-screen',
   traitsButtons:
     'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
   secondaryButton:
     'rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white border border-slate-400 hover:border-slate-600',
+  imageInput:
+    'w-[350px] h-[350px] border border-slate-100 border-dashed border-lg flex items-center justify-content-center text-grey mb-4 cursor-pointer rounded-xl',
+  imagePreview: 'max-h-[450px] rounded-xl cursor-pointer mb-4 max-w-[350px]'
 }
+
+const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080' 
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -111,11 +117,11 @@ function reducer(state, action) {
 }
 
 const CreateNFT = ({uuid}) => {
-  
+
   const [state, dispatch] = useReducer(reducer, {
     name: '',
     description: '',
-    image: '',
+    image: '/assets/uploads/' + uuid,
     properties: {
       external_link: '',
       traits: [
@@ -129,7 +135,8 @@ const CreateNFT = ({uuid}) => {
       tokenid: '',
     },
   })
-
+  const fileInputRef = useRef(null)
+  const [file, setFile] = useState()
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()
@@ -137,7 +144,7 @@ const CreateNFT = ({uuid}) => {
   const connectWithMetamask = useMetamask()
   const { myCollections } = useUserContext()
   const [thisChainCollection, setThisChainCollection] = useState([])
-  
+
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
     if(!myCollections) return
@@ -164,9 +171,7 @@ const CreateNFT = ({uuid}) => {
 
   // const { mutate: mintNFT, isLoading: isMinting, error } = useMintNFT(nftCollection);
 
-  useNFTCollection(selectedCollection.contractAddress)
-
-  //get the NFT COllections created by current user
+  //get the NFT Collections created by current user
   const fetchSanityCollectionData = async (sanityClient = config) => {
     if (!chainid || !address) return
     const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
@@ -208,10 +213,6 @@ const CreateNFT = ({uuid}) => {
     })
   }, [uuid])
 
-  useEffect(() => {
-    const sdk = new ThirdwebSDK(signer)
-    setNftCollection(sdk.getNFTCollection(selectedCollection.contractAddress))
-  }, [selectedCollection])
 
   const urlPatternValidation = (URL) => {
     const regex = new RegExp(
@@ -221,10 +222,10 @@ const CreateNFT = ({uuid}) => {
   }
 
   //handling Create NFT button
-  const handleSubmit = (e, toastHandler = toast) => {
+  const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault()
 
-    if (state.name == '' || state.image == '') {
+    if (state.name == '' || !file) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
     }
@@ -242,7 +243,8 @@ const CreateNFT = ({uuid}) => {
       )
       return
     }
-    if (!isNaN(nftCollection)) {
+    
+    if (!(nftCollection)) {
       //Some issue is there
       toastHandler.error(
         'Error in minting. Cannot find NFT Collection',
@@ -250,95 +252,96 @@ const CreateNFT = ({uuid}) => {
       )
       return
     }
-    if(fileType != "image") {
-      toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
-      return
-    }
+    // if(fileType != "image") {
+    //   toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
+    //   return
+    // }
+    const formdata = new FormData();
+    formdata.append('filetoupload', file)
+    formdata.append('filename', uuid)
     
-    ;(async (sanityClient = config) => {
-      try {
-        setIsMinting(true)        
+    try {
+      await axios.post(HOST.concat('/api/uploadnft'), formdata, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      }).then(async (res) => 
+      {
+        const filePath = '/assets/nfts/' + res.data.filename
 
+        //update filepath in state
+        dispatch({
+          type: 'CHANGE_IMAGE',
+          payload: { image: filePath },
+        })
+      
+      setIsMinting(true)
+      const sdk = new ThirdwebSDK(signer)
+      const nftCollection = await sdk.getContract(selectedCollection.contractAddress)
+      const tx = await nftCollection.erc721.mintTo(address, {...state, image: file})
 
-        const tx = await nftCollection.mintTo(address, state)
+      const receipt = tx.receipt
 
-        const receipt = tx.receipt
-
-        
-        //save NFT data into Sanity
-        const nftItem = {
-          _type: 'nftItem',
-          _id: uuid,
-          id: tx.id.toString(),
-          collection: { 
-            _ref: selectedCollection._id, 
-            _type: 'reference'
-          },
-          listed: false,
-          chainId: chainid,
-          createdBy: { 
-            _ref: address, 
-            _type: 'reference' 
-          },
-          ownedBy: { 
-            _ref: address, 
-            _type: 'reference' 
-          },
-          featured: false,
-          name: state.name,
-        }
-        
-        await sanityClient
-          .createIfNotExists(nftItem)
-          .then()
-          .catch((err) => {
-            console.error(err)
-            toastHandler.error(
-              'Error saving NFT data. Please contact administrator.',
-              errorToastStyle
-            )
-          })
-          
-
-        //save Transaction Data into Sanity
-        const transactionData = {
-          _type: 'activities',
-          _id: receipt.transactionHash,
-          nftItem: { _ref: uuid, _type: 'reference' },
-          transactionHash: receipt.transactionHash,
-          from: receipt.from,
-          to: receipt.to,
-          tokenid: tx.id.toString(),
-          event: 'Mint',
-          price: '-',
-          chainId: chainid,
-          dateStamp: new Date(),
-        }
-        
-        await sanityClient
-          .createIfNotExists(transactionData)
-          .then()
-          .catch((err) => {
-            toastHandler.error(
-              'Error saving NFT Transaction data. Please contact administrator.',
-              errorToastStyle
-            )
-          })
-        
-        setIsMinting(false)
-
-        toastHandler.success('NFT minted successfully', successToastStyle)
-        dispatch({ type: 'CLEAR_OUT_ALL' })
-        
-        router.push(
-          `/nfts/${uuid}`
-        )
-      } catch (error) {
-        toastHandler.error(error.message, errorToastStyle)
-        console.log(error.message)
-        setIsMinting(false)
+      
+      //save NFT data into Sanity
+      const nftItem = {
+        _type: 'nftItem',
+        _id: uuid,
+        filepath: filePath,
+        id: tx.id.toString(),
+        collection: { 
+          _ref: selectedCollection._id, 
+          _type: 'reference'
+        },
+        listed: false,
+        chainId: chainid,
+        createdBy: { 
+          _ref: address, 
+          _type: 'reference' 
+        },
+        ownedBy: { 
+          _ref: address, 
+          _type: 'reference' 
+        },
+        featured: false,
+        name: state.name,
       }
-    })()
+      
+      await sanityClient.createIfNotExists(nftItem)
+        
+
+      //save Transaction Data into Sanity
+      const transactionData = {
+        _type: 'activities',
+        _id: receipt.transactionHash,
+        nftItem: { _ref: uuid, _type: 'reference' },
+        transactionHash: receipt.transactionHash,
+        from: receipt.from,
+        to: receipt.to,
+        tokenid: tx.id.toString(),
+        event: 'Mint',
+        price: '-',
+        chainId: chainid,
+        dateStamp: new Date(),
+      }
+      
+      await sanityClient.createIfNotExists(transactionData)
+      
+      setIsMinting(false)
+
+      toastHandler.success('NFT minted successfully', successToastStyle)
+      dispatch({ type: 'CLEAR_OUT_ALL' })
+      setIsMinting(false)
+      
+      router.push(
+        `/nfts/${uuid}`
+        )
+      })
+    } catch (error) {
+      toastHandler.error(error, errorToastStyle)
+      console.log(error.message)
+      setIsMinting(false)
+    }
   }
 
   //handling input change
@@ -449,19 +452,34 @@ const CreateNFT = ({uuid}) => {
                 <div className="w-[1/2]">
                   <p className={style.label}>Image *</p>
                   <p className={style.smallText}>
-                    Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 5MB
+                    Supported file types: JPG, PNG, GIF, WEBP, JFIF.
                   </p>
+
                   <div
                     className={style.previewImage}
-                    style={{ height: '200px', width: '300px' }}
+                    style={{ height: '350px', width: '300px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setFile(e.dataTransfer.files[0]);
+                        }}
                   >
                     {/* {isNaN(state.image) && <MediaRenderer src={state.image} />} */}
-                    {state.image && (
-                      <Image src={state.image} layout="fill" objectFit="cover" />
+                    {file ? (
+                      <img src={URL.createObjectURL(file)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setFile(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {fileInputRef.current.click()}} 
+                        className="rounded-lg py-1 cursor-pointer hover:bg-slate-800 px-4 border-slate-500 border-dashed border"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setFile(e.dataTransfer.files[0]);
+                        }}>Drag & Drop Image</div>
                     )}
                   </div>
                   <div className="imageUploader mb-4 ml-3">
-                    <FileBase
+                    {/* <FileBase
                       type="file"
                       multiple={false}
                       onDone={({ base64 }) => {
@@ -471,10 +489,47 @@ const CreateNFT = ({uuid}) => {
                           payload: { image: base64 },
                         })
                       }}
+                    /> */}
+                    <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="nftImage"
+                      ref={fileInputRef}
+                      onChange={e => setFile(e.target.files[0])}
+                      style={{ display: "none"}}
                     />
                   </div>
+
                 </div>
               </div>
+
+              {/* {file ? (
+                <img
+                  src={URL.createObjectURL(file)}
+                  className={style.imagePreview}
+                  onClick={() => setFile(undefined)}
+                />
+              ) : (
+                <div
+                  className={style.imageInput}
+                  onClick={uploadFile}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setFile(e.dataTransfer.files[0]);
+                  }}
+                >
+                  Drag and drop an image here to upload it!
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                id="profile-picture-input"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+              /> */}
+
 
               <p className={style.label}>Item Description</p>
               <p className={style.smallText}>
@@ -502,8 +557,9 @@ const CreateNFT = ({uuid}) => {
                     <RadioGroup
                       value={selectedCollection}
                       onChange={(e) => {
-                        updateCategory(e.name)
-                        setSelectedCollection(e)
+                        updateCategory(e.name);
+                        setSelectedCollection(e);
+                        setNftCollection(e.contractAddress)
                       }}
                     >
                       <RadioGroup.Label className="sr-only">

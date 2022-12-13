@@ -1,31 +1,24 @@
-import express from 'express'
+import fs from 'fs'
+import path from 'path'
+import { v4 as uuidv4 } from 'uuid'
 import cors from 'cors'
-import multer from 'multer'
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import axios from 'axios'
+import Redis from 'ioredis'
 import dotenv from 'dotenv'
 import crypto from 'crypto'
-import sanityClient from '@sanity/client'
+import multer from 'multer'
 import cron from 'node-cron'
-import axios from 'axios'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import Redis from 'ioredis'
-import { Web3Storage, getFilesFromPath } from 'web3.storage'
-import { v4 as uuidv4 } from 'uuid'
-import { useMarketplace } from '@thirdweb-dev/react'
+import express from 'express'
 import bodyParser from 'body-parser'
-
+import sanityClient from '@sanity/client'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { Web3Storage, getFilesFromPath } from 'web3.storage'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 
 const app = express()
-app.use(
-  cors({
-    origin: ['http://localhost:3000', 'https://nuvanft.io'],
-  })
-)
+app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io'],}))
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 var globalActiveListings = []
@@ -109,7 +102,35 @@ const randomImageName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString('hex')
 
 const storage = multer.memoryStorage()
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage }) //for profile pic and banner pic saving in AWS
+
+const nftStorage = multer.diskStorage({
+  destination: function (req, file, cb,) {
+    cb(null, '../public/assets/nfts/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, uuidv4() + path.extname(file.originalname))
+  }
+})
+const nftUpload = multer({ storage: nftStorage});
+
+const collectionStorage = multer.diskStorage({
+  destination: function (req, file, cb,) {
+    cb(null, '../public/assets/collections/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, uuidv4() + path.extname(file.originalname))
+  }
+})
+const collectionUpload = multer({ storage: collectionStorage});
+
+app.post('/api/uploadnft', nftUpload.single('filetoupload'), function(req, res) {
+  res.status(200).json({ 'filename' : res.req.file.filename})
+})
+
+app.post('/api/uploadcollection', nftUpload.single('filetoupload'), function(req, res) {
+  res.status(200).json({ 'filename' : res.req.file.filename})
+})
 
 // app.get('/api/getMarketEvents', async (req, res) =>{
 //   // const marketplaceAddress = req.query.marketplaceAddress
@@ -215,8 +236,8 @@ app.post('/api/saveS3Banner', upload.single('banner'), async (req, res) => {
 
 app.get('/api/updateListings', async (req, res) => {
   //get data from blockchain
-  const sdk = new ThirdwebSDK(process.env.NEXT_PUBLIC_POLYGON_RPC_URL)
-  const marketplace = sdk.getMarketplace(process.env.NEXT_PUBLIC_MARKETPLACE_ID)
+  const sdk = new ThirdwebSDK("mumbai")
+  const marketplace = await sdk.getContract(process.env.NEXT_PUBLIC_MARKETPLACE_ID, "marketplace")
   const listedItems = await marketplace.getActiveListings()
 
   redis.del("cache")
@@ -282,7 +303,7 @@ app.get('/api/topTradedCollections', async( req, res) => {
     return res.status(200).json(topCollections)    
   }
   else{
-    const query = `*[_type == "nftCollection"][0..7] | order(volumeTraded desc) {
+    const query = `*[_type == "nftCollection"] | order(volumeTraded desc) {
       "id": _id,
       name, 
       category, 
@@ -299,8 +320,7 @@ app.get('/api/topTradedCollections', async( req, res) => {
       "allOwners" : owners[]->
   }`
   topCollections = await config.fetch(query)
-  redis.del("toptradedcollections")
-  redis.set("toptradedcollections", JSON.stringify(topCollections))
+  redis.set("toptradedcollections", JSON.stringify(topCollections), 'ex', 600)
   return res.status(200).json(JSON.stringify(topCollections))
   }
 })
@@ -315,7 +335,8 @@ app.post('/api/savenft', async(req, res) => {
     return res.status(200).json("Duplicate id. NFT data not saved.")
   }
 })
-app.get('/api/nft/:id', async (req, res) => {
+app.get('/api/nft/listing/:id', async (req, res) => {
+  //this will return Listing Data of a NFT
   const nftId = req.params.id
   let result = []
   await redis.get("cache").then((res) =>{
@@ -323,9 +344,44 @@ app.get('/api/nft/:id', async (req, res) => {
     result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
   })
   if(result.length > 0) {
-    res.status(200).json(JSON.stringify(result[0]))
+    res.status(200).json(result[0])
   }else {
-    res.status(200).json("NFT data not found")
+    res.status(200).json({"message": "NFT data not found"})
+  }
+})
+app.get('/api/nft/:id', async(req, res) => {  
+  //This will return Sanity Database data of an NFT
+  const tokenid = req.params.id
+
+  const query = `*[_type == "nftItem" && _id == "${tokenid}"] {
+    views, filepath, likedBy, likes, _id, chainId, listingid, id, name,
+    ownedBy->,
+    createdBy->,
+    collection->
+  }`;
+  const sanityData = await config.fetch(query);
+  if(sanityData.length > 0){
+    res.status(200).json(sanityData[0])
+  }
+  else {
+    res.status(200).json({"message": "NFT data not found"})
+  }
+})
+app.get('/api/nft/contract/:id/:nftid', async(req, res) => {
+  //This gives Collection Contract Data of a NFT
+  const collectionContractAddress = req.params.id;
+  const nftid = req.params.nftid;
+  
+  const sdk = new ThirdwebSDK("mumbai");
+  const contract = await sdk.getContract(collectionContractAddress, "nft-collection");
+  const nft = await contract.get(nftid);
+  
+
+  if(nft.metadata.name != 'Failed to load NFT metadata') {
+    res.status(200).json(nft);
+  }
+  else {
+    res.status(200).json({messsage: 'NFT data not found'})
   }
 })
 

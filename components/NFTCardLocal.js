@@ -66,9 +66,9 @@ const NFTCardLocal = ({ nftItem, listings }) => {
   useEffect(() => {
     //getting NFT likes from Sanity
     ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && contractAddress == "${
-        nftItem.contractAddress
-      }" && id == "${nftItem.id.toString()}"] {
+      const query = `*[_type == "nftItem" && _id == "${
+        nftItem._id
+      }"] {
         likedBy
       }`
       const res = await sanityClient.fetch(query)

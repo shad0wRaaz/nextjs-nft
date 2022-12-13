@@ -90,7 +90,7 @@ const SearchItem = ({ nftItem }) => {
 
                   {/* <div className={`w-full border-b ${dark ? 'border-sky-700/30' : 'border-neutral-100'}`}></div> */}
 
-                  <div className="flex border-t border-neutral-100 pt-4 items-end justify-between ">
+                  <div className={`flex border-t ${dark ? 'border-slate-500' : 'border-neutral-100'} pt-4 items-end justify-between `}>
                     <div className="pt-3">
                       <div className="relative flex items-baseline rounded-lg border-2 border-green-500 py-1.5 px-2.5 text-sm font-semibold sm:text-base md:py-2 md:px-3.5 ">
                         <span className={`absolute bottom-full -mx-1 block rounded-md translate-y-1 p-1 px-3 bg-green-500 text-xs font-normal text-neutral-100`}>

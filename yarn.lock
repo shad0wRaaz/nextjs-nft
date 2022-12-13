@@ -1895,22 +1895,22 @@
     "@tanstack/query-core" "4.10.3"
     use-sync-external-store "^1.2.0"
 
-"@thirdweb-dev/contracts-js@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts-js/-/contracts-js-1.2.1.tgz#e99c7fceb5b7bccde3196f654645deae1259b98d"
-  integrity sha512-YrLTdfwnapiMpgH6bT4+p6Xw0/1IVNDVhZAukU1q9REmnSOxQZfsdHuq8+ZdSKfRt85p5tzmxpoE7jpyzFSRuQ==
+"@thirdweb-dev/contracts-js@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts-js/-/contracts-js-1.2.2.tgz#92977adc912fd264ed8b4ca767eb629eac2d112e"
+  integrity sha512-6OZ5zDCLHAGjJkf9pcOJ1InR506SnU7P3+a7ggNawn3NzQs8G6wSyfsoIn3e+ZmmEqVtbdv49qX7GMgCxVXZQg==
   dependencies:
-    "@thirdweb-dev/contracts" "^3.2.2"
+    "@thirdweb-dev/contracts" "3.2.8-0"
 
-"@thirdweb-dev/contracts@^3.2.2":
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts/-/contracts-3.2.7.tgz#8adf3599a25833dac6e2b31ea022638357cd1d1c"
-  integrity sha512-QTIHqQ8h0EquG90pSIDLWoCfVg2saPvzGFzzr+eK7lpKHIYOHEoUbvWuDkKRLcQiOsPRe3yyMNgroL038JqPeg==
+"@thirdweb-dev/contracts@3.2.8-0":
+  version "3.2.8-0"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts/-/contracts-3.2.8-0.tgz#74a5775deece2f143d1f4d2d96920efc1f8659df"
+  integrity sha512-yoFoXx2s/baxZx05WYgTGIb6ze/pUwLQ2CkiK9ms3IoUY51mlmN0T8bbRBAJlQBMqJuHRGk4HzB+BUrpFYAZig==
 
-"@thirdweb-dev/react@^3.6.3":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-3.6.3.tgz#e6f81f6e209ca91696073848cbf80aab9609e2bf"
-  integrity sha512-dIzrXeaE5OfAR5jc2oahvu1TB/Z+rWSLVnzIEn/NW+vaUU0n7NqDPAXSWqKbz4pZlmhM0MstCHVCSRuaDipS0g==
+"@thirdweb-dev/react@^3.6.7":
+  version "3.6.7"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-3.6.7.tgz#104fc527767c19305d47fbcbce905134b5192a1a"
+  integrity sha512-XsFQSlMEyCYHBwdDh7shgX7CCtQxypxnCxjzcimDylzc1Q/9oDZkR1mxR6Go0mwktLpOQYzsAesOmLHi1gIlUA==
   dependencies:
     "@emotion/react" "^11.10.0"
     "@emotion/styled" "^11.10.0"
@@ -1932,22 +1932,22 @@
     tiny-invariant "^1.2.0"
     wagmi "^0.2.28"
 
-"@thirdweb-dev/sdk@^3.6.3":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-3.6.3.tgz#f2749dd16a28bb1f6bf460e4542d1a66ac32b34a"
-  integrity sha512-UCbPwVpuUU1jrVQJJFfKje6MS+4Lpi81ordlBSCTL6DEN3jlEEqQwcKpF7Pkrqr3gAOxAnI2qZffulLM1354LQ==
+"@thirdweb-dev/sdk@^3.6.7":
+  version "3.6.7"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-3.6.7.tgz#87a77397265dd1271c61f04ad3c6d4b088b47609"
+  integrity sha512-iUnXt4bYX7HFofEHdqEN6Z8h5qF65+uswqlJW2NKHW1zt+FPYYZENGfvgWe2+xf/7160MDyedyoMOaoK87JG7Q==
   dependencies:
     "@metaplex-foundation/js" "^0.17.6"
     "@metaplex-foundation/mpl-token-metadata" "^2.3.3"
     "@project-serum/anchor" "^0.25.0"
     "@solana/spl-token" "^0.3.5"
     "@solana/web3.js" "^1.62.0"
-    "@thirdweb-dev/contracts-js" "^1.2.1"
+    "@thirdweb-dev/contracts-js" "^1.2.2"
     "@thirdweb-dev/storage" "^1.0.6"
     bn.js "^5.2.1"
     bs58 "^5.0.0"
     cross-fetch "^3.1.5"
-    eventemitter3 "^4.0.7"
+    eventemitter3 "^5.0.0"
     fast-deep-equal "^3.1.3"
     merkletreejs "^0.2.24"
     tiny-invariant "^1.2.0"
@@ -4503,6 +4503,11 @@ eventemitter3@4.0.7, eventemitter3@^4.0.0, eventemitter3@^4.0.4, eventemitter3@^
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
+eventemitter3@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.0.tgz#084eb7f5b5388df1451e63f4c2aafd71b217ccb3"
+  integrity sha512-riuVbElZZNXLeLEoprfNYoDSwTBRR44X3mnhdI1YcnENpWTCsTTVZ2zFuqQcpoyqPQIUXdiPEU0ECAq0KQRaHg==
 
 events@^3.0.0:
   version "3.3.0"

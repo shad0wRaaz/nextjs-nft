@@ -1,25 +1,29 @@
+import axios from 'axios'
 import Head from 'next/head'
+import Script from 'next/script'
 import toast from 'react-hot-toast'
+import { useMutation } from 'react-query'
 import DatePicker from 'react-datepicker'
 import { CgSpinner } from 'react-icons/cg'
-import { RiAuctionLine } from 'react-icons/ri'
 import CoinSelection from './CoinSelection'
+import { useQueryClient } from 'react-query'
+import { RiAuctionLine } from 'react-icons/ri'
+import { Router, useRouter } from 'next/router'
 import { config } from '../../lib/sanityClient'
-import { useChainId, useMarketplace, useAddress } from '@thirdweb-dev/react'
-import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk'
+import { NATIVE_TOKENS } from '@thirdweb-dev/sdk'
 import 'react-datepicker/dist/react-datepicker.css'
 import { MdClose, MdOutlineSell } from 'react-icons/md'
+import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk'
 import React, { useEffect, useState, useRef } from 'react'
-import differenceInSeconds from 'date-fns/differenceInSeconds'
-import { OffCanvas, OffCanvasMenu, OffCanvasBody } from 'react-offcanvas'
-import { IconLoading, IconWallet } from '../icons/CustomIcons'
-import { saveTransaction } from '../../mutators/SanityMutators'
-import { useMutation } from 'react-query'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { useQueryClient } from 'react-query'
-import { NATIVE_TOKENS } from '@thirdweb-dev/sdk'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import axios from 'axios'
+import { IconLoading, IconWallet } from '../icons/CustomIcons'
+import differenceInSeconds from 'date-fns/differenceInSeconds'
+import { saveTransaction } from '../../mutators/SanityMutators'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import { OffCanvas, OffCanvasMenu, OffCanvasBody } from 'react-offcanvas'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useChainId, useAddress, useContract, ConnectWallet } from '@thirdweb-dev/react'
+
 
 const style = {
   canvasMenu:
@@ -46,12 +50,13 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
-const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
+const Sell = ({ nftContractData, nftCollection }) => {
   const { dark } = useThemeContext()
   const address = useAddress()
+  const router = useRouter()
+  const { loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
   const queryClient = useQueryClient()
-  const { marketplaceAddress } = useMarketplaceContext()
-  const marketPlaceModule = useMarketplace(marketplaceAddress)
+  const { marketContract, marketplaceAddress } = useMarketplaceContext()
   const directListingPanel = useRef()
   const auctionListingPanel = useRef()
   const chainid = useChainId()
@@ -61,6 +66,8 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
   const [reservePrice, setReservePrice] = useState(0)
   const [currency, setCurrency] = useState()
   const [buyoutcurrency, setBuyoutCurrency] = useState()
+  // const marketplace = useContract(marketplaceAddress).contract;
+
 
   useEffect(() => {
     if (!chainid) {
@@ -121,9 +128,11 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
 
   const directListItem = async (
     e,
-    module = marketPlaceModule,
-    toastHandler = toast
+    module = marketContract,
+    toastHandler = toast,
+    sanityClient = config
   ) => {
+
     if (!listingPrice) {
       toastHandler.error('Listing price not set.', errorToastStyle)
       return
@@ -132,13 +141,20 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
       toastHandler.error('Listing currency not chosen.', errorToastStyle)
       return
     }
+    if(!nftCollection?.contractAddress) {
+      toastHandler.error("NFT Collection Address could not be located.", errorToastStyle)
+      return
+    }
 
-    setIsLoading(true)
+    setIsLoading(true);
+    setLoadingNewPrice(true);
+    setIsOpen(false);
+
+    //NFT Collection Contract Address
     const listing = {
-      //NFT Collection Contract Address
-      assetContractAddress: collectionAddress,
-      tokenId: selectedNft.metadata.id.toString(),
-      startTimestamp: new Date(),
+      assetContractAddress: nftCollection?.contractAddress,
+      tokenId: nftContractData.metadata.id.toString(),
+      startTimestamp: new Date(0),
       listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
       currencyContractAddress: NATIVE_TOKEN_ADDRESS,
@@ -147,40 +163,53 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
     // console.log(listing);
     
     try {
-      const tx = await module.direct.createListing(listing)
+      const tx = await module?.direct.createListing(listing);
+
+      //update market listing id in database
+      const marketListingId = tx.id.toString();
+      ;(async(id = marketListingId , dbClient = sanityClient)=> {
+        await dbClient.patch(nftContractData?.metadata?.properties?.tokenid).set({ 'listingid': id }).commit();
+      })()
+
 
       //saving transaction data
       mutateSaveTransaction({
         transaction: tx,
-        id: selectedNft.metadata.id.toString(),
+        id: nftContractData.metadata.id.toString(),
         eventName: 'List',
-        itemid: selectedNft.metadata.properties.tokenid,
+        itemid: nftContractData.metadata.properties.tokenid,
         price: listingPrice,
         chainid: chainid,
       })
 
-      queryClient.invalidateQueries(['activities'])
-      queryClient.invalidateQueries(['marketplace'])
+      queryClient.invalidateQueries(['activities']);
+      queryClient.invalidateQueries(['marketplace']);
+      
+      toastHandler.success(
+        "NFT successfully listed in the marketplace. Please wait for a while. Getting the NFT's latest price from the marketplace.",
+        successToastStyle
+      )
 
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings').then(() => {
+          router.reload(window.location.pathname);
+          router.replace(router.asPath);
+          setLoadingNewPrice(false)
+        })
       })()
 
-      toastHandler.success(
-        'NFT successfully listed in the marketplace.',
-        successToastStyle
-      )
     } catch (error) {
       toastHandler.error(error.message, errorToastStyle)
       console.error(error)
     }
-    setIsLoading(false)
+    setLoadingNewPrice(false);
+    setIsLoading(false);
   }
 
   const auctionListItem = async (
     quantityDesired = 1,
-    module = marketPlaceModule,
+    module = marketContract,
     toastHandler = toast,
     sanityClient = config
   ) => {
@@ -196,12 +225,15 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
       toastHandler.error('Listing currency not chosen.', errorToastStyle)
       return
     }
-    
+    if(!nftCollection?.contractAddress) {
+      toastHandler.error("NFT Collection Address could not be located.", errorToastStyle)
+      return
+    }
     setIsLoading(true)
     const auction = {
       //NFT Collection Contract Address
-      assetContractAddress: collectionAddress,
-      tokenId: selectedNft.metadata.id.toString(),
+      assetContractAddress: nftCollection?.contractAddress,
+      tokenId: nftContractData.metadata.id.toString(),
       startTimestamp: new Date(),
       listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
@@ -222,9 +254,9 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
       //saving transaction data
       mutateSaveTransaction({
         transaction: tx,
-        id: selectedNft.metadata.id.toString(),
+        id: nftContractData.metadata.id.toString(),
         eventName: 'Auction',
-        itemid: selectedNft.metadata.properties.tokenid,
+        itemid: nftContractData.metadata.properties.tokenid,
         price: buyoutPrice,
         chainid: chainid,
       })
@@ -238,7 +270,12 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
 
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+        setLoadingNewPrice(true);
+        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings').then(() => {
+          setLoadingNewPrice(false);
+          router.reload(window.location.pathname);
+          router.replace(router.asPath);
+        })
       })()
 
       // window.location.reload(false); //refresh the page
@@ -267,12 +304,7 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
   }, [])
   return (
     <>
-      <Head>
-        <script
-          src="https://unpkg.com/flowbite@1.4.7/dist/datepicker.js"
-          defer
-        ></script>
-      </Head>
+      <Script src="https://unpkg.com/flowbite@1.4.7/dist/datepicker.js" />
       <div className="grow">
         <OffCanvas
           width={650}
@@ -283,7 +315,7 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
         >
           <OffCanvasBody className={isOpen ? '' : ''}>
             <div
-              className="gradBlue relative inline-flex h-auto w-full flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base"
+              className={`${loadingNewPrice ? 'pointer-events-none opacity-75' : '' } gradBlue relative inline-flex h-auto w-full flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base`}
               onClick={() => setIsOpen(true)}
             >
               <IconWallet />
@@ -339,7 +371,7 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
                     </div>
 
                     <div className="pt-4">
-                      <p className={style.label}>Duration</p>
+                      <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
                       <p className={style.smallText}>List this NFT for only selected period of time</p>
                       <div className="flex flex-col items-center mt-4">
                         <div className="relative w-full">
@@ -459,7 +491,7 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
                     </div>
 
                     <div className="pt-4">
-                      <p className={style.label}>Duration*</p>
+                      <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
                       <p className={style.smallText}>List this NFT for only specified period of time.</p>
                       <div className="flex flex-col items-center mt-4">
                         <div className="relative w-full">
@@ -548,7 +580,7 @@ const Sell = ({ selectedNft, collectionAddress, nftCollection }) => {
                 </div>
               </>
             )}
-            {!address && <>ConnectWallet</>}
+            {!address && <><ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" /></>}
           </OffCanvasMenu>
         </OffCanvas>
       </div>

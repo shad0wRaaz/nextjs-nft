@@ -79,13 +79,13 @@ const TopCollections = () => {
     if(!allCollections) return
     if(showTop){
       var latestCollection = allCollections.sort((a,b) => {return (b.volumeTraded - a.volumeTraded)})
-      latestCollection = latestCollection.slice(0, 12)
+      latestCollection = latestCollection.slice(0, 8)
 
       setTopTradedCollections(latestCollection)
     }
     else {
       var latestCollection = allCollections.sort((a,b) => {return (new Date(b._createdAt) - new Date(a._createdAt))})
-      latestCollection = latestCollection.slice(0, 12)
+      latestCollection = latestCollection.slice(0, 8)
       setTopTradedCollections(latestCollection)
     }
   }, [showTop, allCollections])
