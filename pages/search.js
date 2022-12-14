@@ -79,18 +79,26 @@ const search = ({category}) => {
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % filteredListings.length
     setItemOffset(newOffset)
+
+    return() => {
+      //nothing, just clean up codes
+    }
   }
 
   useEffect(() => {
     // console.log(activeListings)
   }, [activeListings])
 
-  useEffect(async () => {
-    const query = `*[_type == "category"] {
-      name
-  }`
-    const res = await config.fetch(query)
-    setCategories(res)
+  useEffect(() => {
+    ;(async() => {
+      const query = `*[_type == "category"] {name}`
+      const res = await config.fetch(query)
+      setCategories(res)
+    })()
+    
+    return() => {
+      //nothing, just clean up codes
+    }
   }, [])
 
   useEffect(() => {
@@ -104,6 +112,10 @@ const search = ({category}) => {
     setIncludeDirect(data?.d === 'true' ? true : false)
     setIncludeHasOffers(data?.h === 'true' ? true : false)
     setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100])
+
+    return() => {
+      //nothing, just clean up codes
+    }
   }, [router.query])
 
   const DIVIDER = BigNumber.from(10).pow(18)
@@ -134,6 +146,10 @@ const search = ({category}) => {
       }
     }
     setPriceRange([minPrice, maxPrice])
+
+    return() => {
+      //nothing, just clean up codes
+    }
   }, [activeListings])
 
   useEffect(() => {
@@ -189,6 +205,10 @@ const search = ({category}) => {
     newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null)
 
     setFilteredListings(newFiltered)
+
+    return() => {
+      //nothing, just clean up codes
+    }
   }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage])
 
   return (
@@ -432,7 +452,9 @@ const search = ({category}) => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
+                    <Menu.Items className={`absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl ${
+                        dark ? 'bg-slate-700' : 'bg-white'
+                      } py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8`}>
                       <div className="px-1 py-1 ">
                         <Menu.Item>
                           <div className="mb-3 font-bold">Choose Sale Type</div>
@@ -570,7 +592,9 @@ const search = ({category}) => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
+                    <Menu.Items className={`absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl ${
+                        dark ? 'bg-slate-700' : 'bg-white'
+                      } py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8`}>
                       <div className="px-1 py-1 ">
                         <Menu.Item>
                           <div className="mb-3 font-bold">Choose Item Type</div>
@@ -704,7 +728,9 @@ const search = ({category}) => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl bg-white py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8">
+                    <Menu.Items className={`absolute left-0 top-full z-30 mt-3 w-full max-w-sm translate-y-0 rounded-3xl ${
+                        dark ? 'bg-slate-700' : 'bg-white'
+                      } py-5 px-4 opacity-100 shadow-xl sm:min-w-[340px] sm:py-6 sm:px-8`}>
                       <div className="px-1 py-1 ">
                         {/* <Menu.Item>
                           <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
