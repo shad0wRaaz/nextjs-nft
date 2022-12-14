@@ -20,9 +20,10 @@ const style = {
 
 const browse = () => {
   const { dark } = useThemeContext()
-  const [categoryData, setCategoryData] = useState([])
+  const [categoryData, setCategoryData] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const fetchCategoryData = async (sanityClient = config) => {
-    const query = `*[_type == "category"] | order(totalCollection desc) {
+    const query = `*[_type == "category"] | order(name asc) {
             name,
             "imageUrl": profileImage.asset->url,
             "bannerUrl": bannerImage.asset->url,
@@ -53,7 +54,7 @@ const browse = () => {
         <h2 className={style.pageTitle}>Browse NFT Collections</h2>
       </div>
       <div className={style.wrapper}>
-        <Tab.Group defaultIndex={1}>
+        <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
           <Tab.List
             className={` mx-auto -mt-[55px] mb-[2rem] flex max-w-fit justify-center space-x-1 overflow-x-auto rounded-full border ${
               dark
@@ -70,7 +71,7 @@ const browse = () => {
                     selected
                       ? dark
                         ? ' bg-slate-600 ring-0'
-                        : 'bg-sky-200 ring-0 focus-within:ring-0 focus:ring-0'
+                        : 'bg-sky-200 border-0 ring-0 focus-within:ring-0 focus:ring-0'
                       : dark
                       ? ' text-neutral-100 hover:bg-slate-600 hover:text-neutral-200'
                       : 'text-black ring-0 hover:bg-sky-100 hover:text-slate-600 focus:ring-0'
