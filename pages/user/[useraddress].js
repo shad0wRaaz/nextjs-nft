@@ -59,9 +59,15 @@ const User = () => {
   const [userCollections, setUserCollections] = useState([])
   const [userData, setUserData] = useState()
   const bannerRef = useRef()
-  useEffect(async () => {
+  useEffect(() => {
     if (!address) return
-    setUserData(await getUser(address))
+    ;(async() => {
+      setUserData(await getUser(address))
+    })()
+    
+    return() => {
+      //nothing , just clean up function
+    }
   }, [address])
   
   useEffect(() => {
@@ -79,6 +85,10 @@ const User = () => {
       setProfile(await getUnsignedImagePath(userData.profileImage))
       setBanner(await getUnsignedImagePath(userData.bannerImage))
     })()
+
+    return() => {
+      //nothing , just clean up function
+    }
   }, [userData, address])
   
   
@@ -181,12 +191,12 @@ const User = () => {
     mutateFollower({ creator: address, admirer: myUser.walletAddress })
   }
 
-  useEffect(() => {
-    ;(async() => {
+  // useEffect(() => {
+  //   ;(async() => {
       
-      // console.log(await getWeb3ImagePath('QmRgm5x1fhezfiBcmkFN5afuSnZsNzhF6e4D87rXa7ntki/0'))
-    })()
-  }, [])
+  //     // console.log(await getWeb3ImagePath('QmRgm5x1fhezfiBcmkFN5afuSnZsNzhF6e4D87rXa7ntki/0'))
+  //   })()
+  // }, [])
 
     //parallax scrolling effect in banner
     useEffect(() => {

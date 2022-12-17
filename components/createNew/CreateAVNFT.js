@@ -9,15 +9,12 @@ import toast, { Toaster } from 'react-hot-toast'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
 import noProfileImage from '../../assets/noProfileImage.png'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect, useReducer, useRef } from 'react'
 import {
   useAddress,
-  useNFTCollection,
   useMetamask,
   useChainId,
   useNetwork,
-  useMintNFT,
-  MediaRenderer,
   useSigner,
 } from '@thirdweb-dev/react'
 import { IconLoading } from '../icons/CustomIcons'
@@ -145,11 +142,19 @@ const CreateAVNFT = ({uuid}) => {
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()
+  const address = useAddress()
   const [fileType, setFileType] = useState()
-  // const [fileType, setFileType] = useState('image')
   const connectWithMetamask = useMetamask()
-  const { myCollections, setMyCollections } = useUserContext()
+  const { myCollections } = useUserContext()
   const [thisChainCollection, setThisChainCollection] = useState([])
+  const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
+  const [selectedCollection, setSelectedCollection] = useState({ contractAddress: '' })
+  const [nftCollection, setNftCollection] = useState()
+  const [isMinting, setIsMinting] = useState(false)
+  const [file, setFile] = useState();
+  const [animatedFile, setAnimatedFile] = useState();
+  const fileInputRef = useRef();
+  const animatedFileInputRef = useRef();
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
@@ -157,6 +162,10 @@ const CreateAVNFT = ({uuid}) => {
     if(!chainid) return
     let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
     setThisChainCollection(tempCollection)
+
+    return() => {
+      //clean up function
+    }
   }, [myCollections, chainid])
 
   const [
@@ -167,49 +176,46 @@ const CreateAVNFT = ({uuid}) => {
     },
     switchNetwork,
   ] = useNetwork()
-  const address = useAddress()
-  const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
-  const [selectedCollection, setSelectedCollection] = useState({
-    contractAddress: '',
-  })
-  const [nftCollection, setNftCollection] = useState()
-  const [isMinting, setIsMinting] = useState(false)
+  
 
   // const { mutate: mintNFT, isLoading: isMinting, error } = useMintNFT(nftCollection);
 
-  useNFTCollection(selectedCollection.contractAddress)
+  // useNFTCollection(selectedCollection.contractAddress)
 
   //get the NFT COllections created by current user
-  const fetchSanityCollectionData = async (sanityClient = config) => {
-    if (!chainid || !address) return
-    const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
-      name, contractAddress, profileImage, createdBy, volumeTraded
-    }`
+  // const fetchSanityCollectionData = async (sanityClient = config) => {
+  //   if (!chainid || !address) return
+  //   const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
+  //     name, contractAddress, profileImage, createdBy, volumeTraded
+  //   }`
 
-    await sanityClient.fetch(query).then(async (res) => {
-      const unresolved = res.map(async (collection) => {
-        const obj = {}
-        const imgPath = await getUnsignedImagePath(collection.profileImage)
-        obj['name'] = collection.name
-        obj['profileImage'] = imgPath?.data.url
-        obj['contractAddress'] = collection.contractAddress
-        obj['createdBy'] = collection.createdBy
-        obj['volumeTraded'] = collection.volumeTraded
-        return obj
-      })
+  //   await sanityClient.fetch(query).then(async (res) => {
+  //     const unresolved = res.map(async (collection) => {
+  //       const obj = {}
+  //       const imgPath = await getUnsignedImagePath(collection.profileImage)
+  //       obj['name'] = collection.name
+  //       obj['profileImage'] = imgPath?.data.url
+  //       obj['contractAddress'] = collection.contractAddress
+  //       obj['createdBy'] = collection.createdBy
+  //       obj['volumeTraded'] = collection.volumeTraded
+  //       return obj
+  //     })
 
-      const resolvedPaths = await Promise.all(unresolved)
+  //     const resolvedPaths = await Promise.all(unresolved)
 
-      if (resolvedPaths) {
-        setSanityCollection(resolvedPaths)
-      }
-    })
-  }
+  //     if (resolvedPaths) {
+  //       setSanityCollection(resolvedPaths)
+  //     }
+  //   })
+  // }
 
   useEffect(() => {
     if (!address) return
     if (myCollections) return
     fetchSanityCollectionData()
+    return() => {
+      //cleanup function
+    }
   }, [address])
 
   useEffect(() => {
@@ -218,12 +224,23 @@ const CreateAVNFT = ({uuid}) => {
       type: 'ADD_TOKENID',
       payload: { tokenid: uuid}
     })
+
+    return() => {
+      //cleanup function
+    }
   }, [uuid])
 
-  useEffect(() => {
-    const sdk = new ThirdwebSDK(signer)
-    setNftCollection(sdk.getNFTCollection(selectedCollection.contractAddress))
-  }, [selectedCollection])
+  // useEffect(() => {
+  //   ;async(() => {
+  //     const sdk = new ThirdwebSDK(signer);
+  //     const contract = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
+  //     setNftCollection(contract);
+  //   })()
+
+  //   return() => {
+  //     //cleanup function
+  //   }
+  // }, [selectedCollection])
 
   const urlPatternValidation = (URL) => {
     const regex = new RegExp(
@@ -272,8 +289,10 @@ const CreateAVNFT = ({uuid}) => {
       ;(async (sanityClient = config) => {
         try {
           setIsMinting(true)
+          const sdk = new ThirdwebSDK(signer);
+          const nftCollection = await sdk.getContract(selectedCollection.contractAddress);
 
-          const tx = await nftCollection.mintTo(address, state)
+          const tx = await nftCollection.erc721.mintTo(address, {...state, image: file, animation_url: animatedFile});
 
           const receipt = tx.receipt
           const tokenId = tx.id
@@ -435,6 +454,9 @@ const CreateAVNFT = ({uuid}) => {
       type: 'CHANGE_ITEMTYPE',
       payload: { itemtype: fileType }
     })
+    return() => {
+
+    }
   }, [fileType])
 
   // useEffect(() => {
@@ -489,7 +511,7 @@ const CreateAVNFT = ({uuid}) => {
                     )}
                   </div>
                   <div className="imageUploader mb-4 ml-3">
-                    <FileBase
+                    {/* <FileBase
                       type="file"
                       multiple={false}
                       onDone={({ base64 }) => {
@@ -499,6 +521,14 @@ const CreateAVNFT = ({uuid}) => {
                           payload: { animation_url: base64 },
                         })
                       }}
+                    /> */}
+                    <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="nftImage"
+                      ref={fileInputRef}
+                      onChange={e => setFile(e.target.files[0])}
+                      style={{ display: "none"}}
                     />
                   </div>
                 </div>
@@ -559,8 +589,9 @@ const CreateAVNFT = ({uuid}) => {
                     <RadioGroup
                       value={selectedCollection}
                       onChange={(e) => {
-                        updateCategory(e.name)
-                        setSelectedCollection(e)
+                        updateCategory(e.name);
+                        setSelectedCollection(e);
+                        setNftCollection(e.contractAddress);
                       }}
                     >
                       <RadioGroup.Label className="sr-only">

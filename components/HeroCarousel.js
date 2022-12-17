@@ -7,7 +7,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 const style = {
   wrapper: `relative`,
   container: ``,
-  contentWrapper: `flex mb-[6rem] h-[70vh] container mx-auto relative justify-between  flex-wrap items-center`,
+  contentWrapper: `flex mb-[6rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
   title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] `,
   description: `container-[400px] mt-[0.8rem] mb-[2.5rem] p-[20px] shoutoutDescription max-w-[500px]`,

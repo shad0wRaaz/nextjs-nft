@@ -5,23 +5,25 @@ import Footer from '../components/Footer'
 import { config } from '../lib/sanityClient'
 import CollectionByCategory from '../components/CollectionByCategory'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useRouter } from 'next/router'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 const style = {
-  wrapper: 'container mx-auto',
+  wrapper: 'container mx-auto sm:px-[2rem] lg:px-[8rem]',
   pageBanner: 'py-[4rem] mb-[2rem]',
   pageTitle: 'text-4xl font-bold text-center textGradBlue',
   categoryImage: 'rounded-full ring-2 ring-white h-[40px] w-[40px]',
-  categoryTitle: 'text-md p-4 px-8 rounded-full',
+  categoryTitle: 'text-md p-4 px-8 rounded-full w-max',
 }
 
 const browse = () => {
+  const router = useRouter();
   const { dark } = useThemeContext()
   const [categoryData, setCategoryData] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
   const fetchCategoryData = async (sanityClient = config) => {
     const query = `*[_type == "category"] | order(name asc) {
             name,
@@ -35,7 +37,28 @@ const browse = () => {
 
   useEffect(() => {
     fetchCategoryData()
+
+    return () => {
+      //just clean up codes, nothing else here
+    }
   }, [])
+
+  useEffect(() => {
+    
+    const param = router.query?.c
+    if(!param) { return }
+    if(param == 'Collectibles') {
+      setSelectedTab(1);
+    }
+    // switch(router.query.c){
+    //   case 'Collectibles':
+    //     setSelectedIndex(4);
+    //     console.log('i changed')
+    //     default:
+    //       setSelectedIndex(1);
+    //       console.log('i changed 00')
+    // }
+  },[router.query.c])
 
   // useEffect(() => {
   //     console.log(categoryData)
@@ -54,7 +77,7 @@ const browse = () => {
         <h2 className={style.pageTitle}>Browse NFT Collections</h2>
       </div>
       <div className={style.wrapper}>
-        <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+        <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
           <Tab.List
             className={` mx-auto -mt-[55px] mb-[2rem] flex max-w-fit justify-center space-x-1 overflow-x-auto rounded-full border ${
               dark

@@ -106,7 +106,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        console.log(res)
+        // console.log(res)
       },
     }
   )
@@ -444,7 +444,7 @@ const Collection = () => {
         )}
 
         {showType == 'createdItems' &&
-          (nftData.length > 0 ? (
+          (nftData?.length > 0 ? (
             <div className={style.nftwrapper}>
               {Boolean(nftData) &&
                 nftData.map((nftItem, id) => (

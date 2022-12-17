@@ -37,7 +37,7 @@ import { getUnsignedImagePath } from '../fetchers/s3'
 import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
-  wrapper: `container mx-auto w-full px-[1.2rem] py-[0.8rem] flex space-x-4 xl:space-x-[6rem]`,
+  wrapper: `container mx-auto w-full sm:px-[2rem] lg:px-[8rem] py-[0.8rem] flex space-x-4 xl:space-x-[6rem]`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
   searchBar: `relative flex flex-1 mx-[0.8rem] w-max-[520px] items-center border rounded-3xl transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,

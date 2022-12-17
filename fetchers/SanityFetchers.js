@@ -123,7 +123,10 @@ export const getMintedNFTs =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "nftItem" && createdBy->walletAddress == "${address}"]{...}`
+    const query = `*[_type == "nftItem" && createdBy._ref == "${address}"]
+    {
+      _id, chainId, id, listed, name, ownedBy->, collection->, createdBy->, listingid,
+    }`
     const res = await config.fetch(query)
     return res
   }
@@ -131,7 +134,10 @@ export const getCollectedNFTs =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "nftItem" && ownedBy->walletAddress == "${address}" && createdBy->walletAddress != "${address}"]{...}`
+    const query = `*[_type == "nftItem" && ownedBy._ref == "${address}" && createdBy.ref != "${address}"]
+    {
+      _id, chainId, id, listed, name, ownedBy->, collection->, createdBy->, listingid,
+    }`
     const res = await config.fetch(query)
     return res
   }

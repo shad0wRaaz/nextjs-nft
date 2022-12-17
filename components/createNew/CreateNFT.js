@@ -151,6 +151,10 @@ const CreateNFT = ({uuid}) => {
     if(!chainid) return
     let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
     setThisChainCollection(tempCollection)
+
+    return() => {
+      //clean up function
+    }
   }, [myCollections, chainid])
 
   const [
@@ -201,7 +205,11 @@ const CreateNFT = ({uuid}) => {
   useEffect(() => {
     if (!address) return
     if (myCollections) return
-    fetchSanityCollectionData()
+    fetchSanityCollectionData();
+    
+    return() => {
+      //clean up function
+    }
   }, [address])
 
 
@@ -211,6 +219,10 @@ const CreateNFT = ({uuid}) => {
       type: 'ADD_TOKENID',
       payload: { tokenid: uuid}
     })
+
+    return() => {
+      //clean up function
+    }
   }, [uuid])
 
 
@@ -261,20 +273,6 @@ const CreateNFT = ({uuid}) => {
     formdata.append('filename', uuid)
     
     try {
-      await axios.post(HOST.concat('/api/uploadnft'), formdata, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-      }).then(async (res) => 
-      {
-        const filePath = '/assets/nfts/' + res.data.filename
-
-        //update filepath in state
-        dispatch({
-          type: 'CHANGE_IMAGE',
-          payload: { image: filePath },
-        })
-      
       setIsMinting(true)
       const sdk = new ThirdwebSDK(signer)
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress)
@@ -287,7 +285,6 @@ const CreateNFT = ({uuid}) => {
       const nftItem = {
         _type: 'nftItem',
         _id: uuid,
-        filepath: filePath,
         id: tx.id.toString(),
         collection: { 
           _ref: selectedCollection._id, 
@@ -333,10 +330,24 @@ const CreateNFT = ({uuid}) => {
       dispatch({ type: 'CLEAR_OUT_ALL' })
       setIsMinting(false)
       
-      router.push(
-        `/nfts/${uuid}`
-        )
-      })
+      router.push(`/nfts/${uuid}`);
+
+      // await axios.post(HOST.concat('/api/uploadnft'), formdata, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   },
+      // }).then(async (res) => 
+      // {
+      //   const filePath = '/assets/nfts/' + res.data.filename
+
+      //   //update filepath in state
+      //   dispatch({
+      //     type: 'CHANGE_IMAGE',
+      //     payload: { image: filePath },
+      //   })
+      
+      
+      // })
     } catch (error) {
       toastHandler.error(error, errorToastStyle)
       console.log(error.message)
@@ -666,8 +677,7 @@ const CreateNFT = ({uuid}) => {
               />
 
               <p className={style.label}>Properties</p>
-              {state.properties.traits.map((x, i) => {
-                return (
+              {state.properties.traits.map((x, i) => (
                   <div className="ml-[2rem] flex gap-[10px]" key={i}>
                     <input
                       name="propertyKey"
@@ -705,7 +715,7 @@ const CreateNFT = ({uuid}) => {
                     </div>
                   </div>
                 )
-              })}
+              )}
 
               <p className={style.label}>Network*</p>
               <input

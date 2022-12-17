@@ -332,7 +332,7 @@ const CreateNFTCollection = () => {
             Settings to organize and distinguish between your different NFT
             collections.
           </p>
-          <button
+          {/* <button
             onClick={() =>
               sendNotification({
                 address: address,
@@ -342,7 +342,7 @@ const CreateNFTCollection = () => {
             }
           >
             Send Notification
-          </button>
+          </button> */}
           <form
             name="CreateNFTCollectionForm"
             onSubmit={handleDeployNFTCollection}

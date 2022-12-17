@@ -16,6 +16,7 @@ import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { FiImage, FiVideo } from 'react-icons/fi'
 import { v4 as uuidv4 } from 'uuid'
+import { AiOutlinePlus } from 'react-icons/ai'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -55,7 +56,7 @@ function reducer(state, action){
 const contracts = () => {
   const [state, dispatch] = useReducer(reducer, {isMenuOpened: false, canvasMenu: ''});
   const { dark } = useThemeContext();
-  const [showModal, setShowModal] = useState(true)
+  const [showModal, setShowModal] = useState(false)
   const nftId = uuidv4() //for image nft
   const nftAVId = uuidv4() //for audio/video nft
 
@@ -66,13 +67,10 @@ const contracts = () => {
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">
           <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl max-w-2xl z-50 relative overflow-hidden`}>
             <div
-              className="absolute top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
+              className="absolute rotate-45 text-md top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
               onClick={() => setShowModal(false)}
             >
-              <img
-                src="https://iconape.com/wp-content/png_logo_vector/cross-2.png"
-                className="h-3 w-3"
-              />
+              <AiOutlinePlus />
             </div>
             <h2 className="text-center font-bold text-2xl mb-[2rem]">Mint</h2>
             <div className="w-full grid grid-cols-2 gap-[2rem]">

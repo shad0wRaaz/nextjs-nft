@@ -37,20 +37,20 @@ const NFTCardLocal = ({ nftItem, listings }) => {
   const address = useAddress()
   const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
-  const { contract } = useContract(nftItem.contractAddress)
+  const { contract } = useContract(nftItem?.collection?.contractAddress)
   const {
     data: nft,
     isLoading,
     error,
-  } = useNFT(contract?.nft, nftItem.id.toString())
+  } = useNFT(contract, nftItem.id.toString())
+
 
   useEffect(() => {
     if (!listings) return
 
     const listing = listings.find(
       (listing) =>
-        listing.asset.id.toString() == nftItem.id.toString() &&
-        listing.assetContractAddress == nftItem.contractAddress
+        listing.asset.id.toString() == nftItem.id.toString()
     )
     // console.log(listing);
     if (Boolean(listing)) {
@@ -60,6 +60,9 @@ const NFTCardLocal = ({ nftItem, listings }) => {
       if (listing.secondsUntilEnd) {
         setSecondsUntilEnd(BigNumber.from(listing.secondsUntilEnd).toNumber())
       }
+    }
+    return() => {
+      //do nothing, just a cleanup function
     }
   }, [listings, nftItem])
 
@@ -74,6 +77,9 @@ const NFTCardLocal = ({ nftItem, listings }) => {
       const res = await sanityClient.fetch(query)
       setLikers(res[0])
     })()
+    return () => {
+      
+    }
   }, [nftItem])
 
   return (
@@ -83,7 +89,7 @@ const NFTCardLocal = ({ nftItem, listings }) => {
       } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl`}
     >
       <Link
-        href={`/nfts/${nftItem.id.toString()}?c=${nftItem.contractAddress}`}
+        href={`/nfts/${nftItem._id}`}
       >
         <div className="relative flex-shrink-0 cursor-pointer">
           <div>
@@ -93,13 +99,17 @@ const NFTCardLocal = ({ nftItem, listings }) => {
                   <IconLoading />
                 </div>
               ) : (
-                <Image
-                  src={nft?.metadata.image}
-                  className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-                  objectFit="cover"
-                  layout="fill"
-                  alt={nft?.metadata.name}
-                />
+                <>
+                  {nft?.metadata?.image &&(
+                    <Image
+                      src={nft?.metadata.image}
+                      className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                      objectFit="cover"
+                      layout="fill"
+                      alt={nft?.metadata.name}
+                    />
+                    )}
+                  </>
               )}
             </div>
           </div>

@@ -110,7 +110,7 @@ const BrowseByCategory = () => {
           >
             {categoryData.map((category, id) => (
               <div key={id} className="relative">
-                <Link href="/browse">
+                <Link href={`/browse/?c=${category?.name}`}>
                   <div className={style.collectionCard}>
                     <div className={style.imageContainer}>
                       <img

@@ -821,17 +821,17 @@ const search = ({category}) => {
             </div>
             <ReactPaginate
               breakLabel="..."
-              nextLabel=">"
+              nextLabel="Next"
               onPageChange={handlePageClick}
               pageRangeDisplayed={5}
               pageCount={pageCount}
-              previousLabel="<"
+              previousLabel="Previous"
               renderOnZeroPageCount={null}
               className="mt-[4rem] flex justify-center gap-3"
-              previousClassName={`px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] cursor-pointer ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
-              nextClassName={`px-3 rounded-full flex items-center justify-center border w-[50px] h-[50px] cursor-pointer ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
-              activeClassName="bg-sky-600 border-sky-700 text-sky-100 hover:bg-sky-600 border"
-              pageLinkClassName="p-3"
+              previousClassName={`px-3 text-sm rounded-full flex items-center justify-center border w-[100px] cursor-pointer ${dark ? 'hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
+              nextClassName={`px-3 text-sm rounded-full flex items-center justify-center border w-[100px] cursor-pointer ${dark ? 'hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
+              activeClassName="bg-sky-600 p-3 text-sky-100 hover:bg-sky-600 border"
+              pageLinkClassName=""
               pageClassName={`flex items-center justify-center rounded-full border w-[50px] h-[50px]  ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'} cursor-pointer`}
             />
 
@@ -872,14 +872,14 @@ const search = ({category}) => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items
-                      className={`absolute top-full z-30 mt-3 max-w-sm translate-y-0 rounded-3xl text-sm ${
-                        dark ? 'bg-slate-700' : 'bg-white'
-                      } py-5 px-4 opacity-100 shadow-xl sm:py-6 sm:px-8`}
+                      className={`absolute top-full z-30 mt-3 max-w-md translate-y-0 rounded-3xl text-sm ${
+                        dark ? 'bg-slate-700' : 'bg-white border border-neutral-200'
+                      } py-5 px-4 opacity-100 shadow-xl sm:py-4 sm:px-4`}
                     >
                       <div className="px-1 py-1 ">
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage('100000')}
                           >
                             Show All
@@ -887,7 +887,7 @@ const search = ({category}) => {
                         </Menu.Item>
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage(4)}
                           >
                             Show 4 items per page
@@ -895,7 +895,7 @@ const search = ({category}) => {
                         </Menu.Item>
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage(8)}
                           >
                             Show 8 items per page
@@ -903,7 +903,7 @@ const search = ({category}) => {
                         </Menu.Item>
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage(12)}
                           >
                             Show 12 items per page
@@ -911,7 +911,7 @@ const search = ({category}) => {
                         </Menu.Item>
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage(16)}
                           >
                             Show 16 items per page
@@ -919,7 +919,7 @@ const search = ({category}) => {
                         </Menu.Item>
                         <Menu.Item>
                           <div
-                            className="cursor-pointer rounded-md py-3 px-2 hover:bg-neutral-100"
+                            className={`cursor-pointer rounded-md py-2 px-6 ${dark ? 'hover:bg-slate-600' : 'hover:bg-neutral-100'}`}
                             onClick={() => setItemsPerPage(20)}
                           >
                             Show 20 items per page

@@ -72,7 +72,7 @@ const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 
 
 const Nft = (props) => {
   const {nftContractData, metaDataFromSanity, listingData } = props;
-
+  const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
   const { dark } = useThemeContext()
 
   const address = useAddress()
@@ -114,22 +114,23 @@ const Nft = (props) => {
       setIsLiked(false)
 
       //remove like
+      setTotalLikers(prev => prev - 1);
+      toastHandler.success('You unliked this NFT.', successToastStyle);
       const likerToRemove = [`likedBy[_ref == "${address}"]`]
       await sanityClient
         .patch(metaDataFromSanity?._id)
         .unset(likerToRemove)
         .commit()
         .then(() => {
-          //remove from state variable too , to reflect updated likes count value
+;          //remove from state variable too , to reflect updated likes count value
           const filteredLikers = metaDataFromSanity.likedBy.filter((likers) => {
             return likers._ref != address
           })
-          setMetadataFromSanity({
-            ...metaDataFromSanity,
-            likedBy: filteredLikers,
-          })
+          // setMetadataFromSanity({
+          //   ...metaDataFromSanity,
+          //   likedBy: filteredLikers,
+          // })
 
-          toastHandler.success('You unliked this NFT.', successToastStyle)
         })
         .catch((err) => {
           console.log(err)
@@ -138,23 +139,24 @@ const Nft = (props) => {
     } else {
       //add like
       setIsLiked(true)
+      setTotalLikers(prev => prev + 1);
+      toastHandler.success('You liked this NFT.', successToastStyle)
       await sanityClient
         .patch(metaDataFromSanity?._id)
         .setIfMissing({ likedBy: [] })
         .insert('before', 'likedBy[0]', [{ _ref: address }])
         .commit({ autoGenerateArrayKeys: true })
         .then(() => {
-          toastHandler.success('You liked this NFT.', successToastStyle)
 
           //add current user into likedby array
           filteredLikers = [
             ...metaDataFromSanity.likedBy,
             { _ref: address, _type: 'reference' },
           ]
-          setMetadataFromSanity({
-            ...metaDataFromSanity,
-            likedBy: filteredLikers,
-          })
+          // setMetadataFromSanity({
+          //   ...metaDataFromSanity,
+          //   likedBy: filteredLikers,
+          // })
         })
         .catch((err) => {
           // console.error(err)
@@ -259,6 +261,10 @@ const Nft = (props) => {
     } else {
       setIsLiked(false)
     }
+
+    return() => {
+      //nothing , just clean up function
+    }
   }, [metaDataFromSanity, address])
 
   
@@ -328,9 +334,9 @@ const Nft = (props) => {
                 onClick={addRemoveLike}
               >
                 <IconHeart color={isLiked ? '#ef4444' : ''} />
-                {metaDataFromSanity?.likedBy?.length > 0 ? (
+                {totalLikers > 0 ? (
                   <span className="ml-2 text-sm">
-                    {millify(metaDataFromSanity?.likedBy?.length)}
+                    {millify(totalLikers)}
                   </span>
                 ) : (
                   <span className="ml-2 text-sm">0</span>
@@ -395,14 +401,14 @@ const Nft = (props) => {
                     <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
                       {nftContractData?.metadata?.properties?.traits?.map(
                         (props, id) => (
-                          <>
+                          <div key={id}>
                             {props.propertyKey != "" ? (
 
                             <div
                               className={`w-[130px] rounded-xl border border-solid ${
                                 dark
                                   ? 'border-slate-600 bg-slate-700'
-                                  : 'border-sky-300 bg-sky-100'
+                                  : 'border-sky-200/70 bg-sky-100'
                               } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
                               key={id}
                             >
@@ -417,12 +423,12 @@ const Nft = (props) => {
                               </p>
                               <p
                                 className={
-                                  dark ? 'text-neutral-100' : 'text-sky-500'
+                                  dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
                                 }
                               >
                                 {props.propertyValue}
                               </p>
-                              <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
+                              {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
                                 <span
                                   className={`w-fit rounded-md ${
                                     dark
@@ -432,10 +438,10 @@ const Nft = (props) => {
                                 >
                                   100% Match
                                 </span>
-                              </p>
+                              </p> */}
                             </div>
                             ) : (<span className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No properties defined.</span>)}
-                          </>
+                          </div>
                         )
                       )}
                     </Disclosure.Panel>
