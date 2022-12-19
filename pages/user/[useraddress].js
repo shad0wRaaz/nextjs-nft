@@ -1,6 +1,5 @@
 import moment from 'moment'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
@@ -9,9 +8,9 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import Loader from '../../components/Loader'
 import { useMutation, useQuery } from 'react-query'
+import { useEffect, useRef, useState } from 'react'
 import { MdOutlineCollections } from 'react-icons/md'
 import { BiUserPlus, BiUserCheck } from 'react-icons/bi'
-import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
 import noProfileImage from '../../assets/noProfileImage.png'
@@ -19,14 +18,14 @@ import CollectionCard from '../../components/CollectionCard'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { IconCopy } from '../../components/icons/CustomIcons'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
+import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { removeFollower, saveFollower } from '../../mutators/SanityMutators'
 import {
   getMyCollections,
   getMintedNFTs,
-  getUserContinuously,
   getUser,
 } from '../../fetchers/SanityFetchers'
-import { getImagefromWeb3, getUnsignedImagePath, getWeb3ImagePath } from '../../fetchers/s3'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import millify from 'millify'
 
 const errorToastStyle = {
@@ -77,7 +76,6 @@ const User = () => {
         .length > 0
     ) {
       setIsFollower(true)
-      console.log(isFollower)
     }
     setFollowerCount(userData?.followers?.length)
     
