@@ -26,7 +26,7 @@ import {
   getUserContinuously,
   getUser,
 } from '../../fetchers/SanityFetchers'
-import { getUnsignedImagePath, getWeb3ImagePath } from '../../fetchers/s3'
+import { getImagefromWeb3, getUnsignedImagePath, getWeb3ImagePath } from '../../fetchers/s3'
 import millify from 'millify'
 
 const errorToastStyle = {
@@ -54,11 +54,12 @@ const User = () => {
   const { myUser, queryCacheTime, queryStaleTime } = useUserContext()
   const [isFollower, setIsFollower] = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
-  const [profile, setProfile] = useState()
-  const [banner, setBanner] = useState()
+  // const [profile, setProfile] = useState()
+  // const [banner, setBanner] = useState()
   const [userCollections, setUserCollections] = useState([])
   const [userData, setUserData] = useState()
   const bannerRef = useRef()
+
   useEffect(() => {
     if (!address) return
     ;(async() => {
@@ -81,10 +82,7 @@ const User = () => {
       console.log(isFollower)
     }
     setFollowerCount(userData?.followers?.length)
-    ;(async () => {
-      setProfile(await getUnsignedImagePath(userData.profileImage))
-      setBanner(await getUnsignedImagePath(userData.bannerImage))
-    })()
+    
 
     return() => {
       //nothing , just clean up function
@@ -211,16 +209,16 @@ const User = () => {
         window.removeEventListener('scroll', handleScroll);
       };
     }, [])
-
+console.log(userData)
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="nc-NcImage absolute inset-0">
-            {banner ? (
+            {Boolean(userData?.web3imagebanner) ? (
               <img
-                src={banner?.data.url}
+                src={getImagefromWeb3(userData?.web3imagebanner)}
                 className="h-full w-full object-cover"
                 alt={userData?.userName}
               />
@@ -243,9 +241,9 @@ const User = () => {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
               <div className="w-40 sm:w-48 md:w-56 xl:w-60">
                 <div className=" aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl">
-                  {profile ? (
+                  {Boolean(userData?.web3imageprofile) ? (
                     <img
-                      src={profile?.data.url}
+                      src={getImagefromWeb3(userData?.web3imageprofile)}
                       className="h-full w-full object-cover"
                       alt={userData?.userName}
                     />

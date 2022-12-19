@@ -5,7 +5,7 @@ const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' :'
 
 export const getUser = async (address) => {
   const query = `*[_type == "users" && walletAddress == "${address}"] {
-      bannerImage, volumeTraded, biography, fbhHandle, followers, following, igHandle, profileImage, twitterHandle, userName, walletAddress, _createdAt
+      web3imagebanner, volumeTraded, biography, fbhHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt
     }`
   const res = await config.fetch(query)
   return res[0]
@@ -16,7 +16,7 @@ export const getUserContinuously =
   async ({ queryKey }) => {
     const [_, address] = queryKey
     const query = `*[_type == "users" && walletAddress == "${address}"] {
-      bannerImage, biography, fbHandle, followers, following, igHandle, profileImage, twitterHandle, userName, walletAddress, _createdAt
+      web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt
     }`
     const res = await config.fetch(query)
     return res[0]
@@ -93,8 +93,8 @@ export const getNFTCollection =
     const [_, collectionid] = queryKey
     const query = `*[_type == "nftCollection" && _id == "${collectionid}" ] {
         _id,
-        profileImage,
-        bannerImage,
+        web3imageprofile,
+        web3imagebanner,
         volumeTraded,
         createdBy,
         chainId,

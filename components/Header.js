@@ -33,7 +33,7 @@ import {
   IconOffer,
   IconProfile,
 } from './icons/CustomIcons'
-import { getUnsignedImagePath } from '../fetchers/s3'
+import { getImagefromWeb3 } from '../fetchers/s3'
 import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
@@ -116,17 +116,18 @@ const Header = () => {
         )
       },
       onSuccess: async (res) => {
-        const unresolved = res.map(async (item) => {
-          const obj = { ...item }
-          const imgPath = await getUnsignedImagePath(item.profileImage)
-          const bannerPath = await getUnsignedImagePath(item.bannerImage)
-          obj['profileImage'] = imgPath?.data.url
-          obj['bannerImage'] = bannerPath?.data.url
-          return obj
-        })
+        setMyCollections(res);
+        // const unresolved = res.map(async (item) => {
+        //   const obj = { ...item }
+        //   const imgPath = await getUnsignedImagePath(item.profileImage)
+        //   const bannerPath = await getUnsignedImagePath(item.bannerImage)
+        //   obj['profileImage'] = imgPath?.data.url
+        //   obj['bannerImage'] = bannerPath?.data.url
+        //   return obj
+        // })
 
-        const resolvedPaths = await Promise.all(unresolved)
-        setMyCollections(resolvedPaths)
+        // const resolvedPaths = await Promise.all(unresolved)
+        // setMyCollections(resolvedPaths)
       },
     }
   )
@@ -198,20 +199,18 @@ const Header = () => {
         _id: address,
         userName: 'Unnamed',
         walletAddress: address,
-        profileImage: 'profileImage-'.concat(address),
-        bannerImage: 'bannerImage-'.concat(address),
         volumeTraded: 0,
       }
 
       //saves new user if not present otherwise returns the user data
       const user = await config.createIfNotExists(userDoc);
       setMyUser(user)
-      if (user?.profileImage) {
-        setMyProfileImage(await getUnsignedImagePath(user.profileImage))
-      }
-      if (user?.bannerImage) {
-        setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
-      }
+      // if (user?.profileImage) {
+      //   setMyProfileImage(await getUnsignedImagePath(user.profileImage))
+      // }
+      // if (user?.bannerImage) {
+      //   setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
+      // }
       // queryclient.invalidateQueries('notification')
       setIsLogged(true)
     })()

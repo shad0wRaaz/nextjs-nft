@@ -59,18 +59,20 @@ const TopCollections = () => {
         )
       },
       onSuccess: async (res) => {
-        const unresolved = res.map(async (item) => {
-          const obj = { ...item }
-          const profilePath = await getUnsignedImagePath(item.profileImage)
-          const bannerPath = await getUnsignedImagePath(item.bannerImage)
-          obj['profileImage'] = profilePath?.data.url
-          obj['bannerImage'] = bannerPath?.data.url
-          return obj
-        })
+        setAllCollections(res)
 
-        const resolvedPaths = await Promise.all(unresolved)
+        // const unresolved = res.map(async (item) => {
+        //   const obj = { ...item }
+        //   const profilePath = await getUnsignedImagePath(item.profileImage)
+        //   const bannerPath = await getUnsignedImagePath(item.bannerImage)
+        //   obj['profileImage'] = profilePath?.data.url
+        //   obj['bannerImage'] = bannerPath?.data.url
+        //   return obj
+        // })
 
-        setAllCollections(resolvedPaths)
+        // const resolvedPaths = await Promise.all(unresolved)
+
+        // setAllCollections(resolvedPaths)
       },
     }
   )
@@ -87,6 +89,10 @@ const TopCollections = () => {
       var latestCollection = allCollections.sort((a,b) => {return (new Date(b._createdAt) - new Date(a._createdAt))})
       latestCollection = latestCollection.slice(0, 8)
       setTopTradedCollections(latestCollection)
+    }
+
+    return() => {
+      //do nothing
     }
   }, [showTop, allCollections])
 
@@ -109,8 +115,8 @@ const TopCollections = () => {
                 id={coll.id}
                 name={coll.name}
                 contractAddress={coll.contractAddress}
-                profileImage={coll.profileImage}
-                bannerImage={coll.bannerImage}
+                profileImage={coll.web3imageprofile}
+                bannerImage={coll.web3imagebanner}
                 description={coll.description}
                 floorPrice={coll.floorPrice}
                 volumeTraded={coll.volumeTraded}

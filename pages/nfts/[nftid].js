@@ -32,7 +32,7 @@ import ItemOffers from '../../components/nft/ItemOffers'
 import BurnCancel from '../../components/nft/BurnCancel'
 
 const style = {
-  wrapper: `flex flex-col pt-[5rem] items-center container-lg text-[#e5e8eb]`,
+  wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
   container: `container p-6`,
   topContent: `flex`,
   nftImgContainer: `flex-1 mr-4`,
@@ -274,7 +274,7 @@ const Nft = (props) => {
       className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}
     >
       <Header />
-      <main className="container mx-auto mt-11 flex">
+      <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex">
         <div className="grid w-full grid-cols-1 gap-10 px-[1.2rem] md:gap-14 lg:grid-cols-2">
           <div className="space-y-8">
             <div

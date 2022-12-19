@@ -12,19 +12,30 @@ export const getUnsignedImagePath = async (filename) => {
 }
 
 //get image path from Web3.Storage
-export const getWeb3ImagePath = async (cid) => {
-  const url = await axios.get(`${HOST}/api/getImageFromWeb3`, {
-    params: { cid: cid }
-  })
-  //return only image data
-  return url?.data
+// export const getWeb3ImagePath = async (cid) => {
+//   const url = await axios.get(`${HOST}/api/getImageFromWeb3`, {
+//     params: { cid: cid }
+//   })
+//   //return only image data
+//   return url?.data
+// }
+
+export const saveImageToWeb3 = async (formdata) => {
+  const imageURI = await axios.post(
+    `${HOST}/api/saveweb3image`, 
+    formdata,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((imageURI) => {
+      return imageURI
+    })
 }
 
-export const saveImageToWeb3 = async (image) => {
-  const imageURI = await axios.put(`${HOST}/api/saveImageToWeb3`, {
-    params : {
-      image: image
-    }
-  })
-  return imageURI
+export const getImagefromWeb3 = (ipfsuri) => {
+  const image = "https://gateway.ipfscdn.io/ipfs/" + String(ipfsuri).slice(7);
+  // const image = "https://api.ipfsbrowser.com/ipfs/get.php?hash=" + String(ipfsuri).slice(7);
+  // const image = "https://ipfs.io/ipfs/" + String(ipfsuri).slice(7);
+  return image;
 }

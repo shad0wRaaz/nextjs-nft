@@ -17,7 +17,7 @@ import Footer from '../../components/Footer'
 import { useQueryClient } from 'react-query'
 import { RiCloseFill } from 'react-icons/ri'
 import NFTCard from '../../components/NFTCard'
-import { getUnsignedImagePath } from '../../fetchers/s3'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
 import { Menu, Transition, Switch } from '@headlessui/react'
@@ -81,11 +81,11 @@ const Collection = () => {
   const [owners, setOwners] = useState()
   const { myUser, queryStaleTime } = useUserContext()
   const [showUnlisted, setShowUnlisted] = useState(false)
-  const [profileImageUrl, setProfileImageUrl] = useState()
-  const [bannerImageUrl, setBannerImageUrl] = useState()
+  // const [profileImageUrl, setProfileImageUrl] = useState()
+  // const [bannerImageUrl, setBannerImageUrl] = useState()
   const [showModal, setShowModal] = useState(false)
   const [newCollectionData, setNewCollectionData] = useState()
-  const [creatorProfileImage, setCreatorProfileImage] = useState()
+  // const [creatorProfileImage, setCreatorProfileImage] = useState()
   const qc = useQueryClient()
   const bannerRef = useRef()
 
@@ -103,13 +103,14 @@ const Collection = () => {
       },
       onSuccess: (res) => {
         if(res){
+          console.log(res[0])
           setNewCollectionData(res[0])
           setShowUnlisted(res[0]?.showUnlisted)
-          ;(async () => {
-            setCreatorProfileImage(await getUnsignedImagePath(res[0]?.creator.profileImage))
-            setProfileImageUrl(await getUnsignedImagePath(res[0]?.profileImage))
-            setBannerImageUrl(await getUnsignedImagePath(res[0]?.bannerImage))
-          })()
+          // ;(async () => {
+          //   setCreatorProfileImage(await getUnsignedImagePath(res[0]?.creator.profileImage))
+          //   setProfileImageUrl(await getUnsignedImagePath(res[0]?.profileImage))
+          //   setBannerImageUrl(await getUnsignedImagePath(res[0]?.bannerImage))
+          // })()
   
           // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
   
@@ -241,7 +242,7 @@ const Collection = () => {
             >
               <RiCloseFill fontSize={25}/>
             </div>
-            <EditCollection collection={newCollectionData} profileImageUrl={profileImageUrl?.data?.url} bannerImageUrl={bannerImageUrl?.data?.url}/>
+            <EditCollection collection={newCollectionData} profileImageUrl={collectionData[0]?.web3imageprofile} bannerImageUrl={collectionData[0]?.web3imagebanner}/>
           </div>
         </div>
       )}
@@ -251,7 +252,7 @@ const Collection = () => {
             <div className="nc-NcImage absolute inset-0" ref={bannerRef}>
               <img
                 src={
-                  bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src
+                  collectionData[0]?.web3imagebanner ? getImagefromWeb3(collectionData[0]?.web3imagebanner) : noBannerImage.src
                 }
                 className="h-full w-full object-cover"
                 alt={collectionData[0]?.name}
@@ -273,8 +274,8 @@ const Collection = () => {
                   >
                     <img
                       src={
-                        profileImageUrl
-                          ? profileImageUrl?.data?.url
+                        collectionData[0]?.web3imageprofile
+                          ? getImagefromWeb3(collectionData[0]?.web3imageprofile)
                           : noProfileImage.src
                       }
                       className="h-full w-full object-cover"
@@ -348,13 +349,11 @@ const Collection = () => {
                         <Link href={`/user/${newCollectionData?.creator?.walletAddress}`}>
                           <div className="flex my-4">
                             <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
-                              {creatorProfileImage && (
-                                <img
-                                  className="absolute inset-0 h-full w-full rounded-full object-cover"
-                                  src={creatorProfileImage?.data?.url}
-                                  alt="test"
-                                />
-                              )}
+                              <img
+                                className="absolute inset-0 h-full w-full rounded-full object-cover"
+                                src={getImagefromWeb3(collectionData[0]?.creator?.web3imageprofile)}
+                                alt="test"
+                              />
                             </div>
 
                             <span className="ml-2.5 flex cursor-pointer flex-col">

@@ -12,6 +12,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import sanityClient from '@sanity/client'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
@@ -30,6 +31,8 @@ const redis = new Redis({
   host: process.env.NEXT_PUBLIC_REDIS_URL,
   port: process.env.NEXT_PUBLIC_REDIS_PORT
 })
+
+const web3storage = new ThirdwebStorage();
 
 dotenv.config() 
 
@@ -51,6 +54,7 @@ const config = sanityClient({
 })
 
 const web3Client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY })
+
 
 cron.schedule('*/500 * * * *', async() => {
   const options = {
@@ -98,8 +102,8 @@ cron.schedule('*/500 * * * *', async() => {
   }
 })
 
-const randomImageName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString('hex')
+// const randomImageName = (bytes = 32) =>
+//   crypto.randomBytes(bytes).toString('hex')
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage }) //for profile pic and banner pic saving in AWS
@@ -146,93 +150,122 @@ app.post('/api/uploadcollection', nftUpload.single('filetoupload'), function(req
 //   return res.status(200).json(JSON.stringify(events))
 // })
 
-app.post('/api/saveImageToWeb3', async (req, res) => {
-  const file = req.body.image
-  const path = req.body.path
-  console.log(path)
+// ipfs://QmbRphLywEnzZoyCX88PHxYbXjWqbiF2Wp1tKWJrvDZyPt/0
+app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
+  const file = req.file.buffer;
+  const fileURI = await web3storage.upload(file);
+  console.log(fileURI)
+  if(fileURI){
+    res.status(200).send(fileURI);
+  }
+  res.status(200).json({ 'message': 'Error in saving image in Web3'})
+})
+
+// app.post('/api/saveimage', upload.single('imagefile'), async (req, res) => {
+//   let files = []
+//   files.push(req.file.buffer);
+//   const cid =  await web3Client.put(files);
+
+//   res.status(200).send(cid);
+// })
+
+// app.get('/api/getweb3image', async(req, res) => {
+//   const fileURI = req.query.uri;
+// //  console.log(fileURI)
+//   const result = await web3storage.download(fileURI);
+//   const data = await result.text();
+//   // const base = Buffer.from(data, 'binary').toString('base64');
+//   console.log(data)
+//   res.status(200).json(data);
+// })
+
+// app.post('/api/saveImageToWeb3', async (req, res) => {
+//   const file = req.body.image
+//   const path = req.body.path
+//   console.log(path)
   
   
-  const fileWithPath = await getFilesFromPath(path)
-  const cid = await web3Client.put(fileWithPath)
-  console.log(cid)
-  return res.status(200).json(cid)    
+//   const fileWithPath = await getFilesFromPath(path)
+//   const cid = await web3Client.put(fileWithPath)
+//   console.log(cid)
+//   return res.status(200).json(cid)    
 
-  // const ext = file.name.split('.').pop()
-  // const fileName = `${uuidv4()}.${ext}`
-  // const newFile = new File([file], fileName, {type: file.type})
-  // const cid = await web3Client.put([newFile, {
-  //   name: fileName
-  // }])
+//   // const ext = file.name.split('.').pop()
+//   // const fileName = `${uuidv4()}.${ext}`
+//   // const newFile = new File([file], fileName, {type: file.type})
+//   // const cid = await web3Client.put([newFile, {
+//   //   name: fileName
+//   // }])
 
-  // const imageURI = `https://${cid}.ipfs.dweb.link/${fileName}`
-  const imageURI = `https://w3s.link/ipfs/cid/${fileName}`
-  return res.status(200).send({ imageURI })
-})
+//   // const imageURI = `https://${cid}.ipfs.dweb.link/${fileName}`
+//   const imageURI = `https://w3s.link/ipfs/cid/${fileName}`
+//   return res.status(200).send({ imageURI })
+// })
 
-app.get('/api/getImageFromWeb3', async(req, res) => {
-  const cid = req.query.cid
-  const returnFile = await web3Client.get(cid)
-  // console.log(returnFile)
-  return res.status(200).send(`https://w3s.link/ipfs/${cid}`)
+// app.get('/api/getImageFromWeb3', async(req, res) => {
+//   const cid = req.query.cid
+//   const returnFile = await web3Client.get(cid)
+//   // console.log(returnFile)
+//   return res.status(200).send(`https://w3s.link/ipfs/${cid}`)
 
-  const result = await web3Client.get(cid)
-  if(!result) {
-    return res.status(200).json('Not Found')
-  }else {
-    console.log(result)
-    // const files = await res.files()
-    // for(const file of files){
-    //   console.log(file.cid, file.path, file.size)
-    // }
-    return res.status(200).send({ result })
-  }
-})
+//   const result = await web3Client.get(cid)
+//   if(!result) {
+//     return res.status(200).json('Not Found')
+//   }else {
+//     console.log(result)
+//     // const files = await res.files()
+//     // for(const file of files){
+//     //   console.log(file.cid, file.path, file.size)
+//     // }
+//     return res.status(200).send({ result })
+//   }
+// })
 
-app.get('/api/getS3Image', async (req, res) => {
-  const params = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-    Key: req.query.filename,
-  }
-  const command = new GetObjectCommand(params)
-  const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
+// app.get('/api/getS3Image', async (req, res) => {
+//   const params = {
+//     Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+//     Key: req.query.filename,
+//   }
+//   const command = new GetObjectCommand(params)
+//   const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
 
-  res.send({ url }).status(200)
-})
+//   res.send({ url }).status(200)
+// })
 
-app.post('/api/saveS3Image', upload.single('profile'), async (req, res) => {
-  const address = req.body.userAddress
-  // console.log(req.file.buffer)
-  const imageName = 'profileImage-' + address
+// app.post('/api/saveS3Image', upload.single('profile'), async (req, res) => {
+//   const address = req.body.userAddress
+//   // console.log(req.file.buffer)
+//   const imageName = 'profileImage-' + address
 
-  const params = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-    Key: imageName,
-    Body: req.file.buffer,
-    ContentType: req.file.mimetype,
-  }
+//   const params = {
+//     Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+//     Key: imageName,
+//     Body: req.file.buffer,
+//     ContentType: req.file.mimetype,
+//   }
 
-  const command = new PutObjectCommand(params)
+//   const command = new PutObjectCommand(params)
 
-  await s3.send(command)
-  res.send({})
-})
+//   await s3.send(command)
+//   res.send({})
+// })
 
-app.post('/api/saveS3Banner', upload.single('banner'), async (req, res) => {
-  const address = req.body.userAddress
-  const imageName = 'bannerImage-' + address
+// app.post('/api/saveS3Banner', upload.single('banner'), async (req, res) => {
+//   const address = req.body.userAddress
+//   const imageName = 'bannerImage-' + address
 
-  const params = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-    Key: imageName,
-    Body: req.file.buffer,
-    ContentType: req.file.mimetype,
-  }
+//   const params = {
+//     Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+//     Key: imageName,
+//     Body: req.file.buffer,
+//     ContentType: req.file.mimetype,
+//   }
 
-  const command = new PutObjectCommand(params)
+//   const command = new PutObjectCommand(params)
 
-  await s3.send(command)
-  res.send({})
-})
+//   await s3.send(command)
+//   res.send({})
+// })
 
 app.get('/api/updateListings', async (req, res) => {
   //get data from blockchain
@@ -298,6 +331,7 @@ app.get('/api/latestCollection', async (req, res) => {
 
 app.get('/api/topTradedCollections', async( req, res) => {
   var topCollections
+  redis.del("toptradedcollections")
   if(await redis.get("toptradedcollections") != null) {
     topCollections = await redis.get("toptradedcollections")
     return res.status(200).json(topCollections)    
@@ -308,8 +342,8 @@ app.get('/api/topTradedCollections', async( req, res) => {
       name, 
       category, 
       contractAddress,
-      profileImage,
-      bannerImage,
+      web3imageprofile,
+      web3imagebanner,
       description,
       _createdAt,
       chainId,
@@ -384,5 +418,6 @@ app.get('/api/nft/contract/:id/:nftid', async(req, res) => {
     res.status(200).json({messsage: 'NFT data not found'})
   }
 })
+
 
 app.listen(8080, () => console.log('listening on 8080'))

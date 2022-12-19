@@ -6,7 +6,7 @@ import SearchItem from './SearchItem'
 
 
 const style= {
-    container: 'container p-6 my-[4rem] mx-auto relative',
+    container: 'container p-6 my-[4rem] mx-auto relative sm:px[2rem] lg:px-[8rem]',
     headTitle: 'text-center py-3 px-8 bg-slate-600 text-white w-fit rounded-full mx-auto z-10 relative',
     divider: 'h-[1px] w-full  z-1 relative -mt-6',
     nftContainer: 'mt-[4rem] rounded-3xl p-[4rem]',

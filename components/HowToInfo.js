@@ -40,7 +40,7 @@ const HowToInfo = () => {
                 'linear-gradient(145deg, #4f5ceb33 0%, #4f5ceb00 100%)',
             }}
           >
-            <div className="mb-3 -mt-[25px] h-[60px] w-[60px] rounded-2xl bg-[#4F5CEB] p-4">
+            <div className="mb-3 h-[60px] w-[60px] rounded-2xl bg-[#4F5CEB] p-4">
               <MdOutlineAccountBalanceWallet fontSize="30px" color="#ffffff" />
             </div>
             <span className="nc-Badge relative inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
@@ -74,7 +74,7 @@ const HowToInfo = () => {
                   'linear-gradient(145deg, #ff6d3d33 0%, #ff6d3d00 100%)',
               }}
             >
-              <div className="-mt-[25px] mb-3 h-[60px] w-[60px] rounded-2xl bg-[#FF6D3D] p-4">
+              <div className=" mb-3 h-[60px] w-[60px] rounded-2xl bg-[#FF6D3D] p-4">
                 <BsCollection fontSize="30px" color="#ffffff" />
               </div>
               <span className="nc-Badge relative inline-flex rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-pink-800 ">

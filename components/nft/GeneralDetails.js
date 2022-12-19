@@ -4,7 +4,6 @@ import Report from '../Report'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
-import { ImHammer2 } from 'react-icons/im'
 import { useQueryClient } from 'react-query'
 import HelmetMetaData from '../HelmetMetaData'
 import { HiOutlineMail } from 'react-icons/hi'
@@ -14,15 +13,15 @@ import { useChainId } from '@thirdweb-dev/react'
 import { TbBrandTelegram } from 'react-icons/tb'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
-import { useState, Fragment, useEffect } from 'react'
-import { getUnsignedImagePath } from '../../fetchers/s3'
+import { useState, Fragment } from 'react'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import { useUserContext } from '../../contexts/UserContext'
 import { updateListings } from '../../fetchers/Web3Fetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getUserContinuously } from '../../fetchers/SanityFetchers'
 import { FiMoreVertical, FiFacebook, FiTwitter } from 'react-icons/fi'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { RiShareBoxLine, RiCloseCircleLine, RiFireLine, RiAuctionLine } from 'react-icons/ri'
+import { RiShareBoxLine , RiAuctionLine } from 'react-icons/ri'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
 
@@ -61,7 +60,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
   const address = useAddress()
   const router = useRouter()
   const chainid = useChainId()
-  const [collectionProfile, setCollectionProfile] = useState()
+  // const [collectionProfile, setCollectionProfile] = useState()
   const [userProfile, setUserProfile] = useState()
   const [auctionedItem, setAuctionedItem] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -89,12 +88,16 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
   // )
 
   //get collection profile image
-  useEffect(() => {
-    if(!metaDataFromSanity) return
-    ;(async()=>{
-      setCollectionProfile(await getUnsignedImagePath(metaDataFromSanity?.collection?.profileImage))
-    })()
-  }, [metaDataFromSanity])
+  // useEffect(() => {
+  //   if(!metaDataFromSanity) return
+  //   ;(async()=>{
+  //     setCollectionProfile(await getUnsignedImagePath(metaDataFromSanity?.collection?.profileImage))
+  //   })()
+
+  //   return(() => {
+  //     //do nothing, clean up function
+  //   });
+  // }, [metaDataFromSanity])
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
@@ -112,10 +115,6 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
           setAuctionedItem(true)
           return
         }
-        
-        ;(async () => {
-          setUserProfile(await getUnsignedImagePath(res?.profileImage))
-        })()
       },
     }
   )
@@ -283,7 +282,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
                 <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}>
                   <img
                     className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
-                    src={collectionProfile?.data.url}
+                    src={getImagefromWeb3(metaDataFromSanity?.collection?.web3imageprofile)}
                     alt={metaDataFromSanity?.collection?.name}
                   />
                 </Link>
@@ -345,7 +344,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
                     <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
                       <img
                         className="absolute inset-0 h-full w-full rounded-full object-cover"
-                        src={userProfile?.data.url}
+                        src={getImagefromWeb3(ownerData?.web3imageprofile)}
                         alt={ownerData?.userName}
                       />
                     </div>

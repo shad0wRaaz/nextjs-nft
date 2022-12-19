@@ -79,7 +79,7 @@ const browse = () => {
       <div className={style.wrapper}>
         <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
           <Tab.List
-            className={` mx-auto -mt-[55px] mb-[2rem] flex max-w-fit justify-center space-x-1 overflow-x-auto rounded-full border ${
+            className={`mx-auto -mt-[55px] mb-[2rem] flex max-w-fit justify-center space-x-1 overflow-x-auto rounded-full border ${
               dark
                 ? 'border-slate-600 bg-slate-700 text-white'
                 : ' border-neutral-100 bg-white'

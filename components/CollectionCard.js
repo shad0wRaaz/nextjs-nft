@@ -6,7 +6,7 @@ import noBannerImage from '../assets/noBannerImage.png'
 import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconEthereum, IconPolygon, IconBNB } from './icons/CustomIcons'
-import { getUnsignedImagePath } from '../fetchers/s3'
+import { getImagefromWeb3 } from '../fetchers/s3'
 
 const style = {
   card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer',
@@ -53,14 +53,14 @@ const CollectionCard = ({
         <div className={style.bannerContainer}>
           {bannerImage ? (
             <img
-              src={bannerImage}
-              className={style.banner + ' object-cover'}
+              src={getImagefromWeb3(bannerImage)}
+              className={style.bannerImage + ' object-cover'}
               alt={name}
             />
           ) : (
             <Image
               src={noBannerImage}
-              className={style.banner}
+              className={style.bannerImage}
               layout="fill"
               objectFit="cover"
             />
@@ -89,7 +89,7 @@ const CollectionCard = ({
               {profileImage ? (
                 <img
                   className="absolute inset-0 h-full w-full rounded-full object-cover"
-                  src={profileImage}
+                  src={getImagefromWeb3(profileImage)}
                   alt={name}
                 />
               ) : (

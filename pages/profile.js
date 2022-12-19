@@ -12,10 +12,11 @@ import { useUserContext } from '../contexts/UserContext'
 import { IconLoading } from '../components/icons/CustomIcons'
 import { QueryClient } from 'react-query'
 import axios from 'axios'
-import { getUnsignedImagePath } from '../fetchers/s3'
+import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
 import noProfileImage from '../assets/noProfileImage.png'
 import noBannerImage from '../assets/noBannerImage.png'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { ThirdwebStorage } from '@thirdweb-dev/storage'
 
 const style = {
   wrapper: '',
@@ -44,6 +45,8 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
+const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080'
+
 const profile = () => {
   const address = useAddress()
   const [userDoc, setUserDoc] = useState()
@@ -55,20 +58,32 @@ const profile = () => {
   const [banner, setBanner] = useState()
   const [profileImageUrl, setProfileImageUrl] = useState()
   const [bannerImageUrl, setBannerImageUrl] = useState()
+  const router = useRouter()
 
   useEffect(() => {
     if (!myUser) return
+    setUserDoc({ ...myUser })
+    console.log(myUser)
+    
+    // ;(async () => {
+    //   if(myUser.profileImage) {
+    //     setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
+    //   }
+    //   if(myUser.bannerImage){
+    //     setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
+    //   }
+    // })()
 
-    ;(async () => {
-      setUserDoc({ ...myUser })
-      if(myUser.profileImage) {
-        setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
-      }
-      if(myUser.bannerImage){
-        setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
-      }
-    })()
+    return() => {
+      //nothing, just a clean up code
+    }
   }, [myUser])
+
+  useEffect(() => {
+    if(!address) {
+      router.push('/');
+    }
+  },[address])
 
   function previewImage(target) {
     const files = document.getElementById(
@@ -101,63 +116,43 @@ const profile = () => {
     if (!address) return
     setIsSaving(true)
     try {
-      //saving profile image
-      
-      const files = document.getElementById('profileImg')
-      if (files.files.length > 0) {
-        var reader = new FileReader()
-        reader.readAsDataURL(files.files[0])
-        // console.log(files.files[0])
-        reader.onload = function (e) {
-          var image = new Image()
-          image.src = e.target.result
-          image.onload = async function () {
-            //upload to IPFS Function here
-            const sdk = new ThirdwebSDK()
-            // const fetch = await sdk.storage.fetch("ipfs://QmU2bj83u6hGRe9EXzqE5ZNMacD9zQLDiaqDt4omMHLxnC/")
-            const hash = await sdk.storage.upload(image.src)
-            console.log(hash)
-
-            const fetch = await sdk.storage.fetch(hash)
-            console.log(fetch)
-          }
-        }
-      } else {
-        // Not supported
-      }
-
       
       if(profile){
         const formdata = new FormData()
-        formdata.append('profile', profile)
-        formdata.append('userAddress', address)
-  
-        const result = await axios.post(
-          'http://localhost:8080/api/saveS3Image',
-          formdata,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
+        formdata.append('imagefile', profile);
+        
+        const uri =  await saveImageToWeb3(formdata);
+        console.log(uri);
+        setUserDoc({...userDoc, web3imageprofile: uri});
+        // const result = await axios.post(
+        //   'http://localhost:8080/api/saveS3Image',
+        //   formdata,
+        //   {
+        //     headers: {
+        //       'Content-Type': 'multipart/form-data',
+        //     },
+        //   }
+        // )
       }
 
       //saving banner image
       if(banner){
-        const bannerData = new FormData()
-        bannerData.append('banner', banner)
-        bannerData.append('userAddress', address)
-  
-        const result2 = await axios.post(
-          'http://localhost:8080/api/saveS3Banner',
-          bannerData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
+        const bannerData = new FormData();
+        bannerData.append('imagefile', banner);
+        
+        const uri  = await saveImageToWeb3(bannerData);
+        console.log(uri);
+        setUserDoc({...userDoc, web3imagebanner: uri});
+
+        // const result2 = await axios.post(
+        //   'http://localhost:8080/api/saveS3Banner',
+        //   bannerData,
+        //   {
+        //     headers: {
+        //       'Content-Type': 'multipart/form-data',
+        //     },
+        //   }
+        // )
       }
     } catch (error) {
       console.log(error)
@@ -171,8 +166,8 @@ const profile = () => {
           twitterHandle: userDoc.twitterHandle,
           igHandle: userDoc.igHandle,
           fbhHandle: userDoc.fbhHandle,
-          bannerImage: 'bannerImage-'.concat(address),
-          profileImage: 'profileImage-'.concat(address),
+          web3imagebanner: userDoc.web3imagebanner,
+          web3imageprofile: userDoc.web3imageprofile,
         })
         .commit()
         .then(() => {
@@ -258,11 +253,21 @@ const profile = () => {
                     style={{ height: '200px', width: '300px' }}
                   >
                     {/* <img src={`${myUser.profileImage}`} id="pImage" /> */}
+                      {/* <img
+                        src={profileImageUrl ? `data:image/jpeg;base64,${profileImageUrl?.data}`  : noProfileImage.src}
+                        id="pImage"
+                        className="w-full object-cover"
+                      /> */}
                       <img
-                        src={profileImageUrl ? profileImageUrl?.data?.url : noProfileImage.src}
+                        src={userDoc?.web3imageprofile ? getImagefromWeb3(userDoc?.web3imageprofile) : noProfileImage.src}
                         id="pImage"
                         className="w-full object-cover"
                       />
+                      {/* <img
+                        src={profileImageUrl ? profileImageUrl?.data?.url : noProfileImage.src}
+                        id="pImage"
+                        className="w-full object-cover"
+                      /> */}
                     {/* <img
                       src={myUser?.profileImage ? myUser?.profileImage : ' '}
                     /> */}
@@ -287,9 +292,14 @@ const profile = () => {
                   <div className={style.bannerImageContainer}>
                       <img
                         id="bImage"
-                        src={bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src}
+                        src={userDoc?.web3imagebanner ? getImagefromWeb3(userDoc?.web3imagebanner) : noProfileImage.src}
                         className="w-full object-cover"
                       />
+                      {/* <img
+                        id="bImage"
+                        src={bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src}
+                        className="w-full object-cover"
+                      /> */}
                   </div>
                   <input
                     id="bannerImg"
