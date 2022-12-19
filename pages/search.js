@@ -260,7 +260,7 @@ const search = ({category}) => {
         </div>
       </div>
 
-      <div className="space-t-16 lg:space-t-28 container p-4 mx-auto pt-16 lg:pt-20">
+      <div className="space-t-16 lg:space-t-28 container p-4 mx-auto pt-16 lg:pt-20 lg:px-[8rem] sm:px-[2rem]">
         <div className="relative mb-12 flex flex-col">
           <div className="flex flex-col justify-between space-y-6 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-2 ">
             <nav className="hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base">
@@ -794,7 +794,7 @@ const search = ({category}) => {
           </div>
         </div>
       </div>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 lg:px-[8rem] sm:px-[2rem]">
         {!filteredListings && <Loader />}
         {filteredListings?.length == 0 && (
           <div className="flex justify-center">
