@@ -47,8 +47,8 @@ export const getNFTCollectionsByCategory =
         name, 
         category, 
         contractAddress,
-        profileImage,
-        bannerImage,
+        web3imageprofile,
+        web3imagebanner,
         description,
         chainId,
         floorPrice,
@@ -67,8 +67,8 @@ export const getMyCollections =
     const [_, address] = queryKey
     const query = `*[_type == "nftCollection" && createdBy->walletAddress == "${address}" ] {
         _id,
-        profileImage,
-        bannerImage,
+        web3imageprofile,
+        web3imagebanner,
         volumeTraded,
         createdBy,
         chainId,

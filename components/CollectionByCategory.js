@@ -3,9 +3,9 @@ import Loader from './Loader'
 import { useQuery } from 'react-query'
 import { toast } from 'react-hot-toast'
 import CollectionCard from './CollectionCard'
-import { getNFTCollectionsByCategory } from '../fetchers/SanityFetchers'
-import { useThemeContext } from '../contexts/ThemeContext'
 import { getUnsignedImagePath } from '../fetchers/s3'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { getNFTCollectionsByCategory } from '../fetchers/SanityFetchers'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -24,68 +24,56 @@ const CollectionByCategory = ({ categoryName }) => {
           errorToastStyle
         )
       },
-      onSuccess: async (res) => {
-        // const unresolved = res.map(async (item) => {
-        //   const obj = { ...item }
-        //   const profilePath = await getUnsignedImagePath(item.profileImage)
-        //   const bannerPath = await getUnsignedImagePath(item.bannerImage)
-        //   obj['profileImage'] = profilePath?.data.url
-        //   obj['bannerImage'] = bannerPath?.data.url
-        //   return obj
-        // })
-        // const resolvedPaths = await Promise.all(unresolved)
-        // setCollections(resolvedPaths)
-      },
     }
   )
-  const { data: updatedData, status: updatedStatus } = useQuery(
-    ['updatedCollection', categoryName],
-    async () => {
-      const unresolved = data.map(async (item) => {
-        const obj = { ...item }
-        const profilePath = await getUnsignedImagePath(item.profileImage)
-        const bannerPath = await getUnsignedImagePath(item.bannerImage)
-        obj['profileImage'] = profilePath?.data.url
-        obj['bannerImage'] = bannerPath?.data.url
-        return obj
-      })
+  // const { data: updatedData, status: updatedStatus } = useQuery(
+  //   ['updatedCollection', categoryName],
+  //   async () => {
+  //     const unresolved = data.map(async (item) => {
+  //       const obj = { ...item }
+  //       const profilePath = await getUnsignedImagePath(item.profileImage)
+  //       const bannerPath = await getUnsignedImagePath(item.bannerImage)
+  //       obj['profileImage'] = profilePath?.data.url
+  //       obj['bannerImage'] = bannerPath?.data.url
+  //       return obj
+  //     })
 
-      const resolvedPaths = await Promise.all(unresolved)
-      return resolvedPaths
-    },
-    {
-      enabled: Boolean(data),
-      onError: () => {
-        toast.error(
-          'Error fetching data. Refresh and try again.',
-          errorToastStyle
-        )
-      },
-      onSuccess:(res) => {
-        // console.log(res)
-      }
-    }
-  )
+  //     const resolvedPaths = await Promise.all(unresolved)
+  //     return resolvedPaths
+  //   },
+  //   {
+  //     enabled: Boolean(data),
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching data. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess:(res) => {
+  //       // console.log(res)
+  //     }
+  //   }
+  // )
 
   return (
     <div
       className={`grid grid-cols-1 place-items-center  ${
-        updatedStatus === 'loading' ||
-        (updatedStatus === 'success' && updatedData.length == 0)
+        status === 'loading' ||
+        (status === 'success' && data.length == 0)
           ? ' '
           : ' gap-4 sm:grid-cols-2 md:gap-7 lg:grid-cols-3 xl:grid-cols-4'
       }`}
     >
-      {updatedStatus === 'success' &&
-        updatedData.length > 0 &&
-        updatedData.map((coll, id) => (
+      {status === 'success' &&
+        data.length > 0 &&
+        data.map((coll, id) => (
           <CollectionCard
             key={id}
             id={coll._id}
             name={coll.name}
             contractAddress={coll.contractAddress}
-            profileImage={coll.profileImage}
-            bannerImage={coll.bannerImage}
+            profileImage={coll.web3imageprofile}
+            bannerImage={coll.web3imagebanner}
             description={coll.description}
             chainId={coll.chainId}
             volumeTraded={coll.volumeTraded}
@@ -95,7 +83,7 @@ const CollectionByCategory = ({ categoryName }) => {
             creatorAddress={coll.creatorAddress}
           />
         ))}
-      {updatedStatus === 'success' && updatedData.length == 0 && (
+      {status === 'success' && data.length == 0 && (
         <div
           className={`mx-auto rounded-xl border ${
             dark ? ' border-sky-400/20' : ' border-neutral-200'
@@ -109,7 +97,7 @@ const CollectionByCategory = ({ categoryName }) => {
           </Link>
         </div>
       )}
-      {updatedStatus === 'loading' && <Loader />}
+      {status === 'loading' && <Loader />}
     </div>
   )
 }

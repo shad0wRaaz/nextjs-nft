@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { HiChevronDown } from 'react-icons/hi'
+import { HiChevronDown, HiOutlineUserCircle } from 'react-icons/hi'
 import { TiLink } from 'react-icons/ti'
 import nuvanftLogo from '../assets/nuvanft.png'
 import toast, { Toaster } from 'react-hot-toast'
@@ -214,6 +214,10 @@ const Header = () => {
       // queryclient.invalidateQueries('notification')
       setIsLogged(true)
     })()
+
+    return () => {
+      //do nothing
+    }
   }, [address])
 
   const handleDisconnect = () => {
@@ -598,38 +602,29 @@ const Header = () => {
         {address && isLogged && (
           <>
             <Menu as="div" className="relative inline-block text-left">
-                <Menu.Button className="px-5 py-3">
-                  Quick Links
+                <Menu.Button className={`px-5 py-3 flex items-center gap-1 ${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100'} rounded-xl`}>
+                  <HiOutlineUserCircle fontSize={22}/> My Account
                 </Menu.Button>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                   <Menu.Items className={` ${
                     dark
                       ? 'divide-sky-400/20 bg-slate-700 text-white'
                       : ' divide-gray-100 bg-white'
-                  } absolute right-0 mt-2 w-64 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}>
+                  } absolute right-0 mt-2 w-72 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}>
                     <div className="px-1 py-1 flex flex-col text-left">
                       <Menu.Item>
-                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
+                        <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
                           <Link href="/collections/myCollection">
                             <div className="flex gap-2 items-center">
-                              <IconImage/> My NFTs
+                              <IconImage/> My NFTs and Collections
                             </div>
                           </Link>
                         </div>
                       </Menu.Item>
                       <Menu.Item>
-                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
-                          <Link href="/collections/myCollection" >
-                            <div className="flex gap-2 items-center">
-                              <IconOffer/> My Collections
-                            </div>
-                          </Link>
-                        </div>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <div className={`p-3 py-2 text-left hover:bg-slate-${dark ? '600' : '200'} cursor-pointer rounded-md`}>
+                        <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
                           <Link href="/profile" >
-                            <div className="flex gap-2 items-center">
+                            <div className="flex gap-1 items-center">
                               <IconProfile/> My Profile
                             </div>
                           </Link>

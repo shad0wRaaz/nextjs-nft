@@ -4,9 +4,9 @@ const UserContext = createContext()
 
 export function UserProvider({ children }) {
   const [myUser, setMyUser] = useState()
-  const [myProfileImage, setMyProfileImage] = useState()
+
   const [myCollections, setMyCollections] = useState([])
-  const [myBannerImage, setMyBannerImage] = useState()
+
   const [queryCacheTime, setQueryCacheTime] = useState(1000 * 60 * 60)
   const [queryStaleTime, setQueryStaleTime] = useState(1000 * 60 * 60)
   return (
@@ -16,10 +16,6 @@ export function UserProvider({ children }) {
         setMyUser,
         queryStaleTime,
         queryCacheTime,
-        myProfileImage,
-        setMyProfileImage,
-        myBannerImage,
-        setMyBannerImage,
         myCollections,
         setMyCollections,
       }}

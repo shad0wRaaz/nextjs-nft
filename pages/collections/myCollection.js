@@ -26,7 +26,7 @@ import toast from 'react-hot-toast'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import NFTCardLocal from '../../components/NFTCardLocal'
 import { IconCopy, IconLoading } from '../../components/icons/CustomIcons'
-import { getUnsignedImagePath } from '../../fetchers/s3'
+import { getImagefromWeb3, getUnsignedImagePath } from '../../fetchers/s3'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -56,41 +56,11 @@ const Collection = () => {
     myUser,
     queryCacheTime,
     queryStaleTime,
-    myProfileImage,
-    myBannerImage,
     myCollections,
-    setMyCollections,
   } = useUserContext()
   const { activeListings } = useMarketplaceContext()
   const [showType, setShowType] = useState('collection')
-  // const { data: collectionData, status: collectionStatus } = useQuery(
-  //   ['mycollections', address],
-  //   getMyCollections(),
-  //   {
-  //     cacheTime: queryCacheTime,
-  //     staleTime: queryStaleTime,
-  //     enabled: Boolean(address), //only run this query if address is provided
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching collection data. Refresh and try again',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: async (res) => {
-  //       const unresolved = res.map(async (item) => {
-  //         const obj = { ...item }
-  //         const imgPath = await getUnsignedImagePath(item.profileImage)
-  //         const bannerPath = await getUnsignedImagePath(item.bannerImage)
-  //         obj['profileImage'] = imgPath?.data.url
-  //         obj['bannerImage'] = bannerPath?.data.url
-  //         return obj
-  //       })
-
-  //       const resolvedPaths = await Promise.all(unresolved)
-  //       setMyCollections(resolvedPaths)
-  //     },
-  //   }
-  // )
+  
 
   const { data: nftData, status: nftStatus } = useQuery(
     ['createdItems', address],
@@ -106,7 +76,6 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-        // console.log(res)
       },
     }
   )
@@ -151,6 +120,10 @@ const Collection = () => {
       router.push('/')
       return
     }
+
+    return() => {
+      //do nothing
+    }
   }, [address])
 
   //parallax scrolling effect in banner
@@ -174,7 +147,7 @@ const Collection = () => {
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="nc-NcImage absolute inset-0" data-nc-id="NcImage">
             <img
-              src={myBannerImage ? myBannerImage.data.url : noBannerImage.src}
+              src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : noBannerImage.src}
               className="h-full w-full object-cover"
               alt={myUser?.userName}
             />
@@ -194,11 +167,7 @@ const Collection = () => {
                   data-nc-id="NcImage"
                 >
                   <img
-                    src={
-                      myProfileImage
-                        ? myProfileImage.data.url
-                        : noProfileImage.src
-                    }
+                    src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : noProfileImage.src }
                     className="h-full w-full object-cover"
                     alt="nc-imgs"
                   />
@@ -372,7 +341,7 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('createdItems')}
           >
-            <span className="inline-block pl-2">Created Items</span>
+            <span className="inline-block pl-2">Minted NFTs</span>
           </div>
           <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
@@ -385,7 +354,7 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('collectedItems')}
           >
-            <span className="inline-block pl-2">Collected Items</span>
+            <span className="inline-block pl-2">Collected NFTs</span>
           </div>
           <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
@@ -398,7 +367,7 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('favourites')}
           >
-            <span className="inline-block pl-1">Favourite Items</span>
+            <span className="inline-block pl-1">Favourite NFTs</span>
           </div>
         </div>
       </div>
@@ -414,8 +383,8 @@ const Collection = () => {
                     name={coll.name}
                     id={coll._id}
                     contractAddress={coll.contractAddress}
-                    profileImage={coll.profileImage}
-                    bannerImage={coll.bannerImage}
+                    profileImage={coll.web3imageprofile}
+                    bannerImage={coll.web3imagebanner}
                     description={coll.description}
                     floorPrice={coll.floorPrice}
                     volumeTraded={coll.volumeTraded}

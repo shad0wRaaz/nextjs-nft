@@ -103,7 +103,6 @@ const Collection = () => {
       },
       onSuccess: (res) => {
         if(res){
-          console.log(res[0])
           setNewCollectionData(res[0])
           setShowUnlisted(res[0]?.showUnlisted)
           // ;(async () => {
@@ -140,9 +139,6 @@ const Collection = () => {
           'Error fetching NFTs. Refresh and try again.',
           errorToastStyle
         )
-      },
-      onSuccess: (res) => {
-        console.log(res);
       },
     }
   )

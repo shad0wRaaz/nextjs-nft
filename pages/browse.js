@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { Tab } from '@headlessui/react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { config } from '../lib/sanityClient'
-import CollectionByCategory from '../components/CollectionByCategory'
+import React, { useState, useEffect } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useRouter } from 'next/router'
+import CollectionByCategory from '../components/CollectionByCategory'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -24,6 +24,7 @@ const browse = () => {
   const { dark } = useThemeContext()
   const [categoryData, setCategoryData] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
+
   const fetchCategoryData = async (sanityClient = config) => {
     const query = `*[_type == "category"] | order(name asc) {
             name,
@@ -58,6 +59,9 @@ const browse = () => {
     //       setSelectedIndex(1);
     //       console.log('i changed 00')
     // }
+    return() => {
+      //do nothing 
+    }
   },[router.query.c])
 
   // useEffect(() => {

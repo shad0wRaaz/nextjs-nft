@@ -54,9 +54,7 @@ const User = () => {
   const { myUser, queryCacheTime, queryStaleTime } = useUserContext()
   const [isFollower, setIsFollower] = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
-  // const [profile, setProfile] = useState()
-  // const [banner, setBanner] = useState()
-  const [userCollections, setUserCollections] = useState([])
+  // const [userCollections, setUserCollections] = useState([])
   const [userData, setUserData] = useState()
   const bannerRef = useRef()
 
@@ -101,20 +99,6 @@ const User = () => {
           errorToastStyle
         )
       },
-      onSuccess: async (res) => {
-        const unresolved = res.map(async (item) => {
-          const obj = { ...item }
-          const imgPath = await getUnsignedImagePath(item.profileImage)
-          const bannerPath = await getUnsignedImagePath(item.bannerImage)
-          obj['profileImage'] = imgPath?.data.url
-          obj['bannerImage'] = bannerPath?.data.url
-          return obj
-        })
-
-        const resolvedPathss = await Promise.all(unresolved)
-
-        setUserCollections(resolvedPathss)
-      },
     }
   )
   const { data: nftData, status: nftStatus } = useQuery(
@@ -129,9 +113,6 @@ const User = () => {
           'Error fetching minted NFTs. Refresh and try again',
           errorToastStyle
         )
-      },
-      onSuccess: (res) => {
-        // console.log(res)
       },
     }
   )
@@ -209,7 +190,7 @@ const User = () => {
         window.removeEventListener('scroll', handleScroll);
       };
     }, [])
-console.log(userData)
+
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
@@ -493,15 +474,15 @@ console.log(userData)
 
         <div className={style.collectionWrapper}>
           {collectionStatus == 'loading' && <Loader />}
-          {userCollections?.length > 0 &&
-            userCollections?.map((coll, id) => (
+          {collectionData?.length > 0 &&
+            collectionData?.map((coll, id) => (
               <CollectionCard
                 key={id}
                 name={coll.name}
                 id={coll._id}
                 contractAddress={coll.contractAddress}
-                profileImage={coll.profileImage}
-                bannerImage={coll.bannerImage}
+                profileImage={coll.web3imageprofile}
+                bannerImage={coll.web3imagebanner}
                 description={coll.description}
                 floorPrice={coll.floorPrice}
                 volumeTraded={coll.volumeTraded}
@@ -513,12 +494,12 @@ console.log(userData)
             ))}
           {collectionData?.length == 0 && (
             <div className={style.errorBox}>
-              <h2 className={style.errorTitle}>No Collection create yet.</h2>
-              <Link href="/contracts">
+              <h2 className={style.errorTitle}>No Collection created yet.</h2>
+              {/* <Link href="/contracts">
                 <button className="text-md gradBlue cursor-pointer rounded-full p-4 px-8 text-center font-bold text-white">
                   Create Collection
                 </button>
-              </Link>
+              </Link> */}
             </div>
           )}
         </div>
