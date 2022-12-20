@@ -16,16 +16,21 @@ import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { SMTPClient } from 'emailjs'
 
 const app = express()
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io'],}))
+app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
+// app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+
 var globalActiveListings = []
 
 // parse application/json
 app.use(bodyParser.json())
+
+dotenv.config() 
 
 const redis = new Redis({
   host: process.env.NEXT_PUBLIC_REDIS_URL,
@@ -34,7 +39,6 @@ const redis = new Redis({
 
 const web3storage = new ThirdwebStorage();
 
-dotenv.config() 
 
 const s3 = new S3Client({
   credentials: {
@@ -419,5 +423,37 @@ app.get('/api/nft/contract/:id/:nftid', async(req, res) => {
   }
 })
 
+app.post('/api/sendemail', async (req,res) => {
+  //get registration link
+  const query = `*[_type == "settings"] {registrationlink}`
+  const result = await config.fetch(query);
+  const {email} = req.body
+  const emailBody = `<html>Dear Member,<br/>Please use the following registration link to continue to self register. <br/>${result[0].registrationlink}</html>`;
+
+
+  const client = new SMTPClient({
+    user: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+    password: process.env.NEXT_PUBLIC_SMTP_PASSWORD,
+    host: process.env.NEXT_PUBLIC_SMTP_HOST,
+    port: process.env.NEXT_PUBLIC_SMTP_PORT,
+    ssl: process.env.NEXT_PUBLIC_SMTP_SSL,
+    tls: true,
+    timeout: process.env.NEXT_PUBLIC_SMTP_TIMEOUT,
+  })
+
+  try {
+    const message = await client.sendAsync({
+      text: emailBody,
+      attachment: [{ data: emailBody, alternative: true }],
+      from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+      to: email,
+      subject: 'Registration Link',
+    })
+  } catch (err) {
+    res.status(400).send(JSON.stringify({ message: err.message }))
+    return
+  }
+  res.status(200).send(JSON.stringify({ message: 'success' }))
+})
 
 app.listen(8080, () => console.log('listening on 8080'))
