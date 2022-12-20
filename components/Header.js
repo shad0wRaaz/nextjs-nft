@@ -397,7 +397,7 @@ const Header = () => {
                               className="mr-2"
                               fontSize="20px"
                             />{' '}
-                            Create
+                            Mint
                           </a>
                         </div>
                       )}
@@ -641,7 +641,7 @@ const Header = () => {
             </div>
             <div className={`rounded-md border cursor-pointer border-slate-${dark ? '500' :'300'} px-5 py-3 bg-slate-${dark ? '600' : '100'} hover:bg-slate-${dark ? '500' : '200'}`}>
               <Link href="/contracts">
-                <div className={style.headerItem}>Create</div>
+                <div className={style.headerItem}>Mint</div>
               </Link>
             </div>
           </>

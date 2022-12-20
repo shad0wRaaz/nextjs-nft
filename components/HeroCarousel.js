@@ -65,8 +65,8 @@ const HeroCarousel = () => {
               and sell NFTs 🖼
             </div>
             <div className={style.description}>
-              Discover the most outstanding NTFs in all topics of life. Creative
-              your NTFs and sell them
+              Discover the most outstanding NFTs in all topics of life. Creative
+              your NFTs and sell them
             </div>
             <div className={style.ctaContainer}>
               <button
@@ -79,7 +79,7 @@ const HeroCarousel = () => {
                 className={style.button}
                 onClick={() => router.push('/contracts')}
               >
-                Create
+                Mint
               </button>
             </div>
           </div>

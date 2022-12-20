@@ -48,7 +48,7 @@ const HeroSearch = () => {
               <div className="flex-grow">
                 <input
                   className="block w-full truncate border-none bg-transparent p-0 font-semibold placeholder-neutral-800 focus:placeholder-neutral-300 focus:outline-none focus:ring-0  xl:text-lg"
-                  placeholder="Seach NFTs"
+                  placeholder="Search NFTs"
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                 />
