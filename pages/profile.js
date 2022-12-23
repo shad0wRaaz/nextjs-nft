@@ -63,7 +63,7 @@ const profile = () => {
   useEffect(() => {
     if (!myUser) return
     setUserDoc({ ...myUser })
-    console.log(myUser)
+
     
     // ;(async () => {
     //   if(myUser.profileImage) {

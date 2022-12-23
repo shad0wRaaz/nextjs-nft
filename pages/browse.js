@@ -28,8 +28,6 @@ const browse = () => {
   const fetchCategoryData = async (sanityClient = config) => {
     const query = `*[_type == "category"] | order(name asc) {
             name,
-            "imageUrl": profileImage.asset->url,
-            "bannerUrl": bannerImage.asset->url,
             totalCollection
         }`
 
@@ -48,8 +46,9 @@ const browse = () => {
     
     const param = router.query?.c
     if(!param) { return }
-    if(param == 'Collectibles') {
-      setSelectedTab(1);
+    console.log(param)
+    if(param == 'Sports') {
+      // setSelectedTab(4);
     }
     // switch(router.query.c){
     //   case 'Collectibles':
@@ -64,9 +63,12 @@ const browse = () => {
     }
   },[router.query.c])
 
-  // useEffect(() => {
-  //     console.log(categoryData)
-  // }, [categoryData])
+  useEffect(() => {
+      console.log(selectedTab)
+  }, [selectedTab])
+  useEffect(() => {
+      setSelectedTab(5)
+  }, [])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -81,7 +83,7 @@ const browse = () => {
         <h2 className={style.pageTitle}>Browse NFT Collections</h2>
       </div>
       <div className={style.wrapper}>
-        <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
+        <Tab.Group defaultIndex={0} onChange={setSelectedTab}>
           <Tab.List
             className={`mx-auto -mt-[55px] mb-[2rem] flex max-w-fit justify-center space-x-1 overflow-x-auto rounded-full border ${
               dark
@@ -92,6 +94,7 @@ const browse = () => {
             {categoryData.map((category, id) => (
               <Tab
                 key={id}
+                data-headlessui-state=""
                 className={({ selected }) =>
                   classNames(
                     'flex items-center justify-center space-x-2 rounded-full border-0 text-sm font-medium leading-5 focus:border-0 focus:ring-0',

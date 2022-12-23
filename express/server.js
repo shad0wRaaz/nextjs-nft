@@ -19,8 +19,8 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3
 import { SMTPClient } from 'emailjs'
 
 const app = express()
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
-// app.use(cors({origin: "*"}))
+// app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
+app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -155,6 +155,7 @@ app.post('/api/uploadcollection', nftUpload.single('filetoupload'), function(req
 // })
 
 // ipfs://QmbRphLywEnzZoyCX88PHxYbXjWqbiF2Wp1tKWJrvDZyPt/0
+
 app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
   const file = req.file.buffer;
   const fileURI = await web3storage.upload(file);
@@ -428,7 +429,40 @@ app.post('/api/sendemail', async (req,res) => {
   const query = `*[_type == "settings"] {registrationlink}`
   const result = await config.fetch(query);
   const {email} = req.body
-  const emailBody = `<html>Dear Member,<br/>Please use the following registration link to continue to self register. <br/>${result[0].registrationlink}</html>`;
+  const emailBody = `<html><body>
+        <table style="margin:0 auto; text-align:center; background: rgb(12, 85, 219); padding: 3rem; border-radius: 30px; color:rgb(255,255,255); font-size: 16px; font-family:Arial, Helvetica, sans-serif">
+        <tr>
+            <td>
+                <img src="https://metanuva.com/App_Themes/assets/images/banner/logo.png" alt="Meta Nuva Logo"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p style="line-height: 28px; font-size: 24px;">Welcome to Meta Nuva, your number one source for all things innovation.</p>
+                <p style="line-height: 28px;">Thank you for taking an interest in us. You can now use the following register button to register. Alternatively, you can also copy the given registration link and paste in your browser. </p>
+                <p style="line-height:28px;"><a href="${result[0].registrationlink}" target="_blank" style="padding: 10px 20px; border-radius: 7px; background: #ffffff; text-decoration: none; ">Register</a></p>
+                <p style="line-height: 28px;"><a style="color: #ffffff;" href="${result[0].registrationlink}">${result[0].registrationlink}</a></p>
+                <p style="line-height: 28px; margin-top: 5em;">Be sure to join the Meta Nuva Community social media channels to access our full range of resources or drop an email to <a href="mailto:support@metanuva.com" style="color: rgb(255,255,255);">support@metanuva.com</a></p>
+                <p style="line-height: 28px; font-size: 12px; font-style: italic">This email and any attachments to it may be confidential and are intended solely for the use of the individual to whom it is addressed. Any views or opinions expressed are solely those of the author and do not necessarily represent those of Meta Nuva. If you have received this by mistake or were not expecting it, please disregard this email.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://t.me/metanuva" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Telegram</a> |
+                <a href="https://twitter.com/nuvacommunity" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Twitter</a> |
+                <a href="https://www.instagram.com/nuva.community/" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Instagram</a> |
+                <a href="https://www.facebook.com/METANUVA" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Facebook</a> |
+                <a href="https://www.linkedin.com/company/nuvatoken" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Linked In</a> |
+                <a href="https://t.me/metanuva" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Telegram</a> |
+                <a href="https://www.youtube.com/c/NUVAGAMERSESPORT" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Youtube</a>
+            </td>
+        </tr>
+        <tr>
+            <td><p style="font-size: 12px;">Copyright @ 2022 Meta Nuva.</p>
+            </td>
+        </tr>
+      </table>
+    </body></html>`;
 
 
   const client = new SMTPClient({

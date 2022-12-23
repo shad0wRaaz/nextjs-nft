@@ -37,10 +37,10 @@ import { getImagefromWeb3 } from '../fetchers/s3'
 import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
-  wrapper: `container mx-auto w-full sm:px-[2rem] lg:px-[8rem] py-[0.8rem] flex space-x-4 xl:space-x-[6rem]`,
+  wrapper: `container mx-auto w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] flex items-center`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
-  searchBar: `relative flex flex-1 mx-[0.8rem] w-max-[520px] items-center border rounded-3xl transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
+  searchBar: `relative flex flex-1 mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
   searchIcon: `text-[#8a939b] mx-3 font-bold text-lg absolute`,
   searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
   headerItems: `flex items-center justify-end nonMobileMenu`,
@@ -258,10 +258,10 @@ const Header = () => {
       </div>
 
       {/* Mobile View Menu */}
-      <div className="mobileMenu z-30 px-4 text-right">
+      <div className="mobileMenu z-30 text-right">
         <Menu as="div" className="relative inline-block text-left">
           <div>
-            <Menu.Button className="absolute -right-9 -top-3 p-3">
+            <Menu.Button className="p-1">
               <HiMenu fontSize="25px" />
             </Menu.Button>
           </div>
@@ -536,7 +536,7 @@ const Header = () => {
       >
         {!isLogged && (
           <div
-            className={`flex items-center justify-between gap-1 rounded-full border ${
+            className={`flex items-center justify-between gap-1 rounded-full text-xs border ${
               dark ? ' border-sky-400/20' : ' border-neutral-200'
             } p-1`}
           >
@@ -546,7 +546,7 @@ const Header = () => {
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-3 hover:bg-sky-100"
+              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
               onClick={() => {
                 setSelectedChain('Ethereum')
                 router.push('/browse')
@@ -561,7 +561,7 @@ const Header = () => {
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-3 hover:bg-sky-100"
+              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
               onClick={() => {
                 setSelectedChain('Binance')
                 router.push('/browse')
@@ -572,7 +572,7 @@ const Header = () => {
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-3 hover:bg-sky-100"
+              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
               onClick={() => {
                 setSelectedChain('Polygon')
                 router.push('/browse')
@@ -583,7 +583,7 @@ const Header = () => {
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-3 hover:bg-sky-100"
+              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
               onClick={() => {
                 setSelectedChain('Avalance')
                 router.push('/browse')
@@ -646,7 +646,7 @@ const Header = () => {
             </div>
           </>
         )}
-        <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className="rounded-xxl ml-4" />
+        <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" style={{ borderRadius: '50% !important'}} />
         {/* <div className="z-10 px-4 text-right">
           <Menu as="div" className="relative inline-block text-left">
             <div>

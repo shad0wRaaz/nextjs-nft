@@ -61,7 +61,7 @@ const SearchBar = () => {
       <Combobox value={selected} onChange={setSelected}>
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left  sm:text-sm">
-            <Combobox.Input
+            <Combobox.Input data-headlessui-state=""
               className={`w-full rounded-full border-transparent bg-transparent bg-none py-2 pl-[1.4rem] pr-10 text-sm leading-5 outline-none ${
                 dark
                   ? 'text-neutral-100 placeholder:text-neutral-500'
@@ -76,7 +76,7 @@ const SearchBar = () => {
                   : ''
               }
             />
-            <Combobox.Button className="absolute  right-0 flex items-center pr-2">
+            <Combobox.Button className="absolute  right-0 flex items-center pr-2" data-headlessui-state="" aria-haspopup="true">
               <RiSearchLine className="h-5 w-5 text-gray-400" />
             </Combobox.Button>
           </div>
@@ -116,6 +116,9 @@ const SearchBar = () => {
                 filteredCollection.length > 0 &&
                 filteredCollection?.map((collectionArray) => (
                   <Combobox.Option
+                    id={collectionArray.contractAddress}
+                    aria-haspopup="true"
+                    data-headlessui-state=""
                     key={collectionArray.contractAddress}
                     className={({ active }) =>
                       `relative select-none rounded-xl py-2 pl-4 pr-4 ${
