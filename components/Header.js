@@ -538,7 +538,7 @@ const Header = () => {
           <div
             className={`flex items-center justify-between gap-1 rounded-full text-xs border ${
               dark ? ' border-sky-400/20' : ' border-neutral-200'
-            } p-1`}
+            } p-[0.37rem]`}
           >
             <div className={style.headerItem}>
               <BsEye className="mr-2 inline-block" fontSize="20px" />
