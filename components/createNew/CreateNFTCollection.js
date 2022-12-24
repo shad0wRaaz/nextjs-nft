@@ -1,27 +1,26 @@
-import React, { useState, useEffect, useReducer } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
-import { BiCollection } from 'react-icons/bi'
+import Select from 'react-select'
 import FileBase from 'react-file-base64'
+import { BiCollection } from 'react-icons/bi'
 import { config } from '../../lib/sanityClient'
+import toast, { Toaster } from 'react-hot-toast'
 import {
   useAddress,
-  useNFTCollection,
   useMetamask,
   useNetwork,
-  MediaRenderer,
   useSigner,
   useChainId,
 } from '@thirdweb-dev/react'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import Select from 'react-select'
-import { useMutation } from 'react-query'
+import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
+import { BsUpload } from 'react-icons/bs'
+import { useMutation } from 'react-query'
+import { useQueryClient } from 'react-query'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { IconLoading } from '../icons/CustomIcons'
+import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
-import { useQueryClient } from 'react-query'
-import axios from 'axios'
-import { IconLoading } from '../icons/CustomIcons'
-import { v4 as uuidv4 } from 'uuid'
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
@@ -29,7 +28,7 @@ const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
   formWrapper: 'flex flex-wrap flex-col mt-4',
   pageTitle: 'm-4 ml-1 font-bold text-3xl text-gray-200 flex gap-[15px]',
-  smallText: 'text-sm m-2 text-[#bbb] mt-0',
+  smallText: 'text-sm m-2 text-slate-400 mt-0',
   subHeading:
     'text-xl font-bold m-2 mt-[2.5rem] mb-2 pt-[2rem] border-t-slate-700 border-t border-dashed',
   input:
@@ -38,7 +37,7 @@ const style = {
   button:
     'gradBlue rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
   previewImage:
-    'previewImage relative mb-[10px] h-[200px] w-[320px] overflow-hidden rounded-lg border-dashed border border-slate-400',
+    'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
   notConnectedWrapper: 'flex justify-center items-center h-screen',
   traitsButtons:
     'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
@@ -64,16 +63,16 @@ const CreateNFTCollection = () => {
   const router = useRouter()
   const sdk = new ThirdwebSDK(signer)
   const { myUser } = useUserContext()
-  const [newCollectionAddress, setNewCollectionAddress] = useState('')
-  const [isDeploying, setIsDeploying] = useState(false)
-  const [deploy, setDeploy] = useState(false)
+  // const [newCollectionAddress, setNewCollectionAddress] = useState('')
+  // const [isDeploying, setIsDeploying] = useState(false)
+  // const [deploy, setDeploy] = useState(false)
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState()
-  const [profileImage, setProfileImage] = useState()
-  const [bannerImage, setBannerImage] = useState()
   const [profile, setProfile] = useState()
   const [banner, setBanner] = useState()
   const queryClient = new useQueryClient()
+  const profileInputRef = useRef()
+  const bannerInputRef = useRef()
 
   const { mutate: sendNotification } = useMutation(
     async ({ address, contractAddress, type }) =>
@@ -89,111 +88,139 @@ const CreateNFTCollection = () => {
     async (form) => {
       const metadata = {
         name: form.itemName.value,
-        image: profileImage,
+        image: profile,
         description: form.itemDescription.value,
         symbol: form.symbol.value,
         fee_recipient: form.fee_recipient.value,
         primary_sale_recipient: form.primary_sale_recipient.value,
         seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
-        platform_fee_basis_points: 200,
-        platform_fee_recipient: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+        platform_fee_basis_points: 500,
+        platform_fee_recipient: '0xa22d92ee43C892eebD01fa1166e1e45F67E28311',
         trusted_forwarders: [],
       }
-      return await sdk.deployer.deployNFTCollection(metadata)
-    },
-    {
-      onError: (error) => {
-        console.log(error)
-        toast.error(error.message, errorToastStyle)
-      },
-      onSuccess: async (res, form, toastHandler = toast) => {
-        const itemID = uuidv4();
+      
+      var profileLink = "";
+      var bannerLink = "";
+      // upload profile and banner in IPFS
+      if(profile){
+        const pfd = new FormData();
+        pfd.append("imagefile", profile);
+        profileLink = await axios.post(
+          `${HOST}/api/saveweb3image`,
+          pfd,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+      }
+      if(banner){
+        const bfd = new FormData();
+        bfd.append("imagefile", banner);
+        bannerLink = await axios.post(
+          `${HOST}/api/saveweb3image`,
+          bfd,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+      }
+      //deploy NFT Collection
+      const res = await sdk.deployer.deployNFTCollection(metadata)
 
-        const collectionDoc = {
-          _type: 'nftCollection',
-          _id: itemID,
-          name: form.itemName.value,
-          contractAddress: res,
-          description: form.itemDescription.value,
-          profileImage: 'profileImage-'.concat(itemID),
-          chainId: chain.toString(),
-          createdBy: {
-            _type: 'reference',
-            _ref: address,
-          },
-          external_link: form.external_link.value,
-          bannerImage: 'bannerImage-'.concat(itemID),
-          volumeTraded: 0,
-          floorPrice: 0,
-          category: selectedCategory,
-        }
+      //save in database
+      const itemID = uuidv4();
+
+      const collectionDoc = {
+        _type: 'nftCollection',
+        _id: itemID,
+        name: form.itemName.value,
+        contractAddress: res,
+        description: form.itemDescription.value,
+        web3imageprofile: profileLink?.data,
+        web3imagebanner: bannerLink?.data,
+        chainId: chain.toString(),
+        createdBy: {
+          _type: 'reference',
+          _ref: address,
+        },
+        external_link: form.external_link.value,
+        volumeTraded: 0,
+        floorPrice: 0,
+        category: selectedCategory,
+      }
         
-        await config
-          .createIfNotExists(collectionDoc)
-          .then(async () => {
-            try {
-              //saving profile image
-              if (profile) {
-                const formdata = new FormData()
-                formdata.append('profile', profile)
-                formdata.append('userAddress', itemID)
+      await config.createIfNotExists(collectionDoc);
+        // .then(async () => {
+        //   try {
+            //saving profile image
+            // if (profile) {
+            //   const formdata = new FormData()
+            //   formdata.append('profile', profile)
+            //   formdata.append('userAddress', itemID)
 
-                await axios.post(
-                  `${HOST}/api/saveS3Image`,
-                  formdata,
-                  {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    },
-                  }
-                )
-              }
-              //saving banner image
-              if (banner) {
-                const bannerData = new FormData()
-                bannerData.append('banner', banner)
-                bannerData.append('userAddress', itemID)
+            //   await axios.post(
+            //     `${HOST}/api/saveS3Image`,
+            //     formdata,
+            //     {
+            //       headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //       },
+            //     }
+            //   )
+            // }
+            //saving banner image
+            // if (banner) {
+            //   const bannerData = new FormData()
+            //   bannerData.append('banner', banner)
+            //   bannerData.append('userAddress', itemID)
 
-                await axios.post(
-                  `${HOST}/api/saveS3Banner`,
-                  bannerData,
-                  {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    },
-                  }
-                )
-              }
-            } catch (error) {
-              console.log(error)
-            }
+            //   await axios.post(
+            //     `${HOST}/api/saveS3Banner`,
+            //     bannerData,
+            //     {
+            //       headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //       },
+            //     }
+            //   )
+            // }
+          // } catch (error) {
+          //   console.log(error)
+          // }
 
-            //increment number of collection in category
-            
-            const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`)
-            await config.patch(categoryId[0]._id)
-            .inc({totalCollection : 1})
-            .commit()
-            .catch((err) => {})
-            // await config.patch(res).
+          //increment number of collection in category
+          
+      const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`)
+      await config.patch(categoryId[0]._id)
+      .inc({totalCollection : 1})
+      .commit()
+      .catch((err) => {})
+      // await config.patch(res).
 
-            queryClient.invalidateQueries('myCollections')
-            
-            //send out notification to all followers
-            sendNotification({
-              address: myUser.walletAddress,
-              contractAddress: res,
-              id: itemID,
-              type: 'TYPE_ONE',
-            })
+      queryClient.invalidateQueries('myCollections');
+      
+      //send out notification to all followers
+      sendNotification({
+        address: myUser.walletAddress,
+        contractAddress: res,
+        id: itemID,
+        type: 'TYPE_ONE',
+      })
 
-            toastHandler.success(
-              'Collection created successfully',
-              successToastStyle
-            )
-          })
-        router.push(`/collections/${itemID}`)
-      },
+      toast.success('Collection created successfully', successToastStyle)
+    },
+      {
+        onError: (error) => {
+          console.log(error)
+          toast.error(error.message, errorToastStyle)
+        },
+        onSuccess: () => {
+          router.push(`/collections/${itemID}`)
+    },
     }
   )
 
@@ -257,6 +284,8 @@ const CreateNFTCollection = () => {
         setSelectedCategory('')
         setProfileImage()
         setBannerImage()
+        setProfile()
+        setBanner()
       }
     }
   }
@@ -398,61 +427,78 @@ const CreateNFTCollection = () => {
                 </div>
                 <div>
                   <p className={style.label}>Profile Image</p>
+                  
                   <div
                     className={style.previewImage}
-                    style={{ height: '200px', width: '325px' }}
-                  >
-                    {/* {Boolean(profileImage) && (
-                      <MediaRenderer src={profileImage} />
-                    )} */}
-                    <img
-                      src={profile?.data?.url}
-                      id="pImage"
-                      className="w-full object-cover"
-                    />
+                    style={{ height: '250px', width: '325px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setProfile(e.dataTransfer.files[0]);
+                        }}>
+                    {profile ? (
+                      <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {profileInputRef.current.click()}} 
+                        className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setProfile(e.dataTransfer.files[0]);
+                        }}><BsUpload fontSize={50} />
+                          Drag & Drop Image
+                          <p className={style.smallText}>
+                            Supported file types: JPG, PNG, GIF, WEBP, JFIF.
+                          </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="imageUploader">
-                    {/* <FileBase
-                      type="file"
-                      multiple={false}
-                      onDone={({ base64 }) => setProfileImage(base64)}
-                    /> */}
+                  <div className="imageUploader mb-4 ml-3">
                     <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
                       id="profileImg"
-                      type="file"
-                      onChange={(e) => {
-                        setProfile(e.target.files[0])
-                        previewImage('profile')
-                      }}
+                      ref={profileInputRef}
+                      onChange={e => setProfile(e.target.files[0])}
+                      style={{ display: "none"}}
                     />
                   </div>
-                  <p className={style.label}>Banner Image</p>
+                  <p className={style.label} style={{marginTop: '40px'}}>Banner Image</p>
                   <div
                     className={style.previewImage}
-                    style={{ height: '200px', width: '325px' }}
-                  >
-                    {/* {Boolean(bannerImage) && (
-                      <MediaRenderer src={bannerImage} />
-                    )} */}
-                    <img
-                      id="bImage"
-                      src={banner?.data?.url}
-                      className="w-full object-cover"
-                    />
+                    style={{ height: '250px', width: '325px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setBanner(e.dataTransfer.files[0]);
+                        }}>
+                    {banner ? (
+                      <img src={URL.createObjectURL(banner)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setBanner(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {bannerInputRef.current.click()}} 
+                        className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setBanner(e.dataTransfer.files[0]);
+                        }}><BsUpload fontSize={50} />
+                          Drag & Drop Image
+                          <p className={style.smallText}>
+                            Supported file types: JPG, PNG, GIF, WEBP, JFIF.
+                          </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="imageUploader">
-                    {/* <FileBase
-                      type="file"
-                      multiple={false}
-                      onDone={({ base64 }) => setBannerImage(base64)}
-                    /> */}
+                  <div className="imageUploader mb-4 ml-3">
                     <input
-                      id="bannerImg"
                       type="file"
-                      onChange={(e) => {
-                        setBanner(e.target.files[0])
-                        previewImage('banner')
-                      }}
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="bannerImg"
+                      ref={bannerInputRef}
+                      onChange={e => setBanner(e.target.files[0])}
+                      style={{ display: "none"}}
                     />
                   </div>
                 </div>
@@ -514,7 +560,7 @@ const CreateNFTCollection = () => {
                 </div>
               </div>
 
-              <p className={style.subHeading}>Network/Chain Setting</p>
+              <p className={style.subHeading}>Network/Chain</p>
               <p className={style.smallText} style={{ marginBottom: '1rem' }}>
                 The NFT Collection will be deployed on following network/chain.
               </p>
@@ -539,13 +585,13 @@ const CreateNFTCollection = () => {
                     disabled
                   >
                     <IconLoading dark="inbutton" />
-                   Deploying...
+                   Processing...
                   </button>
                 ) : (
                   <input
                     type="submit"
                     className={style.button}
-                    value="Deploy"
+                    value="Create"
                   />
                 )}
               </div>

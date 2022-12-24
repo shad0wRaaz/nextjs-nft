@@ -1,30 +1,23 @@
-import { useRouter } from 'next/router'
 import axios from 'axios'
-import FileBase from 'react-file-base64'
+import Image from 'next/image'
 import { useRef } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { useRouter } from 'next/router'
+import FileBase from 'react-file-base64'
 import { BiError } from 'react-icons/bi'
+import { BsUpload } from 'react-icons/bs'
 import { GoPackage } from 'react-icons/go'
 import { RadioGroup } from '@headlessui/react'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
+import { IconLoading } from '../icons/CustomIcons'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
-import { v4 as uuidv4 } from 'uuid'
+import { useUserContext } from '../../contexts/UserContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
-import {
-  useAddress,
-  useMetamask,
-  useChainId,
-  useNetwork,
-  useMintNFT,
-  MediaRenderer,
-  useSigner,
-} from '@thirdweb-dev/react'
-import { IconLoading } from '../icons/CustomIcons'
-import { getUnsignedImagePath } from '../../fetchers/s3'
-import { useUserContext } from '../../contexts/UserContext'
-import Image from 'next/image'
+import { useAddress, useMetamask, useChainId, useNetwork, useMintNFT, MediaRenderer, useSigner} from '@thirdweb-dev/react'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -179,27 +172,29 @@ const CreateNFT = ({uuid}) => {
   const fetchSanityCollectionData = async (sanityClient = config) => {
     if (!chainid || !address) return
     const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
-      name, contractAddress, profileImage, createdBy, volumeTraded
+      name, contractAddress, profileImage, createdBy, volumeTraded, web3imageprofile
     }`
 
-    await sanityClient.fetch(query).then(async (res) => {
-      const unresolved = res.map(async (collection) => {
-        const obj = {}
-        const imgPath = await getUnsignedImagePath(collection.profileImage)
-        obj['name'] = collection.name
-        obj['profileImage'] = imgPath?.data.url
-        obj['contractAddress'] = collection.contractAddress
-        obj['createdBy'] = collection.createdBy
-        obj['volumeTraded'] = collection.volumeTraded
-        return obj
-      })
+    const res = await sanityClient.fetch(query);
+    setSanityCollection(res);
+    // .then(async (res) => {
+    //   const unresolved = res.map(async (collection) => {
+    //     const obj = {}
+    //     const imgPath = await getUnsignedImagePath(collection.profileImage)
+    //     obj['name'] = collection.name
+    //     obj['profileImage'] = imgPath?.data.url
+    //     obj['contractAddress'] = collection.contractAddress
+    //     obj['createdBy'] = collection.createdBy
+    //     obj['volumeTraded'] = collection.volumeTraded
+    //     return obj
+    //   })
 
-      const resolvedPaths = await Promise.all(unresolved)
+    //   const resolvedPaths = await Promise.all(unresolved)
 
-      if (resolvedPaths) {
-        setSanityCollection(resolvedPaths)
-      }
-    })
+    //   if (resolvedPaths) {
+    //     setSanityCollection(resolvedPaths)
+    //   }
+    // })
   }
 
   useEffect(() => {
@@ -268,9 +263,9 @@ const CreateNFT = ({uuid}) => {
     //   toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
     //   return
     // }
-    const formdata = new FormData();
-    formdata.append('filetoupload', file)
-    formdata.append('filename', uuid)
+    // const formdata = new FormData();
+    // formdata.append('filetoupload', file)
+    // formdata.append('filename', uuid)
     
     try {
       setIsMinting(true)
@@ -481,26 +476,16 @@ const CreateNFT = ({uuid}) => {
                     ) : (
                       <div 
                         onClick={() => {fileInputRef.current.click()}} 
-                        className="rounded-lg py-1 cursor-pointer hover:bg-slate-800 px-4 border-slate-500 border-dashed border"
+                        className="rounded-lg cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4 border-slate-500 border-dashed border"
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
                           e.preventDefault();
                           setFile(e.dataTransfer.files[0]);
-                        }}>Drag & Drop Image</div>
+                        }}><BsUpload fontSize={50} />
+                          Drag & Drop Image</div>
                     )}
                   </div>
                   <div className="imageUploader mb-4 ml-3">
-                    {/* <FileBase
-                      type="file"
-                      multiple={false}
-                      onDone={({ base64 }) => {
-                        checkFileType(base64)
-                        dispatch({
-                          type: 'CHANGE_IMAGE',
-                          payload: { image: base64 },
-                        })
-                      }}
-                    /> */}
                     <input
                       type="file"
                       accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
@@ -562,7 +547,7 @@ const CreateNFT = ({uuid}) => {
               <p className={style.smallText}>
                 Select your collection where this NFT will be minted. Only Collections from currently connected chain are shown.
               </p>
-              <div className="ml-[2rem] flex w-full px-4 py-4">
+              <div className="flex w-full px-4 py-4">
                 <div className="mx-auto w-full">
                   {thisChainCollection?.length > 0 ? (
                     <RadioGroup
@@ -576,7 +561,7 @@ const CreateNFT = ({uuid}) => {
                       <RadioGroup.Label className="sr-only">
                         Server size
                       </RadioGroup.Label>
-                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2">
+                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 md:max-h-[300px] overflow-y-scroll p-4">
                         {thisChainCollection?.map((collection) => (
                           <RadioGroup.Option
                             key={collection.name}
@@ -597,7 +582,7 @@ const CreateNFT = ({uuid}) => {
                                     <div className="flex space-x-3 text-sm">
                                       <div className="">
                                         <img
-                                          src={collection.profileImage}
+                                          src={getImagefromWeb3(collection.web3imageprofile)}
                                           alt={collection.name}
                                           className="aspect-video h-[50px] w-[50px] rounded-full ring-2 ring-white"
                                         />
