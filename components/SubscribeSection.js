@@ -1,15 +1,16 @@
+import axios from 'axios'
 import Image from 'next/image'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { config } from '../lib/sanityClient'
 import dropimage from '../assets/pandadrop.png'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useState } from 'react'
-import axios from 'axios'
 
+const HOST = (process.env.NODE_ENV == "production") ? 'https://nuvanft.io' : 'http://localhost:3000';
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[4rem]  pb-0 mt-0',
-  }
+}
 
 const errorToastStyle = {
 style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -21,8 +22,8 @@ iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
 const SubscribeSection = () => {
-    const {dark} = useThemeContext()
-    const [subscriberEmail, setSubscriberEmail] = useState('')
+    const {dark} = useThemeContext();
+    const [subscriberEmail, setSubscriberEmail] = useState('');
 
     const handleSubscribe = async (e, sanityClient = config, toastHandler = toast) => {
         e.preventDefault()
@@ -66,7 +67,7 @@ const SubscribeSection = () => {
               axios.post('/api/email', {
                 email: subscriberEmail,
                 subjectText: 'Nuva NFT Drop Subscription',
-                emailBody: `<html>You will now be notified for any upcoming NFT Drops. <br/><br/><a href='http://localhost:3000/unsubscribe?email=${subscriberEmail}'>Click here to unsubscribe</a></html>`,
+                emailBody: `<html>Thank you for subscription to our list. You will now be notified for any upcoming NFT Drops. <br/><br/><a href='${HOST}/unsubscribe?email=${subscriberEmail}'>Click here to unsubscribe</a></html>`,
               })
               toastHandler.success(
                 'You will now be notified for any upcoming NFT Drops.',
@@ -82,7 +83,7 @@ const SubscribeSection = () => {
     <div className={style.wrapper}>
         <div className="relative flex flex-col lg:flex-row lg:items-center">
             <div className="flex-shrink-0 mb-10 lg:mb-0 lg:mr-10 lg:w-2/5">
-                <h2 className="font-semibold text-4xl">Never miss a drop!</h2>
+                <h2 className="font-semibold text-5xl textGradBlue2">Never miss a drop!</h2>
                 <span className="block mt-5">Subcribe to our super-exclusive drop list and be the first to know about upcoming drops</span>
                 <ul className="space-y-4 mt-10">
                     <li className="flex items-center space-x-4">

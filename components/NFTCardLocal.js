@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { useAddress, useContract, useNFT } from '@thirdweb-dev/react'
 import { config } from '../lib/sanityClient'
 import { useThemeContext } from '../contexts/ThemeContext'
-import Countdown from 'react-countdown'
-import { IconHeart, IconImage, IconLoading } from './icons/CustomIcons'
+import { IconHeart, IconImage } from './icons/CustomIcons'
 import { BigNumber } from 'ethers'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const style = {
   wrapper: `bg-[#1E293BEE] shadow-[inset_0_0_0_1px_rgb(255,255,255,0.1)] flex-auto max-w-[17rem] w-[17rem] h-[29rem] mb-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
@@ -28,38 +28,55 @@ const style = {
   buttonIcon: `text-l text-white`,
   buttonText: `text-white ml-2 text-md`,
 }
+const chainnum = {
+  "41114": "avalance",
+  "41113": "avalance-fuji",
+  "80001": "mumbai",
+  "97": "binance-testnet",
+  "56": "binance",
+  "137": "polygon",
+  "5": "goerli",
+  "1": "mainnet"
+}
 
 const NFTCardLocal = ({ nftItem, listings }) => {
   const [isListed, setIsListed] = useState(false)
   const [price, setPrice] = useState(0)
   const [secondsUntilEnd, setSecondsUntilEnd] = useState(0)
   const [coin, setCoin] = useState('')
-  const address = useAddress()
   const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
-  const { contract } = useContract(nftItem?.collection?.contractAddress)
-  const {
-    data: nft,
-    isLoading,
-    error,
-  } = useNFT(contract, nftItem.id.toString())
-
-
+  const [nftmetadata, setnftmetadata] = useState();
+  const [listednftmetadata, setlistednftmetadata] = useState();
+  
   useEffect(() => {
-    if (!listings) return
-
+    if (!listings) return;
+    
     const listing = listings.find(
       (listing) =>
-        listing.asset.id.toString() == nftItem.id.toString()
+        listing.asset.id.toString() == nftItem.id.toString() && nftItem?.collection?.contractAddress == listing?.assetContractAddress
     )
     // console.log(listing);
     if (Boolean(listing)) {
       setIsListed(true)
+      setlistednftmetadata(listing);
       setPrice(listing.buyoutCurrencyValuePerToken.displayValue)
       setCoin(listing.buyoutCurrencyValuePerToken.symbol)
       if (listing.secondsUntilEnd) {
         setSecondsUntilEnd(BigNumber.from(listing.secondsUntilEnd).toNumber())
       }
+    }else {
+      //this nft is not listed
+
+      if(nftItem?.collection?.chainId && nftItem?.collection?.contractAddress){
+        ;(async() => {
+          const sdk = new ThirdwebSDK(chainnum[nftItem.collection.chainId]);
+          const contract = await sdk.getContract(nftItem.collection.contractAddress, "nft-collection");
+          const nft = await contract.get(nftItem?.id);
+          setnftmetadata(nft);
+        })()
+      }
+
     }
     return() => {
       //do nothing, just a cleanup function
@@ -75,7 +92,7 @@ const NFTCardLocal = ({ nftItem, listings }) => {
         likedBy
       }`
       const res = await sanityClient.fetch(query)
-      setLikers(res[0])
+      setLikers(res[0]);
     })()
     return () => {
       
@@ -94,23 +111,25 @@ const NFTCardLocal = ({ nftItem, listings }) => {
         <div className="relative flex-shrink-0 cursor-pointer">
           <div>
             <div className="nc-NcImage aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
-              {isLoading ? (
-                <div className="flex h-full w-full items-center justify-center">
-                  <IconLoading />
-                </div>
-              ) : (
-                <>
-                  {nft?.metadata?.image &&(
-                    <Image
-                      src={nft?.metadata.image}
-                      className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-                      objectFit="cover"
-                      layout="fill"
-                      alt={nft?.metadata.name}
-                    />
-                    )}
-                  </>
-              )}
+
+              {!isListed && nftmetadata?.metadata?.image &&(
+                <Image
+                  src={nftmetadata?.metadata.image}
+                  className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                  objectFit="cover"
+                  layout="fill"
+                  alt={nftmetadata?.metadata.name}
+                />
+                )}
+                {Boolean(listednftmetadata) && (
+                  <Image
+                    src={listednftmetadata?.asset.image}
+                    className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                    objectFit="cover"
+                    layout="fill"
+                    alt={listednftmetadata?.asset.name}
+                  />
+                )}
             </div>
           </div>
 

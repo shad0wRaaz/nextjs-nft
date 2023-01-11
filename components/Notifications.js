@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import { useThemeContext } from '../contexts/ThemeContext'
-import { useUserContext } from '../contexts/UserContext'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import toast from 'react-hot-toast'
-import { getNotifications } from '../fetchers/SanityFetchers'
-import {
-  changeNotificationReadStatus,
-  deleteNotifications,
-} from '../mutators/SanityMutators'
-import Loader from './Loader'
 import moment from 'moment'
-import noProfileImage from '../assets/noProfileImage.png'
-import { AiOutlineDelete } from 'react-icons/ai'
-import { IconBell } from './icons/CustomIcons'
-import { getUnsignedImagePath } from '../fetchers/s3'
+import Loader from './Loader'
+import { Fragment } from 'react'
+import toast from 'react-hot-toast'
+import React, { useState } from 'react'
 import { GoReport } from 'react-icons/go'
+import { IconBell } from './icons/CustomIcons'
+import { AiOutlineDelete } from 'react-icons/ai'
+import { getImagefromWeb3 } from '../fetchers/s3'
+import { Menu, Transition } from '@headlessui/react'
+import { useUserContext } from '../contexts/UserContext'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { getNotifications } from '../fetchers/SanityFetchers'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { changeNotificationReadStatus, deleteNotifications } from '../mutators/SanityMutators'
 
 const style = {
   background: `icon hover:bg-neutral-100 p-2 pb-0 rounded-xl cursor-pointer z-20`,
@@ -29,12 +25,12 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+
 const Notifications = () => {
   const { myUser } = useUserContext()
   const { dark, queryStaleTime } = useThemeContext()
   const queryClient = useQueryClient()
   const [isNotification, setIsNotification] = useState(false)
-  const [allNotifications, setAllNotifications] = useState({})
   const { data, status } = useQuery(
     ['notification', myUser?.walletAddress],
     getNotifications(),
@@ -42,28 +38,13 @@ const Notifications = () => {
       staleTime: queryStaleTime,
       enabled: Boolean(myUser?.walletAddress),
       onError: () => {
-        toast.error('Error in getting notifications', errorToastStyle)
+        // toast.error('Error in getting notifications', errorToastStyle)
       },
       onSuccess: async (res) => {
-        
+        // console.log(res)
         const checkNotification = res.filter((n) => n.status != true)
         if (checkNotification?.length > 0) {
-          setIsNotification(true)
-        }
-
-        const unresolved = res.map(async (item) => {
-          const obj = { ...item }
-          if(item.from){
-            const imgPath = await getUnsignedImagePath(item.from.profileImage)
-            obj['profileImage'] = imgPath?.data.url
-          }
-          return obj
-        })
-
-        const resolvedPaths = await Promise.all(unresolved)
-
-        if (resolvedPaths) {
-          setAllNotifications(resolvedPaths)
+          setIsNotification(true)  ///are there any new notifications?
         }
       },
     }
@@ -75,7 +56,6 @@ const Notifications = () => {
       onError: () => {},
       onSuccess: (res) => {
         queryClient.invalidateQueries('notification')
-        console.log(res)
       },
     }
   )
@@ -103,7 +83,7 @@ const Notifications = () => {
         className={
           dark
             ? style.background + ' hover:bg-slate-800'
-            : style.background + ' hover:bg-neutral-100'
+            : style.background + ' hover:bg-neutral-100 text-white hover:text-black'
         }
       >
         <Menu as="div" className="relative">
@@ -164,8 +144,8 @@ const Notifications = () => {
                   <p>No new notifications.</p>
                 )}
                 {status === 'success' &&
-                  allNotifications.length > 0 &&
-                  allNotifications.map((notification, id) => {
+                  data.length > 0 &&
+                  data.map((notification, id) => {
                     return (
                       <div key={id}>
                         <Menu.Item>
@@ -180,10 +160,10 @@ const Notifications = () => {
                             } focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50`}
                           >
                             <div className="wil-avatar relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-gray-900 shadow-inner ring-1 ring-white sm:h-12 sm:w-12">
-                              {notification?.profileImage ? (
+                              {notification?.from.web3imageprofile ? (
                               <img
                                 className="absolute inset-0 h-full w-full rounded-full object-cover"
-                                src={notification.profileImage}
+                                src={getImagefromWeb3(notification?.from.web3imageprofile)}
                                 alt="User"
                               />) : (
                                 <GoReport fontSize={23}/>

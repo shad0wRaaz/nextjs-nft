@@ -1,22 +1,22 @@
-import React, { useState, useReducer } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { MdClose } from 'react-icons/md'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { MdClose } from 'react-icons/md'
 import { GoPackage } from 'react-icons/go'
 import { BiCollection } from 'react-icons/bi'
+import { AiOutlinePlus } from 'react-icons/ai'
+import { FiImage, FiVideo } from 'react-icons/fi'
 import { HiCubeTransparent } from 'react-icons/hi'
+import React, { useState, useReducer } from 'react'
 import { BsDroplet, BsDropletHalf } from 'react-icons/bs'
-import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateNFT from '../components/createNew/CreateNFT'
+import { useThemeContext } from '../contexts/ThemeContext'
 import CreateAVNFT from '../components/createNew/CreateAVNFT'
-import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
 import CreateNFTDrop from '../components/createNew/CreateNFTDrop'
 import CreateEdition from '../components/createNew/CreateEdition'
+import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
-import { useThemeContext } from '../contexts/ThemeContext'
-import { FiImage, FiVideo } from 'react-icons/fi'
-import { v4 as uuidv4 } from 'uuid'
-import { AiOutlinePlus } from 'react-icons/ai'
+import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -73,7 +73,7 @@ const contracts = () => {
               <AiOutlinePlus />
             </div>
             <h2 className="text-center font-bold text-2xl mb-[2rem]">Mint</h2>
-            <div className="w-full grid grid-cols-2 gap-[2rem]">
+            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
               <div 
                 className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
                 onClick={() => {
@@ -106,7 +106,6 @@ const contracts = () => {
           effect={"parallax"}
           isMenuOpened={state.isMenuOpened}
           position={"right"}
-          onClick={() => console.log("test")}
           >
             <OffCanvasBody className={ state.isMenuOpened ? 'blur pointer-events-none ' : 'pointer-events-auto'}>
               <Header />

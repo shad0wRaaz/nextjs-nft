@@ -9,14 +9,14 @@ import { IconEthereum, IconPolygon, IconBNB } from './icons/CustomIcons'
 import { getImagefromWeb3 } from '../fetchers/s3'
 
 const style = {
-  card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer',
+  card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer backdrop-blur-md',
   bannerContainer:
     'cursor-pointer  relative w-full h-[150px] rounded-3xl overflow-hidden',
   creator: 'text-center text-sm mb-3',
   bannerImage: '',
   profile:
     'cursor-pointer rounded-full overflow-hidden ring ring-white relative mx-auto top-[-25px] h-[70px] w-[70px] mb-[2rem]',
-  title: 'cursor-pointer text-center text-md relative textGradBlue',
+  title: 'cursor-pointer text-center text-md relative ',
   description: 'cursor-pointer relative px-4 text-md text-center',
 }
 const chainIcon = {
@@ -46,8 +46,8 @@ const CollectionCard = ({
       <div
         className={
           dark
-            ? style.card + ' darkGray border-sky-400/20'
-            : style.card + ' border-slate-200'
+            ? style.card + '  border-sky-400/20 bg-slate-800/80'
+            : style.card + ' border-slate-200 bg-[#ffffff99]'
         }
       >
         <div className={style.bannerContainer}>
@@ -80,12 +80,12 @@ const CollectionCard = ({
           >
             <path
               d="M101.734 19.8581C99.2658 17.4194 96.9737 14.8065 94.5052 12.1935C94.1526 11.671 93.6237 11.3226 93.0947 10.8C92.7421 10.4516 92.5658 10.2774 92.2131 9.92903C85.6895 3.83226 76.6974 0 67 0C57.3026 0 48.3105 3.83226 41.6105 9.92903C41.2579 10.2774 41.0816 10.4516 40.7289 10.8C40.2 11.3226 39.8474 11.671 39.3184 12.1935C36.85 14.8065 34.5579 17.4194 32.0895 19.8581C23.2737 28.7419 11.4605 30.4839 -0.176331 30.8323V54H16.3974H32.0895H101.558H110.197H134V30.6581C122.363 30.3097 110.55 28.7419 101.734 19.8581Z"
-              fill="currentColor"
+              fill=""
             ></path>
           </svg>
 
           <div className="absolute top-2 left-1/2 -translate-x-1/2">
-            <div className="wil-avatar relative inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
+            <div className="wil-avatar relative inline-flex h-14 bg-white w-14 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
               {profileImage ? (
                 <img
                   className="absolute inset-0 h-full w-full rounded-full object-cover"
@@ -111,7 +111,7 @@ const CollectionCard = ({
           <p className={style.creator}>
             by
             <Link href={`/user/${creatorAddress}`}>
-              <span className="textGradBlue cursor-pointer hover:text-sky-500">
+              <span className=" cursor-pointer hover:text-sky-500">
                 {' '}
                 {creator}
               </span>

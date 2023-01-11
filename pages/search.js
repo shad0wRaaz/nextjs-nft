@@ -15,7 +15,7 @@ import {
   IconSearch,
   IconWallet,
 } from '../components/icons/CustomIcons'
-import { useEffect, useState, Fragment, useCallback } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import Loader from '../components/Loader'
 import Slider, { Range } from 'rc-slider'
@@ -51,16 +51,15 @@ const search = ({category}) => {
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [itemName, setItemName] = useState()
-  const [includeImage, setIncludeImage] = useState()
-  const [includeVideo, setIncludeVideo] = useState()
-  const [includeAudio, setIncludeAudio] = useState()
-  const [includeAuction, setIncludeAuction] = useState()
-  const [includeDirect, setIncludeDirect] = useState()
-  const [includeHasOffers, setIncludeHasOffers] = useState()
-  const [priceRange, setPriceRange] = useState([0, 100])
+  const [itemName, setItemName] = useState(' ')
+  const [includeImage, setIncludeImage] = useState(true)
+  const [includeVideo, setIncludeVideo] = useState(true)
+  const [includeAudio, setIncludeAudio] = useState(true)
+  const [includeAuction, setIncludeAuction] = useState(true)
+  const [includeDirect, setIncludeDirect] = useState(true)
+  const [includeHasOffers, setIncludeHasOffers] = useState(true)
+  const [priceRange, setPriceRange] = useState([0, 10000])
   const [sortAsc, setSortAsc] = useState(true)
-  // const [sortAlpha, setSortAlpha] = useState(false)
   const [filteredListings, setFilteredListings] = useState()
 
   //variables for pagination
@@ -71,14 +70,14 @@ const search = ({category}) => {
 
   useEffect(() => {
     if (!filteredListings) return
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(filteredListings.slice(itemOffset, endOffset))
-    setPageCount(Math.ceil(filteredListings.length / itemsPerPage))
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItems(filteredListings.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(filteredListings.length / itemsPerPage));
   }, [itemOffset, itemsPerPage, filteredListings])
 
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % filteredListings.length
-    setItemOffset(newOffset)
+    const newOffset = (event.selected * itemsPerPage) % filteredListings.length;
+    setItemOffset(newOffset);
 
     return() => {
       //nothing, just clean up codes
@@ -86,14 +85,10 @@ const search = ({category}) => {
   }
 
   useEffect(() => {
-    // console.log(activeListings)
-  }, [activeListings])
-
-  useEffect(() => {
     ;(async() => {
-      const query = `*[_type == "category"] {name}`
-      const res = await config.fetch(query)
-      setCategories(res)
+      const query = `*[_type == "category"] {name}`;
+      const res = await config.fetch(query);
+      setCategories(res);
     })()
     
     return() => {
@@ -103,15 +98,24 @@ const search = ({category}) => {
 
   useEffect(() => {
     const data = router.query
-    setItemName(data?.n)
-    setSelectedCategory(data?.c ? data.c : 'all')
-    setIncludeImage(data?.i === 'true' ? true : false)
-    setIncludeVideo(data?.v === 'true' ? true : false)
-    setIncludeAudio(data?.a === 'true' ? true : false)
-    setIncludeAuction(data?.ac === 'true' ? true : false)
-    setIncludeDirect(data?.d === 'true' ? true : false)
-    setIncludeHasOffers(data?.h === 'true' ? true : false)
-    setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100])
+
+    setItemName(data?.n);
+    setSelectedCategory(curVal => data?.c ? data.c : curVal);
+    setIncludeImage(curval => data?.i === 'true' ? true : curval);
+    setIncludeVideo(curval => data?.v === 'true' ? true : curval);
+    setIncludeAudio(curval => data?.a === 'true' ? true : curval);
+    setIncludeAuction(curval => data?.ac === 'true' ? true : curval);
+    setIncludeDirect(curval =>data?.d === 'true' ? true : curval);
+    setIncludeHasOffers(curval => data?.h === 'true' ? true : curval);
+    setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 10000]);
+    // setSelectedCategory(data?.c ? data.c : 'all');
+    // setIncludeImage(data?.i === 'true' ? true : false);
+    // setIncludeVideo(data?.v === 'true' ? true : false);
+    // setIncludeAudio(data?.a === 'true' ? true : false);
+    // setIncludeAuction(data?.ac === 'true' ? true : false);
+    // setIncludeDirect(data?.d === 'true' ? true : false);
+    // setIncludeHasOffers(data?.h === 'true' ? true : false);
+    // setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100]);
 
     return() => {
       //nothing, just clean up codes
@@ -153,63 +157,77 @@ const search = ({category}) => {
   }, [activeListings])
 
   useEffect(() => {
-    if (!activeListings) return
+    if (!activeListings) return;
     let data = []
 
     //sort item according to their price in selected order
     if (sortAsc) {
       data = activeListings.sort(function (a, b) {
-        return (parseInt(a.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(b.buyoutPrice.hex, 16) / DIVIDER)
+        return (parseInt(a.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(b.buyoutPrice.hex, 16) / DIVIDER);
       })
     } else {
       data = activeListings.sort(function (a, b) {
-        return (parseInt(b.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(a.buyoutPrice.hex, 16) / DIVIDER)
+        return (parseInt(b.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(a.buyoutPrice.hex, 16) / DIVIDER);
       })
     }
 
     //filter according to category selected
     if (selectedCategory != 'all') {
       data = data.filter((item) => {
-        return item.asset.properties.category == selectedCategory
+        return (item.asset.properties.category == selectedCategory);
       })
     }
-
+    
     //filter for price range
     data = data.filter((item) => {
-      let itemPrice = parseInt(item.buyoutPrice.hex, 16) / DIVIDER
+      let itemPrice = parseInt(item.buyoutPrice.hex, 16) / DIVIDER;
       return (
         item.asset.name.toLowerCase().includes(itemName?.toLowerCase()) &&
-        parseFloat(priceRange[0]) < itemPrice &&
-        parseFloat(priceRange[1]) > itemPrice
-      )
-    })
+        parseFloat(priceRange[0]) <= itemPrice &&
+        parseFloat(priceRange[1]) >= itemPrice
+        )
+      })
+    //filter for auction and direct listings
+    if(!(includeAuction && includeDirect)){
+      if(!includeAuction){
+        data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+      }else {
+        data = data.filter(item => item.hasOwnProperty('reservePrice'));
+      }
+      if(!includeDirect){
+        data = data.filter(item => !(!item.hasOwnProperty('reservePrice')));
+      }else {
+        data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+      }
+    }
 
     //filter according to chosen file type audio, video or image
-    const audioNFTs = data.filter((item) => item.asset.properties?.itemtype == "audio")
-    const videoNFTs = data.filter((item) => item.asset.properties?.itemtype == "video")
-    const imageNFTs = data.filter((item) => item.asset.properties?.itemtype != "audio" && item.asset.properties?.itemtype != "video")
+    const audioNFTs = data.filter((item) => item.asset.properties?.itemtype == "audio");
+    const videoNFTs = data.filter((item) => item.asset.properties?.itemtype == "video");
+    const imageNFTs = data.filter((item) => item.asset.properties?.itemtype != "audio" && item.asset.properties?.itemtype != "video");
 
-    let newFiltered = []
+    let newFiltered = [];
 
     if(includeAudio){
-      newFiltered = [...newFiltered, ...audioNFTs]
+      newFiltered = [...newFiltered, ...audioNFTs];
     }
     if(includeVideo){
-      newFiltered = [...newFiltered, ...videoNFTs]
+      newFiltered = [...newFiltered, ...videoNFTs];
     }
     if(includeImage){
-      newFiltered = [...newFiltered, ...imageNFTs]
+      newFiltered = [...newFiltered, ...imageNFTs];
     }
+
     // console.log(newFiltered)
     //This filter will filter out all nfts that does not have tokenid. Only Old NFTs do not have tokenid.
-    newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null)
+    newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null);
 
-    setFilteredListings(newFiltered)
+    setFilteredListings(newFiltered);
 
     return() => {
       //nothing, just clean up codes
     }
-  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage])
+  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage, includeAuction, includeDirect])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -237,11 +255,11 @@ const search = ({category}) => {
                   type="search"
                   className={`focus:border-primary-300 block w-full rounded-full border py-5 pl-14 pr-5 text-sm font-normal shadow-lg ${
                     dark
-                      ? 'border-slate-600 bg-slate-700'
+                      ? 'border-slate-600 bg-slate-700 text-slate-200'
                       : 'border-neutral-200 bg-white text-slate-900'
                   } md:pl-16`}
                   id="search-input"
-                  value={itemName ? itemName : ''}
+                  value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                   placeholder="Type your keywords"
                 />
@@ -251,7 +269,7 @@ const search = ({category}) => {
                 >
                   <FiArrowRight />
                 </button>
-                <span className="absolute left-5 top-1/2 -translate-y-1/2 transform text-2xl md:left-6">
+                <span className={`absolute left-5 top-1/2 -translate-y-1/2 transform text-2xl md:left-6 ${dark ? 'text-slate-200' : ' text-slate-700'} `}>
                   <IconSearch />
                 </span>
               </label>
@@ -371,9 +389,11 @@ const search = ({category}) => {
                             <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
                               <Slider
                                 range
+                                min={0}
+                                max={10000}
                                 allowCross={false}
                                 defaultValue={priceRange}
-                                onChange={(value) => setPriceRange(value)}
+                                onChange={(value) => setPriceRange(value)}  
                               />
                             </div>
                             <div className="flex justify-between space-x-5">
@@ -394,7 +414,6 @@ const search = ({category}) => {
                                     disabled=""
                                     id="minPrice"
                                     className="block w-32 rounded-full border-neutral-200 bg-transparent pr-10 pl-4 sm:text-sm"
-                                    value="0.01"
                                   />
                                 </div>
                               </div>
@@ -415,7 +434,6 @@ const search = ({category}) => {
                                     name="maxPrice"
                                     id="maxPrice"
                                     className="block w-32 rounded-full border-neutral-200 bg-transparent pr-10 pl-4 sm:text-sm"
-                                    value="10"
                                   />
                                 </div>
                               </div>
@@ -465,7 +483,7 @@ const search = ({category}) => {
                               <span className="block text-[17px]">
                                 On Direct Listing
                               </span>
-                              <span className="block text-sm text-neutral-400">
+                              <span className="block text-xs text-neutral-400">
                                 Items put on direct sale
                               </span>
                             </div>
@@ -498,7 +516,7 @@ const search = ({category}) => {
                               <span className="block text-[17px]">
                                 On Auction
                               </span>
-                              <span className="block text-sm text-neutral-400">
+                              <span className="block text-xs text-neutral-400">
                                 Items put on Auction
                               </span>
                             </div>
@@ -528,7 +546,7 @@ const search = ({category}) => {
                           </div>
                         </Menu.Item>
                         <Menu.Item>
-                          <div className="group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm">
+                          <div className="group flex w-full items-center hidden justify-between rounded-md px-2 py-2 text-sm">
                             <div>
                               <span className="block text-[17px]">
                                 Has Offers
@@ -577,7 +595,7 @@ const search = ({category}) => {
                       } px-4 py-2 text-sm focus:outline-none`}
                     >
                       <IconImage />
-                      <span className="ml-2">File Types</span>
+                      <span className="ml-2">NFT Type</span>
                       <span className="bg-primary-500 ml-3 flex h-4 w-4 flex-shrink-0 cursor-pointer items-center justify-center rounded-full">
                         <BsChevronDown />
                       </span>
@@ -605,7 +623,7 @@ const search = ({category}) => {
                               <span className="block text-[17px]">
                                 Image Items
                               </span>
-                              <span className="block text-sm text-neutral-400">
+                              <span className="block text-xs text-neutral-400">
                                 Items in JPG, GIF, WEBP, SVG format
                               </span>
                             </div>
@@ -638,7 +656,7 @@ const search = ({category}) => {
                               <span className="block text-[17px]">
                                 Video Items
                               </span>
-                              <span className="block text-sm text-neutral-400">
+                              <span className="block text-xs text-neutral-400">
                                 Items in MP4, WEBM, AVI format
                               </span>
                             </div>
@@ -671,7 +689,7 @@ const search = ({category}) => {
                               <span className="block text-[17px]">
                                 Audio Items
                               </span>
-                              <span className="block text-sm text-neutral-400">
+                              <span className="block text-xs text-neutral-400">
                                 Items in MP3, WEBM format
                               </span>
                             </div>

@@ -1,7 +1,4 @@
-import axios from 'axios'
-import Image from 'next/image'
 import { useRef } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import FileBase from 'react-file-base64'
 import { BiError } from 'react-icons/bi'
@@ -33,7 +30,7 @@ const style = {
   button:
     'gradBlue flex gap-2 justify-center rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
   previewImage:
-    'relative mr-[1rem] h-[200px] w-[300px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-500 flex items-center justify-center',
+    'relative mr-[1rem] h-[200px] w-[300px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-500 flex items-center justify-center hover:bg-slate-800',
   notConnectedWrapper: 'flex justify-center items-center h-screen',
   traitsButtons:
     'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
@@ -160,9 +157,7 @@ const CreateNFT = ({uuid}) => {
   ] = useNetwork()
   const address = useAddress()
   const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
-  const [selectedCollection, setSelectedCollection] = useState({
-    contractAddress: '',
-  })
+  const [selectedCollection, setSelectedCollection] = useState({contractAddress: ''})
   const [nftCollection, setNftCollection] = useState()
   const [isMinting, setIsMinting] = useState(false)
 
@@ -230,33 +225,29 @@ const CreateNFT = ({uuid}) => {
 
   //handling Create NFT button
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
-    e.preventDefault()
+    e.preventDefault();
 
+    if(!uuid){
+      toastHandler.error("ID could not be defined. Refresh and try again.", errorToastStyle);
+    }
     if (state.name == '' || !file) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
     }
     if (
       !urlPatternValidation(state.properties.external_link) &&
-      state.properties.external_link !== ''
-    ) {
+      state.properties.external_link !== '') {
       toastHandler.error('External link is not valid.', errorToastStyle)
       return
     }
     if (selectedCollection.contractAddress == '') {
-      toastHandler.error(
-        'Collection is not selected. Select a collection to mint this NFT to.',
-        errorToastStyle
-      )
+      toastHandler.error('Collection is not selected. Select a collection to mint this NFT to.', errorToastStyle)
       return
     }
     
     if (!(nftCollection)) {
       //Some issue is there
-      toastHandler.error(
-        'Error in minting. Cannot find NFT Collection',
-        errorToastStyle
-      )
+      toastHandler.error('Error in minting. Cannot find NFT Collection', errorToastStyle)
       return
     }
     // if(fileType != "image") {
@@ -457,9 +448,6 @@ const CreateNFT = ({uuid}) => {
               <div className="flex justify-between gap-2">
                 <div className="w-[1/2]">
                   <p className={style.label}>Image *</p>
-                  <p className={style.smallText}>
-                    Supported file types: JPG, PNG, GIF, WEBP, JFIF.
-                  </p>
 
                   <div
                     className={style.previewImage}
@@ -476,13 +464,17 @@ const CreateNFT = ({uuid}) => {
                     ) : (
                       <div 
                         onClick={() => {fileInputRef.current.click()}} 
-                        className="rounded-lg cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4 border-slate-500 border-dashed border"
+                        className="rounded-lg cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 px-4"
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
                           e.preventDefault();
                           setFile(e.dataTransfer.files[0]);
                         }}><BsUpload fontSize={50} />
-                          Drag & Drop Image</div>
+                          Drag & Drop Image
+                          <p className={style.smallText + " text-center"}>
+                            Supported file types: JPG, PNG, GIF, WEBP, JFIF.
+                          </p>
+                        </div>
                     )}
                   </div>
                   <div className="imageUploader mb-4 ml-3">
@@ -727,11 +719,7 @@ const CreateNFT = ({uuid}) => {
         </div>
       ) : (
         <div className={style.notConnectedWrapper}>
-          <button
-            type="button"
-            className={style.button}
-            onClick={connectWithMetamask}
-          >
+          <button type="button" className={style.button} onClick={connectWithMetamask}>
             Connect Wallet
           </button>
         </div>

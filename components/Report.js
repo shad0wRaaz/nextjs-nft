@@ -29,7 +29,7 @@ const style = {
     button: 'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-4 ml-0 font-bold max-w-[12rem] ease-linear transition duration-500',
 }
 
-const Report = ({showModal, setShowModal, dark, itemType, selectedNft, metaDataFromSanity}) => {
+const Report = ({ setShowModal, dark, itemType, metaDataFromSanity, nftContractData}) => {
     const address = useAddress()
     const [selected, setSelected] = useState(reportType[0])
     const [otherDescription, setOtherDescription] = useState()
@@ -41,7 +41,7 @@ const Report = ({showModal, setShowModal, dark, itemType, selectedNft, metaDataF
             address,
             type,
             itemID,
-            followers: [{_ref: selectedNft?.owner}],
+            followers: [{_ref: nftContractData?.owner}],
             eventTitle,
             description,
           })

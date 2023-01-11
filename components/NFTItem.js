@@ -96,7 +96,7 @@ const NFTItem = ({ nftItem }) => {
             </div> */}
           </div>
           {/* {nftItem && nftItem.startTimeInSeconds?.toNumber() != nftItem.secondsUntilEnd?.toNumber() && ( */}
-          {nftItem && (parseInt(nftItem.startTimeInSeconds?.hex, 16) != parseInt(nftItem.secondsUntilEnd?.hex, 16)) && (
+          {/* {nftItem && (parseInt(nftItem.startTimeInSeconds?.hex, 16) != parseInt(nftItem.secondsUntilEnd?.hex, 16)) && (
             <div className="absolute top-[-1px] right-[-1px] flex items-center">
               <svg
                 className={`w-44 ${
@@ -128,7 +128,7 @@ const NFTItem = ({ nftItem }) => {
                 </span>
               </div>
             </div>
-          )}
+          )} */}
 
           <div className="absolute left-[-1px] bottom-[-0.4px] ">
             <svg

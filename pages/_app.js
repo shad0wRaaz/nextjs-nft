@@ -12,7 +12,7 @@ import appletouchicon from '../assets/favicon/apple-touch-icon.png'
 import icon32 from '../assets/favicon/favicon-32x32.png'
 import icon16 from '../assets/favicon/favicon-16x16.png'
 
-const desiredChainId = ChainId.Mumbai;
+const desiredChainId = ChainId.BinanceSmartChainTestnet;
 
 function MyApp({ Component, pageProps }) {
   const client = new QueryClient()

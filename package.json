@@ -10,6 +10,8 @@
     "export": "next export"
   },
   "dependencies": {
+    "@dicebear/avatars": "^4.10.8",
+    "@dicebear/pixel-art": "^4.10.8",
     "@headlessui/react": "^1.7.7",
     "@sanity/client": "^3.3.0",
     "@thirdweb-dev/react": "^3.6.7",

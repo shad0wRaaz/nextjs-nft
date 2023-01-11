@@ -1,13 +1,14 @@
-import NFTItem from './NFTItem'
 import Link from 'next/link'
+import NFTItem from './NFTItem'
 import bsclogo from '../assets/bsc.png'
 import maticlogo from '../assets/matic.png'
 import ethereumlogo from '../assets/ethereum.png'
 import avalancelogo from '../assets/avalance.png'
+import React, { useEffect, useState } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { BigNumber } from 'ethers'
-import React, { useEffect, useState } from 'react'
+import { useAddress } from '@thirdweb-dev/react'
+
 
 const style = {
   wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem]',
@@ -27,85 +28,79 @@ const style = {
 }
 
 const ExploreNFTs = () => {
-  const { dark } = useThemeContext()
-  const { activeListings, selectedChain, setSelectedChain, latestNfts } =
-    useMarketplaceContext()
-
-  // useEffect(() => {
-    //only show latest 8 NFTs
-    // if(!latestNfts) return
-    // console.log(latestNfts)
-  // }, [latestNfts])
-  // console.log(filteredListings)
+  const address = useAddress();
+  const { dark } = useThemeContext();
+  const { latestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
 
   return (
     <div className={style.wrapper}>
-      <h2 className={style.title}>Latest NFTs</h2>
-
-      <div className="container mx-auto mb-[4rem] flex justify-center">
-        <div
-          className={`border ${
-            dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-          } flex justify-between gap-2 overflow-hidden rounded-full p-1 shadow`}
-        >
+      <h2 className={style.title}><span className="textGradCyan">Explore Latest NFTs</span></h2>
+      {!address && (
+        <div className="container mx-auto mb-[4rem] flex justify-center">
           <div
-            className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              selectedChain == 'Ethereum' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setSelectedChain('Ethereum')}
+            className={`border ${
+              dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
+            } flex justify-between gap-2 overflow-hidden rounded-full p-1 shadow`}
           >
-            <img src={ethereumlogo.src} width="20px" className="inline-block" />
-            <span className="inline-block pl-2">Ethereum</span>
-          </div>
-          <div
-            className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              selectedChain == 'Binance' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setSelectedChain('Binance')}
-          >
-            <img src={bsclogo.src} width="20px" className="inline-block" />
-            <span className="inline-block pl-2">Binance</span>
-          </div>
-          <div
-            className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              selectedChain == 'Polygon' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setSelectedChain('Polygon')}
-          >
-            <img src={maticlogo.src} width="18px" className="inline-block" />
-            <span className="inline-block pl-2">Polygon</span>
-          </div>
-          <div
-            className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              selectedChain == 'Avalance' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setSelectedChain('Avalance')}
-          >
-            <img src={avalancelogo.src} width="18px" className="inline-block" />
-            <span className="inline-block pl-1">Avalance</span>
+            <div
+              className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-4 ${
+                dark
+                  ? ' hover:bg-slate-600 hover:text-neutral-100'
+                  : ' hover:bg-sky-100 hover:text-black'
+              } ${
+                selectedBlockchain == 'goerli' &&
+                (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
+              }`}
+              onClick={() => setSelectedBlockchain('goerli')}
+            >
+              <img src={ethereumlogo.src} width="20px" className="inline-block" />
+              <span className="inline-block pl-2">Ethereum</span>
+            </div>
+            <div
+              className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-4 ${
+                dark
+                  ? ' hover:bg-slate-600 hover:text-neutral-100'
+                  : ' hover:bg-sky-100 hover:text-black'
+              } ${
+                selectedBlockchain == 'binance-testnet' &&
+                (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
+              }`}
+              onClick={() => setSelectedBlockchain('binance-testnet')}
+            >
+              <img src={bsclogo.src} width="20px" className="inline-block" />
+              <span className="inline-block pl-2">Binance</span>
+            </div>
+            <div
+              className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-4 ${
+                dark
+                  ? ' hover:bg-slate-600 hover:text-neutral-100'
+                  : ' hover:bg-sky-100 hover:text-black'
+              } ${
+                selectedBlockchain == 'mumbai' &&
+                (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
+              }`}
+              onClick={() => setSelectedBlockchain('mumbai')}
+            >
+              <img src={maticlogo.src} width="18px" className="inline-block" />
+              <span className="inline-block pl-2">Polygon</span>
+            </div>
+            <div
+              className={`flex cursor-pointer flex-row items-center rounded-full p-3 px-4 ${
+                dark
+                  ? ' hover:bg-slate-600 hover:text-neutral-100'
+                  : ' hover:bg-sky-100 hover:text-black'
+              } ${
+                selectedBlockchain == 'avalanche-fuji' &&
+                (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
+              }`}
+              onClick={() => setSelectedBlockchain('avalanche-fuji')}
+            >
+              <img src={avalancelogo.src} width="18px" className="inline-block" />
+              <span className="inline-block pl-1">Avalance</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {latestNfts?.length == 0 && (
         <div>
@@ -126,8 +121,8 @@ const ExploreNFTs = () => {
       )}
 
       <div className="mt-8 flex justify-center pt-8">
-        <Link href="/browse">
-          <div className={style.button}>Browse NFT Collections</div>
+        <Link href="/search">
+          <div className={style.button}>Browse All NFTs</div>
         </Link>
       </div>
     </div>

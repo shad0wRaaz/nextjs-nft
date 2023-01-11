@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Head from 'next/head'
 import Script from 'next/script'
 import toast from 'react-hot-toast'
 import { useMutation } from 'react-query'
@@ -10,19 +9,18 @@ import { useQueryClient } from 'react-query'
 import { RiAuctionLine } from 'react-icons/ri'
 import { Router, useRouter } from 'next/router'
 import { config } from '../../lib/sanityClient'
-import { NATIVE_TOKENS } from '@thirdweb-dev/sdk'
 import 'react-datepicker/dist/react-datepicker.css'
 import { MdClose, MdOutlineSell } from 'react-icons/md'
-import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk'
 import React, { useEffect, useState, useRef } from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import differenceInSeconds from 'date-fns/differenceInSeconds'
 import { saveTransaction } from '../../mutators/SanityMutators'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { OffCanvas, OffCanvasMenu, OffCanvasBody } from 'react-offcanvas'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { useChainId, useAddress, useContract, ConnectWallet } from '@thirdweb-dev/react'
+import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon, IconWallet } from '../icons/CustomIcons'
+import { useChainId, useAddress, useContract, ConnectWallet, useSigner } from '@thirdweb-dev/react'
 
 
 const style = {
@@ -49,38 +47,31 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+const blockchainCurrency = {
+"mumbai" : {currency: "MATIC", icon: <IconPolygon />, DATABASE_COIN_NAME: "maticprice"},
+"polygon": {currency: "MATIC", icon: <IconPolygon />, DATABASE_COIN_NAME: "maticprice"},
+"goerli": {currency: "ETH", icon: <IconEthereum />, DATABASE_COIN_NAME: "ethprice"},
+"mainnet": {currency: "ETH", icon: <IconEthereum />, DATABASE_COIN_NAME: "ethprice"},
+"binance-testnet": {currency: "TBNB", icon: <IconBNB />, DATABASE_COIN_NAME: "bnbprice"},
+"binance": {currency: "BNB", icon: <IconBNB />, DATABASE_COIN_NAME: "bnbprice"},
+"avalanche": {currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
+"avalanche-fuji":{currency: "AVAX GOR", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
+}
 
-const Sell = ({ nftContractData, nftCollection }) => {
+const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTblockchain }) => {
   const { dark } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
-  const { loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
+  const { loadingNewPrice, setLoadingNewPrice, coinPrices } = useSettingsContext();
   const queryClient = useQueryClient()
-  const { marketContract, marketplaceAddress } = useMarketplaceContext()
   const directListingPanel = useRef()
   const auctionListingPanel = useRef()
   const chainid = useChainId()
+  const signer = useSigner()
   const [isOpen, setIsOpen] = useState(false)
   const [listingPrice, setListingPrice] = useState(0)
   const [buyoutPrice, setBuyoutPrice] = useState(0)
   const [reservePrice, setReservePrice] = useState(0)
-  const [currency, setCurrency] = useState()
-  const [buyoutcurrency, setBuyoutCurrency] = useState()
-  // const marketplace = useContract(marketplaceAddress).contract;
-
-
-  useEffect(() => {
-    if (!chainid) {
-      return
-    } else if (chainid == 80001) {
-      setCurrency(NATIVE_TOKEN_ADDRESS)
-      setBuyoutCurrency(NATIVE_TOKEN_ADDRESS)
-    } else if (chainid == 4) {
-      setCurrency(NATIVE_TOKEN_ADDRESS)
-      setBuyoutCurrency(NATIVE_TOKEN_ADDRESS)
-    }
-  }, [chainid])
-
   const [listingDuration, setListingDuration] = useState('')
   const [auctionDuration, setAuctionDuration] = useState('')
   const [startDate, setStartDate] = useState()
@@ -88,6 +79,21 @@ const Sell = ({ nftContractData, nftCollection }) => {
   const [startAuctionDate, setAuctionStartDate] = useState()
   const [endAuctionDate, setAuctionEndDate] = useState()
   const [isLoading, setIsLoading] = useState(false)
+  const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
+
+  useEffect(() => {
+    const t = thisNFTblockchain;
+    if(!t) return
+    if(t == "mumbai" || t == "polygon") { setThisNFTBlockchainCurrency(coinPrices?.maticprice); } 
+    else if(t == "mainnet" || t == "goerli") { setThisNFTBlockchainCurrency(coinPrices?.ethrice); }
+    else if (t == "binance" || t == "binance-testnet") { setThisNFTBlockchainCurrency(coinPrices?.bnbprice); }
+    else if(t == "avalanche" || t == "avalanche-fuji") { setThisNFTBlockchainCurrency(coinPrices?.avaxprice); }
+
+    return() => {
+      // do nothing
+    } 
+  }, [thisNFTblockchain])
+
   const { mutate: mutateSaveTransaction } = useMutation(
     ({ transaction, id, eventName, price, chainid, itemid }) =>
       saveTransaction({
@@ -118,31 +124,35 @@ const Sell = ({ nftContractData, nftCollection }) => {
 
   useEffect(() => {
     if (!startDate || !endDate) return
-    setListingDuration(differenceInSeconds(endDate, startDate))
+    setListingDuration(differenceInSeconds(endDate, startDate));
+
+    return() =>{ 
+      //do nothing
+    }
   }, [startDate, endDate])
 
   useEffect(() => {
     if (!startAuctionDate || !endAuctionDate) return
-    setAuctionDuration(differenceInSeconds(endAuctionDate, startAuctionDate))
+    setAuctionDuration(differenceInSeconds(endAuctionDate, startAuctionDate));
+
+    return() =>{ 
+      //do nothing
+    }
   }, [startAuctionDate, endAuctionDate])
 
   const directListItem = async (
     e,
-    module = marketContract,
     toastHandler = toast,
     sanityClient = config
   ) => {
 
     if (!listingPrice) {
-      toastHandler.error('Listing price not set.', errorToastStyle)
+      toastHandler.error('Listing price not set.', errorToastStyle);
       return
     }
-    if (!currency) {
-      toastHandler.error('Listing currency not chosen.', errorToastStyle)
-      return
-    }
+
     if(!nftCollection?.contractAddress) {
-      toastHandler.error("NFT Collection Address could not be located.", errorToastStyle)
+      toastHandler.error("NFT Collection Address could not be located.", errorToastStyle);
       return
     }
 
@@ -154,17 +164,18 @@ const Sell = ({ nftContractData, nftCollection }) => {
     const listing = {
       assetContractAddress: nftCollection?.contractAddress,
       tokenId: nftContractData.metadata.id.toString(),
-      startTimestamp: new Date(0),
+      startTimestamp: new Date(),
       listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
       currencyContractAddress: NATIVE_TOKEN_ADDRESS,
       buyoutPricePerToken: listingPrice,
     }
-    // console.log(listing);
     
     try {
-      const tx = await module?.direct.createListing(listing);
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
+      const tx = await contract?.direct.createListing(listing);
       //update market listing id in database
       const marketListingId = tx.id.toString();
       ;(async(id = marketListingId , dbClient = sanityClient)=> {
@@ -185,14 +196,11 @@ const Sell = ({ nftContractData, nftCollection }) => {
       queryClient.invalidateQueries(['activities']);
       queryClient.invalidateQueries(['marketplace']);
       
-      toastHandler.success(
-        "NFT successfully listed in the marketplace. Please wait for a while. Getting the NFT's latest price from the marketplace.",
-        successToastStyle
-      )
+      toastHandler.success("NFT successfully listed in the marketplace. Please wait for a while. Getting the NFT's latest price from the marketplace.", successToastStyle);
 
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings').then(() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
           router.reload(window.location.pathname);
           router.replace(router.asPath);
           setLoadingNewPrice(false)
@@ -209,7 +217,6 @@ const Sell = ({ nftContractData, nftCollection }) => {
 
   const auctionListItem = async (
     quantityDesired = 1,
-    module = marketContract,
     toastHandler = toast,
     sanityClient = config
   ) => {
@@ -221,10 +228,7 @@ const Sell = ({ nftContractData, nftCollection }) => {
       toastHandler.error('Reserve price not set.', errorToastStyle)
       return
     }
-    if (!buyoutcurrency) {
-      toastHandler.error('Listing currency not chosen.', errorToastStyle)
-      return
-    }
+    
     if(!nftCollection?.contractAddress) {
       toastHandler.error("NFT Collection Address could not be located.", errorToastStyle)
       return
@@ -237,15 +241,19 @@ const Sell = ({ nftContractData, nftCollection }) => {
       startTimestamp: new Date(),
       listingDurationInSeconds: Number(listingDuration) || 31449600,
       quantity: 1,
-      currencyContractAddress: currency,
+      currencyContractAddress: NATIVE_TOKEN_ADDRESS,
       buyoutPricePerToken: buyoutPrice,
       reservePricePerToken: reservePrice,
     }
     // console.log(listing);
     try {
-      const tx = await module.auction.createListing(auction)
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+
+      const tx = await contract.auction.createListing(auction);
       const receipt = tx.receipt
       const newListingId = tx.id
+
       toastHandler.success(
         'NFT successfully auctioned in the marketplace.',
         successToastStyle
@@ -271,7 +279,7 @@ const Sell = ({ nftContractData, nftCollection }) => {
       //update listing data
       ;(async() => {
         setLoadingNewPrice(true);
-        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings').then(() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
           setLoadingNewPrice(false);
           router.reload(window.location.pathname);
           router.replace(router.asPath);
@@ -301,6 +309,10 @@ const Sell = ({ nftContractData, nftCollection }) => {
   useEffect(() => {
     if (!address) return
     showDirect()
+
+    return() =>{ 
+      //do nothing
+    }
   }, [])
   return (
     <>
@@ -358,15 +370,22 @@ const Sell = ({ nftContractData, nftCollection }) => {
                     <div className="">
                       <p className={style.label}>Price*</p>
                       <div className="flex flex-row items-center gap-5">
-                        <CoinSelection chainid={nftCollection.chainId} />
                         <input
                           className={style.input}
                           style={{ margin: '0' }}
-                          type="text"
+                          type="number"
                           name="listingPrice"
                           value={listingPrice}
                           onChange={(e) => setListingPrice(e.target.value)}
                         />
+                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                          {blockchainCurrency[thisNFTblockchain].icon}
+                          {blockchainCurrency[thisNFTblockchain].currency}
+                        </div>
+                      </div>
+                      <div className="p-2 text-sm">
+                        ≈ $ {parseFloat(listingPrice * thisNFTBlockchainCurrency).toFixed(2)} 
+                        <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
                       </div>
                     </div>
 
@@ -433,7 +452,7 @@ const Sell = ({ nftContractData, nftCollection }) => {
 
                     <div className="flex justify-between pt-8">
                       <span>Platform Fees</span>
-                      <span>2.5%</span>
+                      <span>5%</span>
                     </div>
 
                     <div className="pt-8">
@@ -466,7 +485,6 @@ const Sell = ({ nftContractData, nftCollection }) => {
                     <div className="">
                       <p className={style.label}>Buyout Price*</p>
                       <div className="flex flex-row items-center gap-5">
-                        <CoinSelection />
                         <input
                           className={style.input}
                           style={{ margin: '0' }}
@@ -475,19 +493,33 @@ const Sell = ({ nftContractData, nftCollection }) => {
                           value={buyoutPrice}
                           onChange={(e) => setBuyoutPrice(e.target.value)}
                         />
+                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                          {blockchainCurrency[thisNFTblockchain].icon}
+                          {blockchainCurrency[thisNFTblockchain].currency}
+                        </div>
+                      </div>
+                      <div className="p-2 text-sm">
+                        ≈ $ {parseFloat(buyoutPrice * thisNFTBlockchainCurrency).toFixed(2)} 
+                        <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
                       </div>
                     </div>
 
                     <div className="relative mt-4 w-full">
                       <p className={style.label}>Minimum Bidding Price*</p>
-                      <input
-                        className={style.input}
-                        style={{ margin: '0', width: '100%' }}
-                        type="number"
-                        name="minimumPrice"
-                        value={reservePrice}
-                        onChange={(e) => setReservePrice(e.target.value)}
-                      />
+                      <div className="flex flex-row items-center gap-5">
+                        <input
+                          className={style.input}
+                          style={{ margin: '0', width: '100%' }}
+                          type="number"
+                          name="minimumPrice"
+                          value={reservePrice}
+                          onChange={(e) => setReservePrice(e.target.value)}
+                        />
+                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                          {blockchainCurrency[thisNFTblockchain].icon}
+                          {blockchainCurrency[thisNFTblockchain].currency}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="pt-4">
@@ -553,7 +585,7 @@ const Sell = ({ nftContractData, nftCollection }) => {
 
                     <div className="flex justify-between pt-8">
                       <span>Platform Fees</span>
-                      <span>2.5%</span>
+                      <span>5%</span>
                     </div>
 
                     <div className="pt-8">
@@ -563,7 +595,7 @@ const Sell = ({ nftContractData, nftCollection }) => {
                           style={{ opacity: '0.8', cursor: 'disabled' }}
                           disabled
                         >
-                          <CgSpinner className="animate-spin" fontSize="20px" />{' '}
+                          <IconLoading dark="in-button" /> {' '}
                           Processing...
                         </button>
                       ) : (

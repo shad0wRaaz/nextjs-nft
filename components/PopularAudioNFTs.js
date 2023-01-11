@@ -1,12 +1,10 @@
-import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import AudioNFTCard from './AudioNFTCard'
-import AudioNFTCardCompact from './AudioNFTCardCompact'
-import Link from 'next/link'
-import { useThemeContext } from '../contexts/ThemeContext'
 import { useRouter } from 'next/router'
+import AudioNFTCard from './AudioNFTCard'
 import { config } from '../lib/sanityClient'
+import React, { useEffect, useState } from 'react'
+import AudioNFTCardCompact from './AudioNFTCardCompact'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0',
@@ -23,26 +21,34 @@ const PopularAudioNFTs = () => {
         if(!activeListings) return
         const audioItems = activeListings.filter(item => item.asset.properties?.itemtype == "audio" && item.asset.properties?.tokenid != null)
         const tempList = audioItems.map(async (item) => {
-            var obj = { ...item }
-            const query = `*[_type == "nftItem" && _id == "${item.metadata?.properties.tokenid}"] {
-                likedBy,
-              }`
-            const result = config.fetch(query)
-            obj['likedBy'] = result
-            return obj
-        })
-        const updatedList = Promise.all(tempList).then(
-            (res) => { 
-            })
+            var obj = { ...item };
+            const query = `*[_type == "nftItem" && _id == "${item.asset?.properties.tokenid}"] {"likers":count(likedBy)}`;
+            const result = await config.fetch(query);
 
-        if(audioItems.length < 2) {
-            setTopTwoNFTItems(audioItems)
-        }
-        else {
-            const topItems = audioItems.slice(0,2)
-            const otherItems = audioItems.slice(2, 5)
-            setTopTwoNFTItems(topItems) //First two Audio Items
-            setOtherThreeNFTItems(otherItems) //Another three Audio Items
+            if(result[0].likers){
+                obj['likedBy'] = result[0].likers;
+            }else {
+                obj['likedBy'] = 0;
+            }
+            return obj;
+        });
+        ;(async () => {
+            const updatedList = await Promise.all(tempList);
+            //sort out the array based on number of likers
+
+            const sortedList = updatedList.sort((a,b) => { return (b.likedBy - a.likedBy)});
+            if(audioItems.length < 2) {
+                setTopTwoNFTItems(sortedList)
+            }
+            else {
+                const topItems = sortedList.slice(0,2)
+                const otherItems = sortedList.slice(2, 5)
+                setTopTwoNFTItems(topItems) //First two Audio Items
+                setOtherThreeNFTItems(otherItems) //Another three Audio Items
+            }
+        })()
+        return() => {
+            //do nothing
         }
     }, [activeListings])
 
@@ -52,7 +58,7 @@ const PopularAudioNFTs = () => {
             <div className="relative">
                 <div className="relative flex flex-col sm:flex-row sm:items-center justify-between mb-1">
                     <div className="max-w-2xl mb-8">
-                        <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold">Popular Audio NFTs</h2>
+                        <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold ">Popular <span className="textGradGreen pl-3"> Audio NFTs</span></h2>
                         <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click on music icon and enjoy NFT music or audio </span>
                     </div>
                     <div 

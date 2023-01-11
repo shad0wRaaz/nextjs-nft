@@ -1,32 +1,28 @@
-import { useState, useEffect, useRef } from 'react'
-import moment from 'moment'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
-import noBannerImage from '../../assets/noBannerImage.png'
-import noProfileImage from '../../assets/noProfileImage.png'
-import { useAddress, useSigner } from '@thirdweb-dev/react'
+import moment from 'moment'
+import toast from 'react-hot-toast'
+import { useQuery } from 'react-query'
+import { useRouter } from 'next/router'
+import { FiImage } from 'react-icons/fi'
+import { CgUserList } from 'react-icons/cg'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-import { AiOutlineFacebook, AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
-import { CgUserList } from 'react-icons/cg'
+import { useState, useEffect, useRef } from 'react'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import { MdOutlineCollections } from 'react-icons/md'
-import { RiFacebookBoxFill, RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { FiImage } from 'react-icons/fi'
-import CollectionCard from '../../components/CollectionCard'
-import { useThemeContext } from '../../contexts/ThemeContext'
-import { useUserContext } from '../../contexts/UserContext'
-import { useQuery } from 'react-query'
-import {
-  getMyCollections,
-  getMintedNFTs,
-  getCollectedNFTs,
-  getFavouriteNFTs,
-} from '../../fetchers/SanityFetchers'
-import toast from 'react-hot-toast'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import NFTCardLocal from '../../components/NFTCardLocal'
+import noBannerImage from '../../assets/noBannerImage.png'
+import { useUserContext } from '../../contexts/UserContext'
+import { useAddress, useSigner } from '@thirdweb-dev/react'
+import noProfileImage from '../../assets/noProfileImage.png'
+import CollectionCard from '../../components/CollectionCard'
+import { getFullListings } from '../../fetchers/Web3Fetchers'
+import { useThemeContext } from '../../contexts/ThemeContext'
+import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
+import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { IconCopy, IconLoading } from '../../components/icons/CustomIcons'
-import { getImagefromWeb3, getUnsignedImagePath } from '../../fetchers/s3'
+import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -57,10 +53,11 @@ const Collection = () => {
     queryCacheTime,
     queryStaleTime,
     myCollections,
-  } = useUserContext()
-  const { activeListings } = useMarketplaceContext()
-  const [showType, setShowType] = useState('collection')
-  
+  } = useUserContext();
+  const [showType, setShowType] = useState('collection');
+
+  //get all active listings from all blockchain
+  const { data: fullListingData } = useQuery(['fulllistings'], getFullListings());
 
   const { data: nftData, status: nftStatus } = useQuery(
     ['createdItems', address],
@@ -76,6 +73,7 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
+        // console.log(res)
       },
     }
   )
@@ -112,6 +110,9 @@ const Collection = () => {
           errorToastStyle
         )
       },
+      onSuccess:(res)=> {
+        // console.log(res)
+      }
     }
   )
 
@@ -420,7 +421,7 @@ const Collection = () => {
                   <NFTCardLocal
                     key={id}
                     nftItem={nftItem}
-                    listings={activeListings}
+                    listings={fullListingData}
                   />
                 ))}
             </div>
@@ -445,7 +446,7 @@ const Collection = () => {
                   <NFTCardLocal
                     key={id}
                     nftItem={nftItem}
-                    listings={activeListings}
+                    listings={fullListingData}
                   />
                 ))}
             </div>
@@ -464,7 +465,7 @@ const Collection = () => {
                   <NFTCardLocal
                     key={id}
                     nftItem={nftItem}
-                    listings={activeListings}
+                    listings={fullListingData}
                   />
                 ))}
             </div>

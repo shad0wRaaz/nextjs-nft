@@ -5,7 +5,7 @@ import { BsFillPlayFill, BsPause } from 'react-icons/bs'
 import { useThemeContext } from '../contexts/ThemeContext'
 
 const AudioNFTCardCompact = ({nft}) => {
-    const {dark} = useThemeContext()
+    const {dark} = useThemeContext();
     const [play, setPlay] = useState(false)
   return (
     <div className={`relative flex justify-between p-2 space-x-2 rounded-3xl ${dark ? 'bg-slate-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
@@ -41,11 +41,11 @@ const AudioNFTCardCompact = ({nft}) => {
                         </div> */}
                         <div className="sm:ml-3.5">
                             <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-semibold ">
-                                <span className={`block absolute font-normal bottom-full translate-y-1 p-1 -mx-1 text-xs ${dark ? 'bg-slate-700 text-slate-100' : 'bg-white text-netural-500'}`}>Price</span>
+                            <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
                                 <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} {nft.buyoutCurrencyValuePerToken.symbol}</span>
                             </div>
                         </div>
-                        <span className="block ml-3.5 text-neutral-500 dark:text-neutral-400 text-xs">1 of 100</span>
+                        {/* <span className="block ml-3.5 text-neutral-500 dark:text-neutral-400 text-xs">1 of 100</span> */}
                     </div>
                 </div>
             </a>

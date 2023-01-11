@@ -13,7 +13,7 @@ import ItemActivity from '../../components/nft/ItemActivity'
 import AuctionTimer from '../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import GeneralDetails from '../../components/nft/GeneralDetails'
-import { useAddress, useContract } from '@thirdweb-dev/react'
+import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import RelatedNFTs from '../../components/RelatedNFTs'
@@ -28,8 +28,8 @@ import { BsPause, BsPlay } from 'react-icons/bs'
 import { MdAudiotrack } from 'react-icons/md'
 import ReportActivity from '../../components/nft/ReportActivity'
 import ItemOffers from '../../components/nft/ItemOffers'
-
 import BurnCancel from '../../components/nft/BurnCancel'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -70,25 +70,49 @@ const rpcChains = {
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 'http://localhost:3000' 
 
-const Nft = (props) => {
-  const {nftContractData, metaDataFromSanity, listingData } = props;
-  const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
-  const { dark } = useThemeContext()
+const Nft = (props) => { //props are from getServerSideProps
 
-  const address = useAddress()
+  const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain } = props;
+  const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
+  const { dark } = useThemeContext();
+  const address = useAddress();
+  const signer = useSigner();
+  const [isLiked, setIsLiked] = useState(false)
+  const [playItem, setPlayItem] = useState(false)
+  const [thisNFTMarketContract, setThisNFTMarketContract] = useState();
+
+  //get Market Contract signed with connected wallet otherwise get generic
+  useEffect(()=>{
+    if(!thisNFTMarketAddress && !thisNFTblockchain) {
+      toast.error("Marketplace could not be found.", errorToastStyle);
+      return;
+    }
+
+    ;(async () => {
+      let sdk = '';
+      if(signer) { 
+        sdk = new ThirdwebSDK(signer); 
+      }
+      else { 
+        sdk = new ThirdwebSDK(thisNFTblockchain); 
+      }
+
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      setThisNFTMarketContract(contract);
+    })();
+
+    return() => {
+      // just clean up function, nothing else
+    }
+  }, [thisNFTMarketAddress, address, signer])
+
 
   let isAuctionItem = false;
   if(listingData?.reservePrice) {
     isAuctionItem = true;
   }
 
-  const router = useRouter()
-  const tokenid = router.query.nftid
-
-
-
-  const [isLiked, setIsLiked] = useState(false)
-  const [playItem, setPlayItem] = useState(false)
+ 
   
   //Add or Remove Likes/Heart
   const addRemoveLike = async (
@@ -285,7 +309,7 @@ const Nft = (props) => {
                   : 'relative'
               }
             >
-              <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl">
+              <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl max-h-[38rem]">
                 {playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
                   <video className="w-full h-full" autoPlay loop>
                     <source src={nftContractData?.metadata?.animation_url}/>
@@ -533,7 +557,7 @@ const Nft = (props) => {
               </Disclosure>
             </div>
           </div>
-          <div className="border-t-2 border-neutral-200 pt-10 lg:border-t-0 lg:pt-0 xl:pl-10">
+          <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
             
             {/* {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
               <AuctionTimer
@@ -548,11 +572,15 @@ const Nft = (props) => {
               listingData={listingData}
               nftCollection={metaDataFromSanity?.collection}
               auctionItem={isAuctionItem}
+              thisNFTMarketAddress={thisNFTMarketAddress}
+              thisNFTblockchain={thisNFTblockchain}
               />
             <ItemOffers
               selectedNft={nftContractData}
               listingData={listingData}
               metaDataFromSanity={metaDataFromSanity}
+              thisNFTMarketAddress={thisNFTMarketAddress}
+              thisNFTblockchain={thisNFTblockchain}
               />
 
             <ItemActivity
@@ -571,6 +599,8 @@ const Nft = (props) => {
               nftContractData={nftContractData} 
               listingData={listingData} 
               collectionAddress={metaDataFromSanity?.collection?.contractAddress}
+              thisNFTMarketAddress={thisNFTMarketAddress}
+              thisNFTblockchain={thisNFTblockchain}
               />
           </div>
         </div>
@@ -591,18 +621,45 @@ export async function getServerSideProps(context){
   const nftdata = await response.json();
 
   const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
-  console.log(query.nftid)
   const sanityData = await response2.json();
 
+
   const collectionAddress = sanityData.collection?.contractAddress;
-  const response3 = await fetch(`${HOST}/api/nft/contract/${collectionAddress}/${sanityData.id}`);
+  const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
+
   const nftcontractdata = await response3.json();
+
+  //determine which marketplace is current NFT is in
+  const nftChainid = sanityData?.collection.chainId;
+  const marketplace = {
+    '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
+    '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
+    '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+    '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
+    '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+    '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+    '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
+    '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
+  }
+  const blockchainName = {
+    '80001': 'mumbai',
+    '5': 'goerli',
+    '43114': 'avalanche-fuji',
+    '97': 'binance-testnet',
+    '421563': 'arbitrum-goerli',
+    '1': 'mainnet',
+    '137': 'polygon',
+    '56': 'binance',
+  }
+  const marketAddress = marketplace[nftChainid];
 
   return {
     props: {
       listingData: nftdata,
       metaDataFromSanity: sanityData,
       nftContractData: nftcontractdata,
+      thisNFTMarketAddress: marketAddress,
+      thisNFTblockchain: blockchainName[nftChainid]
     }
   }
 }

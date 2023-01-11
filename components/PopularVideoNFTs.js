@@ -53,7 +53,7 @@ const PopularVideoNFTs = () => {
         <div className="relative">
             <div className="relative flex flex-col sm:flex-row sm:items-end justify-between md:mb-8 gap-4">
                 <div className="max-w-2xl">
-                    <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold">Explore Video NFTs</h2>
+                    <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold">Explore <span className="textGradRed pl-3">Video NFTs</span></h2>
                     <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click play and enjoy Video NFTs </span>
                 </div>
                 <div className="navigation-controls">

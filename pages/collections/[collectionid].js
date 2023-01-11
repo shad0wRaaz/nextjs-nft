@@ -38,6 +38,8 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
+
 const style = {
   bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
   bannerImage: `h-full object-cover`,
@@ -58,37 +60,52 @@ const style = {
   ethLogo: `h-6 mr-2`,
   statName: `text-sm w-full text-center mt-1`,
   description: `text-white text-md w-max-1/4 flex-wrap my-2`,
+  nftWrapperContainer: `container mx-auto mt-[5rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]`,
   nftwrapper:
-    'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 relative  lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]',
+    'gap-7  grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 relative  ',
   nftwrapper_old: `flex flex-wrap justify-center mb-[4rem] gap-[40px] sm:p-[2rem] md:p-[4rem] pt-[6rem] nftWrapper`,
   errorBox:
     'border rounded-xl p-[2rem] mx-auto text-center lg:w-[44vw] md:w-[80vw] sm:w-full max-w-[700px]',
   errorTitle: 'block text-[1.5rem] mb-3',
 }
 
+const marketplace = {
+      '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
+      '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
+      '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+      '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
+      '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+      '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+      '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
+      '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
+    }
+
+const blockchainName = {
+      '80001': 'mumbai',
+      '5': 'goerli',
+      '43114': 'avalanche-fuji',
+      '97': 'binance-testnet',
+      '421563': 'arbitrum-goerli',
+      '1': 'mainnet',
+      '137': 'polygon',
+      '56': 'binance',
+}
 
 const Collection = () => {
   const router = useRouter()
-  const {
-    marketplaceAddress,
-    activeListings,
-    setMarketplaceAddress,
-    rpcUrl,
-    setRpcUrl,
-  } = useMarketplaceContext()
-  const { collectionid } = router.query
-  const { dark } = useThemeContext()
-  const [owners, setOwners] = useState()
-  const { myUser, queryStaleTime } = useUserContext()
-  const [showUnlisted, setShowUnlisted] = useState(false)
-  // const [profileImageUrl, setProfileImageUrl] = useState()
-  // const [bannerImageUrl, setBannerImageUrl] = useState()
-  const [showModal, setShowModal] = useState(false)
-  const [newCollectionData, setNewCollectionData] = useState()
-  // const [creatorProfileImage, setCreatorProfileImage] = useState()
-  const qc = useQueryClient()
   const bannerRef = useRef()
+  const qc = useQueryClient()
+  const { dark } = useThemeContext();
+  const { collectionid } = router.query;
+  const [owners, setOwners] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const { myUser, queryStaleTime } = useUserContext();
+  const [showUnlisted, setShowUnlisted] = useState(false);
+  const [newCollectionData, setNewCollectionData] = useState()
+  const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
+  const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
 
+  //collections' sanity data
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['collection', collectionid],
     getNFTCollection(),
@@ -102,37 +119,24 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
+
         if(res){
-          setNewCollectionData(res[0])
-          setShowUnlisted(res[0]?.showUnlisted)
-          // ;(async () => {
-          //   setCreatorProfileImage(await getUnsignedImagePath(res[0]?.creator.profileImage))
-          //   setProfileImageUrl(await getUnsignedImagePath(res[0]?.profileImage))
-          //   setBannerImageUrl(await getUnsignedImagePath(res[0]?.bannerImage))
-          // })()
-  
-          // setMarketplaceAddress('0x9a9817a85E5d54345323e381AC503F3BDC1f01f4')
-  
-          if (res[0]?.chainId == '80001') {
-            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL)
-          } else if (res[0]?.chainId == '4') {
-            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL)
-          } else if (res[0]?.chainId == '5') {
-            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_GOERLI_URL)
-          } else if (res[0]?.chainId == '97') {
-            setRpcUrl(process.env.NEXT_PUBLIC_INFURA_TBNB_URL)
-          }
+          setNewCollectionData(res[0]);
+          setShowUnlisted(res[0]?.showUnlisted);
+          setThisCollectionBlockchain(blockchainName[res[0].chainId]);
+          setThisCollectionMarketAddress(marketplace[res[0].chainId]);
         }
       },
     }
   )
 
+  //get all nfts from blockchain
   const { data: nftData, status: nftStatus } = useQuery(
     ['allnftss', newCollectionData?.contractAddress],
-    getAllNFTs(rpcUrl),
+    getAllNFTs(thisCollectionBlockchain),
     {
       staleTime: queryStaleTime,
-      enabled: Boolean(rpcUrl) && Boolean(newCollectionData?._id),
+      enabled: Boolean(thisCollectionBlockchain) && Boolean(newCollectionData?._id),
       onError: (error) => {
         console.log(error)
         toast.error(
@@ -142,18 +146,18 @@ const Collection = () => {
       },
     }
   )
+
   const { data: marketData, status: marketStatus } = useQuery(
-    ['marketplace', marketplaceAddress],
-    getActiveListings(rpcUrl),
+    ['marketplace', thisCollectionBlockchain],
+    getActiveListings(),
     {
-      // enabled: Boolean(marketplaceAddress) && Boolean(nftData),
-      enabled: false,
+      enabled: Boolean(thisCollectionBlockchain),
       onError: () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',
           errorToastStyle
         )
-      },
+      }
     }
   )
 
@@ -342,7 +346,7 @@ const Collection = () => {
                             {collectionData[0]?.category}
                         </span>
 
-                        <Link href={`/user/${newCollectionData?.creator?.walletAddress}`}>
+                        <a href={`/user/${newCollectionData?.creator?.walletAddress}`}>
                           <div className="flex my-4">
                             <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
                               <img
@@ -382,7 +386,7 @@ const Collection = () => {
                               </span>
                             </span>
                           </div>
-                        </Link>
+                        </a>
                       </div>
 
                       <div className="py-4 md:ml-4">
@@ -400,8 +404,8 @@ const Collection = () => {
                     <div>
                       <Menu as="div" className="relative inline-block">
                         <div>
-                          <Menu.Button className="inline-flex w-full justify-center transition hover:scale-110">
-                            <FiSettings fontSize="20px" />
+                          <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
+                            <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> Settings
                           </Menu.Button>
                         </div>
 
@@ -566,25 +570,82 @@ const Collection = () => {
           </div>
         )}
       </div>
+      
+      {nftStatus == 'success' &&
+            nftData.length > 0 && (
+              <>
+                <div className={style.nftWrapperContainer}>
+                  <h2 className="text-2xl font-semibold sm:text-xl lg:text-2xl text-center mb-8">NFT's in this Collection</h2>
+                  <div className={style.nftwrapper}>
+                    {
+                      nftData.map((nftItem, id) => (
+                        nftItem?.metadata?.properties?.tokenid ? (
+                        <NFTCard
+                          key={id}
+                          nftItem={nftItem}
+                          title={collectionData[0]?.name}
+                          listings={marketData}
+                          showUnlisted={showUnlisted}
+                          creator={collectionData[0]?.createdBy}
+                        />) : ''
+                      ))
+                    }
+                  </div>
+                </div>
+              </>
 
-      <div className={style.nftwrapper}>
-        {nftStatus == 'success' &&
-          nftData.length > 0 &&
-          nftData.map((nftItem, id) => (
-            nftItem?.metadata?.properties?.tokenid ? (
-            <NFTCard
-              key={id}
-              nftItem={nftItem}
-              title={collectionData[0]?.name}
-              listings={activeListings}
-              showUnlisted={showUnlisted}
-              creator={collectionData[0]?.createdBy}
-            />) : ''
-          ))}
-      </div>
+            )
+      }
+      
       <Footer />
     </div>
   )
 }
 
 export default Collection
+
+// export async function getServerSideProps(context){
+//   const { query } = context;
+
+//   const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`);
+//   const nftdata = await response.json();
+
+//   const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
+//   const sanityData = await response2.json();
+
+
+//   const collectionAddress = sanityData.collection?.contractAddress;
+//   const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
+
+//   const nftcontractdata = await response3.json();
+
+//   //determine which marketplace is current NFT is in
+//   const nftChainid = sanityData?.collection.chainId;
+//   const marketplace = {
+//     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
+//     '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
+//     '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+//     '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
+//     '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+//     '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+//     '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
+//     '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
+//   }
+//   const blockchainName = {
+//     '80001': 'mumbai',
+//     '5': 'goerli',
+//     '43114': 'avalanche-fuji',
+//     '97': 'binance-testnet',
+//     '421563': 'arbitrum-goerli',
+//     '1': 'mainnet',
+//     '137': 'polygon',
+//     '56': 'binance',
+//   }
+//   const marketAddress = marketplace[nftChainid];
+
+//   return {
+//     props: {
+//      activeListings: ''
+//     }
+//   }
+// }

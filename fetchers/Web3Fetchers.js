@@ -5,24 +5,22 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
-export const getMarketOffers = (marketModule) => async({queryKey}) => {
+export const getMarketOffers = (marketAddress, blockchain) => async({queryKey}) => {
   const [_, listingId] = queryKey
-  if(listingId && marketModule) {
-
-    const marketEvents = await marketModule.events.getEvents('NewOffer');
-    const selectedEvents = marketEvents.filter((e) => BigNumber.from(e.data.listingId).toString() == listingId);
-    if(selectedEvents) {
-      return selectedEvents;
-    }
+  if(listingId && marketAddress && blockchain) {
+    const sdk = new ThirdwebSDK(blockchain);
+    const contract = await sdk.getContract(marketAddress, "marketplace");
+    const marketOffers = await contract.getOffers(listingId);
+    return marketOffers;
   }
   return null
 }
 export const getAllNFTs =
-  (rpcUrl) =>
+  (blockchain) =>
   async ({ queryKey }) => {
     const [_, collectionid] = queryKey
 
-    const sdk = new ThirdwebSDK(rpcUrl);
+    const sdk = new ThirdwebSDK(blockchain);
     const nftCollection = await sdk.getContract(collectionid, "nft-collection")
     const res = await nftCollection.getAll()
 
@@ -31,23 +29,45 @@ export const getAllNFTs =
     return filtered;
   }
   
-export const getLatestNfts = (qty) => async () => {
-  const result = await axios.get(`${HOST}/api/getLatestNfts`,
+export const getLatestNfts = (qty) => async ({queryKey}) => {
+  const [_, selectedBlockchain] = queryKey;
+  const result = await axios.get(`${HOST}/api/getLatestNfts/${selectedBlockchain}`,
   {
-    params: { quantity: qty}
+    params: { quantity: qty }
   })
 
   return result.data
 
 }
+
+//Listing data from single blockchain
 export const getActiveListings = 
-  (rpcUrl) =>
+  () =>
   async ({queryKey}) => {
-    const [_, marketplaceId] = queryKey
-    const result = await axios.get(`${HOST}/api/getAllListings`)
+    const [_, selectedBlockchain] = queryKey;
+    const result = await axios.get(`${HOST}/api/getAllListings/${selectedBlockchain}`)
 
     return result.data
   }
+
+  //All Listing data from all Blockchain
+export const getFullListings = () =>  async() => {
+  const blockchains = ["mumbai", "binance-testnet", "avalance-fuji", "goerli"]
+  const unresolved = blockchains.map(async (chain) => await axios.get(`${HOST}/api/getAllListings/${chain}`)) 
+
+  const resolved = await Promise.all(unresolved);
+
+  //strip out unnecessary info and unify into single array
+  //take out null data
+  const filterNull = resolved.filter(result => result.data != null);
+  let fullArray = [];
+
+  filterNull.map(chaindata => {
+    chaindata.data.map(nft => fullArray.push(nft));
+  });
+  
+  return fullArray;
+}
 
 export const updateListings = 
   (rpcUrl) => 
@@ -88,3 +108,10 @@ export const getAuctionItems =
       return res
     } catch (error) {}
   }
+
+export const getTotalsforAdmin = (whichnet) => async () => {
+  let testnet = (whichnet == "testnet") ? "true" : "false";
+  const result = await axios.get(`${HOST}/api/getAllListingsCount?testnet=${testnet}`);
+  return result?.data;
+
+}

@@ -1,20 +1,18 @@
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
+import { useEffect, useState } from 'react'
 import CollectionCard from './CollectionCard'
-import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
-import { Fragment, useEffect, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { RiArrowDropDownLine, RiCheckLine } from 'react-icons/ri'
-import { useThemeContext } from '../contexts/ThemeContext'
+import background from '../assets/nftworlds.jpg'
 import { IconLoading } from './icons/CustomIcons'
-import { useUserContext } from '../contexts/UserContext'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { getUnsignedImagePath } from '../fetchers/s3'
 import { RiArrowUpDownLine } from 'react-icons/ri'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
 
 const style = {
-  wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem]',
-  title: 'font-bold text-[2rem] mb-[2rem] grow text-center flex justify-center items-center gap-2',
+  wrapperContainer: 'text-center bg-center bg-top md:bg-center md:bg-cover',
+  wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]',
+  title: 'font-bold mb-[2rem] grow text-center flex flex-col md:flex-row justify-center items-center gap-2 text-white text-[3rem]',
   collectionWrapper:
     'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   collection:
@@ -41,14 +39,13 @@ const people = [
 ]
 
 const TopCollections = () => {
-  const { dark } = useThemeContext()
-  const [showTop, setShowTop] = useState(true)
-  const [allCollections, setAllCollections] = useState()
-  const { topTradedCollections, setTopTradedCollections } =
-    useMarketplaceContext()
+  const { dark } = useThemeContext();
+  const [showTop, setShowTop] = useState(true);
+  const [allCollections, setAllCollections] = useState();
+  const { topTradedCollections, setTopTradedCollections, selectedBlockchain } = useMarketplaceContext();
 
   const { data, status, isFetching } = useQuery(
-    'topcollection',
+    ['topcollection', selectedBlockchain],
     getTopTradedNFTCollections(),
     {
       enabled: true,
@@ -97,42 +94,44 @@ const TopCollections = () => {
   }, [showTop, allCollections])
 
   return (
-    <div className={style.wrapper}>
-      <div className="flex-between flex">
-        <h2 className={style.title}>{showTop ? 'Top Traded' : 'Latest'} Collections</h2>
-        <div>
-          <div className="z-20  w-[3rem] h-[3rem] border flex justify-center mb-[2rem] py-1 px-2 rounded-xl items-center hover:bg-slate-100 cursor-pointer"  onClick={() => setShowTop(current => !current)}>
-            <RiArrowUpDownLine className="cursor-pointer text-lg" />
+    <div className={style.wrapperContainer} style={{ backgroundImage: `url(${background.src})`}}>
+      <div className={style.wrapper}>
+        <div className="flex-between flex flex-col md:flex-row items-center">
+          <h2 className={style.title}><span className="textGradBlue2">{showTop ? 'Top Traded' : 'Latest'}</span> Collections</h2>
+          <div>
+            <div className={`z-20  w-[3rem] h-[3rem] border flex justify-center items-center mb-[2rem] py-1 px-2 rounded-xl items-center ${dark ? ' bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : ' bg-slate-100 hover:bg-slate-200'} cursor-pointer`}  onClick={() => setShowTop(current => !current)}>
+              <RiArrowUpDownLine className="cursor-pointer text-lg" />
+            </div>
           </div>
         </div>
+        {topTradedCollections && (
+          <div className={style.collectionWrapper}>
+            {topTradedCollections.length > 0 &&
+              topTradedCollections.map((coll, id) => (
+                <CollectionCard
+                  key={id}
+                  id={coll.id}
+                  name={coll.name}
+                  contractAddress={coll.contractAddress}
+                  profileImage={coll.web3imageprofile}
+                  bannerImage={coll.web3imagebanner}
+                  description={coll.description}
+                  floorPrice={coll.floorPrice}
+                  volumeTraded={coll.volumeTraded}
+                  allOwners={coll.allOwners}
+                  chainId={coll.chainId}
+                  creator={coll.creator}
+                  creatorAddress={coll.creatorAddress}
+                />
+              ))}
+          </div>
+        )}
+        {status === 'loading' && (
+          <div className="flex items-center justify-center gap-2">
+            <IconLoading dark={dark} /> Loading{' '}
+          </div>
+        )}
       </div>
-      {topTradedCollections && (
-        <div className={style.collectionWrapper}>
-          {topTradedCollections.length > 0 &&
-            topTradedCollections.map((coll, id) => (
-              <CollectionCard
-                key={id}
-                id={coll.id}
-                name={coll.name}
-                contractAddress={coll.contractAddress}
-                profileImage={coll.web3imageprofile}
-                bannerImage={coll.web3imagebanner}
-                description={coll.description}
-                floorPrice={coll.floorPrice}
-                volumeTraded={coll.volumeTraded}
-                allOwners={coll.allOwners}
-                chainId={coll.chainId}
-                creator={coll.creator}
-                creatorAddress={coll.creatorAddress}
-              />
-            ))}
-        </div>
-      )}
-      {status === 'loading' && (
-        <div className="flex items-center justify-center gap-2">
-          <IconLoading dark={dark} /> Loading{' '}
-        </div>
-      )}
     </div>
   )
 }

@@ -164,11 +164,43 @@ body::-webkit-scrollbar-thumb,
   background-size: 100%;
   transition: all 0.5s;
 }
+.gradPink {
+  background-image: linear-gradient(to right, #DB02AF, #6A02C4);
+  background-size: 100%;
+  color: #ffffff;
+  transition: all 0.5s;
+}
+.gradGreen {
+  background-image: linear-gradient(to right, #44e09a, #3AB7B5);
+  background-size: 100%;
+  color: #ffffff;
+  transition: all 0.5s;
+}
 .gradBlue:hover {
   background-size: 200%;
 }
 .textGradBlue {
   background: -webkit-linear-gradient(45deg, #0053f2, #08a9ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.textGradCyan {
+  background: -webkit-linear-gradient(45deg, #2CC9D7, #5A80E7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.textGradGreen {
+  background: -webkit-linear-gradient(45deg, #44e09a, #3AB7B5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.textGradBlue2 {
+  background: -webkit-linear-gradient(45deg, #056AFE, #8071FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.textGradRed {
+  background: -webkit-linear-gradient(45deg, #FD727B, #ED5699);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -192,12 +224,21 @@ body::-webkit-scrollbar-thumb,
 .inner-element .slick-track > div > div { width: 100%; height: 100%; }
 .inner-element .slick-arrow { position: absolute; bottom: -60px; left: 50%; padding: 5px 15px; border: 1px solid #00000033; border-radius: 20px; font-size: 12px; transition: 0.3s; }
 .inner-element .slick-arrow:hover { background: #00000010; }
-.inner-element .slick-arrow.slick-prev {left:35%}
-.inner-element .slick-arrow.slick-next {right:35%}
+.inner-element .slick-arrow.slick-prev { left:31%; }
+.inner-element .slick-arrow.slick-next { right:34%; }
 .inner-element .slick-track .coverImage, .parallax-effect  { width: 500px;}
+
+.slick-slide {
+  visibility: hidden;
+}
+.slick-slide.slick-active {
+  visibility: visible;
+}
 
 /* End of Hero Carousel CSS */
 
+.imageContainer .overlay { display: none; }
+.imageContainer:hover .overlay { display: flex;}
 
 @media screen and (min-width: 768px) {
   .mobileMenu {
@@ -232,7 +273,7 @@ body::-webkit-scrollbar-thumb,
   }
   .heroSearchForm {
     margin: auto;
-    margin-top: 22rem;
+    margin-top: 25rem;
   }
   .heroSearchForm .searchfields {
     padding-top: 10px;
@@ -265,5 +306,66 @@ body::-webkit-scrollbar-thumb,
   .inner-element .slick-track{
     max-width: 400px;
   }
-  .inner-element .slick-track .coverImage, .parallax-effect { width: 390px;}
+  .inner-element .slick-track .coverImage, .parallax-effect { width: 100%;}
+  .inner-element .slick-arrow.slick-prev { left:27%; }
+}
+
+/************************************************************/
+/*** ADMIN CSS **/
+
+.cards-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 20px;
+  padding: 20px;
+}
+.card{
+  color: rgba(0, 0, 0, 0.87);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  overflow: hidden;
+  position: relative;
+  min-width: 0px;
+  overflow-wrap: break-word;
+  background-color: rgb(255, 255, 255);
+  background-clip: border-box;
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 1rem;
+  box-shadow: rgb(0 0 0 / 5%) 0rem 1.25rem 1.6875rem 0rem;
+  padding:20px;
+}
+.card-header {
+  margin: 0px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  opacity: 1;
+  text-transform: capitalize;
+  vertical-align: unset;
+  text-decoration: none;
+  color: rgb(46, 46, 46);
+}
+.card-body h5 {
+  margin: 0px;
+  font-size: 1.25rem;
+  line-height: 1.375;
+  opacity: 1;
+  text-transform: none;
+  vertical-align: unset;
+  text-decoration: none;
+  color: rgb(52, 71, 103);
+  font-weight: 700;
+}
+.card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-left: auto;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  opacity: 1;
+  background: linear-gradient(310deg, rgb(33, 82, 255), rgb(33, 212, 253));
+  color: rgb(255, 255, 255);
+  border-radius: 0.5rem;
+  box-shadow: rgb(20 20 20 / 12%) 0rem 0.25rem 0.375rem -0.0625rem, rgb(20 20 20 / 7%) 0rem 0.125rem 0.25rem -0.0625rem;
 }

@@ -21,7 +21,7 @@ export const getUnsignedImagePath = async (filename) => {
 // }
 
 export const saveImageToWeb3 = async (formdata) => {
-  const imageURI = await axios.post(
+  await axios.post(
     `${HOST}/api/saveweb3image`, 
     formdata,
     {

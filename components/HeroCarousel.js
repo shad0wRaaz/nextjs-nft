@@ -1,22 +1,20 @@
 import Slider from 'react-slick'
+import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
 import FeaturedItems from './FeaturedItems'
-import { config } from '../lib/sanityClient'
-import { useEffect, useState, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import Tilt from 'react-parallax-tilt'
 
 const style = {
   wrapper: `relative`,
   container: ``,
   contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
-  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] `,
-  description: `container-[400px] mt-[0.8rem] mb-[2.5rem] p-[20px] shoutoutDescription max-w-[500px]`,
+  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] text-white`,
+  description: `container-[400px] mt-[0.8rem] mb-[2.5rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
   ctaContainer: `flex justify-start gap-[20px] px-[20px] mb-8`,
   accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,
   button: ` relative text-lg font-semibold px-12 py-4 bg-slate-800 rounded-full  text-[#e4e8ea] hover:bg-slate-700 cursor-pointer`,
-  cardContainer: ` sm:m-4 md:m-0 p-2`,
+  cardContainer: `md:w-1/2 p-4 overflow-hidden`,
   infoContainer: `h-20 bg-[#313338] p-4 rounded-b-lg flex items-center text-white`,
   author: `flex flex-col justify-center ml-4`,
   name: ``,
@@ -30,50 +28,16 @@ const settings = {
   infinite: true,
   lazyload: true,
   fade: true,
-  speed: 3000,
+  speed: 4000,
   slidesToShow: 1,
   slidesToScroll: 1,
   autoplay: true,
-  autoplaySpeed: 5000,
+  autoplaySpeed: 2000,
   pauseOnHover: true
 };
 
-const HeroCarousel = () => {
-  const [featuredNfts, setFeaturedNFts] = useState()
-  // console.log(Boolean(featuredNfts))
-  // const [count, setCount] = useState(0)
+const HeroCarousel = (props) => {
   const { dark } = useThemeContext()
-
-  useEffect(() => {
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "featuredNfts"] {
-              nftitem->, name, contractAddress, id, owner, nftImage,
-              "collection" : nftitem->collection->
-          }`
-      setFeaturedNFts(await sanityClient.fetch(query))
-      // console.log(featuredNfts)
-    })()
-
-    
-
-    return() => {
-      //do nothing
-    }
-  }, [])
-
-  
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     setCount((c) => ++c % 5)
-  //   }, 4000)
-
-  //   return () => clearInterval(intervalId)
-  // }, [])
-
-  // useEffect(() => {
-  //   if (!featuredNfts) return
-  // }, [featuredNfts])
 
   const router = useRouter()
   return (
@@ -84,7 +48,7 @@ const HeroCarousel = () => {
         <div className={style.contentWrapper}>
           <div className={style.copyContainer}>
             <div
-              className={dark ? style.title + ' text-neutral-200' : style.title}
+              className={style.title}
             >
               Discover, collect,
               <br />
@@ -116,10 +80,10 @@ const HeroCarousel = () => {
               tiltMaxAngleX={20}
               tiltMaxAngleY={20}
               transitionSpeed={1500}
-              className=" parallax-effect flex justify-center items-center rounded-2xl shadow-md p-2 md:left-0 sm:left-[2rem] cursor-pointer bg-[#ffffffdd] backdrop-blur-md">
+              className="parallax-effect flex justify-center items-center rounded-2xl shadow-md p-2 md:left-0 sm:left-[2rem] cursor-pointer bg-[#ffffffdd] backdrop-blur-md">
                 <div className="inner-element relative w-full transition">
                   <Slider {...settings}>
-                      {Boolean(featuredNfts) ? featuredNfts?.map((nft, index) => (
+                      {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
                           <FeaturedItems item={nft} id={index} key={index} />
                           )) : ''}
                   </Slider>

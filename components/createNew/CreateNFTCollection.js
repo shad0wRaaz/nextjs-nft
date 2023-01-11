@@ -101,7 +101,9 @@ const CreateNFTCollection = () => {
       
       var profileLink = "";
       var bannerLink = "";
-      // upload profile and banner in IPFS
+
+      try{
+        // upload profile and banner in IPFS
       if(profile){
         const pfd = new FormData();
         pfd.append("imagefile", profile);
@@ -115,6 +117,7 @@ const CreateNFTCollection = () => {
           }
         )
       }
+
       if(banner){
         const bfd = new FormData();
         bfd.append("imagefile", banner);
@@ -128,11 +131,13 @@ const CreateNFTCollection = () => {
           }
         )
       }
+      
+      const itemID = uuidv4();
+
       //deploy NFT Collection
       const res = await sdk.deployer.deployNFTCollection(metadata)
 
       //save in database
-      const itemID = uuidv4();
 
       const collectionDoc = {
         _type: 'nftCollection',
@@ -154,73 +159,39 @@ const CreateNFTCollection = () => {
       }
         
       await config.createIfNotExists(collectionDoc);
-        // .then(async () => {
-        //   try {
-            //saving profile image
-            // if (profile) {
-            //   const formdata = new FormData()
-            //   formdata.append('profile', profile)
-            //   formdata.append('userAddress', itemID)
-
-            //   await axios.post(
-            //     `${HOST}/api/saveS3Image`,
-            //     formdata,
-            //     {
-            //       headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //       },
-            //     }
-            //   )
-            // }
-            //saving banner image
-            // if (banner) {
-            //   const bannerData = new FormData()
-            //   bannerData.append('banner', banner)
-            //   bannerData.append('userAddress', itemID)
-
-            //   await axios.post(
-            //     `${HOST}/api/saveS3Banner`,
-            //     bannerData,
-            //     {
-            //       headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //       },
-            //     }
-            //   )
-            // }
-          // } catch (error) {
-          //   console.log(error)
-          // }
-
-          //increment number of collection in category
-          
-      const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`)
-      await config.patch(categoryId[0]._id)
-      .inc({totalCollection : 1})
-      .commit()
-      .catch((err) => {})
-      // await config.patch(res).
-
-      queryClient.invalidateQueries('myCollections');
       
-      //send out notification to all followers
-      sendNotification({
-        address: myUser.walletAddress,
-        contractAddress: res,
-        id: itemID,
-        type: 'TYPE_ONE',
-      })
+      const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`);
+      
+      await config.patch(categoryId[0]._id)
+        .inc({totalCollection : 1})
+        .commit()
+        .catch((err) => {})
 
-      toast.success('Collection created successfully', successToastStyle)
+        // await config.patch(res).
+
+        queryClient.invalidateQueries('myCollections');
+        
+        //send out notification to all followers
+        sendNotification({
+          address: myUser.walletAddress,
+          contractAddress: res,
+          id: itemID,
+          type: 'TYPE_ONE',
+        })
+
+        toast.success('Collection created successfully', successToastStyle);
+        
+        router.push(`/collections/${itemID}`);
+
+      } catch(err){
+          toastHandler.error(err, errorToastStyle);
+      }
+      
     },
       {
         onError: (error) => {
-          console.log(error)
           toast.error(error.message, errorToastStyle)
         },
-        onSuccess: () => {
-          router.push(`/collections/${itemID}`)
-    },
     }
   )
 

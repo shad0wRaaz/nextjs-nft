@@ -2,11 +2,12 @@ import Moment from 'react-moment'
 import Link from 'next/link'
 import { useThemeContext } from '../../../contexts/ThemeContext'
 import { IconPolygon, IconEthereum, IconBNB } from '../../icons/CustomIcons'
+import { RiCheckboxCircleFill } from 'react-icons/ri'
 
 const style = {
   event: `p-2 py-4 text-sm text-center whitespace-nowrap`,
   eventIcon: `mr-2 text-sm flex justify-center items-center`,
-  eventName: `p-3 min-w-[72px] text-[12px] font-bold py-0 rounded-md text-sm bg-neutral-300`,
+  eventName: `p-3 min-w-[72px] text-[12px] py-0 rounded-md text-sm cursor-pointer bg-neutral-300`,
   eventPrice: `flex items-center justify-center`,
   eventPriceValue: `text-sm -ml-1`,
   ethLogo: `h-5 mr-2`,
@@ -27,14 +28,14 @@ const chainExplorer = {
   '1': process.env.NEXT_PUBLIC_EXPLORER_MAINNET,
 }
 const pillcolor = {
-  'Mint' : ' bg-lime-300 text-lime-700',
-  'List' : ' bg-indigo-300 text-indigo-700',
-  'Auction' : ' bg-pink-300 text-pink-700',
-  'Buy': ' bg-green-300 text-green-700',
-  'Delist': ' bg-grey-300 text-grey-700',
-  'Burn': ' bg-red-300 text-red-700',
-  'Bid': ' bg-amber-300 text-amber-700',
-  'Offer': ' bg-amber-400 text-amber-800',
+  'Mint' : ' bg-lime-200 text-lime-600',
+  'List' : ' bg-indigo-200 text-indigo-600',
+  'Auction' : ' bg-pink-200 text-pink-600',
+  'Buy': ' bg-green-200 text-green-600',
+  'Delist': ' bg-slate-300 text-slate-700',
+  'Burn': ' bg-red-200 text-red-600',
+  'Bid': ' bg-amber-200 text-amber-600',
+  'Offer': ' bg-amber-200 text-amber-600',
 }
 
 const EventItem = ({ event }) => {
@@ -49,9 +50,11 @@ const EventItem = ({ event }) => {
       <td className={style.event}>
         <div className={style.eventIcon}>
           <div className={style.eventName + pillcolor[event.event]}>
-            <Link href={`${chainExplorer[event.chainId]}${event.transactionHash}`}>
-              <a target="_blank">{event.event}</a>
-            </Link>
+            <a href={`${chainExplorer[event.chainId]}${event.transactionHash}`} target="_blank">
+              <div className="flex items-center justify-center gap-1">
+                <RiCheckboxCircleFill fontSize={14} />{event.event}
+              </div>
+            </a>
           </div>
         </div>
       </td>

@@ -3,17 +3,18 @@ import Sell from './Sell'
 import { BigNumber } from 'ethers'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { RiAuctionLine } from 'react-icons/ri'
+import { config } from '../../lib/sanityClient'
 import { BsLightningCharge } from 'react-icons/bs'
-import { ChainId, NATIVE_TOKENS } from '@thirdweb-dev/sdk'
-import { useChainId, useAddress } from '@thirdweb-dev/react'
+import { useEffect, useRef, useState } from 'react'
+import { useMutation, useQueryClient } from 'react-query'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
+import { ChainId, NATIVE_TOKENS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
 import { saveTransaction, addVolumeTraded } from '../../mutators/SanityMutators'
-import { MdOutlineCancel, MdOutlineCheck, MdOutlineCheckCircle } from 'react-icons/md'
+import { useChainId, useAddress, useNetwork, useSigner } from '@thirdweb-dev/react'
 
 const style = {
   button: `mr-8 flex items-center py-2 px-12 rounded-lg cursor-pointer`,
@@ -32,23 +33,36 @@ const successToastStyle = {
   style: { background: '#10B981', padding: '16px', color: '#fff' },
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
+const blockchainNum = {
+  "mumbai" : 80001,
+  "binance-testnet": 97,
+  "avalance-fuji": 43113,
+  "goerli": 5,
+  "binance": 56,
+  "mainnet": 1,
+  "polygon": 137,
+  "avalanche": 43114
+}
 
 const MakeOffer = ({
   nftContractData,
   nftCollection,
   listingData,
   auctionItem,
+  thisNFTMarketAddress,
+  thisNFTblockchain
 }) => {
 
 var listed = true
   if(listingData?.message) {
     listed = false
   }
-  const { marketContract, marketplaceAddress } = useMarketplaceContext();
   const { coinPrices, loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
   const { dark } = useThemeContext();
   const chainId = useChainId();
+  const [,switchNetwork] = useNetwork();
   const address = useAddress();
+  const signer = useSigner();
   const settingRef = useRef();
   const bidsettingRef = useRef();
   const [offerAmount, setOfferAmount] = useState(0);
@@ -61,7 +75,7 @@ var listed = true
   const burntOwnerAddress = "0x0000000000000000000000000000000000000000";
   const isburnt = nftContractData.owner == burntOwnerAddress ? true : false;
   const router = useRouter();
-  
+
   const { mutate: mutateSaveTransaction } = useMutation(
     ({ transaction, id, eventName, price, chainid, itemid }) =>
       saveTransaction({
@@ -97,21 +111,35 @@ var listed = true
       },
     }
   )
+  
+  const currencyChainMatcher = {
+      "80001": "MATIC",
+      "137" : "MATIC",
+      "1": "ETH",
+      "5": "ETH",
+      "43113": "AVAX",
+      "43114": "AVAX",
+      "97": "TBNB",
+      "56": "BNB"
+  }
 
   useEffect(() => {
     if (!listingData) return
 
     //get currency symbol from market(listed) nft item
-    if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'MATIC') {
+    const currencySymbol = listingData?.buyoutCurrencyValuePerToken?.symbol;
+
+    if (currencySymbol == 'MATIC') {
       setCoinMultiplier(coinPrices?.maticprice)
-    } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'ETH') {
+    } else if (currencySymbol == 'ETH') {
       setCoinMultiplier(coinPrices?.ethprice)
-    } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'FTX') {
-      setCoinMultiplier(coinPrices?.ftxprice)
-    } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'AVAX') {
+    } else if (currencySymbol == 'AVAX') {
       setCoinMultiplier(coinPrices?.avaxprice)
-    } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'BNB') {
+    } else if (currencySymbol == 'BNB' || currencySymbol == "TBNB") {
       setCoinMultiplier(coinPrices?.bnbprice)
+    }
+    return() => {
+      //do nothing
     }
   }, [listingData, coinPrices])
 
@@ -120,11 +148,10 @@ var listed = true
   const makeAnOffer = async (
     listingId = listingData.id.toString(),
     quantityDesired = 1,
-    module = marketContract,
     toastHandler = toast,
     qc = queryClient
   ) => {
-    if (!address) {
+    if (!address || !signer) {
       toastHandler.error(
         'Wallet not connected. Connect wallet first.',
         errorToastStyle
@@ -138,12 +165,25 @@ var listed = true
     
     if(!listingData) return
 
+    //check if the conencted wallet is in same chain
+    if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
+      toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+      switchNetwork(Number(nftCollection?.chainId));
+      return
+    }
+
     try {
       setOfferLoading(true); 
-      const tx = await module.direct.makeOffer(
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      console.log( listingId,
+        quantityDesired,
+        NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
+        offerAmount);
+      const tx = await contract.direct.makeOffer(
         listingId,
         quantityDesired,
-        NATIVE_TOKENS[ChainId.Mumbai].wrapped.address,
+        NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
         offerAmount
       );
 
@@ -178,7 +218,6 @@ var listed = true
   }
   const bidItem = async ( 
     listingId = listingData.id.toString(),
-    module = marketContract,
     toastHandler = toast,
     qc = queryClient
   ) => {
@@ -192,10 +231,20 @@ var listed = true
       return
     }
     try {
+
+      //check if the conencted wallet is in same chain
+      if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
+        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+        switchNetwork(Number(nftCollection?.chainId));
+        return
+      }
+
       setBidLoading(true)
       // await module.setBidBufferBps(500) //bid buffer, next bid must be at least 5% higher than the current bid
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
-      const tx = await module.auction.makeBid(listingId, bidAmount)
+      const tx = await contract.auction.makeBid(listingId, bidAmount)
       toastHandler.success('Bid successful.', successToastStyle)
       
       //save transaction
@@ -210,8 +259,6 @@ var listed = true
       qc.invalidateQueries(['activities']);
       queryClient.invalidateQueries(['eventData']);
       qc.invalidateQueries(['marketplace']);
-
-      console.log(tx)
     } catch (error) {
       // console.log(error)
       toastHandler.error(error.message, errorToastStyle)
@@ -223,9 +270,9 @@ var listed = true
   const buyItem = async (
     listingId = listingData.id.toString(),
     quantityDesired = 1,
-    module = marketContract,
     toastHandler = toast,
-    qc = queryClient
+    qc = queryClient,
+    sanityClient = config
     ) => {
       if (!address) {
         toastHandler.error(
@@ -235,16 +282,25 @@ var listed = true
           return
         }
     try {
+      //check if the conencted wallet is in same chain
+      if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
+        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+        switchNetwork(Number(nftCollection?.chainId));
+        return
+      }
 
-      setBuyLoading(true)
+      setBuyLoading(true);
       setLoadingNewPrice(true);
 
-      const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16)
-      const divider = BigNumber.from(10).pow(18)
-      const buyOutPrice = bigNumberPrice / divider
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+
+      const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
+      const divider = BigNumber.from(10).pow(18);
+      const buyOutPrice = bigNumberPrice / divider;
     
-      const tx = await module.buyoutListing(listingId, quantityDesired)
-      toastHandler.success('NFT purchase successful.', successToastStyle)
+      const tx = await contract.buyoutListing(listingId, quantityDesired);
+      toastHandler.success('NFT purchase successful.', successToastStyle);
 
       mutateSaveTransaction({
         transaction: tx,
@@ -256,27 +312,30 @@ var listed = true
       })
       // console.log(tx)
 
-      const volume2Add = parseFloat(buyOutPrice * coinMultiplier)
+      const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
       
       //adding volume to Collection
       addVolume({
         id: nftCollection?._id,
         volume: volume2Add,
-      })
+      });
 
       //adding volume to the user
       addVolume({
         id: address,
         volume: volume2Add
-      })
+      });
+
+      //update Owner in Database
+      sanityClient.patch(nftContractData.metadata.properties.tokenid).set({ "ownedBy" : { _type: 'reference', _ref: address} }).commit();
 
 
-      qc.invalidateQueries(['activities'])
-      qc.invalidateQueries(['marketplace'])
+      qc.invalidateQueries(['activities']);
+      qc.invalidateQueries(['marketplace']);
       
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings').then(() => {
+        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
           setLoadingNewPrice(false);
           setBuyLoading(false)
           router.reload(window.location.pathname);
@@ -286,14 +345,10 @@ var listed = true
       
     } catch (error) {
       console.error(error)
+      setBuyLoading(false);
+      setLoadingNewPrice(false);
       toastHandler.error(error.message, errorToastStyle)
-      setBuyLoading(false)
       return
-    }
-    //save the transaction data
-    try {
-    } catch (error) {
-      toastHandler.error('Error in saving NFT data. Contact administrator.')
     }
   }
   const openOfferSetting = (value) => {
@@ -372,6 +427,8 @@ var listed = true
           <Sell
             nftContractData={nftContractData}
             nftCollection={nftCollection}
+            thisNFTMarketAddress={thisNFTMarketAddress}
+            thisNFTblockchain={thisNFTblockchain}
           />
         )}
 
@@ -412,22 +469,25 @@ var listed = true
         {listed &&
           auctionItem &&
           listingData.sellerAddress != address && (
-            <>
+            <div className="flex justify-between items-center flex-grow gap-2 flex-col md:flex-row">
+              <div className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
+              <IconWallet /> <span className="ml-2.5">Buy</span>
+              </div>
               {bidLoading ? (
-                <div className="gradBlue relative inline-flex h-auto flex-1 cursor-wait items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
+                <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
                   <IconLoading dark="inbutton" />
                   <span className="ml-2.5">Processing...</span>
                 </div>
               ) : (
                 <div
-                  className="gradBlue relative inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base"
+                  className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
                   onClick={() => openBidSetting('block')}
                 >
-                  <IconWallet />
+                  <RiAuctionLine fontSize={20}/>
                   <span className="ml-2.5">Make a Bid</span>
                 </div>
               )}
-            </>
+            </div>
           )}
       </div>
       <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>

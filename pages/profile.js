@@ -17,6 +17,7 @@ import noProfileImage from '../assets/noProfileImage.png'
 import noBannerImage from '../assets/noBannerImage.png'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
+import { BsUpload } from 'react-icons/bs'
 
 const style = {
   wrapper: '',
@@ -25,13 +26,14 @@ const style = {
     'container mx-auto p-3 pt-[2rem] px-[1.2rem] max-w-[700px] rounded-xl',
   formWrapper: 'flex flex-wrap flex-col',
   pageTitle: 'text-4xl font-bold text-center textGradBlue',
+  smallText: 'text-sm m-2 text-slate-400 mt-0',
   input: 'm-2 outline-none p-3 border rounded-xl transition linear',
   inputgroup: 'p-3 border rounded-xl transition linear',
   label: 'font-bold m-2 mt-6',
   button:
     'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500',
   profileImageContainer:
-    'aspect-square relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg border-dashed border-2 border-sky-500 flex items-center',
+    'aspect-square relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-400 flex items-center',
   bannerImageContainer:
     'aspect-video w-[97%] relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg flex items-center border-dashed border-2 border-sky-500',
 }
@@ -56,23 +58,13 @@ const profile = () => {
   const queryClient = new QueryClient()
   const [profile, setProfile] = useState()
   const [banner, setBanner] = useState()
-  const [profileImageUrl, setProfileImageUrl] = useState()
-  const [bannerImageUrl, setBannerImageUrl] = useState()
+  const profileInputRef = useRef()
+  const bannerInputRef = useRef()
   const router = useRouter()
 
   useEffect(() => {
     if (!myUser) return
     setUserDoc({ ...myUser })
-
-    
-    // ;(async () => {
-    //   if(myUser.profileImage) {
-    //     setProfileImageUrl(await getUnsignedImagePath(myUser.profileImage))
-    //   }
-    //   if(myUser.bannerImage){
-    //     setBannerImageUrl(await getUnsignedImagePath(myUser.bannerImage))
-    //   }
-    // })()
 
     return() => {
       //nothing, just a clean up code
@@ -85,27 +77,27 @@ const profile = () => {
     }
   },[address])
 
-  function previewImage(target) {
-    const files = document.getElementById(
-      target == 'profile' ? 'profileImg' : 'bannerImg'
-    )
-    if (files.files.length > 0) {
-      var reader = new FileReader()
-      reader.readAsDataURL(files.files[0])
-      // console.log(files.files[0])
-      reader.onload = function (e) {
-        var image = new Image()
-        image.src = e.target.result
-        image.onload = function () {
-          document.getElementById(
-            target == 'profile' ? 'pImage' : 'bImage'
-          ).src = image.src
-        }
-      }
-    } else {
-      // Not supported
-    }
-  }
+  // function previewImage(target) {
+  //   const files = document.getElementById(
+  //     target == 'profile' ? 'profileImg' : 'bannerImg'
+  //   )
+  //   if (files.files.length > 0) {
+  //     var reader = new FileReader()
+  //     reader.readAsDataURL(files.files[0])
+  //     // console.log(files.files[0])
+  //     reader.onload = function (e) {
+  //       var image = new Image()
+  //       image.src = e.target.result
+  //       image.onload = function () {
+  //         document.getElementById(
+  //           target == 'profile' ? 'pImage' : 'bImage'
+  //         ).src = image.src
+  //       }
+  //     }
+  //   } else {
+  //     // Not supported
+  //   }
+  // }
 
   const handleSubmit = async (
     e,
@@ -114,7 +106,7 @@ const profile = () => {
   ) => {
     e.preventDefault()
     if (!address) return
-    setIsSaving(true)
+    setIsSaving(true) 
     try {
       
       if(profile){
@@ -122,17 +114,7 @@ const profile = () => {
         formdata.append('imagefile', profile);
         
         const uri =  await saveImageToWeb3(formdata);
-        console.log(uri);
         setUserDoc({...userDoc, web3imageprofile: uri});
-        // const result = await axios.post(
-        //   'http://localhost:8080/api/saveS3Image',
-        //   formdata,
-        //   {
-        //     headers: {
-        //       'Content-Type': 'multipart/form-data',
-        //     },
-        //   }
-        // )
       }
 
       //saving banner image
@@ -141,18 +123,7 @@ const profile = () => {
         bannerData.append('imagefile', banner);
         
         const uri  = await saveImageToWeb3(bannerData);
-        console.log(uri);
         setUserDoc({...userDoc, web3imagebanner: uri});
-
-        // const result2 = await axios.post(
-        //   'http://localhost:8080/api/saveS3Banner',
-        //   bannerData,
-        //   {
-        //     headers: {
-        //       'Content-Type': 'multipart/form-data',
-        //     },
-        //   }
-        // )
       }
     } catch (error) {
       console.log(error)
@@ -219,7 +190,7 @@ const profile = () => {
                       setUserDoc({ ...userDoc, userName: e.target.value })
                     }
                   />
-                  <p className={style.label}>Biography</p>
+                  <p className={style.label}>Short Intro</p>
                   <input
                     type="text"
                     className={
@@ -250,56 +221,98 @@ const profile = () => {
                   <p className={style.label}>Profile Image</p>
                   <div
                     className={style.profileImageContainer}
-                    style={{ height: '200px', width: '300px' }}
-                  >
-                    {/* <img src={`${myUser.profileImage}`} id="pImage" /> */}
-                      {/* <img
-                        src={profileImageUrl ? `data:image/jpeg;base64,${profileImageUrl?.data}`  : noProfileImage.src}
-                        id="pImage"
-                        className="w-full object-cover"
-                      /> */}
-                      <img
-                        src={userDoc?.web3imageprofile ? getImagefromWeb3(userDoc?.web3imageprofile) : noProfileImage.src}
-                        id="pImage"
-                        className="w-full object-cover"
-                      />
-                      {/* <img
-                        src={profileImageUrl ? profileImageUrl?.data?.url : noProfileImage.src}
-                        id="pImage"
-                        className="w-full object-cover"
-                      /> */}
-                    {/* <img
-                      src={myUser?.profileImage ? myUser?.profileImage : ' '}
-                    /> */}
+                    style={{ height: '250px', width: '325px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setProfile(e.dataTransfer.files[0]);
+                        }}>
+                    {profile ? (
+                      <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {profileInputRef.current.click()}} 
+                        className={`imageContainer relative cursor-pointer w-full h-full text-center flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-${dark ? '800' : '100'} px-4`}
+                        style={{ backgroundImage: `url(${getImagefromWeb3(userDoc?.web3imageprofile)})`, backgroundSize: 'cover'}}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setProfile(e.dataTransfer.files[0]);
+                        }}>
+                          <div className="overlay absolute h-full transition w-full top-0 left-0 hover:bg-slate-800/90 text-center flex justify-center flex-wrap flex-col items-center gap-2">
+                            <BsUpload fontSize={50} color="white"/>
+                            <span className="text-white">Drag & Drop Image</span>
+                            <p className={style.smallText}>
+                              <span className="text-white">Supported file types: JPG, PNG, GIF, WEBP, JFIF.</span>
+                            </p>
+                          </div>
+                      </div>
+                    )}
                   </div>
-                  <input
-                    id="profileImg"
-                    type="file"
-                    onChange={(e) => {
-                      setProfile(e.target.files[0])
-                      previewImage('profile')
-                    }}
-                  />
-                  {/* <FileBase
-                    type="file"
-                    id="profileImg"
-                    multiple={false}
-                    onDone={({ base64 }) =>
-                      setUserDoc({ ...userDoc, profileImage: base64 })
-                    }
-                  /> */}
+                  <div className="imageUploader mb-4 ml-3">
+                    <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="profileImg"
+                      ref={profileInputRef}
+                      onChange={e => setProfile(e.target.files[0])}
+                      style={{ display: "none"}}
+                    />
+                  </div>
+
                   <p className={style.label}>Banner Image</p>
-                  <div className={style.bannerImageContainer}>
+                  <div
+                    className={style.profileImageContainer}
+                    style={{ height: '220px', width: '100%' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setBanner(e.dataTransfer.files[0]);
+                        }}>
+                    {banner ? (
+                      <img src={URL.createObjectURL(banner)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setBanner(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {bannerInputRef.current.click()}} 
+                        className={`imageContainer relative cursor-pointer w-full h-full text-center flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-${dark ? '800' : '100'} px-4`}
+                        style={{ backgroundImage: `url(${getImagefromWeb3(userDoc?.web3imagebanner)})`, backgroundSize: 'cover'}}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setBanner(e.dataTransfer.files[0]);
+                        }}>
+                          <div className="overlay absolute h-full transition w-full top-0 left-0 hover:bg-slate-800/90 text-center flex justify-center flex-wrap flex-col items-center gap-2">
+                            <BsUpload fontSize={50} color="white"/>
+                            <span className="text-white">Drag & Drop Image</span>
+                            <p className={style.smallText}>
+                              <span className="text-white">Supported file types: JPG, PNG, GIF, WEBP, JFIF.</span>
+                            </p>
+                          </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="imageUploader mb-4 ml-3">
+                    <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="profileImg"
+                      ref={bannerInputRef}
+                      onChange={e => setBanner(e.target.files[0])}
+                      style={{ display: "none"}}
+                    />
+                  </div>
+
+                  {/* <div className={style.bannerImageContainer}>
                       <img
                         id="bImage"
                         src={userDoc?.web3imagebanner ? getImagefromWeb3(userDoc?.web3imagebanner) : noProfileImage.src}
                         className="w-full object-cover"
                       />
-                      {/* <img
+                      <img
                         id="bImage"
                         src={bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src}
                         className="w-full object-cover"
-                      /> */}
+                      />
                   </div>
                   <input
                     id="bannerImg"
@@ -308,7 +321,7 @@ const profile = () => {
                       setBanner(e.target.files[0])
                       previewImage('banner')
                     }}
-                  />
+                  /> */}
                   {/* <FileBase
                     type="file"
                     multiple={false}

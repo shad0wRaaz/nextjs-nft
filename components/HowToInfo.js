@@ -4,48 +4,41 @@ import { ImFilePicture } from 'react-icons/im'
 import { BsCollection, BsTags } from 'react-icons/bs'
 import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
 import { useThemeContext } from '../contexts/ThemeContext'
+import background from '../assets/traders-favor-ethereum-solana.webp'
 
-const style = {
-  wrapper:
-    'container text-center text-white mx-auto lg:p-[8rem] p-[2rem]',
-  title: `font-bold text-[2rem] mb-[2.2rem] px-[3rem]`,
-  contentWrapper:
-    'howToContentContainer relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4',
-  content:
-    'cursor-pointer z-10 bg-white p-[50px] rounded-3xl flex  justify-center flex-col w-full items-start hover:opacity-80',
-  contentTitle: 'text-lg text-left font-bold mb-2 mt-4',
-  contentDescription: 'text-left text-md ',
-}
 
 const HowToInfo = () => {
   const { dark } = useThemeContext()
-
+  
+  const style = {
+    wrapper:
+      'container text-center text-white mx-auto lg:p-[8rem] p-[2rem]',
+    title: `font-bold text-[2rem] mb-[2.2rem] px-[3rem]`,
+    contentWrapper:
+      'howToContentContainer relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4',
+    content:
+      `cursor-pointer z-10 p-[50px] rounded-3xl flex flex-col w-full transition hover:scale-105 backdrop-blur-md hover:backdrop-blur-xl ${dark ? ' bg-slate-700 ' : ' bg-[#ffffff99]'}`,
+    contentTitle: 'text-lg text-left font-bold mb-2 mt-4',
+    contentDescription: 'text-left text-sm leading-relaxed ',
+  }
   return (
+    // <div className={`${dark ? ' darkGray' : ' bg-[#F5F6F8]'}` + " bg-cover bg-center"} style={{ backgroundImage: `url(${background.src})`}}>
     <div className={`${dark ? ' darkGray' : ' bg-[#F5F6F8]'}`}>
       <div className={style.wrapper}>
         <h2
-          className={
-            dark
-              ? style.title + ' text-neutral-100'
-              : style.title + ' text-black'
-          }
-        >
-          Create and Sell your NFTs
+          className={style.title + ' text-[3rem] text-[#ffffff]'}>
+          <span className="textGradGreen">Create</span> & <span className="textGradRed">Sell</span> your NFTs
         </h2>
         <div className={style.contentWrapper}>
-          <div
-            className={style.content}
-            style={{
-              background:
-                'linear-gradient(145deg, #4f5ceb33 0%, #4f5ceb00 100%)',
-            }}
-          >
+          <div className={style.content}>
             <div className="mb-3 h-[60px] w-[60px] rounded-2xl bg-[#4F5CEB] p-4">
               <MdOutlineAccountBalanceWallet fontSize="30px" color="#ffffff" />
             </div>
-            <span className="nc-Badge relative inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
-              Step 1
-            </span>
+            <div className="text-left">
+              <span className="relative inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
+                Step 1
+              </span>
+            </div>
             <h2
               className={
                 dark ? style.contentTitle : style.contentTitle + ' text-black'
@@ -67,19 +60,15 @@ const HowToInfo = () => {
           </div>
 
           <Link href="/contracts">
-            <div
-              className={style.content}
-              style={{
-                background:
-                  'linear-gradient(145deg, #ff6d3d33 0%, #ff6d3d00 100%)',
-              }}
-            >
+            <div className={style.content}>
               <div className=" mb-3 h-[60px] w-[60px] rounded-2xl bg-[#FF6D3D] p-4">
                 <BsCollection fontSize="30px" color="#ffffff" />
               </div>
-              <span className="nc-Badge relative inline-flex rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-pink-800 ">
-                Step 2
-              </span>
+              <div className="text-left">
+                <span className="relative inline-flex rounded-full bg-pink-100 px-2.5 py-1 text-xs font-medium text-pink-800 ">
+                  Step 2
+                </span>
+              </div>
               <h2
                 className={
                   dark
@@ -104,19 +93,15 @@ const HowToInfo = () => {
           </Link>
 
           <Link href="/contracts">
-            <div
-              className={style.content}
-              style={{
-                background:
-                  'linear-gradient(145deg, #25cfaa33 0%, #25cfaa00 100%)',
-              }}
-            >
+            <div className={style.content}>
               <div className="mb-3 h-[60px] w-[60px] rounded-2xl bg-[#25CFAA] p-4">
                 <ImFilePicture fontSize="30px" color="#ffffff" />
               </div>
-              <span className="nc-Badge relative rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
-                Step 3
-              </span>
+              <div className="text-left">
+                <span className="relative rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+                  Step 3
+                </span>
+              </div>
               <h2
                 className={
                   dark
@@ -141,19 +126,15 @@ const HowToInfo = () => {
           </Link>
 
           <Link href="/contracts">
-            <div
-              className={style.content}
-              style={{
-                background:
-                  'linear-gradient(145deg, #ffca4033 0%, #ffca4000 100%)',
-              }}
-            >
+            <div className={style.content}>
               <div className="mb-3 h-[60px] w-[60px] rounded-2xl bg-[#FFCA40] p-4">
                 <BsTags fontSize="30px" color="#ffffff" />
               </div>
-              <span className="nc-Badge relative inline-flex rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-800">
-                Step 4
-              </span>
+              <div className="text-left">
+                <span className="relative inline-flex rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-800">
+                  Step 4
+                </span>
+              </div>
               <h2
                 className={
                   dark

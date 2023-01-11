@@ -1,50 +1,39 @@
 import Link from 'next/link'
-import { HiChevronDown, HiOutlineUserCircle } from 'react-icons/hi'
-import { TiLink } from 'react-icons/ti'
-import nuvanftLogo from '../assets/nuvanft.png'
-import toast, { Toaster } from 'react-hot-toast'
-import { BsEye } from 'react-icons/bs'
-import { MdOutlineCollections, MdOutlineWallpaper } from 'react-icons/md'
-import { VscDebugDisconnect } from 'react-icons/vsc'
-import { BiUser } from 'react-icons/bi'
-import { Menu, Transition } from '@headlessui/react'
-import { useState, useEffect, Fragment } from 'react'
 import SearchBar from './SearchBar'
+import { TiLink } from 'react-icons/ti'
+import { BiUser } from 'react-icons/bi'
 import { HiMenu } from 'react-icons/hi'
-import { useRouter } from 'next/router'
 import Notifications from './Notifications'
 import ThemeSwitcher from './ThemeSwitcher'
-import { useThemeContext } from '../contexts/ThemeContext'
-import { useUserContext } from '../contexts/UserContext'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
-import { useAddress, useNetwork, useDisconnect, ConnectWallet } from '@thirdweb-dev/react'
-import ethereumlogo from '../assets/ethereum.png'
-import maticlogo from '../assets/matic.png'
-import bsclogo from '../assets/bsc.png'
 import { config } from '../lib/sanityClient'
-import avalancelogo from '../assets/avalance.png'
-import { QueryClient, useQuery, useQueryClient } from 'react-query'
-import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
-import { getUser } from '../fetchers/SanityFetchers'
-import {
-  IconImage,
-  IconMagnifier,
-  IconOffer,
-  IconProfile,
-} from './icons/CustomIcons'
-import { getImagefromWeb3 } from '../fetchers/s3'
+import nuvanftLogo from '../assets/nuvanft.png'
+import toast, { Toaster } from 'react-hot-toast'
+import { VscDebugDisconnect } from 'react-icons/vsc'
+import { Menu, Transition } from '@headlessui/react'
+import { useState, useEffect, Fragment } from 'react'
+import { useQuery, useQueryClient } from 'react-query'
+import { useUserContext } from '../contexts/UserContext'
+import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext'
+import { HiChevronDown, HiOutlineUserCircle } from 'react-icons/hi'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { MdOutlineCollections, MdOutlineWallpaper, MdOutlineWidgets, MdOutlineWorkspaces } from 'react-icons/md'
+import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
+import { IconAvalanche, IconBNB, IconEthereum, IconImage, IconMagnifier, IconOffer, IconPolygon, IconProfile } from './icons/CustomIcons'
+import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
+import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
+import { GoDashboard } from 'react-icons/go'
+
 
 const style = {
-  wrapper: `container mx-auto w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] flex items-center`,
+  wrapper: ` mx-auto w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 relative`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
-  searchBar: `relative flex flex-1 mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
+  searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
   searchIcon: `text-[#8a939b] mx-3 font-bold text-lg absolute`,
   searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
   headerItems: `flex items-center justify-end nonMobileMenu`,
-  headerItem: `px-4 hover:opacity-80 cursor-pointer font-bold`,
+  headerItem: `px-4 cursor-pointer font-bold`,
   headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
   menuWrapper: 'relative',
   menu: 'absolute',
@@ -63,71 +52,43 @@ const successToastStyle = {
   iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 
+const chainnum = {
+  "80001": "mumbai",
+  "97": "binance-testnet",
+  "137": "polygon",
+  "5": "goerli",
+  "1": "mainnet"
+}
+
+
 const Header = () => {
   
-  const {
-    marketplaceAddress,
-    rpcUrl,
-    setSelectedChain,
-    activeListings,
-    setActiveListings,
-    setLatestNfts,
-    marketContract,
-  } = useMarketplaceContext()
-  const { setCoinPrices } = useSettingsContext()
-  const address = useAddress()
-  const disconnectWallet = useDisconnect()
-  const router = useRouter()
-  
-
-  const [
-    {
-      data: { chain, chains },
-      loading,
-      error,
-    },
-    switchNetwork,
-  ] = useNetwork()
-  const queryclient = useQueryClient()
-  const [isLogged, setIsLogged] = useState(false)
+  const address = useAddress();
+  const chainid = useChainId();
   const { dark } = useThemeContext()
-  const {
-    setMyUser,
-    setMyProfileImage,
-    setMyCollections,
-    myBannerImage,
-    setMyBannerImage,
-  } = useUserContext()
-  // const welcomeUser = (userName, toastHandler = toast) => {
-  //   toastHandler.success(
-  //     `Welcome back ${userName != 'Unnamed' ? `${userName}` : ''} !`, successToastStyle
-  //   )
-  // }
-  
+  const disconnectWallet = useDisconnect();
+  const { setCoinPrices } = useSettingsContext();
+  const [isLogged, setIsLogged] = useState(false)
+  const { setMyUser,setMyCollections } = useUserContext()
+  const [{ data: { chain, chains }, loading, error }, switchNetwork] = useNetwork();
+  const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const getAllAdminUsers = async () => {
+    const query = '*[_type == "settings"]{adminusers}';
+    const res = await config.fetch(query)
+    return res[0].adminusers
+  }
+
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['mycollections', address],
     getMyCollections(),
     {
       enabled: Boolean(address), //only run this query if address is provided
       onError: () => {
-        toast.error(
-          'Error fetching collection data. Refresh and try again',
-          errorToastStyle
-        )
+        toast.error('Error fetching collection data. Refresh and try again', errorToastStyle)
       },
       onSuccess: async (res) => {
         setMyCollections(res);
-        // const unresolved = res.map(async (item) => {
-        //   const obj = { ...item }
-        //   const imgPath = await getUnsignedImagePath(item.profileImage)
-        //   const bannerPath = await getUnsignedImagePath(item.bannerImage)
-        //   obj['profileImage'] = imgPath?.data.url
-        //   obj['bannerImage'] = bannerPath?.data.url
-        //   return obj
-        // })
-
-        // const resolvedPaths = await Promise.all(unresolved)
-        // setMyCollections(resolvedPaths)
       },
     }
   )
@@ -147,33 +108,27 @@ const Header = () => {
    ) 
 
    const { data: latestNfts, status: latestNftsStatus } = useQuery(
-    ['latestNfts'],
+    ['latestNfts', selectedBlockchain],
     getLatestNfts(8),
     {
-      enabled: Boolean(marketplaceAddress),
       onError: () => {
-        toast.error('Error fetching latest NFT data. Refresh and try again.'),
-        errorToastStyle
+        toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
       },
       onSuccess: (res) => {
-        // console.log(res)
         setLatestNfts(res);
       },
     }
    )
 
   const { data: marketData, status: marketStatus } = useQuery(
-    ['marketplace', marketplaceAddress],
-    getActiveListings(rpcUrl),
+    ['marketplace', selectedBlockchain],
+    getActiveListings(),
     {
-      enabled: Boolean(marketplaceAddress),
       onError: () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',
           errorToastStyle
         )
-        // localStorage.setItem('activeListings', false)
-
       },
       onSuccess: (res) => {
         setActiveListings(res)
@@ -186,11 +141,16 @@ const Header = () => {
     (toastHandler = toast) => {
       if (!error) return
       toastHandler.error(error.message, errorToastStyle)
+
+      return() => {
+        //do nothing
+      }
     },[error])
 
   useEffect(() => {
     if (!address) {
-      setIsLogged(false)
+      setIsLogged(false);
+      setIsAdmin(false);
       return
     }
     ;(async () => {
@@ -205,20 +165,27 @@ const Header = () => {
       //saves new user if not present otherwise returns the user data
       const user = await config.createIfNotExists(userDoc);
       setMyUser(user)
-      // if (user?.profileImage) {
-      //   setMyProfileImage(await getUnsignedImagePath(user.profileImage))
-      // }
-      // if (user?.bannerImage) {
-      //   setMyBannerImage(await getUnsignedImagePath(user.bannerImage))
-      // }
-      // queryclient.invalidateQueries('notification')
       setIsLogged(true)
-    })()
+    })();
 
-    return () => {
-      //do nothing
+    ;(async() => {
+      const adminList = await getAllAdminUsers();
+      const isThisUserAdmin = adminList.filter(user => user._ref == address)
+      if(isThisUserAdmin.length > 0){
+          setIsAdmin(true);
+      }
+    })();
+  
+    return() => {
+        //do nothing//clean up function
+
     }
   }, [address])
+
+  useEffect(() => {
+    if(!chainid) return
+    setSelectedBlockchain(chainnum[chainid]);
+  }, [chainid])
 
   const handleDisconnect = () => {
     setIsLogged(false)
@@ -232,8 +199,14 @@ const Header = () => {
     toastHandler.success(`You have been disconnected !`, successToastStyle)
   }
 
+  const changeBlockchain = (selectedChainName) => {
+    setSelectedBlockchain(selectedChainName);
+    toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
+  }
+
   return (
     <div className={style.wrapper}>
+      <div className="container flex items-center justify-between ">
       <Toaster position="top-center" reverseOrder={false} />
       <Link href="/">
         <div className={style.logoContainer} style={{ marginLeft: 0 }}>
@@ -248,7 +221,7 @@ const Header = () => {
         className={
           dark
             ? style.searchBar + ' border-sky-400/20'
-            : style.searchBar + ' border-neutral-200'
+            : style.searchBar + ' border-neutral-200 bg-[#ffffff99]'
         }
       >
         <div className={style.searchIcon}>
@@ -275,7 +248,7 @@ const Header = () => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items
-              className={`absolute right-0 mt-2 w-56 origin-top-right divide-y ${
+              className={`absolute right-0 mt-2 w-72 origin-top-right divide-y ${
                 dark
                   ? ' divide-slate-600 bg-slate-700 text-neutral-100'
                   : ' divide-gray-100 bg-white'
@@ -284,19 +257,65 @@ const Header = () => {
               <div className="px-1 py-1 ">
                 <Menu.Item>
                   {({ active }) => (
-                    <div
-                      className={`${
-                        active ? 'bg-blue-500 ' : ''
-                      } group rounded-md px-2 py-2 text-sm`}
-                    >
-                      <a href="/browse" className="flex w-full items-center ">
-                        <BsEye className="mr-2" fontSize="20px" /> Browse
-                      </a>
-                    </div>
+                    <>
+                      <div
+                        className={`${
+                          active ? 'bg-blue-500 ' : ''
+                        } group rounded-md px-4 py-2 text-sm pt-4`}
+                      >
+                        <span className="flex w-full items-center ">
+                          Select Chain
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                      <div
+                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                          onClick={() => {
+                            changeBlockchain('goerli')
+                          }}
+                        >
+                          <IconEthereum />
+                          <span className="inline-block text-sm">Ethereum</span>
+                        </div>
+
+                        <div
+                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                          onClick={() => {
+                            changeBlockchain('binance-testnet')
+                          }}
+                        >
+                          <IconBNB />
+                          <span className="inline-block text-sm">Binance</span>
+                        </div>
+
+                        <div
+                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                          onClick={() => {
+                            changeBlockchain('mumbai')
+                          }}
+                        >
+                          <IconPolygon />
+                          <span className="inline-block text-sm">Polygon</span>
+                        </div>
+
+                        <div
+                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                          onClick={() => {
+                            changeBlockchain('avalanche-fuji')
+                          }}
+                        >
+                          <IconAvalanche/>
+                          <span className="inline-block text-sm">Avalance</span>
+                        </div>
+                      </div>
+                    </>
                   )}
                 </Menu.Item>
+
                 {!isLogged && (
-                  <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" />
+                  <div className="w-64 mx-auto mb-4 mt-4 pt-4 border-t border-slate-600">
+                    <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl" />
+                  </div>
                   // <>
                   //   <div className="mb-2 border-t border-neutral-200 pt-3 pl-2 text-sm font-bold">
                   //     CONNECT WALLET WITH
@@ -536,64 +555,51 @@ const Header = () => {
       >
         {!isLogged && (
           <div
-            className={`flex items-center justify-between gap-1 rounded-full text-xs border ${
-              dark ? ' border-sky-400/20' : ' border-neutral-200'
+            className={`flex items-center backdrop-blur-md justify-between gap-1 rounded-md text-xs border ${
+              dark ? ' border-sky-400/20' : ' border-neutral-200/40 bg-[#ffffff99]'
             } p-[0.37rem]`}
           >
             <div className={style.headerItem}>
-              <BsEye className="mr-2 inline-block" fontSize="20px" />
-              <span className="inline-block">Browse</span>
+              <span className="inline-block">Select Chain</span>
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
+              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
-                setSelectedChain('Ethereum')
-                router.push('/browse')
+                changeBlockchain('goerli')
               }}
             >
-              <img
-                src={ethereumlogo.src}
-                width="20px"
-                className="inline-block"
-              />{' '}
+              <IconEthereum/>
               <span className="inline-block">Ethereum</span>
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
+              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
-                setSelectedChain('Binance')
-                router.push('/browse')
+                changeBlockchain('binance-testnet')
               }}
             >
-              <img src={bsclogo.src} width="20px" className="inline-block" />{' '}
+              <IconBNB/>
               <span className="inline-block">Binance</span>
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
+              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
-                setSelectedChain('Polygon')
-                router.push('/browse')
+                changeBlockchain('mumbai')
               }}
             >
-              <img src={maticlogo.src} width="20px" className="inline-block" />{' '}
+              <IconPolygon/>
               <span className="inline-block">Polygon</span>
             </div>
 
             <div
-              className="cursor-pointer rounded-full p-2 px-2 hover:bg-sky-100"
+              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
-                setSelectedChain('Avalance')
-                router.push('/browse')
+                changeBlockchain('avalanche-fuji')
               }}
             >
-              <img
-                src={avalancelogo.src}
-                width="20px"
-                className="inline-block"
-              />{' '}
+              <IconAvalanche/>
               <span className="inline-block">Avalance</span>
             </div>
           </div>
@@ -602,7 +608,7 @@ const Header = () => {
         {address && isLogged && (
           <>
             <Menu as="div" className="relative inline-block text-left">
-                <Menu.Button className={`px-5 py-3 flex items-center gap-1 ${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100'} rounded-xl`}>
+                <Menu.Button className={`px-5 py-3 flex text-white hover:text-black items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100'} rounded-xl`}>
                   <HiOutlineUserCircle fontSize={22}/> My Account
                 </Menu.Button>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
@@ -610,7 +616,7 @@ const Header = () => {
                     dark
                       ? 'divide-sky-400/20 bg-slate-700 text-white'
                       : ' divide-gray-100 bg-white'
-                  } absolute right-0 mt-2 w-72 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10`}>
+                  } absolute right-0 mt-2 w-72 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-30`}>
                     <div className="px-1 py-1 flex flex-col text-left">
                       <Menu.Item>
                         <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
@@ -635,13 +641,18 @@ const Header = () => {
                   </Menu.Items>
               </Transition>
             </Menu>
-            <div className="flex flex-row items-center gap-4 px-5 pl-0">
+            <div className="flex flex-row items-center gap-4 px-5">
+              <a href="/dashboard">
+                <div className={`${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100 text-white hover:text-black'} p-2 -mr-2 rounded-xl cursor-pointer`}>
+                  <GoDashboard fontSize={23}/>
+                </div>
+              </a>
               <ThemeSwitcher />
               <Notifications />
             </div>
-            <div className={`rounded-md border cursor-pointer border-slate-${dark ? '500' :'300'} px-5 py-3 bg-slate-${dark ? '600' : '100'} hover:bg-slate-${dark ? '500' : '200'}`}>
+            <div className={`rounded-md cursor-pointer px-5 py-3 gradGreen `}>
               <Link href="/contracts">
-                <div className={style.headerItem}>Mint</div>
+                <div className={style.headerItem + " inline-flex gap-1 items-center"}><div className="animate-pulse"><MdOutlineWidgets /></div> Mint</div>
               </Link>
             </div>
           </>
@@ -934,6 +945,7 @@ const Header = () => {
             </Transition>
           </Menu>
         </div> */}
+      </div>
       </div>
     </div>
   )

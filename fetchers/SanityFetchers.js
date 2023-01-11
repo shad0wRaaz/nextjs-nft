@@ -82,8 +82,10 @@ export const getMyCollections =
     return res
   }
 
-export const getTopTradedNFTCollections = () => async () => {
-  const collections = await axios.get(`${HOST}/api/topTradedCollections`)
+export const getTopTradedNFTCollections = () => async ({queryKey}) => {
+  const [_, blockchain] = queryKey;
+
+  const collections = await axios.get(`${HOST}/api/topTradedCollections/${blockchain}`)
     return JSON.parse(collections.data)
 }
 
@@ -134,7 +136,7 @@ export const getCollectedNFTs =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "nftItem" && ownedBy._ref == "${address}" && createdBy.ref != "${address}"]
+    const query = `*[_type == "nftItem" && ownedBy._ref == "${address}" && createdBy._ref != "${address}"]
     {
       _id, chainId, id, listed, name, ownedBy->, collection->, createdBy->, listingid,
     }`
@@ -145,7 +147,7 @@ export const getFavouriteNFTs =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*["${address}" in likedBy[]._ref]`
+    const query = `*["${address}" in likedBy[]._ref] {...,collection->}`
     const res = await config.fetch(query)
     return res
   }
@@ -158,7 +160,46 @@ export const getAllOwners =
     return res
   }
 export const getCoinPrices = () => async () => {
-  const query = `*[_type == "settings"]{ethprice, maticprice, _updatedAt}`
-  const res = config.fetch(query)
+  const query = `*[_type == "settings"]{ethprice, maticprice, bnbprice, avaxprice, _updatedAt}`
+  const res = await config.fetch(query)
+  return res
+}
+
+export const getTotals = (chainid) => async() => {
+  let query1 = ''; let query2 = ''; let query3 = ''; let query4 = ''; let query5 = ''; let query6 = ''; let query7 = '';
+  if(chainid){
+    query1 = `count(*[_type == "nftItem" && chainId == ${chainid}])`;
+    query2 = `count(*[_type == "nftCollection" && chainId == ${chainid}])`;
+    query3 = 'count(*[_type == "users"])';
+    query4 = '*[_type == "users" && volumeTraded != null]{userName, walletAddress, _id, web3imageprofile, volumeTraded} | order(volumeTraded desc) [0..9]';
+    query5 = `*[_type == "nftCollection" && volumeTraded != null && chainId == ${chainid}]{name, chainId, floorPrice, walletAddress, _id, contractAddress, volumeTraded, web3imageprofile} | order(volumeTraded desc) [0..9]`;
+    query6 = `*[_type == "nftItem" && likedBy != null && collection!= null && chainId == ${chainid}]{"likers": count(likedBy), name, _id, chainId, id, collection->} | order(likers desc) [0..9]`;
+    query7 = '*[_type == "settings"] {platformfee}';
+  }else{
+    query1 = 'count(*[_type == "nftItem"])';
+    query2 = 'count(*[_type == "nftCollection"])';
+    query3 = 'count(*[_type == "users"])';
+    query4 = '*[_type == "users" && volumeTraded != null]{userName, walletAddress, _id, web3imageprofile, volumeTraded} | order(volumeTraded desc) [0..9]';
+    query5 = '*[_type == "nftCollection" && volumeTraded != null]{name, chainId, floorPrice, walletAddress, _id, contractAddress, volumeTraded, web3imageprofile} | order(volumeTraded desc) [0..9]';
+    query6 = '*[_type == "nftItem" && likedBy != null && collection!= null]{"likers": count(likedBy), name, _id, chainId, id, collection->} | order(likers desc) [0..9]';
+    query7 = '*[_type == "settings"] {platformfee}';
+  }
+
+  const totalNfts = await config.fetch(query1);
+
+  const totalCollections = await config.fetch(query2);
+
+  const totalUsers = await config.fetch(query3);
+
+  const topActiveUsers =  await config.fetch(query4);
+ 
+  const topCollections =  await config.fetch(query5);
+  
+  const popularNfts =  await config.fetch(query6);
+
+  const platformfee = await config.fetch(query7);
+
+  const res = { totalNfts, totalCollections, totalUsers, topActiveUsers, topCollections, popularNfts, platformfee: platformfee[0]};
+
   return res
 }

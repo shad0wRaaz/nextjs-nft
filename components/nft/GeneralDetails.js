@@ -52,16 +52,10 @@ const style = {
 }
 
 const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) => {
-  const { queryStaleTime } = useUserContext()
-  const { marketplaceAddress } = useMarketplaceContext()
-  const market = ''
-  const queryClient = useQueryClient()
+  const { marketAddress } = useMarketplaceContext()
   const { dark } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
-  const chainid = useChainId()
-  // const [collectionProfile, setCollectionProfile] = useState()
-  const [userProfile, setUserProfile] = useState()
   const [auctionedItem, setAuctionedItem] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`
@@ -110,122 +104,132 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
       },
       onSuccess: (res) => {
         //check if the item is in auction, if in auction, owner will be marketplace
-        if (!res && (nftContractData?.owner == marketplaceAddress)
-        ) {
+        // if the item is auctioned, then res will be undefined
+        const marketArray = [
+          process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE, 
+          process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE
+          ];
+        if (!res && (marketArray.includes(nftContractData?.owner))) {
           setAuctionedItem(true)
           return
         }
       },
     }
   )
+ 
+  // const burn = (e, sanityClient = config, toastHandler = toast) => {
+  //   if (Boolean(listingData)) {
+  //     toastHandler.error(
+  //       'Cannot burn a listed NFT. Delist this NFT first.',
+  //       errorToastStyle
+  //     )
+  //     return
+  //   }
+  //   ;(async () => {
+  //     try {
+  //       const tx = await contract.burn(nftContractData.metadata.id.toString())
 
-  const burn = (e, sanityClient = config, toastHandler = toast) => {
-    if (Boolean(listingData)) {
-      toastHandler.error(
-        'Cannot burn a listed NFT. Delist this NFT first.',
-        errorToastStyle
-      )
-      return
-    }
-    ;(async () => {
-      try {
-        const tx = await contract.burn(nftContractData.metadata.id.toString())
+  //       //saving transaction in sanity
+  //       const transactionData = {
+  //         _type: 'activities',
+  //         _id: tx.receipt.transactionHash,
+  //         transactionHash: tx.receipt.transactionHash,
+  //         from: tx.receipt.from,
+  //         contractAddress: collectionAddress,
+  //         tokenid: nftContractData.metadata.id.toString(),
+  //         to: tx.receipt.to,
+  //         event: 'Burn',
+  //         price: '-',
+  //         chainId: chainid,
+  //         dateStamp: new Date(),
+  //       }
+  //       console.log(transactionData)
+  //       await sanityClient
+  //         .createIfNotExists(transactionData)
+  //         .then(() => {
+  //           queryClient.invalidateQueries(['marketplace'])
+  //           queryClient.invalidateQueries(['activities'])
+  //           queryClient.invalidateQueries(['user'])
+  //         })
+  //         .catch((err) => {
+  //           console.log(err)
+  //           toastHandler.error(
+  //             'Error saving Transaction Activity. Contact administrator.',
+  //             errorToastStyle
+  //           )
+  //           return
+  //         })
+  //     } catch (error) {
+  //       toastHandler.error(error, errorToastStyle)
+  //     }
+  //   })()
+  // }
 
-        //saving transaction in sanity
-        const transactionData = {
-          _type: 'activities',
-          _id: tx.receipt.transactionHash,
-          transactionHash: tx.receipt.transactionHash,
-          from: tx.receipt.from,
-          contractAddress: collectionAddress,
-          tokenid: nftContractData.metadata.id.toString(),
-          to: tx.receipt.to,
-          event: 'Burn',
-          price: '-',
-          chainId: chainid,
-          dateStamp: new Date(),
-        }
-        console.log(transactionData)
-        await sanityClient
-          .createIfNotExists(transactionData)
-          .then(() => {
-            queryClient.invalidateQueries(['marketplace'])
-            queryClient.invalidateQueries(['activities'])
-            queryClient.invalidateQueries(['user'])
-          })
-          .catch((err) => {
-            console.log(err)
-            toastHandler.error(
-              'Error saving Transaction Activity. Contact administrator.',
-              errorToastStyle
-            )
-            return
-          })
-      } catch (error) {
-        toastHandler.error(error, errorToastStyle)
-      }
-    })()
-  }
+  // const cancelListing = (
+  //   e,
+  //   module = market,
+  //   sanityClient = config,
+  //   toastHandler = toast
+  // ) => {
+  //   if (!Boolean(listingData)) return
+  //   ;(async () => {
+  //     try {
+  //       const tx = await module.direct.cancelListing(listingData.id)
+  //       // console.log(tx.receipt)
+  //       if (tx) {
+  //         toastHandler.success(
+  //           'The NFT has been delisted from the marketplace.',
+  //           successToastStyle
+  //         )
 
-  const cancelListing = (
-    e,
-    module = market,
-    sanityClient = config,
-    toastHandler = toast
-  ) => {
-    if (!Boolean(listingData)) return
-    ;(async () => {
-      try {
-        const tx = await module.direct.cancelListing(listingData.id)
-        // console.log(tx.receipt)
-        if (tx) {
-          toastHandler.success(
-            'The NFT has been delisted from the marketplace.',
-            successToastStyle
-          )
+  //             //update listing data
+  //         ;(async() => {
+  //           await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
+  //         })()
 
-              //update listing data
-          ;(async() => {
-            await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
-          })()
-
-          //saving transaction in sanity
-          const transactionData = {
-            _type: 'activities',
-            _id: tx.receipt.transactionHash,
-            transactionHash: tx.receipt.transactionHash,
-            from: tx.receipt.from,
-            tokenid: nftContractData.metadata.id.toString(),
-            to: tx.receipt.to,
-            event: 'Delist',
-            nftItem: { _ref: nftContractData.metadata.properties.tokenid, _type: 'reference'},
-            price: '-',
-            chainId: chainid,
-            dateStamp: new Date(),
-          }
-          // console.log(transactionData)
-          await sanityClient
-            .createIfNotExists(transactionData)
-            .then(() => {
-              queryClient.invalidateQueries(['marketplace'])
-              queryClient.invalidateQueries(['activities'])
-            })
-            .catch((err) => {
-              console.log(err)
-              toastHandler.error(
-                'Error saving Transaction Activity. Contact administrator.',
-                errorToastStyle
-              )
-              return
-            })
-        }
-      } catch (err) {
-        console.error(err)
-        toastHandler.error('Error in delisting this NFT.', errorToastStyle)
-        return
-      }
-    })()
-  }
+  //         //saving transaction in sanity
+  //         const transactionData = {
+  //           _type: 'activities',
+  //           _id: tx.receipt.transactionHash,
+  //           transactionHash: tx.receipt.transactionHash,
+  //           from: tx.receipt.from,
+  //           tokenid: nftContractData.metadata.id.toString(),
+  //           to: tx.receipt.to,
+  //           event: 'Delist',
+  //           nftItem: { _ref: nftContractData.metadata.properties.tokenid, _type: 'reference'},
+  //           price: '-',
+  //           chainId: chainid,
+  //           dateStamp: new Date(),
+  //         }
+  //         // console.log(transactionData)
+  //         await sanityClient
+  //           .createIfNotExists(transactionData)
+  //           .then(() => {
+  //             queryClient.invalidateQueries(['marketplace'])
+  //             queryClient.invalidateQueries(['activities'])
+  //           })
+  //           .catch((err) => {
+  //             console.log(err)
+  //             toastHandler.error(
+  //               'Error saving Transaction Activity. Contact administrator.',
+  //               errorToastStyle
+  //             )
+  //             return
+  //           })
+  //       }
+  //     } catch (err) {
+  //       console.error(err)
+  //       toastHandler.error('Error in delisting this NFT.', errorToastStyle)
+  //       return
+  //     }
+  //   })()
+  // }
 
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
@@ -236,7 +240,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
         tokenId={nftContractData?.metadata?.properties?.tokenid}
         contractAddress={metaDataFromSanity?.collection?.contractAddress}>
           
-        </HelmetMetaData>
+      </HelmetMetaData>
       {/* Modal window*/}
       {showModal &&  
         <Report 
@@ -275,7 +279,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
             { metaDataFromSanity?.collection?.category }
           </div>
 
-        <div className="flex flex-col-reverse gap-5 space-y-4 text-sm sm:flex-row sm:items-center sm:space-y-0 sm:space-x-8">
+        <div className="flex flex-col-reverse justify-between gap-5 space-y-4 text-sm sm:flex-row sm:items-center sm:space-y-0 sm:space-x-8">
           <div className="flex items-center">
             <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white dark:ring-neutral-900">
               {metaDataFromSanity && (
@@ -331,7 +335,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
               !ownerData ? (
                 auctionedItem ? (
                   <div className="flex items-center justify-center gap-2 rounded-lg bg-pink-500 p-2 px-4 text-white">
-                    <RiAuctionLine className="text-xl" /> <span>This item is on Auction</span>
+                    <RiAuctionLine className="text-xl" /> <span>Auctioned NFT</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">

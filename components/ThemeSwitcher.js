@@ -3,7 +3,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { IconSun, IconMoon } from './icons/CustomIcons'
 
 const style = {
-  background: `icon hover:bg-neutral-100 p-2 rounded-xl cursor-pointer`,
+  background: `icon hover:bg-neutral-100 p-2 -mr-2 rounded-xl cursor-pointer`,
 }
 
 const ThemeSwitcher = () => {
@@ -15,8 +15,8 @@ const ThemeSwitcher = () => {
       <div
         className={
           dark
-            ? style.background + ' hover:bg-slate-800'
-            : style.background + ' hover:bg-neutral-100'
+            ? style.background + ' hover:bg-slate-800 '
+            : style.background + ' hover:bg-neutral-100 text-white hover:text-black'
         }
         onClick={() => setDark(!dark)}
       >

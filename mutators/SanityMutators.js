@@ -36,19 +36,30 @@ export const sendNotificationFrom = async ({
   eventTitle,
   description,
 }) => {
-console.log(followers)
+// console.log(followers)
   let link = ''
   let event = ''
 
   if (type == 'TYPE_ONE') {
     //this is create NFT Collection
-    link = `/collections/${itemID}`
-    event = 'Uploaded an NFT Collection'
+    link = `/collections/${itemID}`;
+    event = 'Uploaded an NFT Collection';
   }
-  else if(type == 'TYPE_TWO'){}
-  else if(type == 'TYPE_THREE'){}
-  else if(type == 'TYPE_FOUR'){}
-  else if(type == 'TYPE_FIVE'){}
+  else if(type == 'TYPE_TWO'){
+    //this is create NFT Item or Minted
+
+  }
+  else if(type == 'TYPE_THREE'){
+    //this is NFT Bought
+    link = `/nfts/${itemID}`;
+    event = 'Your NFT was sold'
+  }
+  else if(type == 'TYPE_FOUR'){
+    //this is NFT Listed
+  }
+  else if(type == 'TYPE_FIVE'){
+    //this is NFT Delist
+  }
   else if(type == 'TYPE_SIX'){
     //this is Report NFT 
     link = `/nfts/${itemID}`
@@ -58,6 +69,8 @@ console.log(followers)
     //this is Report Collection
     link = `collections/${itemID}`
     event = 'Your Collection was reported as...'
+  }else if(type == 'TYPE_EIGHT'){
+    //this is burn NFT
   }
   
 
@@ -86,7 +99,7 @@ console.log(followers)
       await config.create(doc)
     })
   } else{
-    console.log('0 Followers. Notification not sent.')
+    console.log('0 Followers. Notification is not sent.')
   }
   
 }

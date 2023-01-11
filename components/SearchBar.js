@@ -11,7 +11,7 @@ const style = {
 }
 
 const SearchBar = () => {
-  const [selected, setSelected] = useState('Search for Collections, Addresses')
+  const [selected, setSelected] = useState('Search Collections')
   const [query, setQuery] = useState('')
   const [collectionArray, setCollectionArray] = useState([])
   const router = useRouter()
@@ -72,12 +72,12 @@ const SearchBar = () => {
               onFocus={(event) => (event.target.value = '')}
               onBlur={(event) =>
                 event.target.value == ''
-                  ? (event.target.value = 'Search for Collections, Addresses')
+                  ? (event.target.value = 'Search Collections')
                   : ''
               }
             />
             <Combobox.Button className="absolute  right-0 flex items-center pr-2" data-headlessui-state="" aria-haspopup="true">
-              <RiSearchLine className="h-5 w-5 text-gray-400" />
+              <RiSearchLine color='#000000' className="h-5 w-5 text-black" />
             </Combobox.Button>
           </div>
           <Transition

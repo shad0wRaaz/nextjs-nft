@@ -6,28 +6,21 @@ import { RadioGroup } from '@headlessui/react'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
-import { BsFillCheckCircleFill } from 'react-icons/bs'
+import { IconLoading } from '../icons/CustomIcons'
+import { getImagefromWeb3 } from '../../fetchers/s3'
+import { useUserContext } from '../../contexts/UserContext'
 import noProfileImage from '../../assets/noProfileImage.png'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
+import { BsFillCheckCircleFill, BsUpload } from 'react-icons/bs'
 import React, { useState, useEffect, useReducer, useRef } from 'react'
-import {
-  useAddress,
-  useMetamask,
-  useChainId,
-  useNetwork,
-  useSigner,
-} from '@thirdweb-dev/react'
-import { IconLoading } from '../icons/CustomIcons'
-import { getUnsignedImagePath } from '../../fetchers/s3'
-import { useUserContext } from '../../contexts/UserContext'
-import Image from 'next/image'
+import { useAddress, useMetamask, useChainId, useNetwork, useSigner } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: 'pr-[2rem]',
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
   formWrapper: 'flex flex-wrap flex-col ',
   pageTitle: 'm-4 ml-1 font-bold text-3xl text-gray-200 flex gap-[15px]',
-  smallText: 'text-sm m-2 text-[#bbb] mt-0 mb-0',
+  smallText: 'text-sm m-2 text-slate-400 mt-0 mb-0',
   subHeading:
     'text-xl font-bold m-2 mt-[2.5rem] mb-2 pt-[2rem] border-t-slate-700 border-t border-dashed',
   input:
@@ -36,7 +29,7 @@ const style = {
   button:
     'gradBlue flex gap-2 justify-center rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
   previewImage:
-    'relative mr-[1rem] h-[200px] w-[300px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-400',
+    'relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400 hover:bg-slate-800',
   notConnectedWrapper: 'flex justify-center items-center h-screen',
   traitsButtons:
     'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
@@ -147,7 +140,6 @@ const CreateAVNFT = ({uuid}) => {
   const connectWithMetamask = useMetamask()
   const { myCollections } = useUserContext()
   const [thisChainCollection, setThisChainCollection] = useState([])
-  const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
   const [selectedCollection, setSelectedCollection] = useState({ contractAddress: '' })
   const [nftCollection, setNftCollection] = useState()
   const [isMinting, setIsMinting] = useState(false)
@@ -155,6 +147,32 @@ const CreateAVNFT = ({uuid}) => {
   const [animatedFile, setAnimatedFile] = useState();
   const fileInputRef = useRef();
   const animatedFileInputRef = useRef();
+
+  useEffect(() => {
+    if(!file) return
+    console.log(file.type)
+      if(file.size > 2097152) { //file limit is 2MB
+        toast.error("File is too large", errorToastStyle);
+        setFile(undefined);
+      }
+    return() => {
+
+    }
+  },[file])
+
+  useEffect(() => {
+    if(!animatedFile) return
+    console.log(animatedFile.type)
+      if(animatedFile.type.search(/ideo/) > 0) { setFileType("video"); } 
+      if(animatedFile.type.search(/udio/) > 0) { setFileType("audio"); } 
+      if(animatedFile.size > 5097152) { //file limit is 2MB
+        toast.error("File is too large", errorToastStyle)
+        setAnimatedFile(undefined);
+      }
+    return() => {
+
+    }
+  },[animatedFile])
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
@@ -175,48 +193,7 @@ const CreateAVNFT = ({uuid}) => {
       error,
     },
     switchNetwork,
-  ] = useNetwork()
-  
-
-  // const { mutate: mintNFT, isLoading: isMinting, error } = useMintNFT(nftCollection);
-
-  // useNFTCollection(selectedCollection.contractAddress)
-
-  //get the NFT COllections created by current user
-  // const fetchSanityCollectionData = async (sanityClient = config) => {
-  //   if (!chainid || !address) return
-  //   const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
-  //     name, contractAddress, profileImage, createdBy, volumeTraded
-  //   }`
-
-  //   await sanityClient.fetch(query).then(async (res) => {
-  //     const unresolved = res.map(async (collection) => {
-  //       const obj = {}
-  //       const imgPath = await getUnsignedImagePath(collection.profileImage)
-  //       obj['name'] = collection.name
-  //       obj['profileImage'] = imgPath?.data.url
-  //       obj['contractAddress'] = collection.contractAddress
-  //       obj['createdBy'] = collection.createdBy
-  //       obj['volumeTraded'] = collection.volumeTraded
-  //       return obj
-  //     })
-
-  //     const resolvedPaths = await Promise.all(unresolved)
-
-  //     if (resolvedPaths) {
-  //       setSanityCollection(resolvedPaths)
-  //     }
-  //   })
-  // }
-
-  useEffect(() => {
-    if (!address) return
-    if (myCollections) return
-    fetchSanityCollectionData()
-    return() => {
-      //cleanup function
-    }
-  }, [address])
+  ] = useNetwork();
 
   useEffect(() => {
     if(!uuid) return
@@ -253,7 +230,7 @@ const CreateAVNFT = ({uuid}) => {
   const handleSubmit = (e, toastHandler = toast) => {
     e.preventDefault()
 
-    if (state.name == '' || state.image == '' || state.animation_url == '') {
+    if (state.name == '' || file == undefined || animatedFile == undefined) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
     }
@@ -261,8 +238,6 @@ const CreateAVNFT = ({uuid}) => {
       !urlPatternValidation(state.properties.external_link) &&
       state.properties.external_link !== ''
     ) {
-      console.log(state.properties.external_link)
-      console.log(urlPatternValidation(state.properties.external_link))
       toastHandler.error('External link is not valid.', errorToastStyle)
       return
     }
@@ -271,20 +246,22 @@ const CreateAVNFT = ({uuid}) => {
         'Collection is not selected. Select a collection to mint this NFT to.',
         errorToastStyle
       )
-      return
+      return;
     }
-    if (!isNaN(nftCollection)) {
+
+    if (!nftCollection) {
       //Some issue is there
       toastHandler.error(
         'Error in minting. Cannot find NFT Collection',
         errorToastStyle
       )
+      return;
     }
     if(fileType != "audio" && fileType != "video") {
       toastHandler.error("Audio or Video file is required.", errorToastStyle)
       return
     }
-    // 0xFd7CFAA95Ad1a64081C43721A9398eb0a9165879 <- static use of nft collection address
+
     else {
       ;(async (sanityClient = config) => {
         try {
@@ -490,10 +467,52 @@ const CreateAVNFT = ({uuid}) => {
               <div className="flex justify-between gap-2">
               <div className="w-[1/2]">
                   <p className={style.label}>Audio/Video*</p>
-                  <p className={style.smallText}>
-                    Supported file types: MP3, MPEG, WAV, MPG, WEBM. Max size: 5MB
-                  </p>
                   <div
+                    className={style.previewImage}
+                    style={{ height: '250px', width: '325px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setAnimatedFile(e.dataTransfer.files[0]);
+                        }}>
+                    {animatedFile ? (
+                      <video id="itemVideo" width="300px" height="200px" className="object-cover cursor-pointer hover:opacity-80" onClick={e => setAnimatedFile(undefined)}>
+                        <source src={URL.createObjectURL(animatedFile)}/>
+                        Your browser does not support video tag. Upgrade your browser.
+                      </video>
+                      // <img src={URL.createObjectURL(file)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setFile(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {animatedFileInputRef.current.click()}} 
+                        className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 px-4"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setAnimatedFile(e.dataTransfer.files[0]);
+                        }}><BsUpload fontSize={50} />
+                          Drag & Drop Image
+                          <p className={style.smallText}>
+                            Supported file types: MP3, MPEG, WAV, MPG, WEBM. Max size: 2MB.
+                          </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="imageUploader mb-4 ml-3">
+                    <input
+                      type="file"
+                      accept="video/mp4, video/x-m4v, video/*, audio/*"
+                      id="profileImg"
+                      ref={animatedFileInputRef}
+                      onChange={e => setAnimatedFile(e.target.files[0])}
+                      style={{ display: "none"}}
+                    />
+                  </div>
+
+
+                  {/* <p className={style.smallText}>
+                    Supported file types: MP3, MPEG, WAV, MPG, WEBM. Max size: 5MB
+                  </p> */}
+                  {/* <div
                     className={style.previewImage}
                     style={{ height: '200px', width: '300px' }}
                   >
@@ -509,8 +528,8 @@ const CreateAVNFT = ({uuid}) => {
                         Your browser does not support audio tag. Upgrade your browser.
                       </audio>
                     )}
-                  </div>
-                  <div className="imageUploader mb-4 ml-3">
+                  </div> */}
+                  {/* <div className="imageUploader mb-4 ml-3"> */}
                     {/* <FileBase
                       type="file"
                       multiple={false}
@@ -522,7 +541,7 @@ const CreateAVNFT = ({uuid}) => {
                         })
                       }}
                     /> */}
-                    <input
+                    {/* <input
                       type="file"
                       accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
                       id="nftImage"
@@ -530,24 +549,60 @@ const CreateAVNFT = ({uuid}) => {
                       onChange={e => setFile(e.target.files[0])}
                       style={{ display: "none"}}
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="w-[1/2]">
                   <p className={style.label}>Cover Image*</p>
-                  <p className={style.smallText}>
-                    Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 5MB
-                  </p>
                   <div
                     className={style.previewImage}
-                    style={{ height: '200px', width: '300px' }}
-                  >
-                    {/* {isNaN(state.image) && <MediaRenderer src={state.image} />} */}
-                    {state.image && (
-                      <Image src={state.image} layout="fill" objectFit="cover" />
+                    style={{ height: '250px', width: '325px' }}
+                    onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setFile(e.dataTransfer.files[0]);
+                        }}>
+                    {file ? (
+                      <img src={URL.createObjectURL(file)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setFile(undefined)}/>
+                    ) : (
+                      <div 
+                        onClick={() => {fileInputRef.current.click()}} 
+                        className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 px-4"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setFile(e.dataTransfer.files[0]);
+                        }}><BsUpload fontSize={50} />
+                          Drag & Drop Image
+                          <p className={style.smallText}>
+                            Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 2MB.
+                          </p>
+                      </div>
                     )}
                   </div>
                   <div className="imageUploader mb-4 ml-3">
+                    <input
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                      id="profileImg"
+                      ref={fileInputRef}
+                      onChange={e => setFile(e.target.files[0])}
+                      style={{ display: "none"}}
+                    />
+                  </div>
+
+                  {/* <p className={style.smallText}>
+                    Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 5MB
+                  </p> */}
+                  {/* <div
+                    className={style.previewImage}
+                    style={{ height: '200px', width: '300px' }}
+                  >
+                    {state.image && (
+                      <Image src={state.image} layout="fill" objectFit="cover" />
+                    )}
+                  </div> */}
+                  {/* <div className="imageUploader mb-4 ml-3">
                     <FileBase
                       type="file"
                       multiple={false}
@@ -558,7 +613,7 @@ const CreateAVNFT = ({uuid}) => {
                         })
                       }}
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -583,7 +638,7 @@ const CreateAVNFT = ({uuid}) => {
               <p className={style.smallText}>
               Select your collection where this NFT will be minted. Only Collections from currently connected chain are shown.
               </p>
-              <div className="ml-[2rem] flex w-full px-4 py-4">
+              <div className="flex w-full px-4 py-4">
                 <div className="mx-auto w-full">
                   {thisChainCollection?.length > 0 ? (
                     <RadioGroup
@@ -597,7 +652,7 @@ const CreateAVNFT = ({uuid}) => {
                       <RadioGroup.Label className="sr-only">
                         Server size
                       </RadioGroup.Label>
-                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2">
+                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 md:max-h-[300px] overflow-y-scroll p-4">
                         {thisChainCollection?.map((collection) => (
                           <RadioGroup.Option
                             key={collection.name}
@@ -618,7 +673,7 @@ const CreateAVNFT = ({uuid}) => {
                                     <div className="flex space-x-3 text-sm">
                                       <div className="">
                                         <img
-                                          src={collection.profileImage}
+                                          src={getImagefromWeb3(collection.web3imageprofile)}
                                           alt={collection.name}
                                           className="aspect-video h-[50px] w-[50px] rounded-full ring-2 ring-white"
                                         />
