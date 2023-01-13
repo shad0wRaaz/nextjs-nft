@@ -20,8 +20,8 @@ import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
-  pageBanner: 'py-[4rem] mb-[2rem]',
-  pageTitle: 'text-4xl text-center text-black font-bold my-4 textGradBlue',
+  pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+  pageTitle: 'text-4xl text-center font-bold my-4 text-white',
   contractsWrapper: 'flex flex-wrap justify-center gap-[40px] pt-4',
   contractItem: 'flex justify-center flex-col text-center hover:opacity-80 cursor-pointer py-[2rem] px-[1rem] md:w-1/3 sm:w-full flex justify-start rounded-xl border',
   contractItemIcon: 'mb-[1rem] text-5xl mx-auto',
@@ -29,7 +29,7 @@ const style = {
   contractDescription: 'text-sm',
   canvasMenu: 'bg-[#0f172a] h-[100vh] shadow-xl px-[2rem] overflow-y-scroll',
   blur: 'filter: blur(1px)',
-  smallText: 'text-sm text-center mb-[2rem]',
+  smallText: 'text-sm text-center mb-[2rem] text-white',
   noPointer: ' pointer-events-none',
   closeButton : 'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70'
 }
@@ -67,7 +67,7 @@ const contracts = () => {
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">
           <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl max-w-2xl z-50 relative overflow-hidden`}>
             <div
-              className="absolute rotate-45 text-md top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
+              className={`absolute rotate-45 text-md top-5 right-5 ${dark ? 'bg-slate-600 hover:bg-slate-500' : ' bg-gray-300 hover:bg-gray-400'} p-3 rounded-full transition-all cursor-pointer`}
               onClick={() => setShowModal(false)}
             >
               <AiOutlinePlus />
@@ -115,17 +115,17 @@ const contracts = () => {
               </div>
               <div className={style.wrapper}>
                 <div className={style.contractsWrapper}>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => setShowModal(curVal => !curVal)}>
+                  <div className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem} onClick={() => setShowModal(curVal => !curVal)}>
                     <GoPackage className={style.contractItemIcon} />
                     <span className={style.contractTitle}>NFT</span>
                     <span className={style.contractDescription}>Your unique Non-fungible token</span>
                   </div>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_COLLECTION'})}>
+                  <div className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_COLLECTION'})}>
                     <BiCollection className={style.contractItemIcon} />
                     <span className={style.contractTitle}>NFT Collection</span>
                     <span className={style.contractDescription}>A collection of one-of-one NFTs</span>
                   </div>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_DROP'})}>
+                  {/* <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_DROP'})}>
                     <BsDroplet className={style.contractItemIcon} />
                     <span className={style.contractTitle}>NFT Drop</span>
                     <span className={style.contractDescription}>Claimable drop of one-of-one NFTs</span>
@@ -139,7 +139,7 @@ const contracts = () => {
                     <BsDropletHalf className={style.contractItemIcon} />
                     <span className={style.contractTitle}>Edition Drop</span>
                     <span className={style.contractDescription}>Claimable drop of N-of-one NFTs</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <Footer/>
@@ -162,7 +162,7 @@ const contracts = () => {
               {state.canvasMenu == "NFT_COLLECTION" && 
                 <CreateNFTCollection/>
               }
-              {state.canvasMenu == "NFT_DROP" && 
+              {/* {state.canvasMenu == "NFT_DROP" && 
                 <CreateNFTDrop/>
               }
               {state.canvasMenu == "EDITION" && 
@@ -170,7 +170,7 @@ const contracts = () => {
               }
               {state.canvasMenu == "EDITION_DROP" && 
                 <CreateEditionDrop/>
-              }
+              } */}
             </OffCanvasMenu>
         </OffCanvas>
       

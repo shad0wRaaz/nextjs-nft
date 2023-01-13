@@ -5,12 +5,13 @@ import HeroSearch from '../components/HeroSearch'
 import ExploreNFTs from '../components/ExploreNFTs'
 import HeroCarousel from '../components/HeroCarousel'
 import TopCollections from '../components/TopCollections'
+import HelmetMetaData from '../components/HelmetMetaData'
 import { useThemeContext } from '../contexts/ThemeContext'
+import herobackground from '../assets/herobackground.jpeg'
 import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
 import PopularVideoNFTs from '../components/PopularVideoNFTs'
-import herobackground from '../assets/herobackground.jpeg'
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
@@ -25,8 +26,14 @@ const Home = (props) => {
   const { dark } = useThemeContext();
 
   return (
-      <div className={ dark ? 'darkBackground text-neutral-200': '' }>
-        <div className="bg-top md:bg-center md:pb-[8rem]" style={{ backgroundImage: `url(${herobackground.src})`}}>
+      <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden` }>
+        <HelmetMetaData
+          title="Nuva NFT"
+          description="A Multichain NFT Marketplace"
+          tokenId={"v1.0"}
+          contractAddress={"NUVA"}>  
+        </HelmetMetaData>
+        <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${herobackground.src})`}}>
           <Header/>
           <HeroCarousel featuredNfts={props.featuredNfts}/>
           <HeroSearch />

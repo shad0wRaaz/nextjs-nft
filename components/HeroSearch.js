@@ -36,7 +36,7 @@ const HeroSearch = () => {
               : ' border-neutral-100/70 bg-[#ffffff99]'
           } divide-y  lg:divide-y-0 backdrop-blur-md`}
         >
-          <div className="searchfields relative flex">
+          <div className="searchfields border-slate-500  relative flex">
             <div className="relative flex flex-1 flex-shrink-0 cursor-pointer items-center space-x-3 text-left focus:outline-none  ">
               <div className={`searchfieldicon pl-5 ${dark ? ' text-white' : ' text-black'}`}>
                 <IconSearch />
@@ -61,7 +61,7 @@ const HeroSearch = () => {
             </div>
           </div>
 
-          <div className="searchfields relative flex">
+          <div className="searchfields border-slate-500 relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
@@ -180,7 +180,7 @@ const HeroSearch = () => {
             </Menu>
           </div>
 
-          <div className="searchfields relative flex">
+          <div className="searchfields border-slate-500 relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
@@ -307,7 +307,7 @@ const HeroSearch = () => {
             </Menu>
           </div>
 
-          <div className="searchfields relative flex">
+          <div className="searchfields border-slate-500  relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
                 <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
@@ -357,7 +357,7 @@ const HeroSearch = () => {
             </Menu>
           </div>
 
-          <div className="py-4 pl-4 lg:py-0">
+          <div className="py-4 pl-4 lg:py-0 border-slate-500">
             <button
               type="button"
               className="flex h-14 w-full items-center justify-center rounded-full bg-blue-600 text-neutral-50 hover:bg-blue-700 focus:outline-none md:h-16 md:w-16"

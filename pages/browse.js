@@ -13,8 +13,8 @@ function classNames(...classes) {
 
 const style = {
   wrapper: 'container mx-auto sm:px-[2rem] lg:px-[8rem]',
-  pageBanner: 'py-[4rem] mb-[2rem]',
-  pageTitle: 'text-4xl font-bold text-center textGradBlue',
+  pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+  pageTitle: 'text-4xl font-bold text-center text-white',
   categoryImage: 'rounded-full ring-2 ring-white h-[40px] w-[40px]',
   categoryTitle: 'text-md p-4 px-8 rounded-full w-max',
 }

@@ -4,19 +4,19 @@ import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
   wrapper: 'container mx-auto',
-  pageBanner: 'py-[4rem] mb-[2rem]',
-  pageTitle: 'text-4xl font-bold text-center textGradBlue',
+  pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+  pageTitle: 'text-4xl font-bold text-center text-white',
   categoryImage: 'rounded-full ring-2 ring-white h-[40px] w-[40px]',
   categoryTitle: 'text-md hover:bg-neutral-100 p-2.5 px-4 rounded-full',
 }
 
-const cookiepolicy = () => {
+const cookiespolicy = () => {
   const { dark } = useThemeContext()
 
   const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-4 lg:pb-0',
-    pageBanner: 'py-[4rem] bg-sky-100 mb-[2rem]',
-    pageTitle: 'text-4xl font-bold text-center textGradBlue',
+    pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+    pageTitle: 'text-4xl font-bold text-center text-white',
     section: 'py-8',
     header: 'font-bold text-xl mb-2',
     table: `rounded-3xl border ${dark ? 'border-slate-700' : 'border-neutral-100'} w-[56] p-4 mt-4`,
@@ -36,7 +36,7 @@ const cookiepolicy = () => {
             : style.pageBanner + ' bg-sky-100'
         }
       >
-        <h2 className={style.pageTitle}>Cookie Policy</h2>
+        <h2 className={style.pageTitle}>Cookies Policy</h2>
       </div>
       <div className={style.wrapper}>
         <div className={style.section}>
@@ -130,4 +130,4 @@ const cookiepolicy = () => {
   )
 }
 
-export default cookiepolicy
+export default cookiespolicy

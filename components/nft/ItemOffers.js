@@ -51,13 +51,13 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
   useEffect(() => {
     if(!marketOffer) return
     const marketArray = [
-      process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE, 
       process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE, 
+      process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
+      process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
+      process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE
       ];
     if (marketArray.includes(selectedNft?.owner)) {

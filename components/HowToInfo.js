@@ -4,7 +4,6 @@ import { ImFilePicture } from 'react-icons/im'
 import { BsCollection, BsTags } from 'react-icons/bs'
 import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
 import { useThemeContext } from '../contexts/ThemeContext'
-import background from '../assets/traders-favor-ethereum-solana.webp'
 
 
 const HowToInfo = () => {
@@ -13,11 +12,10 @@ const HowToInfo = () => {
   const style = {
     wrapper:
       'container text-center text-white mx-auto lg:p-[8rem] p-[2rem]',
-    title: `font-bold text-[2rem] mb-[2.2rem] px-[3rem]`,
     contentWrapper:
       'howToContentContainer relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4',
     content:
-      `cursor-pointer z-10 p-[50px] rounded-3xl flex flex-col w-full transition hover:scale-105 backdrop-blur-md hover:backdrop-blur-xl ${dark ? ' bg-slate-700 ' : ' bg-[#ffffff99]'}`,
+      `cursor-pointer z-10 p-[50px] shadow-md rounded-3xl flex flex-col w-full transition hover:scale-105 backdrop-blur-md hover:backdrop-blur-xl ${dark ? ' bg-slate-700 ' : ' bg-[#ffffff99]'}`,
     contentTitle: 'text-lg text-left font-bold mb-2 mt-4',
     contentDescription: 'text-left text-sm leading-relaxed ',
   }
@@ -26,8 +24,8 @@ const HowToInfo = () => {
     <div className={`${dark ? ' darkGray' : ' bg-[#F5F6F8]'}`}>
       <div className={style.wrapper}>
         <h2
-          className={style.title + ' text-[3rem] text-[#ffffff]'}>
-          <span className="textGradGreen">Create</span> & <span className="textGradRed">Sell</span> your NFTs
+          className={`font-bold mb-[2.2rem] px-[3rem] text-[3rem] ${dark ? 'text-[#ffffff]' : ' text-black'}`}>
+          <span className="textGradBlue2">Create</span> & <span className="textGradRed">Sell</span> your NFTs
         </h2>
         <div className={style.contentWrapper}>
           <div className={style.content}>

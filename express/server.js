@@ -156,20 +156,23 @@ const collectionUpload = multer({ storage: collectionStorage});
 app.get('/api/getfeaturednfts', async(req, res) => {
 
   let featuredNfts = await redis.get("featurednfts");
-
+  console.log(featuredNfts)
   if(featuredNfts) {
     return res.status(200).send(featuredNfts);
   }else {
-    const query = `*[_type == "nftItem" && featured] {_id, id, name, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
+    const query = `*[_type == "nftItem" && featured == true] {_id, id, name, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
     const featurednfts = await config.fetch(query);
-  
+    console.log(featurednfts)
     const unresolved = featurednfts?.map(async (item) => {
       if(item?.collection){
         const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
         const contract = await sdk.getContract(item?.collection?.contractAddress);
         const nft = await contract.erc721.get(item?.id);
-        const obj = { ...item, nft };
-    
+
+        const getownerquery = `*[_type == "users" && _id == "${nft.owner}"] {userName, web3imageprofile}`;
+        const ownerdata = await config.fetch(getownerquery);
+
+        const obj = { ...item, nft, owner: ownerdata[0] };
         return obj;
       }
     })
@@ -179,7 +182,8 @@ app.get('/api/getfeaturednfts', async(req, res) => {
     const filterResolved = resolvedPath.filter(Boolean);
 
     //save in redis if not present already
-    redis.set("featurednfts", JSON.stringify(filterResolved))
+    redis.set("featurednfts", JSON.stringify(filterResolved));
+    redis.expire("featurednft", 60);
   
     return (res.status(200).json(filterResolved))
   }

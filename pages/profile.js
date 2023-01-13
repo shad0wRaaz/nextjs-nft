@@ -21,11 +21,11 @@ import { BsUpload } from 'react-icons/bs'
 
 const style = {
   wrapper: '',
-  pageBanner: 'py-[4rem] mb-[2rem]',
+  pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
   container:
     'container mx-auto p-3 pt-[2rem] px-[1.2rem] max-w-[700px] rounded-xl',
   formWrapper: 'flex flex-wrap flex-col',
-  pageTitle: 'text-4xl font-bold text-center textGradBlue',
+  pageTitle: 'text-4xl font-bold text-center text-white',
   smallText: 'text-sm m-2 text-slate-400 mt-0',
   input: 'm-2 outline-none p-3 border rounded-xl transition linear',
   inputgroup: 'p-3 border rounded-xl transition linear',

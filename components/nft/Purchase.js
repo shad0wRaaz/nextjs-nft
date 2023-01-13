@@ -176,10 +176,7 @@ var listed = true
       setOfferLoading(true); 
       const sdk = new ThirdwebSDK(signer);
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-      console.log( listingId,
-        quantityDesired,
-        NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
-        offerAmount);
+     
       const tx = await contract.direct.makeOffer(
         listingId,
         quantityDesired,

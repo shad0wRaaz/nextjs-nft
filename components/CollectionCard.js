@@ -25,6 +25,17 @@ const chainIcon = {
   '5': <IconEthereum width="1.0rem" height="1.0rem" />,
   '4': <IconEthereum width="1.0rem" height="1.0rem" />
 }
+const chainName = {
+  "97": "TBNB",
+  "56": "BNB",
+  "5": "ETH",
+  "1": "ETH",
+  "137": "MATIC",
+  "80001": "MATIC",
+  "43113": "AVAX",
+  "43114": "AVAX",
+}
+
 const CollectionCard = ({
   id,
   name,
@@ -126,8 +137,8 @@ const CollectionCard = ({
             <p className="flex items-center justify-start">
               {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
               {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
-              {chainIcon[chainId]}
-              {floorPrice}
+              {floorPrice}{' '}
+              {chainName[chainId]}
             </p>
           </div>
 

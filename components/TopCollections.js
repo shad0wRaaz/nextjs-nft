@@ -10,7 +10,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
 
 const style = {
-  wrapperContainer: 'text-center bg-center bg-top md:bg-center md:bg-cover',
+  wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-1 relative',
   wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]',
   title: 'font-bold mb-[2rem] grow text-center flex flex-col md:flex-row justify-center items-center gap-2 text-white text-[3rem]',
   collectionWrapper:
@@ -96,8 +96,8 @@ const TopCollections = () => {
   return (
     <div className={style.wrapperContainer} style={{ backgroundImage: `url(${background.src})`}}>
       <div className={style.wrapper}>
-        <div className="flex-between flex flex-col md:flex-row items-center">
-          <h2 className={style.title}><span className="textGradBlue2">{showTop ? 'Top Traded' : 'Latest'}</span> Collections</h2>
+        <div className="flex-between flex flex-col md:flex-row items-center relative z-10">
+          <h2 className={style.title}><span className="textGradGreen">{showTop ? 'Top Traded' : 'Latest'}</span> Collections</h2>
           <div>
             <div className={`z-20  w-[3rem] h-[3rem] border flex justify-center items-center mb-[2rem] py-1 px-2 rounded-xl items-center ${dark ? ' bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : ' bg-slate-100 hover:bg-slate-200'} cursor-pointer`}  onClick={() => setShowTop(current => !current)}>
               <RiArrowUpDownLine className="cursor-pointer text-lg" />

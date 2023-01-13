@@ -133,7 +133,7 @@ const dashboard = () => {
                                 onClick={() => setSelectedChain("binance-test")}>
                                 <IconBNB/> Binance
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "avalanche-fuji" ? ' bg-white shadow-md' : ''}`}
+                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 flex gap-1 items-center p-4 mb-1 cursor-pointer ${selectedChain == "avalanche-fuji" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("avalanche-fuji")}>
                                 <IconAvalanche/>  Avalanche
                             </div>

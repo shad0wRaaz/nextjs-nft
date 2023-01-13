@@ -54,7 +54,7 @@ const SearchBar = () => {
     <div
       className={`z-20 h-[2.6rem] w-full border-0 bg-transparent px-4 pl-5 outline-0 ring-0 ${
         dark
-          ? 'text-neutral-100 placeholder:text-neutral-200'
+          ? 'text-black placeholder:text-neutral-200'
           : 'text-black placeholder:text-neutral-100'
       }`}
     >
@@ -64,8 +64,8 @@ const SearchBar = () => {
             <Combobox.Input data-headlessui-state=""
               className={`w-full rounded-full border-transparent bg-transparent bg-none py-2 pl-[1.4rem] pr-10 text-sm leading-5 outline-none ${
                 dark
-                  ? 'text-neutral-100 placeholder:text-neutral-500'
-                  : 'text-black placeholder:text-neutral-100'
+                  ? ' placeholder:text-neutral-500'
+                  : 'placeholder:text-neutral-100'
               } focus-within:bg-transparent focus:ring-0 focus-visible:ring-opacity-0`}
               displayValue=""
               onChange={(event) => setQuery(event.target.value)}

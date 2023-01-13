@@ -10,10 +10,10 @@ import { MdAudiotrack } from 'react-icons/md'
 import { useAddress } from '@thirdweb-dev/react'
 
 const NFTItem = ({ nftItem }) => {
-  const { dark } = useThemeContext()
-  const [isLiked, setIsLiked] = useState(false)
-  const address = useAddress()
-  const [nftData, settNftData] = useState()
+  const { dark } = useThemeContext();
+  const [isLiked, setIsLiked] = useState(false);
+  const address = useAddress();
+  const [nftData, settNftData] = useState();
 
   useEffect(() => {
     
@@ -23,8 +23,8 @@ const NFTItem = ({ nftItem }) => {
         _id,
         likedBy
       }`
-      const res = await sanityClient.fetch(query)
-      settNftData(res[0])
+      const res = await sanityClient.fetch(query);
+      settNftData(res[0]);
       
     })()
   }, [nftItem])
@@ -34,7 +34,7 @@ const NFTItem = ({ nftItem }) => {
     if(!nftData || !address) return
 
     if(nftData.likedBy != null){
-      const likersArray = nftData.likedBy
+      const likersArray = nftData.likedBy;
 
       const amILiker = likersArray.find(
         (user) => user._ref == address
@@ -150,7 +150,6 @@ const NFTItem = ({ nftItem }) => {
               <h2 className="text-left text-sm font-semibold">
                 {nftItem.asset.name}
               </h2>
-
               <div className="mt-1.5 flex w-full items-end justify-between ">
                 <div className="pt-3">
                   <div className="relative flex items-baseline rounded-lg border border-green-500 py-1.5 px-2.5 text-sm font-semibold sm:text-base md:py-2 md:px-3.5 ">

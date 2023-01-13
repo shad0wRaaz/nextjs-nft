@@ -1,15 +1,14 @@
+import Link from 'next/link'
+import { config } from '../lib/sanityClient'
+import { IconWallet } from './icons/CustomIcons'
 import React, { useState, useEffect } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { config } from '../lib/sanityClient'
-import { BsBasket, BsFillPlayFill, BsPause } from 'react-icons/bs'
-import Link from 'next/link'
-import Countdown from 'react-countdown'
-import { IconWallet } from './icons/CustomIcons'
+import { BsFillPlayFill, BsPause } from 'react-icons/bs'
 
 const VideoNFTCard = ({nft}) => {
-    const { dark } = useThemeContext()
-    const [play,setPlay] = useState(false)
-    const [likers, setLikers] = useState([])
+    const { dark } = useThemeContext();
+    const [play, setPlay] = useState(false);
+    const [likers, setLikers] = useState([]);
 
     useEffect(() => {
         if(!nft) return
@@ -25,7 +24,7 @@ const VideoNFTCard = ({nft}) => {
     }, [nft])
     
   return (
-    <div className={`relative flex flex-col group keen-slider__slide shadow-md p-2 rounded-3xl ${dark ? 'bg-slate-700' : ' bg-neutral-200'}`}>
+    <div className={`relative flex flex-col group shadow-md p-2 rounded-3xl ${dark ? 'bg-slate-700' : ' bg-neutral-200'}`}>
         <div className="relative flex-shrink-0 rounded-3xl overflow-hidden">
             <div className="">
                 <div className="flex aspect-video z-0">

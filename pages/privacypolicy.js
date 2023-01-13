@@ -7,8 +7,8 @@ const privacypolicy = () => {
 
   const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-4 lg:pb-0',
-    pageBanner: 'py-[4rem] bg-sky-100 mb-[2rem]',
-    pageTitle: 'text-4xl font-bold text-center textGradBlue',
+    pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+    pageTitle: 'text-4xl font-bold text-center text-white',
     categoryImage: 'rounded-full ring-2 ring-white h-[40px] w-[40px]',
     categoryTitle: 'text-md hover:bg-neutral-100 p-2.5 px-4 rounded-full',
     section: 'py-8',
@@ -34,7 +34,7 @@ const privacypolicy = () => {
       </div>
       <div className={style.wrapper}>
         <p>This privacy policy applies between you, the User of this Website, and NUVA NFT, the owner and provider of this Website. NUVA NFT takes the privacy of your information very seriously. This privacy policy applies to our use of any and all Data collected by us or provided by you in relation to your use of the Website.
-          <br/>This privacy policy should be read alongside, and in addition to, our Terms and Conditions, which can be found at: <a href="https://nuvatoken.com" target="_blank" className="underline text-blue-500">nuvatoken.com</a>.
+          <br/>This privacy policy should be read alongside, and in addition to, our Terms and Conditions, which can be found at: <a href="/termsandconditions" className="underline text-blue-500">https://nuvanft.io/termsandconditions</a>.
         </p><br/>
         <p>Please read this privacy policy carefully.</p>
         <br/>
@@ -44,7 +44,7 @@ const privacypolicy = () => {
           <div className={style.table}>
             <div className={style.tableRow}>
               <div className={style.tableColFirst}>
-                Date
+                Data
               </div>
               <div className={style.tableColSecond}>
                 collectively all information that you submit to NUVA NFT via the Website. This definition incorporates, where applicable, the definitions provided in the Data Protection Laws;
@@ -103,7 +103,7 @@ const privacypolicy = () => {
                 Website
               </div>
               <div className={style.tableColSecond}>
-                the website that you are currently using, nuvatoken.com, and any sub-domains of this site unless expressly excluded by their own terms and conditions.
+              the website that you are currently using, nuvanft.io, and any sub-domains of this site unless expressly excluded by their own terms and conditions.
               </div>
             </div>
           </div>
@@ -144,12 +144,25 @@ const privacypolicy = () => {
 
         <div className={style.section}>
           <p className={style.header}>How we collect data</p>
-          6. We collect data in the following ways:
+          6. We collect Data in the following ways:
           <ol className='pl-8'>
             <li>a. data is given to us by you;</li>
             <li>b. data is received from other sources; and</li>
             <li>c. data is collected automatically.</li>
           </ol>
+        </div>
+
+        <div className={style.section}>
+          <p className={style.header}>Data that is given to us by you</p>
+          7. NUVA NFT will collect your Data in a number of ways, for example:
+          <ol className='pl-8'>
+            <li>a. when you contact us through the Website, by telephone, post, e-mail or through any other means;</li>
+            <li>b. when you register with us and set up an account to receive our products/services;</li>
+            <li>c. when you make payments to us, through this Website or otherwise;</li>
+            <li>c. when you elect to receive marketing communications from us;</li>
+            <li>c. when you use our services;</li>
+          </ol>
+          in each case, in accordance with this privacy policy.
         </div>
 
         <div className={style.section}>

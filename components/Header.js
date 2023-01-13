@@ -26,11 +26,11 @@ import { GoDashboard } from 'react-icons/go'
 
 
 const style = {
-  wrapper: ` mx-auto w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 relative`,
+  wrapper: ` mx-auto absolute top-0 left-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
   searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
-  searchIcon: `text-[#8a939b] mx-3 font-bold text-lg absolute`,
+  searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
   searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
   headerItems: `flex items-center justify-end nonMobileMenu`,
   headerItem: `px-4 cursor-pointer font-bold`,
@@ -220,8 +220,8 @@ const Header = () => {
       <div
         className={
           dark
-            ? style.searchBar + ' border-sky-400/20'
-            : style.searchBar + ' border-neutral-200 bg-[#ffffff99]'
+            ? style.searchBar + ' border-sky-400/20 bg-[#ffffff99] text-black'
+            : style.searchBar + ' border-neutral-200 bg-[#ffffff99] text-black'
         }
       >
         <div className={style.searchIcon}>
@@ -564,7 +564,7 @@ const Header = () => {
             </div>
 
             <div
-              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
                 changeBlockchain('goerli')
               }}
@@ -574,7 +574,7 @@ const Header = () => {
             </div>
 
             <div
-              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
                 changeBlockchain('binance-testnet')
               }}
@@ -584,7 +584,7 @@ const Header = () => {
             </div>
 
             <div
-              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
                 changeBlockchain('mumbai')
               }}
@@ -594,7 +594,7 @@ const Header = () => {
             </div>
 
             <div
-              className={`cursor-pointer rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+              className={`cursor-pointer flex gap-2 rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
               onClick={() => {
                 changeBlockchain('avalanche-fuji')
               }}
@@ -650,7 +650,7 @@ const Header = () => {
               <ThemeSwitcher />
               <Notifications />
             </div>
-            <div className={`rounded-md cursor-pointer px-5 py-3 gradGreen `}>
+            <div className={`rounded-md cursor-pointer px-5 py-3 text-black shadow-md bg-white `}>
               <Link href="/contracts">
                 <div className={style.headerItem + " inline-flex gap-1 items-center"}><div className="animate-pulse"><MdOutlineWidgets /></div> Mint</div>
               </Link>

@@ -29,6 +29,7 @@ import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
+import HelmetMetaData from '../../components/HelmetMetaData'
 
 const errorToastStyle = {
   style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -207,9 +208,6 @@ const Collection = () => {
     updateShowListed(collectionid)
   }
 
-
-  
-
   useEffect(() => {
     // console.log(showUnlisted)
   }, [showUnlisted])
@@ -228,11 +226,20 @@ const Collection = () => {
     };
   }, [])
  
-
+  console.log(collectionData)
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       {/* {collectionStatus == 'loading' && <Loader />} */}
+      {collectionData && (
+        <HelmetMetaData
+          title={collectionData[0]?.name}
+          description={collectionData[0]?.description}
+          image={getImagefromWeb3(collectionData[0]?.web3imageprofile)}
+          tokenId={collectionData[0]?._id}
+          contractAddress={collectionData[0]?.contractAddress}>
+        </HelmetMetaData>
+      )}
       {showModal && (
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
           <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl w-[55.5rem] h-[50rem] overflow-y-scroll z-50 relative`}>

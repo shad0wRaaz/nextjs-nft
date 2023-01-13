@@ -26,11 +26,11 @@ const style = {
 const settings = {
   dots: false,
   infinite: true,
-  speed: 3000,
+  speed: 500,
   slidesToShow: 5,
   slidesToScroll: 1,
   autoplay: true,
-  autoplaySpeed: 5000,
+  autoplaySpeed: 2000,
   pauseOnHover: true,
   responsive: [
     {

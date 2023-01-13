@@ -12,6 +12,8 @@ import {
 } from 'react-icons/fa'
 import axios from 'axios'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { BiGroup, BiHelpCircle } from 'react-icons/bi'
+import { HiOutlineNewspaper } from 'react-icons/hi'
 
 const style = {
   partnerContainer:
@@ -21,7 +23,7 @@ const style = {
     'm-auto justify-between flex flex-wrap container px-[1.2rem]',
   footerContainer:
     'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
-  header: 'font-bold text-lg mb-3',
+  header: 'text-lg mb-3 inline-flex items-center gap-1',
   text: '',
   leftBox: 'lg:max-w-[50%] sm:max-w-[290px]',
   socialWrapper: 'flex flex-wrap gap-3',
@@ -123,7 +125,7 @@ const Footer = () => {
                   : style.header + ' text-neutral-600'
               }
             >
-              Get Latest Updates
+              <HiOutlineNewspaper/> Get Latest Updates
             </h2>
             <p className={style.text}>
               Join our mailing list to stay in the loop with our newest feature
@@ -147,7 +149,8 @@ const Footer = () => {
             </div>
           </div>
           <div className={style.RightBox}>
-            <h2 className={style.header}>Join the Community</h2>
+            <h2 className={style.header}><BiGroup/> Join the Community</h2>
+            
             <div className={style.socialWrapper}>
               <Link href="https://t.me/+6qVi9uU9KzY2YzE0">
                 <a target="_blank" rel="noopener noreferrer">
@@ -192,6 +195,10 @@ const Footer = () => {
                 </a>
               </Link>
             </div>
+            <div className="my-8"></div>
+            <h2 className={style.header}><BiHelpCircle/> Help and Resources</h2>
+            
+
           </div>
         </div>
       </div>
@@ -207,6 +214,19 @@ const Footer = () => {
           >
           <p className={style.copyright}>&copy; {new Date().getFullYear()} Meta Nuva Ltd.</p>
           <div className={style.footerLinksWrapper}>
+            <Link href="/termsandconditions">
+              <a
+                className={
+                  dark
+                    ? style.footerLinks +
+                      ' text-neutral-100 hover:text-neutral-300'
+                    : style.footerLinks + ' text-black hover:text-slate-500 '
+                }
+                rel="noopener noreferrer"
+              >
+                Terms & Conditions
+              </a>
+            </Link>
             <Link href="/privacypolicy">
               <a
                 className={
@@ -220,7 +240,7 @@ const Footer = () => {
                 Privacy Policy
               </a>
             </Link>
-            <Link href="/cookiepolicy">
+            <Link href="/cookiespolicy">
               <a
                 className={
                   dark
@@ -230,7 +250,7 @@ const Footer = () => {
                 }
                 rel="noopener noreferrer"
               >
-                Cookie Policy
+                Cookies Policy
               </a>
             </Link>
           </div>

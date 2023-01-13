@@ -133,12 +133,12 @@ const search = ({category}) => {
     if (!router.query._r) return
     
 
-    let minPrice = parseInt(activeListings[0].buyoutPrice.hex,16) / DIVIDER
+    let minPrice = parseInt(activeListings[0]?.buyoutPrice.hex,16) / DIVIDER
     let maxPrice = minPrice
     
 
     for (let i = 0; i < activeListings.length; i++) {
-      let currentPrice = parseInt(activeListings[i].buyoutPrice.hex, 16)
+      let currentPrice = parseInt(activeListings[i]?.buyoutPrice.hex, 16)
 
       let buyPrice = currentPrice / DIVIDER
 

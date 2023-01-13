@@ -141,40 +141,42 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
             </div>
         </td>
         <td className={`p-4 border-t pl-0 ${dark ? 'border-slate-700' : 'border-slate-200'}`}>
-            <div className="flex justify-between items-center">
-            <div>
-                <p className="text-sm">
-                    <a className="" href={`/user/${offer?.offeredBy.walletAddress}`}>{offer?.offeredBy.userName}</a>
-                </p>
-                <p className="text-sm">
-                    <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
-                </p>
-            </div> 
-            <div className="flex-grow text-right flex justify-end items-center gap-1">
-                {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
-                ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
-                {Math.abs((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue)).toFixed(2) * 100}%
-            </div>
-            {!isAuctionItem && (
-                <div className="flex items-center justify-between gap-2">
-                {listingData?.sellerAddress == address ? (
-                    <button 
-                    onClick={() => acceptOffer(offer?.listingId.toString(), offer?.buyerAddress, offer?.currencyValue.displayValue)} 
-                    className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
-                    title='Accept this offer'>
-                        {isAccepting ? (
-                        <>
-                            <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
-                        </>
-                        ) : (
-                        <>
-                            <FaRegCheckCircle fontSize={15} /> Accept
-                        </>
-                        )}
-                    </button>
-                ) : ('')}
+            <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
+              <div className="flex items-center w-full flex-grow justify-center">
+                <div className="flex-grow">
+                  <p className="text-sm">
+                      <a className="" href={`/user/${offer?.offeredBy.walletAddress}`}>{offer?.offeredBy.userName}</a>
+                  </p>
+                  <p className="text-sm">
+                      <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
+                  </p>
                 </div>
-            )}
+                <div className="flex-grow text-right flex justify-end items-center gap-1">
+                    {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
+                    ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
+                    {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(4)}%
+                </div>
+              </div>
+              {!isAuctionItem && (
+                  <div className="flex items-center justify-between gap-2">
+                  {listingData?.sellerAddress == address ? (
+                      <button
+                      onClick={() => acceptOffer(offer?.listingId.toString(), offer?.buyerAddress, offer?.currencyValue.displayValue)} 
+                      className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
+                      title='Accept this offer'>
+                          {isAccepting ? (
+                          <>
+                              <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
+                          </>
+                          ) : (
+                          <>
+                              <FaRegCheckCircle fontSize={15} /> Accept
+                          </>
+                          )}
+                      </button>
+                  ) : ('')}
+                  </div>
+              )}
             </div>
         </td>
     </tr>

@@ -6,15 +6,15 @@ import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
   wrapper: `relative`,
-  container: ``,
+  container: `pt-[8rem]`,
   contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
   title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] text-white`,
   description: `container-[400px] mt-[0.8rem] mb-[2.5rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
   ctaContainer: `flex justify-start gap-[20px] px-[20px] mb-8`,
   accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,
-  button: ` relative text-lg font-semibold px-12 py-4 bg-slate-800 rounded-full  text-[#e4e8ea] hover:bg-slate-700 cursor-pointer`,
-  cardContainer: `md:w-1/2 p-4 overflow-hidden`,
+  button: ` relative text-lg font-semibold px-12 py-4 bg-slate-600 rounded-full text-[#e4e8ea] hover:bg-slate-700 cursor-pointer`,
+  cardContainer: `md:w-1/2 md:p-4 sm:p-0`,
   infoContainer: `h-20 bg-[#313338] p-4 rounded-b-lg flex items-center text-white`,
   author: `flex flex-col justify-center ml-4`,
   name: ``,
@@ -26,13 +26,12 @@ const style = {
 const settings = {
   dots: false,
   infinite: true,
-  lazyload: true,
   fade: true,
-  speed: 4000,
+  speed: 7000,
   slidesToShow: 1,
   slidesToScroll: 1,
   autoplay: true,
-  autoplaySpeed: 2000,
+  autoplaySpeed: 7000,
   pauseOnHover: true
 };
 
@@ -81,7 +80,7 @@ const HeroCarousel = (props) => {
               tiltMaxAngleY={20}
               transitionSpeed={1500}
               className="parallax-effect flex justify-center items-center rounded-2xl shadow-md p-2 md:left-0 sm:left-[2rem] cursor-pointer bg-[#ffffffdd] backdrop-blur-md">
-                <div className="inner-element relative w-full transition">
+                <div className="inner-element featured relative w-full transition">
                   <Slider {...settings}>
                       {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
                           <FeaturedItems item={nft} id={index} key={index} />

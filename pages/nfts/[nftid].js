@@ -1,7 +1,5 @@
 import millify from 'millify'
 import toast from 'react-hot-toast'
-import { useQuery } from 'react-query'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Footer from '../../components/Footer'
 import { BiChevronUp } from 'react-icons/bi'
@@ -14,7 +12,6 @@ import AuctionTimer from '../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import GeneralDetails from '../../components/nft/GeneralDetails'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import RelatedNFTs from '../../components/RelatedNFTs'
 import { IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
@@ -295,10 +292,10 @@ const Nft = (props) => { //props are from getServerSideProps
 
   return (
     <div
-      className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}
+      className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}
     >
       <Header />
-      <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex">
+      <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex pt-[5rem] md:pt-[8rem]">
         <div className="grid w-full grid-cols-1 gap-10 px-[1.2rem] md:gap-14 lg:grid-cols-2">
           <div className="space-y-8">
             <div
