@@ -14,7 +14,7 @@ import {
 
 const HeroSearch = () => {
   const { dark } = useThemeContext()
-  const [itemName, setItemName] = useState('Search NFTs')
+  const [itemName, setItemName] = useState('')
   const [includeImage, setIncludeImage] = useState(true)
   const [includeVideo, setIncludeVideo] = useState(false)
   const [includeAudio, setIncludeAudio] = useState(false)
@@ -44,13 +44,11 @@ const HeroSearch = () => {
 
               <div className="flex-grow">
                 <input
-                  className="block w-full truncate border-none bg-transparent p-0 font-semibold placeholder-neutral-800 focus:placeholder-neutral-300 focus:outline-none focus:ring-0  xl:text-lg"
+                  className="block w-full truncate border-none bg-transparent p-0 font-semibold placeholder-neutral-300 focus:placeholder-neutral-300/20 focus:outline-none focus:ring-0  xl:text-lg"
                   placeholder="Search NFTs"
                   value={itemName}
                   ref={itemNameRef}
                   onChange={(e) => setItemName(e.target.value)}
-                  onFocus={(e) => e.target.value == 'Search NFTs' && setItemName('')}
-                  onBlur={(e) => e.target.value == '' && setItemName('Search NFTs')}
                 />
                 <span className={`mt-0.5 block text-sm font-light ${dark ? ' text-white' : ' text-black'}`}>
                   <span className="line-clamp-1">
@@ -365,7 +363,7 @@ const HeroSearch = () => {
                 router.push({
                   pathname: '/search',
                   query: {
-                    n: itemName == 'Search NFTs' && '',
+                    n: itemName,
                     i: includeImage,
                     v: includeVideo,
                     a: includeAudio,

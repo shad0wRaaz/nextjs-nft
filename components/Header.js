@@ -258,132 +258,88 @@ const Header = () => {
               } rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
             >
               <div className="px-1 py-1 ">
-                <Menu.Item>
-                  {({ active }) => (
-                    <>
-                      <div
-                        className={`${
-                          active ? 'bg-blue-500 ' : ''
-                        } group rounded-md px-4 py-2 text-sm pt-4`}
-                      >
-                        <span className="flex w-full items-center ">
-                          Select Chain
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                      <div
-                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                          onClick={() => {
-                            changeBlockchain('goerli')
-                          }}
-                        >
-                          <IconEthereum />
-                          <span className="inline-block text-sm">Ethereum</span>
-                        </div>
-
-                        <div
-                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                          onClick={() => {
-                            changeBlockchain('binance-testnet')
-                          }}
-                        >
-                          <IconBNB />
-                          <span className="inline-block text-sm">Binance</span>
-                        </div>
-
-                        <div
-                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                          onClick={() => {
-                            changeBlockchain('mumbai')
-                          }}
-                        >
-                          <IconPolygon />
-                          <span className="inline-block text-sm">Polygon</span>
-                        </div>
-
-                        <div
-                          className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                          onClick={() => {
-                            changeBlockchain('avalanche-fuji')
-                          }}
-                        >
-                          <IconAvalanche/>
-                          <span className="inline-block text-sm">Avalance</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </Menu.Item>
-
                 {!isLogged && (
-                  <div className="w-64 mx-auto mb-4 mt-4 pt-4 border-t border-slate-600">
-                    <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl" />
-                  </div>
-                  // <>
-                  //   <div className="mb-2 border-t border-neutral-200 pt-3 pl-2 text-sm font-bold">
-                  //     CONNECT WALLET WITH
-                  //   </div>
-                  //   <Menu.Item>
-                  //     {({ active }) => (
-                  //       <button
-                  //         onClick={connectWithMetamask}
-                  //         className={`${
-                  //           active ? 'bg-blue-500 ' : ''
-                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  //       >
-                  //         <img src={MetaMask.src} className="mr-2 h-[25px]" />
-                  //         Metamask
-                  //       </button>
-                  //     )}
-                  //   </Menu.Item>
-                  //   <Menu.Item>
-                  //     {({ active }) => (
-                  //       <button
-                  //         onClick={connectWithCoinbase}
-                  //         className={`${
-                  //           active ? 'bg-blue-500 ' : ''
-                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  //       >
-                  //         <img src={Coinbase.src} className="mr-2 h-[25px]" />
-                  //         Coinbase Wallet
-                  //       </button>
-                  //     )}
-                  //   </Menu.Item>
-                  //   <Menu.Item>
-                  //     {({ active }) => (
-                  //       <button
-                  //         onClick={connectWithWalletConnect}
-                  //         className={`${
-                  //           active ? 'bg-blue-500 ' : ''
-                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  //       >
-                  //         <img
-                  //           src={Walletconnect.src}
-                  //           className="mr-2 w-[23px]"
-                  //         />
-                  //         Wallet Connect
-                  //       </button>
-                  //     )}
-                  //   </Menu.Item>
-                  //   <Menu.Item>
-                  //     {({ active }) => (
-                  //       <button
-                  //         className={`${
-                  //           active ? 'bg-blue-500 ' : ''
-                  //         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  //       >
-                  //         <img
-                  //           src={Emailwallet.src}
-                  //           className="mr-2 w-[23px]"
-                  //         />
-                  //         Email Wallet
-                  //       </button>
-                  //     )}
-                  //   </Menu.Item>
-                  // </>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <>
+                        <div
+                          className={`${
+                            active ? 'bg-blue-500 ' : ''
+                          } group rounded-md px-4 py-2 text-sm pt-4`}
+                        >
+                          <span className="flex w-full items-center ">
+                            Select Chain
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                        <div
+                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                            onClick={() => {
+                              changeBlockchain('goerli')
+                            }}
+                          >
+                            <IconEthereum />
+                            <span className="inline-block text-sm">Ethereum</span>
+                          </div>
+
+                          <div
+                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                            onClick={() => {
+                              changeBlockchain('binance-testnet')
+                            }}
+                          >
+                            <IconBNB />
+                            <span className="inline-block text-sm">Binance</span>
+                          </div>
+
+                          <div
+                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                            onClick={() => {
+                              changeBlockchain('mumbai')
+                            }}
+                          >
+                            <IconPolygon />
+                            <span className="inline-block text-sm">Polygon</span>
+                          </div>
+
+                          <div
+                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                            onClick={() => {
+                              changeBlockchain('avalanche-fuji')
+                            }}
+                          >
+                            <IconAvalanche/>
+                            <span className="inline-block text-sm">Avalance</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </Menu.Item>
                 )}
+
                 {isLogged && (
                   <>
+                   <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={`${
+                            active ? 'bg-blue-500 ' : ''
+                          } group rounded-md px-2 pt-2 pb-3 text-sm`}
+                        >
+                          <a
+                            href="/contracts"
+                            className="flex w-full items-center "
+                          >
+                            <MdOutlineWidgets 
+                              className="mr-2"
+                              fontSize="20px"
+                            />{' '}
+                            Mint
+                          </a>
+                        </div>
+                      )}
+                    </Menu.Item>
+
                     <Menu.Item>
                       {({ active }) => (
                         <div
@@ -404,34 +360,6 @@ const Header = () => {
                         </div>
                       )}
                     </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group rounded-md px-2 pt-2 pb-3 text-sm`}
-                        >
-                          <a
-                            href="/contracts"
-                            className="flex w-full items-center "
-                          >
-                            <MdOutlineWallpaper
-                              className="mr-2"
-                              fontSize="20px"
-                            />{' '}
-                            Mint
-                          </a>
-                        </div>
-                      )}
-                    </Menu.Item>
-
-                    <div
-                      className={`h-2 border-t ${
-                        dark ? ' border-slate-600' : ' border-neutral-200'
-                      } text-sm font-bold`}
-                    >
-                      &nbsp;
-                    </div>
 
                     <Menu.Item>
                       {({ active }) => (
@@ -450,7 +378,7 @@ const Header = () => {
                       )}
                     </Menu.Item>
 
-                    <Menu.Item>
+                    {/* <Menu.Item>
                       {({ active }) => (
                         <div className="flex w-full items-center p-2">
                           <TiLink className="mr-2" fontSize="20px" />
@@ -521,9 +449,9 @@ const Header = () => {
                           </Menu>
                         </div>
                       )}
-                    </Menu.Item>
+                    </Menu.Item> */}
 
-                    <Menu.Item>
+                    {/* <Menu.Item>
                       {({ active }) => (
                         <button
                           onClick={handleDisconnect}
@@ -538,9 +466,12 @@ const Header = () => {
                           Disconnect
                         </button>
                       )}
-                    </Menu.Item>
+                    </Menu.Item> */}
                   </>
                 )}
+                <div className="w-64 mx-auto mb-4 mt-4 pt-4 border-t border-slate-600">
+                  <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl" />
+                </div>
               </div>
             </Menu.Items>
           </Transition>

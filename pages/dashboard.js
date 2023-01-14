@@ -13,10 +13,21 @@ import { getImagefromWeb3 } from '../fetchers/s3'
 import React, { useEffect, useState } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { getTotals } from '../fetchers/SanityFetchers'
-import { getTotalsforAdmin } from '../fetchers/Web3Fetchers'
+import { getTotalsforAdmin, updateListings } from '../fetchers/Web3Fetchers'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
 import { BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
 import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../components/icons/CustomIcons'
+import toast from 'react-hot-toast'
+import axios from 'axios'
+
+const errorToastStyle = {
+    style: { background: '#ef4444', padding: '16px', color: '#fff' },
+    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
+}
+const successToastStyle = {
+style: { background: '#10B981', padding: '16px', color: '#fff' },
+iconTheme: { primary: '#ffffff', secondary: '#10B981' },
+}
 
 const chainnum = {
     "80001": "mumbai",
@@ -48,6 +59,10 @@ const dashboard = () => {
     const [totalPlatformFees, setTotalPlatformFees] = useState(0)
     const [loggedIn, setLoggedIn] = useState(false);
     const [popularNfts, setPopularNfts] = useState();
+    const [ethloading, setethloading] = useState(false);
+    const [bnbloading, setbnbloading] = useState(false);
+    const [maticloading, setmaticloading] = useState(false);
+    const [avaxloading, setavaxloading] = useState(false);
 
     const getAllAdminUsers = async () => {
         const query = '*[_type == "settings"]{adminusers}';
@@ -94,6 +109,28 @@ const dashboard = () => {
         getTotalsforAdmin("testnet"), 
     )
 
+    const refreshListings = async (blockchain) => {
+        // selection for loading icon
+        if(blockchain == "mumbai" || blockchain == "polygon") {setmaticloading(true);}
+        else if(blockchain == "goerli" || blockchain == "mainnet") {setethloading(true);}
+        else if(blockchain == "binance-testnet" || blockchain == "binance") {setbnbloading(true);}
+        else if(blockchain == "avalanche-fuji" || blockchain == "avalanche") {setavaxloading(true);}
+        
+        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${blockchain}` : `http://localhost:8080/api/updateListings/${blockchain}`)
+            .then(() => {
+                toast.success(`Listings in ${blockchain} chain has been refreshed.`, successToastStyle);
+            }).catch((err) => {
+                toast.error(err, errorToastStyle);
+            });
+        
+        if(blockchain == "mumbai" || blockchain == "polygon") {setmaticloading(false);}
+        else if(blockchain == "goerli" || blockchain == "mainnet") {setethloading(false);}
+        else if(blockchain == "binance-testnet" || blockchain == "binance") {setbnbloading(false);}
+        else if(blockchain == "avalanche-fuji" || blockchain == "avalanche") {setavaxloading(false);}
+        
+    }
+    
+
   return (
     <div className="">
         <Head>
@@ -109,7 +146,7 @@ const dashboard = () => {
                 <div className="bg-slate-700">
                     <Header />
                 </div>
-                <div className="flex" style={{ backgroundColor: "rgb(248, 249, 250)" }}>
+                <div className="flex pt-[5rem]" style={{ backgroundColor: "rgb(248, 249, 250)" }}>
                     <div className="sidebar w-64 border hidden md:block p-4 text-sm">
                          <div className="mx-2 p-2 px-4 flex justify-between items-center">
                             <span className="">Select Chain</span> 
@@ -120,14 +157,14 @@ const dashboard = () => {
                                 </div>
                             )}
                         </div>
-                         <div className="chainHolder flex flex-col">
+                        <div className="chainHolder flex flex-col">
                             <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "goerli" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("goerli")}>
                                 <IconEthereum/> Ethereum
                             </div>
                             <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "mumbai" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("mumbai")}>
-                                <IconPolygon/> Polygon
+                                <IconPolygon/> Polygon 
                             </div>
                             <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "binance-test" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("binance-test")}>
@@ -137,7 +174,38 @@ const dashboard = () => {
                                 onClick={() => setSelectedChain("avalanche-fuji")}>
                                 <IconAvalanche/>  Avalanche
                             </div>
-                         </div>
+                        </div>
+                        <h2 className="mt-5">Refresh Active Listings</h2>
+                        <div className="flex flex-col flex-wrap">
+                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                                onClick={() => refreshListings("goerli")}>
+                                <div>
+                                    <IconEthereum/> Ethereum 
+                                </div>
+                                {ethloading && <IconLoading />}
+                            </div>
+                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                                onClick={() => refreshListings("mumbai")}>
+                                <div>
+                                    <IconPolygon/> Polygon
+                                </div> 
+                                {maticloading && <IconLoading />}
+                            </div>
+                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                                onClick={() => refreshListings("binance-testnet")}>
+                                <div>
+                                    <IconBNB/> Binance
+                                </div> 
+                                {bnbloading && <IconLoading />}
+                            </div>
+                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 gap-1 items-center p-4 mb-1 cursor-pointer`}
+                                onClick={() => refreshListings("avalanche-fuji")}>
+                                <div>
+                                    <IconAvalanche/> Avalanche
+                                </div>
+                                    {avaxloading && <IconLoading />}
+                            </div>
+                        </div>
                     </div>
                     <main className="flex-grow p-4">
                         <div className="pt-10 h-[100vh]">

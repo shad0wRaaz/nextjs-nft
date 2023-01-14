@@ -2,7 +2,7 @@ import { Bars } from 'svg-loaders-react'
 
 export const IconImage = () => {
   return (
-    <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+    <svg className="h-6 w-6 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
       <path
         d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
         stroke="currentColor"
@@ -469,9 +469,7 @@ export const IconOffer = () => {
 export const IconDollar = () => {
   return (
     <svg
-      className="nc-icon-field nc-icon-field-2"
-      width="24"
-      height="24"
+      className="nc-icon-field nc-icon-field-2 h-6 w-6 md:h-5 md:w-5"
       fill="none"
       viewBox="0 0 24 24"
     >
@@ -642,8 +640,7 @@ export const IconCopy = () => {
 export const IconBulb = () => {
   return (
     <svg
-      width="24"
-      height="24"
+      className="h-6 w-6 md:h-5 md:w-5"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

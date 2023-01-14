@@ -51,7 +51,7 @@ const search = ({category}) => {
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [itemName, setItemName] = useState(' ')
+  const [itemName, setItemName] = useState('')
   const [includeImage, setIncludeImage] = useState(true)
   const [includeVideo, setIncludeVideo] = useState(true)
   const [includeAudio, setIncludeAudio] = useState(true)
@@ -99,7 +99,7 @@ const search = ({category}) => {
   useEffect(() => {
     const data = router.query
 
-    setItemName(data?.n);
+    setItemName(data?.n ? data?.n : '');
     setSelectedCategory(curVal => data?.c ? data.c : curVal);
     setIncludeImage(curval => data?.i === 'true' ? true : curval);
     setIncludeVideo(curval => data?.v === 'true' ? true : curval);

@@ -10,7 +10,7 @@ const style = {
   contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
   title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] text-white`,
-  description: `container-[400px] mt-[0.8rem] mb-[2.5rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
+  description: `container-[400px] mt-[0.8rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
   ctaContainer: `flex justify-start gap-[20px] px-[20px] mb-8`,
   accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,
   button: ` relative text-lg font-semibold px-12 py-4 bg-slate-600 rounded-full text-[#e4e8ea] hover:bg-slate-700 cursor-pointer`,
@@ -54,8 +54,8 @@ const HeroCarousel = (props) => {
               and sell NFTs 🖼
             </div>
             <div className={style.description}>
-              Discover the most outstanding NFTs in all topics of life. Creative
-              your NFTs and sell them
+              Discover the most outstanding NFTs in all topics of life. Create 
+              your own, Mint, Sell and Buy
             </div>
             <div className={style.ctaContainer}>
               <button

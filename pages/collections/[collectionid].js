@@ -516,7 +516,7 @@ const Collection = () => {
                         : ' border border-neutral-50'
                     } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                   >
-                    <span className="text-sm">Floor Price</span>
+                    <span className="text-sm text-center">Floor Price</span>
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
                       ${collectionData[0]?.floorPrice}
                     </span>

@@ -273,7 +273,7 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
     else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
     else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'TBNB'; } 
     else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
-    else if (blockchain == 'avalanche-fuji' || blockchain == "avalnche") { selectedChainCurrency = 'AVAX'; } 
+    else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
 
     const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
     const latestNfts = thisChainNfts?.slice(-nftQuantity); 
