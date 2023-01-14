@@ -271,7 +271,8 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
   if(blockchain != undefined){
     if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
     else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
-    else if (blockchain == 'binance-testnet' || blockchain == "binance") { selectedChainCurrency = 'TBNB'; } 
+    else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'TBNB'; } 
+    else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
     else if (blockchain == 'avalanche-fuji' || blockchain == "avalnche") { selectedChainCurrency = 'AVAX'; } 
 
     const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
