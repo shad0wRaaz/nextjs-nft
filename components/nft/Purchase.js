@@ -64,7 +64,7 @@ const MakeOffer = ({
 }) => {
 
 var listed = true
-  if(listingData?.message) {
+  if(listingData?.message || !listingData) {
     listed = false
   }
   const { coinPrices, loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
@@ -152,7 +152,7 @@ var listed = true
       //do nothing
     }
   }, [listingData, coinPrices])
-
+console.log(listed)
 
   //function to make offer for nfts
   const makeAnOffer = async (
@@ -275,12 +275,16 @@ var listed = true
     openBidSetting('none');
   }
   const buyItem = async (
-    listingId = listingData.id.toString(),
+    listingId = listingData?.id?.toString(),
     quantityDesired = 1,
     toastHandler = toast,
     qc = queryClient,
     sanityClient = config
     ) => {
+      if(!listingData) {
+        toastHandler.error('NFT listing not found', errorToastStyle);
+        return;
+      }
       if (!address) {
         toastHandler.error(
           'Wallet not connected. Connect wallet first.',

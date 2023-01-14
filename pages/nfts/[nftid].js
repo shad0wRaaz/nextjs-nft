@@ -613,18 +613,20 @@ export default Nft
 
 export async function getServerSideProps(context){
   const { query } = context;
+  var nftdata = "";
+  var sanityData = "";
+  var nftcontractdata = "";
 
-  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`);
-  const nftdata = await response.json();
+  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`); 
+  if(response.status == 200) {nftdata = await response.json();}
 
   const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
-  const sanityData = await response2.json();
+  if(response2.status == 200) { sanityData = await response2.json(); }
 
 
   const collectionAddress = sanityData.collection?.contractAddress;
   const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
-
-  const nftcontractdata = await response3.json();
+  if(response3.status == 200) { nftcontractdata = await response3.json(); }
 
   //determine which marketplace is current NFT is in
 

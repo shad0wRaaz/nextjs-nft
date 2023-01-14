@@ -9,9 +9,9 @@ const style = {
   container: `pt-[8rem]`,
   contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
-  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl !leading-[114%] text-white`,
+  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl leading-[5rem] text-white`,
   description: `container-[400px] mt-[0.8rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
-  ctaContainer: `flex justify-start gap-[20px] px-[20px] mb-8`,
+  ctaContainer: `flex justify-start gap-[20px] px-[20px] mt-5 mb-8`,
   accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,
   button: ` relative text-lg font-semibold px-12 py-4 bg-slate-600 rounded-full text-[#e4e8ea] hover:bg-slate-700 cursor-pointer`,
   cardContainer: `md:w-1/2 md:p-4 sm:p-0`,
@@ -49,14 +49,12 @@ const HeroCarousel = (props) => {
             <div
               className={style.title}
             >
-              Discover, collect,
-              <br />
-              and sell NFTs 🖼
+              Discover, Collect, Mint, Sell and Buy NFTs 🖼
             </div>
-            <div className={style.description}>
+            {/* <div className={style.description}>
               Discover the most outstanding NFTs in all topics of life. Create 
-              your own, Mint, Sell and Buy
-            </div>
+              your own, Mint, Sell  Buy
+            </div> */}
             <div className={style.ctaContainer}>
               <button
                 className={style.accentedButton}

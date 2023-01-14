@@ -42,7 +42,7 @@ const HowToInfo = () => {
                 dark ? style.contentTitle : style.contentTitle + ' text-black'
               }
             >
-              Create your wallet
+              Create your Wallet
             </h2>
             <p
               className={
@@ -74,7 +74,7 @@ const HowToInfo = () => {
                     : style.contentTitle + ' text-black'
                 }
               >
-                Create your collection
+                Create your Collection
               </h2>
               <p
                 className={
@@ -140,7 +140,7 @@ const HowToInfo = () => {
                     : style.contentTitle + ' text-black'
                 }
               >
-                List them for sale
+                List them for Sale
               </h2>
               <p
                 className={

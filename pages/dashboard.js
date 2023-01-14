@@ -19,6 +19,7 @@ import { BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
 import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../components/icons/CustomIcons'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import millify from 'millify'
 
 const errorToastStyle = {
     style: { background: '#ef4444', padding: '16px', color: '#fff' },
@@ -330,7 +331,7 @@ const dashboard = () => {
                                                                 )}
                                                                 <div className="user-text flex flex-col text-sm">
                                                                     <span>{collection.name}</span>
-                                                                    <span>${collection.volumeTraded}</span>
+                                                                    <span>${millify(collection.volumeTraded)}</span>
                                                                 </div>
                                                             </div>
                                                             <a href={`/collections/${collection?._id}`} target="_blank">
@@ -364,7 +365,7 @@ const dashboard = () => {
                                                                 </div>
                                                                 <div className="user-text flex flex-col text-sm">
                                                                     <span>{user.userName}</span>
-                                                                    <span>${user.volumeTraded}</span>
+                                                                    <span>${millify(user.volumeTraded)}</span>
                                                                 </div>
                                                             </div>
                                                             <a href={`/user/${user?._id}`} target="_blank">
