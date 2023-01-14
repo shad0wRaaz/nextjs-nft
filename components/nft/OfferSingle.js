@@ -160,20 +160,20 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
               {!isAuctionItem && (
                   <div className="flex items-center justify-between gap-2">
                   {listingData?.sellerAddress == address ? (
-                      <button
-                      onClick={() => acceptOffer(offer?.listingId.toString(), offer?.buyerAddress, offer?.currencyValue.displayValue)} 
-                      className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
-                      title='Accept this offer'>
-                          {isAccepting ? (
-                          <>
-                              <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
-                          </>
-                          ) : (
-                          <>
-                              <FaRegCheckCircle fontSize={15} /> Accept
-                          </>
-                          )}
-                      </button>
+                    <button
+                    onClick={() => acceptOffer(offer?.listingId.toString(), offer?.buyerAddress, offer?.currencyValue.displayValue)} 
+                    className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
+                    title='Accept this offer'>
+                        {isAccepting ? (
+                        <>
+                          <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
+                        </>
+                        ) : (
+                        <>
+                          <FaRegCheckCircle fontSize={15} /> Accept
+                        </>
+                        )}
+                    </button>
                   ) : ('')}
                   </div>
               )}

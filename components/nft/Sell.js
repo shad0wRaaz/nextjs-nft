@@ -55,7 +55,7 @@ const blockchainCurrency = {
 "binance-testnet": {currency: "TBNB", icon: <IconBNB />, DATABASE_COIN_NAME: "bnbprice"},
 "binance": {currency: "BNB", icon: <IconBNB />, DATABASE_COIN_NAME: "bnbprice"},
 "avalanche": {currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
-"avalanche-fuji":{currency: "AVAX GOR", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
+"avalanche-fuji":{currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
 }
 
 const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTblockchain }) => {

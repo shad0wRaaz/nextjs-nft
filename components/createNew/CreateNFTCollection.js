@@ -1,11 +1,9 @@
 import Select from 'react-select'
-import FileBase from 'react-file-base64'
 import { BiCollection } from 'react-icons/bi'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import {
   useAddress,
-  useMetamask,
   useNetwork,
   useSigner,
   useChainId,
@@ -17,10 +15,12 @@ import { BsUpload } from 'react-icons/bs'
 import { useMutation } from 'react-query'
 import { useQueryClient } from 'react-query'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { ConnectWallet } from '@thirdweb-dev/react'
 import { IconLoading } from '../icons/CustomIcons'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
+import { useThemeContext } from '../../contexts/ThemeContext'
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
@@ -55,24 +55,21 @@ const successToastStyle = {
 }
 
 const CreateNFTCollection = () => {
-  const connectWithMetamask = useMetamask()
   const network = useNetwork()
   const chain = useChainId()
+  const {dark} = useThemeContext();
   const address = useAddress()
-  const signer = useSigner()
-  const router = useRouter()
-  const sdk = new ThirdwebSDK(signer)
   const { myUser } = useUserContext()
-  // const [newCollectionAddress, setNewCollectionAddress] = useState('')
-  // const [isDeploying, setIsDeploying] = useState(false)
-  // const [deploy, setDeploy] = useState(false)
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState()
   const [profile, setProfile] = useState()
   const [banner, setBanner] = useState()
   const queryClient = new useQueryClient()
+  const router = useRouter();
+  const signer = useSigner();
   const profileInputRef = useRef()
   const bannerInputRef = useRef()
+  const sdk = new ThirdwebSDK(signer)
 
   const { mutate: sendNotification } = useMutation(
     async ({ address, contractAddress, type }) =>
@@ -86,105 +83,108 @@ const CreateNFTCollection = () => {
 
   const { data, mutate, status, isLoading } = useMutation(
     async (form) => {
-      const metadata = {
-        name: form.itemName.value,
-        image: profile,
-        description: form.itemDescription.value,
-        symbol: form.symbol.value,
-        fee_recipient: form.fee_recipient.value,
-        primary_sale_recipient: form.primary_sale_recipient.value,
-        seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
-        platform_fee_basis_points: 500,
-        platform_fee_recipient: '0xa22d92ee43C892eebD01fa1166e1e45F67E28311',
-        trusted_forwarders: [],
-      }
       
       var profileLink = "";
       var bannerLink = "";
-
+      
       try{
         // upload profile and banner in IPFS
-      if(profile){
-        const pfd = new FormData();
-        pfd.append("imagefile", profile);
-        profileLink = await axios.post(
-          `${HOST}/api/saveweb3image`,
-          pfd,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+        if(profile){
+          const pfd = new FormData();
+          pfd.append("imagefile", profile);
+          profileLink = await axios.post(
+            `${HOST}/api/saveweb3image`,
+            pfd,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+            )
           }
-        )
-      }
-
-      if(banner){
-        const bfd = new FormData();
-        bfd.append("imagefile", banner);
-        bannerLink = await axios.post(
-          `${HOST}/api/saveweb3image`,
-          bfd,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+          
+        if(banner){
+          const bfd = new FormData();
+          bfd.append("imagefile", banner);
+          bannerLink = await axios.post(
+            `${HOST}/api/saveweb3image`,
+            bfd,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+            )
           }
-        )
-      }
+            
+        const metadata = {
+          name: form.itemName.value,
+          image: profileLink?.data,
+          description: form.itemDescription.value,
+          symbol: form.symbol.value,
+          fee_recipient: form.fee_recipient.value,
+          primary_sale_recipient: form.primary_sale_recipient.value,
+          seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
+          platform_fee_basis_points: 500,
+          platform_fee_recipient: '0xa22d92ee43C892eebD01fa1166e1e45F67E28311',
+          trusted_forwarders: [],
+        }
+        const itemID = uuidv4();
+        console.log(profileLink, bannerLink)
+        console.log(metadata)
+        console.log(itemID)
       
-      const itemID = uuidv4();
+        //deploy NFT Collection
+        const res = await sdk.deployer.deployNFTCollection(metadata);
 
-      //deploy NFT Collection
-      const res = await sdk.deployer.deployNFTCollection(metadata)
+        //save in database
 
-      //save in database
-
-      const collectionDoc = {
-        _type: 'nftCollection',
-        _id: itemID,
-        name: form.itemName.value,
-        contractAddress: res,
-        description: form.itemDescription.value,
-        web3imageprofile: profileLink?.data,
-        web3imagebanner: bannerLink?.data,
-        chainId: chain.toString(),
-        createdBy: {
-          _type: 'reference',
-          _ref: address,
-        },
-        external_link: form.external_link.value,
-        volumeTraded: 0,
-        floorPrice: 0,
-        category: selectedCategory,
-      }
-        
-      await config.createIfNotExists(collectionDoc);
-      
-      const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`);
-      
-      await config.patch(categoryId[0]._id)
-        .inc({totalCollection : 1})
-        .commit()
-        .catch((err) => {})
-
-        // await config.patch(res).
-
-        queryClient.invalidateQueries('myCollections');
-        
-        //send out notification to all followers
-        sendNotification({
-          address: myUser.walletAddress,
+        const collectionDoc = {
+          _type: 'nftCollection',
+          _id: itemID,
+          name: form.itemName.value,
           contractAddress: res,
-          id: itemID,
-          type: 'TYPE_ONE',
-        })
+          description: form.itemDescription.value,
+          web3imageprofile: profileLink?.data,
+          web3imagebanner: bannerLink?.data,
+          chainId: chain.toString(),
+          createdBy: {
+            _type: 'reference',
+            _ref: address,
+          },
+          external_link: form.external_link.value,
+          volumeTraded: 0,
+          floorPrice: 0,
+          category: selectedCategory,
+        }
+          
+        await config.createIfNotExists(collectionDoc);
+        
+        const categoryId = await config.fetch(`*[_type == "category" && name == "${selectedCategory}"]{_id}`);
+        
+        await config.patch(categoryId[0]._id)
+          .inc({totalCollection : 1})
+          .commit()
+          .catch((err) => {})
+
+          // await config.patch(res).
+
+          queryClient.invalidateQueries('myCollections');
+          
+          //send out notification to all followers
+          sendNotification({
+            address: myUser.walletAddress,
+            contractAddress: res,
+            id: itemID,
+            type: 'TYPE_ONE',
+          })
 
         toast.success('Collection created successfully', successToastStyle);
         
         router.push(`/collections/${itemID}`);
 
       } catch(err){
-          toastHandler.error(err, errorToastStyle);
+          toast.error(err, errorToastStyle);
       }
       
     },
@@ -222,7 +222,8 @@ const CreateNFTCollection = () => {
   //handling Create NFT Collection button
   const handleDeployNFTCollection = (e, toastHandler = toast) => {
     e.preventDefault()
-    const form = e.target
+    const form = e.target;
+    console.log(form)
 
     if (
       form.itemName.value == '' ||
@@ -241,24 +242,15 @@ const CreateNFTCollection = () => {
       return
     }
 
-    if (!sdk) {
-      //Some issue is there
-      toastHandler.error('Error in deploying NFT collection', errorToastStyle)
-      return
-    } else {
-
       // setIsDeploying(true)
-      mutate(form)
+      mutate(form);
 
       if (status === 'success') {
         e.target.reset()
         setSelectedCategory('')
-        setProfileImage()
-        setBannerImage()
         setProfile()
         setBanner()
       }
-    }
   }
 
   const customSelectStyles = {
@@ -403,10 +395,10 @@ const CreateNFTCollection = () => {
                     className={style.previewImage}
                     style={{ height: '250px', width: '325px' }}
                     onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setProfile(e.dataTransfer.files[0]);
-                        }}>
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setProfile(e.dataTransfer.files[0]);
+                    }}>
                     {profile ? (
                       <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
                     ) : (
@@ -571,13 +563,7 @@ const CreateNFTCollection = () => {
         </div>
       ) : (
         <div className={style.notConnectedWrapper}>
-          <button
-            type="button"
-            className={style.button}
-            onClick={connectWithMetamask}
-          >
-            Connect Wallet
-          </button>
+          <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" style={{ borderRadius: '50% !important'}} />
         </div>
       )}
     </div>

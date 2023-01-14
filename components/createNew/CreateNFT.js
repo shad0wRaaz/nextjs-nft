@@ -14,7 +14,8 @@ import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useUserContext } from '../../contexts/UserContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
-import { useAddress, useMetamask, useChainId, useNetwork, useMintNFT, MediaRenderer, useSigner} from '@thirdweb-dev/react'
+import { useAddress, useMetamask, useChainId, useNetwork, useMintNFT, MediaRenderer, useSigner, ConnectWallet} from '@thirdweb-dev/react'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -125,6 +126,7 @@ const CreateNFT = ({uuid}) => {
       tokenid: '',
     },
   })
+  const {dark} = useSettingsContext()
   const fileInputRef = useRef(null)
   const [file, setFile] = useState()
   const signer = useSigner()
@@ -719,9 +721,7 @@ const CreateNFT = ({uuid}) => {
         </div>
       ) : (
         <div className={style.notConnectedWrapper}>
-          <button type="button" className={style.button} onClick={connectWithMetamask}>
-            Connect Wallet
-          </button>
+          <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" style={{ borderRadius: '50% !important'}} />
         </div>
       )}
     </div>

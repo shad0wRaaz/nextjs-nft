@@ -631,7 +631,8 @@ export async function getServerSideProps(context){
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
     '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
-    '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+    '43113': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+    '43114': process.env.NEXT_PUBLIC_AVALANCE_MARKETPLACE,
     '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
     '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
     '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
@@ -640,13 +641,14 @@ export async function getServerSideProps(context){
   }
   const blockchainName = {
     '80001': 'mumbai',
-    '5': 'goerli',
-    '43114': 'avalanche-fuji',
-    '97': 'binance-testnet',
-    '421563': 'arbitrum-goerli',
-    '1': 'mainnet',
     '137': 'polygon',
+    '43113': 'avalanche-fuji',
+    '43114': 'avalanche',
+    '97': 'binance-testnet',
     '56': 'binance',
+    '421563': 'arbitrum-goerli',
+    '5': 'goerli',
+    '1': 'mainnet',
   }
   const marketAddress = marketplace[nftChainid];
 

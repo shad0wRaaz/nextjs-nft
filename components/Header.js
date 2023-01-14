@@ -54,10 +54,13 @@ const successToastStyle = {
 
 const chainnum = {
   "80001": "mumbai",
-  "97": "binance-testnet",
   "137": "polygon",
+  "97": "binance-testnet",
+  "56": "binance",
   "5": "goerli",
-  "1": "mainnet"
+  "1": "mainnet",
+  "43113": "avalanche-fuji",
+  "43114": "avalanche",
 }
 
 
@@ -115,6 +118,7 @@ const Header = () => {
         toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
       },
       onSuccess: (res) => {
+        console.log(res)
         setLatestNfts(res);
       },
     }

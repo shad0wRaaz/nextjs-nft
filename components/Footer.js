@@ -14,24 +14,25 @@ import axios from 'axios'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { HiOutlineNewspaper } from 'react-icons/hi'
+import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
 
 const style = {
   partnerContainer:
     'container mx-auto bg-neutral-50 border-t border-neutral-200 p-[50px] text-center partnerContainer mt-[80px]',
   bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
   bottomContainer:
-    'm-auto justify-between flex flex-wrap container px-[1.2rem]',
+    'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
   footerContainer:
     'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
-  header: 'text-lg mb-3 inline-flex items-center gap-1',
+  header: 'text-lg mb-3 inline-flex items-center gap-1 mt-[40px]',
   text: '',
-  leftBox: 'lg:max-w-[50%] sm:max-w-[290px]',
+  leftBox: 'lg:max-w-[40%] sm:max-w-[300px]',
   socialWrapper: 'flex flex-wrap gap-3',
   socialItem:
     'transition linear hover:bg-[#f55d6d] curosr-pointer gradBlue rounded-md p-[7px] flex justify-center items-center',
   copyright: 'text-sm',
   footerLinksWrapper: 'flex gap-3',
-  footerLinks: 'transition linear text-sm',
+  footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
   subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row',
   subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
   subscribeButton:
@@ -114,7 +115,7 @@ const Footer = () => {
       </div> */}
       <div
         className={style.bottomWrapper}
-        style={{ marginTop: '120px', paddingTop: '80px' }}
+        style={{ marginTop: '120px', paddingTop: '40px' }}
       >
         <div className={style.bottomContainer}>
           <div className={style.leftBox}>
@@ -148,6 +149,21 @@ const Footer = () => {
               </button>
             </div>
           </div>
+
+          <div>
+            <h2 className={
+                dark
+                  ? style.header + ' text-neutral-200'
+                  : style.header + ' text-neutral-600'
+              }><BiHelpCircle/> Get Test Coins</h2>
+            <div className="flex flex-col gap-3 text-sm">
+              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli Chain)</a></p>
+              <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
+              <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
+              <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-blue-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
+            </div>
+          </div>
+
           <div className={style.RightBox}>
             <h2 className={style.header}><BiGroup/> Join the Community</h2>
             
@@ -196,9 +212,6 @@ const Footer = () => {
               </Link>
             </div>
             <div className="my-8"></div>
-            <h2 className={style.header}><BiHelpCircle/> Help and Resources</h2>
-            
-
           </div>
         </div>
       </div>
@@ -219,8 +232,8 @@ const Footer = () => {
                 className={
                   dark
                     ? style.footerLinks +
-                      ' text-neutral-100 hover:text-neutral-300'
-                    : style.footerLinks + ' text-black hover:text-slate-500 '
+                      ' text-neutral-100'
+                    : style.footerLinks + ' text-black'
                 }
                 rel="noopener noreferrer"
               >
@@ -232,8 +245,8 @@ const Footer = () => {
                 className={
                   dark
                     ? style.footerLinks +
-                      ' text-neutral-100 hover:text-neutral-300'
-                    : style.footerLinks + ' text-black hover:text-slate-500 '
+                      ' text-neutral-100 '
+                    : style.footerLinks + ' text-black'
                 }
                 rel="noopener noreferrer"
               >
@@ -245,8 +258,8 @@ const Footer = () => {
                 className={
                   dark
                     ? style.footerLinks +
-                      ' text-neutral-100 hover:text-neutral-300'
-                    : style.footerLinks + ' text-black hover:text-slate-500 '
+                      ' text-neutral-100'
+                    : style.footerLinks + ' text-black '
                 }
                 rel="noopener noreferrer"
               >

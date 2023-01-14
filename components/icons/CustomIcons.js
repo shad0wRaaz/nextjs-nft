@@ -527,7 +527,11 @@ export const IconPolygon = ({ width, height }) => {
 }
 export const IconAvalanche = ({ width, height }) => {
   return (
-    <svg x="0px" y="0px" viewBox="0 0 254 254" width="15" height="15">
+    <svg x="0px" y="0px" 
+      viewBox="0 0 254 254" 
+      width={width ? width : '15'}
+      height={height ? height : '15'}
+      className="mr-2 inline-block" >
       <g>
         <circle fillRule="evenodd" clipRule="evenodd" fill="#E84142" cx="127" cy="127" r="127"/>
         <path fill="#ffffff" d="M171.8,130.3c4.4-7.6,11.5-7.6,15.9,0l27.4,48.1c4.4,7.6,0.8,13.8-8,13.8h-55.2c-8.7,0-12.3-6.2-8-13.8   L171.8,130.3z M118.8,37.7c4.4-7.6,11.4-7.6,15.8,0l6.1,11L155.1,74c3.5,7.2,3.5,15.7,0,22.9l-48.3,83.7   c-4.4,6.8-11.7,11.1-19.8,11.6H46.9c-8.8,0-12.4-6.1-8-13.8L118.8,37.7z"/>

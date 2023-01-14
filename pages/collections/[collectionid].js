@@ -24,7 +24,7 @@ import { Menu, Transition, Switch } from '@headlessui/react'
 import EditCollection from '../../components/EditCollection'
 import noProfileImage from '../../assets/noProfileImage.png'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { IconDollar } from '../../components/icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
 import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
@@ -84,12 +84,25 @@ const marketplace = {
 const blockchainName = {
       '80001': 'mumbai',
       '5': 'goerli',
-      '43114': 'avalanche-fuji',
+      '43113': 'avalanche-fuji',
+      '43114': 'avalanche',
       '97': 'binance-testnet',
       '421563': 'arbitrum-goerli',
       '1': 'mainnet',
       '137': 'polygon',
       '56': 'binance',
+}
+
+const chainIcon = {
+  '80001': <IconPolygon/>,
+  '137': <IconPolygon/>,
+  '43113': <IconAvalanche width="40px" height="40px" />,
+  '43114': <IconAvalanche/>,
+  '421563': <IconAvalanche/>,
+  '5': <IconEthereum/>,
+  '1': <IconEthereum/>,
+  '97': <IconBNB/>,
+  '56': <IconBNB/>,
 }
 
 const Collection = () => {
@@ -326,7 +339,7 @@ const Collection = () => {
                   <div>
                     <h2 className="inline-block text-2xl font-semibold sm:text-3xl lg:text-4xl">
                       {!newCollectionData && 'Unknown NFT Collection'}
-                      {collectionData[0]?.name}
+                      {chainIcon[collectionData[0]?.chainId]} {collectionData[0]?.name}
                     </h2>
                     
                     <div className="flex lg:gap-3 flex-wrap ">

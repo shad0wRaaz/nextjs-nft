@@ -22,10 +22,14 @@ const chainIcon = {
 }
 const chainExplorer = {
   '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
+  '56': process.env.NEXT_PUBLIC_EXPLORER_BNB,
   '80001': process.env.NEXT_PUBLIC_EXPLORER_MUMBAI,
+  '137': process.env.NEXT_PUBLIC_EXPLORER_POLYGON,
   '5': process.env.NEXT_PUBLIC_EXPLORER_GOERLI,
   '4': process.env.NEXT_PUBLIC_EXPLORER_RINKEBY,
   '1': process.env.NEXT_PUBLIC_EXPLORER_MAINNET,
+  '43113': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE_FUJI,
+  '43114': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE,
 }
 const pillcolor = {
   'Mint' : ' bg-lime-200 text-lime-600',

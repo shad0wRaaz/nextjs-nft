@@ -31,19 +31,22 @@ dotenv.config()
 
 const chainnum = {
   "80001": "mumbai",
-  "97": "binance-testnet",
   "137": "polygon",
+  "97": "binance-testnet",
+  "56": "binance",
+  "43113": "avalanche-fuji",
+  "43114": "avalanche",
   "5": "goerli",
   "1": "mainnet"
 }
 const chainEnum = {
   "mumbai" : 80001,
-  "binance-testnet": 97,
-  "avalance-fuji": 43113,
-  "goerli": 5,
-  "binance": 56,
-  "mainnet": 1,
   "polygon": 137,
+  "mainnet": 1,
+  "goerli": 5,
+  "binance-testnet": 97,
+  "binance": 56,
+  "avalanche-fuji": 43113,
   "avalanche": 43114
 }
 
@@ -156,13 +159,13 @@ const collectionUpload = multer({ storage: collectionStorage});
 app.get('/api/getfeaturednfts', async(req, res) => {
 
   let featuredNfts = await redis.get("featurednfts");
-  console.log(featuredNfts)
+
   if(featuredNfts) {
     return res.status(200).send(featuredNfts);
   }else {
     const query = `*[_type == "nftItem" && featured == true] {_id, id, name, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
     const featurednfts = await config.fetch(query);
-    console.log(featurednfts)
+
     const unresolved = featurednfts?.map(async (item) => {
       if(item?.collection){
         const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
@@ -266,10 +269,10 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
   var selectedChainCurrency = '';
 
   if(blockchain != undefined){
-    if (blockchain == 'mumbai') { selectedChainCurrency = 'MATIC'; } 
-    else if (blockchain == 'goerli') { selectedChainCurrency = 'ETH'; } 
-    else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'TBNB'; } 
-    else if (blockchain == 'avalance-fuji') { selectedChainCurrency = 'AVAX'; } 
+    if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
+    else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
+    else if (blockchain == 'binance-testnet' || blockchain == "binance") { selectedChainCurrency = 'TBNB'; } 
+    else if (blockchain == 'avalanche-fuji' || blockchain == "avalnche") { selectedChainCurrency = 'AVAX'; } 
 
     const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
     const latestNfts = thisChainNfts?.slice(-nftQuantity); 
@@ -312,7 +315,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
   if(blockchain){
     var topCollections;
     const chainid = chainEnum[blockchain];
-  
+  console.log(chainid)
     redis.del("toptradedcollections"+blockchain)
     topCollections = await redis.get("toptradedcollections-"+blockchain);
   
