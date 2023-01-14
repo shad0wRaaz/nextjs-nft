@@ -35,13 +35,23 @@ const successToastStyle = {
 }
 const blockchainNum = {
   "mumbai" : 80001,
-  "binance-testnet": 97,
-  "avalance-fuji": 43113,
-  "goerli": 5,
-  "binance": 56,
-  "mainnet": 1,
   "polygon": 137,
-  "avalanche": 43114
+  "binance-testnet": 97,
+  "binance": 56,
+  "avalanche-fuji": 43113,
+  "avalanche": 43114,
+  "goerli": 5,
+  "mainnet": 1,
+}
+const currency = {
+  "mumbai" : { offerCurrency: "WMATIC", bidCurrency: "MATIC" },
+  "polygon": { offerCurrency: "WMATIC", bidCurrency: "MATIC" },
+  "binance-testnet": { offerCurrency: "TBNB", bidCurrency: "TBNB" },
+  "binance": { offerCurrency: "BNB", bidCurrency: "BNB" },
+  "avalanche-fuji": { offerCurrency: "AVAX", bidCurrency: "AVAX" },
+  "avalanche": { offerCurrency: "AVAX", bidCurrency: "AVAX" },
+  "goerli": { offerCurrency: "ETH", bidCurrency: "ETH" },
+  "mainnet": { offerCurrency: "ETH", bidCurrency: "ETH" },
 }
 
 const MakeOffer = ({
@@ -487,10 +497,14 @@ var listed = true
             </div>
           )}
       </div>
+
+      {/* Offer Section */}
       <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>
           <div className="flex flex-wrap gap-4">
             <div className="inputControls flex flex-1">
-              <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>WMATIC</div>
+              <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
+                { currency[thisNFTblockchain].offerCurrency }
+              </div>
               <input 
                 type="number" 
                 className={`border flex-1  text-sm p-3 ring-0 outline-0 rounded-r-xl ${dark ? 'bg-slate-700 border-slate-700/50' : 'bg-white border-neutral-200 border-l-0'}`} 
@@ -511,34 +525,40 @@ var listed = true
               </button>
             </div>
           </div>
-          <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped MATIC Token to make an offer.</p>
-        </div>
+          <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped Token to make an offer.</p>
+      </div>
+      {/* End of Offer Section */}
 
-        <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${bidLoading ? 'pointer-events-none opacity-40' : ''}`} ref={bidsettingRef}>
-          <div className="flex flex-wrap gap-4">
-            <div className="inputControls flex flex-1">
-              <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>MATIC</div>
-              <input 
-                type="number" 
-                className={`border flex-1  text-sm p-3 ring-0 outline-0 rounded-r-xl ${dark ? 'bg-slate-700 border-slate-700/50' : 'bg-white border-neutral-200 border-l-0'}`} 
-                placeholder="Enter amount to offer"
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)} />
+      {/* Bidding Section */}
+      <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${bidLoading ? 'pointer-events-none opacity-40' : ''}`} ref={bidsettingRef}>
+        <div className="flex flex-wrap gap-4">
+          <div className="inputControls flex flex-1">
+            <div 
+              className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
+                { currency[thisNFTblockchain].bidCurrency }
             </div>
-            <div className="buttonControls flex flex-1">
-              <button 
-                className={`gradBlue p-3 text-white rounded-xl ml-3 px-6 flex items-center gap-2 w-full text-center justify-center`}
-                onClick={() => bidItem()}>
-                  <MdOutlineCheckCircle /> Bid
-              </button>
-              <button 
-                className={`${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-blue-600 text-slate-800 hover:text-white border-netural-200'} transition border p-3 justify-center text-white items-center rounded-xl ml-3 px-6 flex gap-2 w-full text-center`}
-                onClick={() => openBidSetting('none')}>
-                  <MdOutlineCancel /> Cancel
-              </button>
-            </div>
+            <input 
+              type="number" 
+              className={`border flex-1  text-sm p-3 ring-0 outline-0 rounded-r-xl ${dark ? 'bg-slate-700 border-slate-700/50' : 'bg-white border-neutral-200 border-l-0'}`} 
+              placeholder="Enter amount to offer"
+              value={bidAmount}
+              onChange={(e) => setBidAmount(e.target.value)} />
+          </div>
+          <div className="buttonControls flex flex-1">
+            <button 
+              className={`gradBlue p-3 text-white rounded-xl ml-3 px-6 flex items-center gap-2 w-full text-center justify-center`}
+              onClick={() => bidItem()}>
+                <MdOutlineCheckCircle /> Bid
+            </button>
+            <button 
+              className={`${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-blue-600 text-slate-800 hover:text-white border-netural-200'} transition border p-3 justify-center text-white items-center rounded-xl ml-3 px-6 flex gap-2 w-full text-center`}
+              onClick={() => openBidSetting('none')}>
+                <MdOutlineCancel /> Cancel
+            </button>
           </div>
         </div>
+      </div>
+      {/* End of Bidding Section */}
     </div>
   )
 }

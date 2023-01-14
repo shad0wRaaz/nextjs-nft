@@ -157,7 +157,7 @@ const Footer = () => {
                   : style.header + ' text-neutral-600'
               }><BiHelpCircle/> Get Test Coins</h2>
             <div className="flex flex-col gap-3 text-sm">
-              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli Chain)</a></p>
+              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
               <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
               <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
               <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-blue-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
