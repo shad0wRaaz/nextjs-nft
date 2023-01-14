@@ -239,7 +239,7 @@ const Collection = () => {
     };
   }, [])
  
-  console.log(collectionData)
+
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />

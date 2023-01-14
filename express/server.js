@@ -316,7 +316,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
   if(blockchain){
     var topCollections;
     const chainid = chainEnum[blockchain];
-  console.log(chainid)
+
     redis.del("toptradedcollections"+blockchain)
     topCollections = await redis.get("toptradedcollections-"+blockchain);
   

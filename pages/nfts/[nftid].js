@@ -627,6 +627,7 @@ export async function getServerSideProps(context){
   const nftcontractdata = await response3.json();
 
   //determine which marketplace is current NFT is in
+
   const nftChainid = sanityData?.collection.chainId;
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,

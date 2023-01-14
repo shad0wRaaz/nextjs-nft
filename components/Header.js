@@ -118,7 +118,6 @@ const Header = () => {
         toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
       },
       onSuccess: (res) => {
-        console.log(res)
         setLatestNfts(res);
       },
     }
