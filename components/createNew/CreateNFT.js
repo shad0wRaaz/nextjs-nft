@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { useRouter } from 'next/router'
-import FileBase from 'react-file-base64'
 import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
 import { GoPackage } from 'react-icons/go'
@@ -12,10 +11,11 @@ import { IconLoading } from '../icons/CustomIcons'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useUserContext } from '../../contexts/UserContext'
+import { useThemeContext } from '../../contexts/ThemeContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
-import { useAddress, useMetamask, useChainId, useNetwork, useMintNFT, MediaRenderer, useSigner, ConnectWallet} from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { useAddress, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -41,8 +41,6 @@ const style = {
     'w-[350px] h-[350px] border border-slate-100 border-dashed border-lg flex items-center justify-content-center text-grey mb-4 cursor-pointer rounded-xl',
   imagePreview: 'max-h-[450px] rounded-xl cursor-pointer mb-4 max-w-[350px]'
 }
-
-const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080' 
 
 function reducer(state, action) {
   switch (action.type) {
@@ -117,16 +115,16 @@ const CreateNFT = ({uuid}) => {
       tokenid: '',
     },
   })
-  const {dark, errorToastStyle, successToastStyle} = useSettingsContext()
-  const fileInputRef = useRef(null)
-  const [file, setFile] = useState()
-  const signer = useSigner()
-  const chainid = useChainId()
-  const router = useRouter()
-  const [fileType, setFileType] = useState()
-  const connectWithMetamask = useMetamask()
-  const { myCollections } = useUserContext()
-  const [thisChainCollection, setThisChainCollection] = useState([])
+  const {dark, HOST} = useSettingsContext();
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState();
+  const signer = useSigner();
+  const chainid = useChainId();
+  const router = useRouter();
+  const [fileType, setFileType] = useState();
+  const { myCollections } = useUserContext();
+  const { errorToastStyle, successToastStyle } = useThemeContext();
+  const [thisChainCollection, setThisChainCollection] = useState([]);
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area

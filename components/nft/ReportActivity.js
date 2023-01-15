@@ -21,7 +21,7 @@ const style = {
 
 const ReportActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
     const [toggle, setToggle] = useState(true)
-    const { dark, errorToastStyle } = useThemeContext()
+    const { dark, errorToastStyle } = useThemeContext();
     const { data:reportActivities, status } = useQuery(
         ['reportactivities', metaDataFromSanity?._id],
         getReportActivities(metaDataFromSanity?._id),

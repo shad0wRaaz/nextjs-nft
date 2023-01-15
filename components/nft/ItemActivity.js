@@ -1,13 +1,12 @@
 import Loader from '../Loader'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { BiChevronUp } from 'react-icons/bi'
 import EventItem from './itemActivity/EventItem'
 import { HiOutlineLightningBolt } from 'react-icons/hi'
-import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getActivities } from '../../fetchers/SanityFetchers'
-import toast from 'react-hot-toast'
 
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,

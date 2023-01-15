@@ -7,8 +7,6 @@ import React, {useState, useEffect} from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
-
-
 const PopularVideoNFTs = () => {
     const { dark } = useThemeContext()
     const { activeListings } = useMarketplaceContext()

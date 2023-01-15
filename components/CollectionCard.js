@@ -7,6 +7,7 @@ import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconEthereum, IconPolygon, IconBNB, IconAvalanche } from './icons/CustomIcons'
 import { getImagefromWeb3 } from '../fetchers/s3'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer backdrop-blur-md',
@@ -30,16 +31,6 @@ const chainIcon = {
   '43113': <IconAvalanche width="1.0rem" height="1.0rem" />,
   '43114': <IconAvalanche width="1.0rem" height="1.0rem" />,
 }
-const chainName = {
-  "97": "TBNB",
-  "56": "BNB",
-  "5": "ETH",
-  "1": "ETH",
-  "137": "MATIC",
-  "80001": "MATIC",
-  "43113": "AVAX",
-  "43114": "AVAX",
-}
 
 const CollectionCard = ({
   id,
@@ -55,7 +46,8 @@ const CollectionCard = ({
   creatorAddress,
   chainId,
 }) => {
-  const { dark } = useThemeContext()
+  const { dark } = useThemeContext();
+  const { currencyByChainId } = useSettingsContext();
 
   return (
     <Link href={`/collections/${id}`}>
@@ -143,7 +135,7 @@ const CollectionCard = ({
               {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
               {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
               {floorPrice}{' '}
-              {chainName[chainId]}
+              {currencyByChainId[chainId]}
             </p>
           </div>
 

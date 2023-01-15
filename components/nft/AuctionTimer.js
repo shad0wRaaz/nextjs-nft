@@ -6,10 +6,7 @@ import { useState } from 'react'
 const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
   const { dark } = useThemeContext()
   const [localListingData, setLocalListingData] = useState()
-  // console.log('Start Time:', new Date(listingData?.startTimeInSeconds.toNumber() * 1000))
-  // console.log('End Time:', parseInt(listingData.secondsUntilEnd.hex, 16))
-  // console.log('Now Time', Date.now())
-  // console.log('Now Time',  (listingData?.secondsUntilEnd.toNumber() * 1000) - new Date().getTime())
+
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
       //do something

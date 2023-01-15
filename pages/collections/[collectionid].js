@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import millify from 'millify'
-import Image from 'next/image'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
@@ -23,15 +22,13 @@ import { useUserContext } from '../../contexts/UserContext'
 import { Menu, Transition, Switch } from '@headlessui/react'
 import EditCollection from '../../components/EditCollection'
 import noProfileImage from '../../assets/noProfileImage.png'
+import HelmetMetaData from '../../components/HelmetMetaData'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { IconAvalanche, IconBNB, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
 import { changeShowUnlisted } from '../../mutators/SanityMutators'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
-import HelmetMetaData from '../../components/HelmetMetaData'
-
-const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
+import { IconAvalanche, IconBNB, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
 
 const style = {
   bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -62,39 +59,16 @@ const style = {
   errorTitle: 'block text-[1.5rem] mb-3',
 }
 
-const marketplace = {
-      '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
-      '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
-      '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
-      '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
-      '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
-      '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
-      '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
-      '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
-    }
-
-const blockchainName = {
-      '80001': 'mumbai',
-      '5': 'goerli',
-      '43113': 'avalanche-fuji',
-      '43114': 'avalanche',
-      '97': 'binance-testnet',
-      '421563': 'arbitrum-goerli',
-      '1': 'mainnet',
-      '137': 'polygon',
-      '56': 'binance',
-}
-
 const chainIcon = {
-  '80001': <IconPolygon className="mr-0" />,
-  '137': <IconPolygon/>,
+  '80001': <IconPolygon className="mr-0" width="30px" height="30px" />,
+  '137': <IconPolygon width="30px" height="30px"/>,
   '43113': <IconAvalanche width="40px" height="40px" />,
   '43114': <IconAvalanche/>,
   '421563': <IconAvalanche/>,
-  '5': <IconEthereum/>,
-  '1': <IconEthereum/>,
-  '97': <IconBNB/>,
-  '56': <IconBNB/>,
+  '5': <IconEthereum width="30px" height="30px"/>,
+  '1': <IconEthereum width="30px" height="30px"/>,
+  '97': <IconBNB width="30px" height="30px"/>,
+  '56': <IconBNB width="30px" height="30px"/>,
 }
 
 const Collection = () => {
@@ -107,6 +81,7 @@ const Collection = () => {
   const { myUser, queryStaleTime } = useUserContext();
   const [showUnlisted, setShowUnlisted] = useState(false);
   const [newCollectionData, setNewCollectionData] = useState()
+  const { blockchainName, marketplace } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
@@ -329,9 +304,10 @@ const Collection = () => {
               <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
                 <div className="flex w-full justify-between">
                   <div>
-                    <h2 className="flex gap-2 text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-center">
+                    <h2 className="flex gap-2 text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-start">
                       {!newCollectionData && 'Unknown NFT Collection'}
-                      <div className="p-2 rounded-xl border-sky-700/50 border w-[40px] h-[40px] flex items-center justify-center">{chainIcon[collectionData[0]?.chainId]}</div> {collectionData[0]?.name}
+                      {newCollectionData && chainIcon[collectionData[0]?.chainId]}
+                      {newCollectionData && collectionData[0]?.name}
                     </h2>
                     
                     <div className="flex lg:gap-3 flex-wrap ">

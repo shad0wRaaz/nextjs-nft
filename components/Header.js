@@ -43,24 +43,13 @@ const style = {
     'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
 }
 
-const chainnum = {
-  "80001": "mumbai",
-  "137": "polygon",
-  "97": "binance-testnet",
-  "56": "binance",
-  "5": "goerli",
-  "1": "mainnet",
-  "43113": "avalanche-fuji",
-  "43114": "avalanche",
-}
-
 const Header = () => {
   
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const disconnectWallet = useDisconnect();
-  const { setCoinPrices } = useSettingsContext();
+  const { setCoinPrices, blockchainName } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
   const { setMyUser,setMyCollections } = useUserContext()
   const [{ data: { chain, chains }, loading, error }, switchNetwork] = useNetwork();
@@ -178,7 +167,7 @@ const Header = () => {
 
   useEffect(() => {
     if(!chainid) return
-    setSelectedBlockchain(chainnum[chainid]);
+    setSelectedBlockchain(blockchainName[chainid]);
   }, [chainid])
 
   // const handleDisconnect = () => {

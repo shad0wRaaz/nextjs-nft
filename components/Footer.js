@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import toast from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import React, { useState } from 'react'
 import { config } from '../lib/sanityClient'
 import {
@@ -102,6 +102,7 @@ const Footer = () => {
 
   return (
     <div className={`${dark ? 'darkNavy': 'bg-neutral-100'}`}>
+      <Toaster position="bottom-right" reverseOrder={false} />
       {/* <div className={style.bottomContainer}>
         <h2 className={style.header}>Partners</h2>
       </div> */}

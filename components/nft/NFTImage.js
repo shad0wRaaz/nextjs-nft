@@ -1,5 +1,3 @@
-import { IoMdSnow } from 'react-icons/io'
-import { AiOutlineHeart } from 'react-icons/ai'
 import { RiBarChartFill } from 'react-icons/ri'
 import { CgDetailsMore } from 'react-icons/cg'
 import { FiInfo } from 'react-icons/fi'

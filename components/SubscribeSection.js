@@ -5,16 +5,16 @@ import toast from 'react-hot-toast'
 import { config } from '../lib/sanityClient'
 import dropimage from '../assets/pandadrop.png'
 import { useThemeContext } from '../contexts/ThemeContext'
-
-const HOST = (process.env.NODE_ENV == "production") ? 'https://nuvanft.io' : 'http://localhost:3000';
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[4rem]  pb-0 mt-0',
 }
 
 const SubscribeSection = () => {
-    const {dark, errorToastStyle, successToastStyle} = useThemeContext();
-    const [subscriberEmail, setSubscriberEmail] = useState('');
+  const { HOST } = useSettingsContext();
+  const [subscriberEmail, setSubscriberEmail] = useState('');
+  const {dark, errorToastStyle, successToastStyle} = useThemeContext();
 
     const handleSubscribe = async (e, sanityClient = config, toastHandler = toast) => {
         e.preventDefault()

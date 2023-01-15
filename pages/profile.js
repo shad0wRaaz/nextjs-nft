@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import FileBase from 'react-file-base64'
 import Loader from '../components/Loader'
@@ -13,6 +13,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconLoading } from '../components/icons/CustomIcons'
 import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapper: '',
@@ -33,20 +34,18 @@ const style = {
     'aspect-video w-[97%] relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg flex items-center border-dashed border-2 border-sky-500',
 }
 
-const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080'
-
 const profile = () => {
+  const router = useRouter()
   const address = useAddress()
+  const bannerInputRef = useRef()
+  const profileInputRef = useRef()
+  const queryClient = new QueryClient()
+  const [banner, setBanner] = useState()
+  const [profile, setProfile] = useState()
   const [userDoc, setUserDoc] = useState()
+  const { myUser, setMyUser } = useUserContext()
   const [isSaving, setIsSaving] = useState(false)
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-  const { myUser, setMyUser } = useUserContext()
-  const queryClient = new QueryClient()
-  const [profile, setProfile] = useState()
-  const [banner, setBanner] = useState()
-  const profileInputRef = useRef()
-  const bannerInputRef = useRef()
-  const router = useRouter()
 
   useEffect(() => {
     if (!myUser) return
@@ -57,11 +56,11 @@ const profile = () => {
     }
   }, [myUser])
 
-  useEffect(() => {
-    if(!address) {
-      router.push('/');
-    }
-  },[address])
+  // useEffect(() => {
+  //   if(!address) {
+  //     router.push('/');
+  //   }
+  // },[address])
 
   // function previewImage(target) {
   //   const files = document.getElementById(

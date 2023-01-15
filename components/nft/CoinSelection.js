@@ -1,7 +1,7 @@
-import { Menu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { HiChevronDown } from 'react-icons/hi'
 import maticLogo from '../../assets/matic.png'
+import { Menu, Transition } from '@headlessui/react'
 
 export default function CoinSelection({chainid}) {
   

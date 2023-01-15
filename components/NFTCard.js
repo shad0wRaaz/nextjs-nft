@@ -53,6 +53,9 @@ const NFTCard = ({
     if (Boolean(listing)) {
       setListedItem(listing)
     }
+    return() =>{
+      //do nothing
+    }
   }, [listings, nftItem])
 
   useEffect(() => {
@@ -68,6 +71,9 @@ const NFTCard = ({
         setLikers(res[0])
       }
     })()
+    return() => {
+      //do nothing
+    }
   }, [nftItem])
 
   return (

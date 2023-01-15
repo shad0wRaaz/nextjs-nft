@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import NFTItem from './NFTItem'
+import toast from 'react-hot-toast'
 import bsclogo from '../assets/bsc.png'
 import maticlogo from '../assets/matic.png'
 import ethereumlogo from '../assets/ethereum.png'
 import avalancelogo from '../assets/avalance.png'
 import React, { useEffect, useState } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { useAddress } from '@thirdweb-dev/react'
-import toast from 'react-hot-toast'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 
 const style = {

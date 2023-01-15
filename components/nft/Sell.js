@@ -54,7 +54,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
-  const { loadingNewPrice, setLoadingNewPrice, coinPrices } = useSettingsContext();
+  const { loadingNewPrice, setLoadingNewPrice, coinPrices, HOST } = useSettingsContext();
   const queryClient = useQueryClient()
   const directListingPanel = useRef()
   const auctionListingPanel = useRef()
@@ -192,7 +192,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
 
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
+        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
           router.reload(window.location.pathname);
           router.replace(router.asPath);
           setLoadingNewPrice(false)
@@ -271,7 +271,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
       //update listing data
       ;(async() => {
         setLoadingNewPrice(true);
-        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
+        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
           setLoadingNewPrice(false);
           router.reload(window.location.pathname);
           router.replace(router.asPath);

@@ -9,14 +9,6 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { getMarketOffers } from '../../fetchers/Web3Fetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 
-const chainExplorer = {
-  '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
-  '80001': process.env.NEXT_PUBLIC_EXPLORER_MUMBAI,
-  '5': process.env.NEXT_PUBLIC_EXPLORER_GOERLI,
-  '4': process.env.NEXT_PUBLIC_EXPLORER_RINKEBY,
-  '1': process.env.NEXT_PUBLIC_EXPLORER_MAINNET,
-}
-
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
   title: `px-6 py-4 flex items-center cursor-pointer`,

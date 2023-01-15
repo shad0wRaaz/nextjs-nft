@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
 import { config } from '../lib/sanityClient'
+import { MdAudiotrack } from 'react-icons/md'
+import { useAddress } from '@thirdweb-dev/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
-import { BigNumber } from 'ethers'
-import { RiTimerLine } from 'react-icons/ri'
-import { MdAudiotrack } from 'react-icons/md'
-import Countdown from 'react-countdown'
-import { useAddress } from '@thirdweb-dev/react'
 
 
 const SearchItem = ({ nftItem }) => {
-  const [likers, setLikers] = useState([])
-  const [isLiked, setIsLiked] = useState(false)
   const address = useAddress()
   const { dark } = useThemeContext()
+  const [likers, setLikers] = useState([])
+  const [isLiked, setIsLiked] = useState(false)
  
   useEffect(() => {
     //getting NFT likes from Sanity
@@ -48,6 +43,10 @@ const SearchItem = ({ nftItem }) => {
       }
     } else {
       setIsLiked(false)
+    }
+
+    return() => {
+      //do nothing
     }
   }, [address, likers])
   

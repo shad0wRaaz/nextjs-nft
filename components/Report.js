@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { BigNumber } from 'ethers'
 import toast from 'react-hot-toast'
 import { BsCheck } from 'react-icons/bs'
 import { CgSelect } from 'react-icons/cg'
@@ -17,11 +16,6 @@ const reportType = [
     { name: 'Spam' },
     { name: 'Others' },
 ]
-
-const successToastStyle = {
-    style: { background: '#10B981', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
   
 const style = {
     label: 'm-2 mt-4',

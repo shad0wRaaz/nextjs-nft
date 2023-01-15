@@ -19,10 +19,9 @@ import { ConnectWallet } from '@thirdweb-dev/react'
 import { IconLoading } from '../icons/CustomIcons'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
-import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useThemeContext } from '../../contexts/ThemeContext'
-
-const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import { sendNotificationFrom } from '../../mutators/SanityMutators'
 
 const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
@@ -46,21 +45,22 @@ const style = {
 }
 
 const CreateNFTCollection = () => {
-  const network = useNetwork()
-  const chain = useChainId()
+  const network = useNetwork();
+  const chain = useChainId();
+  const { HOST } = useSettingsContext();
   const {dark, successToastStyle, errorToastStyle} = useThemeContext();
-  const address = useAddress()
-  const { myUser } = useUserContext()
-  const [categories, setCategories] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState()
-  const [profile, setProfile] = useState()
-  const [banner, setBanner] = useState()
-  const queryClient = new useQueryClient()
+  const address = useAddress();
+  const { myUser } = useUserContext();
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [profile, setProfile] = useState();
+  const [banner, setBanner] = useState();
+  const queryClient = new useQueryClient();
   const router = useRouter();
   const signer = useSigner();
-  const profileInputRef = useRef()
-  const bannerInputRef = useRef()
-  const sdk = new ThirdwebSDK(signer)
+  const profileInputRef = useRef();
+  const bannerInputRef = useRef();
+  const sdk = new ThirdwebSDK(signer);
 
   const { mutate: sendNotification } = useMutation(
     async ({ address, contractAddress, type }) =>

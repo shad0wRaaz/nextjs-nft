@@ -28,7 +28,6 @@ const Home = (props) => {
 
   return (
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden` }>
-        <Toaster position="bottom-left" reverseOrder={false} />
         <HelmetMetaData
           title="Nuva NFT"
           description="A Multichain NFT Marketplace"

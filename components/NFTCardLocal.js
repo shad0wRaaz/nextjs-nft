@@ -6,6 +6,7 @@ import { config } from '../lib/sanityClient'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { IconHeart, IconImage } from './icons/CustomIcons'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapper: `bg-[#1E293BEE] shadow-[inset_0_0_0_1px_rgb(255,255,255,0.1)] flex-auto max-w-[17rem] w-[17rem] h-[29rem] mb-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
@@ -27,18 +28,9 @@ const style = {
   buttonIcon: `text-l text-white`,
   buttonText: `text-white ml-2 text-md`,
 }
-const chainnum = {
-  "41114": "avalance",
-  "41113": "avalance-fuji",
-  "80001": "mumbai",
-  "97": "binance-testnet",
-  "56": "binance",
-  "137": "polygon",
-  "5": "goerli",
-  "1": "mainnet"
-}
 
 const NFTCardLocal = ({ nftItem, listings }) => {
+  const { blockchainName } = useSettingsContext();
   const [isListed, setIsListed] = useState(false)
   const [price, setPrice] = useState(0)
   const [secondsUntilEnd, setSecondsUntilEnd] = useState(0)
@@ -69,7 +61,7 @@ const NFTCardLocal = ({ nftItem, listings }) => {
 
       if(nftItem?.collection?.chainId && nftItem?.collection?.contractAddress){
         ;(async() => {
-          const sdk = new ThirdwebSDK(chainnum[nftItem.collection.chainId]);
+          const sdk = new ThirdwebSDK(blockchainName[nftItem.collection.chainId]);
           const contract = await sdk.getContract(nftItem.collection.contractAddress, "nft-collection");
           const nft = await contract.get(nftItem?.id);
           setnftmetadata(nft);

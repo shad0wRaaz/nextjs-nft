@@ -1,8 +1,8 @@
 import Moment from 'react-moment'
-import Link from 'next/link'
-import { useThemeContext } from '../../../contexts/ThemeContext'
-import { IconPolygon, IconEthereum, IconBNB } from '../../icons/CustomIcons'
 import { RiCheckboxCircleFill } from 'react-icons/ri'
+import { useThemeContext } from '../../../contexts/ThemeContext'
+import { useSettingsContext } from '../../../contexts/SettingsContext'
+import { IconPolygon, IconEthereum, IconBNB, IconAvalanche } from '../../icons/CustomIcons'
 
 const style = {
   event: `p-2 py-4 text-sm text-center whitespace-nowrap`,
@@ -14,23 +14,6 @@ const style = {
   accent: `text-neutral-900`,
 }
 
-const chainIcon = {
-  '97': <IconBNB width="1.3rem" height="1.3rem" />,
-  '80001': <IconPolygon width="1.3rem" height="1.3rem" />,
-  '5': <IconEthereum width="1.3rem" height="1.3rem" />,
-  '4': <IconEthereum width="1.3rem" height="1.3rem" />
-}
-const chainExplorer = {
-  '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
-  '56': process.env.NEXT_PUBLIC_EXPLORER_BNB,
-  '80001': process.env.NEXT_PUBLIC_EXPLORER_MUMBAI,
-  '137': process.env.NEXT_PUBLIC_EXPLORER_POLYGON,
-  '5': process.env.NEXT_PUBLIC_EXPLORER_GOERLI,
-  '4': process.env.NEXT_PUBLIC_EXPLORER_RINKEBY,
-  '1': process.env.NEXT_PUBLIC_EXPLORER_MAINNET,
-  '43113': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE_FUJI,
-  '43114': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE,
-}
 const pillcolor = {
   'Mint' : ' bg-lime-200 text-lime-600',
   'List' : ' bg-indigo-200 text-indigo-600',
@@ -44,6 +27,7 @@ const pillcolor = {
 
 const EventItem = ({ event }) => {
   const { dark } = useThemeContext()
+  const { chainExplorer } = useSettingsContext();
 
   return (
     <tr
@@ -67,21 +51,23 @@ const EventItem = ({ event }) => {
           {event.event !== 'Mint' &&
             event.event != 'Delist' &&
             event.event != 'Burn' &&
-            (event.chainId == '800001' || event.chainId == '137' ? (
-              <IconPolygon width={'10'} height={'10'} />
-            ) : event.chainId == '1' || event.chainId == '4' ? (
+            (event.chainId == '80001' || event.chainId == '137' ? (
+              <IconPolygon width={'15'} height={'15'} />
+            ) : event.chainId == '1' || event.chainId == '5' ? (
               <IconEthereum />
-            ) : (
-              <IconPolygon />
-            ))}
+            ) : event.chainId == '56' || event.chainId == '97' ? (
+              <IconBNB />
+            ) : event.chainId == '43113' || event.chainId == '43114' ?
+            (<IconAvalanche />) : ''
+            )}
           <div className={style.eventPriceValue}> { !isNaN(Number(event.price)) ? Number(event.price).toFixed(5) : '-'}</div>
         </div>
       </td>
       <td className={style.event}>
-        {event.from.slice(0, 6)}..{event.from.slice(-4)}
+        {event.from.slice(0, 6)}...{event.from.slice(-4)}
       </td>
       <td className={style.event}>
-        {event.to.slice(0, 6)}..{event.to.slice(-4)}
+        {event.to.slice(0, 6)}...{event.to.slice(-4)}
       </td>
       <td className={style.event}>
         <Moment fromNow>{event._createdAt}</Moment>

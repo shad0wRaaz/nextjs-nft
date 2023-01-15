@@ -124,17 +124,16 @@ const CreateAVNFT = ({uuid}) => {
     },
   })
   const {dark, errorToastStyle, successToastStyle } = useSettingsContext()
-  const signer = useSigner()
-  const chainid = useChainId()
-  const router = useRouter()
-  const address = useAddress()
-  const [fileType, setFileType] = useState()
-  const connectWithMetamask = useMetamask()
-  const { myCollections } = useUserContext()
-  const [thisChainCollection, setThisChainCollection] = useState([])
-  const [selectedCollection, setSelectedCollection] = useState({ contractAddress: '' })
-  const [nftCollection, setNftCollection] = useState()
-  const [isMinting, setIsMinting] = useState(false)
+  const signer = useSigner();
+  const chainid = useChainId();
+  const router = useRouter();
+  const address = useAddress();
+  const [fileType, setFileType] = useState();
+  const { myCollections } = useUserContext();
+  const [thisChainCollection, setThisChainCollection] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState({ contractAddress: '' });
+  const [nftCollection, setNftCollection] = useState();
+  const [isMinting, setIsMinting] = useState(false);
   const [file, setFile] = useState();
   const [animatedFile, setAnimatedFile] = useState();
   const fileInputRef = useRef();
