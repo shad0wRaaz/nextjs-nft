@@ -5,7 +5,7 @@ import Image from 'next/image'
 import noBannerImage from '../assets/noBannerImage.png'
 import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { IconEthereum, IconPolygon, IconBNB } from './icons/CustomIcons'
+import { IconEthereum, IconPolygon, IconBNB, IconAvalanche } from './icons/CustomIcons'
 import { getImagefromWeb3 } from '../fetchers/s3'
 
 const style = {
@@ -21,9 +21,14 @@ const style = {
 }
 const chainIcon = {
   '97': <IconBNB width="1.0rem" height="1.0rem" />,
+  '56': <IconBNB width="1.0rem" height="1.0rem" />,
   '80001': <IconPolygon width="1.0rem" height="1.0rem" />,
+  '137': <IconPolygon width="1.0rem" height="1.0rem" />,
   '5': <IconEthereum width="1.0rem" height="1.0rem" />,
-  '4': <IconEthereum width="1.0rem" height="1.0rem" />
+  '4': <IconEthereum width="1.0rem" height="1.0rem" />,
+  '1': <IconEthereum width="1.0rem" height="1.0rem" />,
+  '43113': <IconAvalanche width="1.0rem" height="1.0rem" />,
+  '43114': <IconAvalanche width="1.0rem" height="1.0rem" />,
 }
 const chainName = {
   "97": "TBNB",

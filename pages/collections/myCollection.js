@@ -24,15 +24,6 @@ import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { IconCopy, IconLoading } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 const style = {
   nftwrapper:
     'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
@@ -46,7 +37,7 @@ const Collection = () => {
   const router = useRouter()
   const signer = useSigner()
   const address = useAddress()
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const bannerRef = useRef()
   const {
     myUser,
@@ -146,7 +137,7 @@ const Collection = () => {
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
-          <div className="nc-NcImage absolute inset-0" data-nc-id="NcImage">
+          <div className="nc-NcImage absolute inset-0">
             <img
               src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : noBannerImage.src}
               className="h-full w-full object-cover"

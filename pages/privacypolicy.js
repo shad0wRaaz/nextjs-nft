@@ -34,7 +34,7 @@ const privacypolicy = () => {
       </div>
       <div className={style.wrapper}>
         <p>This privacy policy applies between you, the User of this Website, and NUVA NFT, the owner and provider of this Website. NUVA NFT takes the privacy of your information very seriously. This privacy policy applies to our use of any and all Data collected by us or provided by you in relation to your use of the Website.
-          <br/>This privacy policy should be read alongside, and in addition to, our Terms and Conditions, which can be found at: <a href="/termsandconditions" className="underline text-blue-500">https://nuvanft.io/termsandconditions</a>.
+          <br/>This privacy policy should be read alongside, and in addition to, our Terms and Conditions, which can be found at: <a href="/termsandconditions" className="underline text-blue-500 hover:text-blue-600">https://nuvanft.io/termsandconditions</a>.
         </p><br/>
         <p>Please read this privacy policy carefully.</p>
         <br/>
@@ -231,7 +231,7 @@ const privacypolicy = () => {
               <li>a. access to your account is controlled by a password and a username that is unique to you.</li>
               <li>b. we store your Data on secure servers.</li>
             </ol><br/>
-          18. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorised access to your Data, please let us know immediately by contacting us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500">support@metanuva.com</a>.<br/><br/>
+          18. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorised access to your Data, please let us know immediately by contacting us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a>.<br/><br/>
           19. If you want detailed information from Get Safe Online on how to protect your information and your computers and devices against fraud, identity theft, viruses and many other online problems, please visit www.getsafeonline.org. Get Safe Online is supported by HM Government and leading businesses.<br/><br/>
         </div>
 
@@ -254,7 +254,7 @@ const privacypolicy = () => {
           </ol>
         </div>
 
-        23. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500">support@metanuva.com</a><br/><br/>
+        23. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a><br/><br/>
         24. If you are not satisfied with the way a complaint you make in relation to your Data is handled by us, you may be able to refer your complaint to the relevant data protection authority. For the UK, this is the Information Commissioner's Office (ICO). The ICO's contact details can be found on their website at https://ico.org.uk/.<br/><br/>
         25. It is important that the Data we hold about you is accurate and current. Please keep us informed if your Data changes during the period for which we hold it.
         
@@ -266,16 +266,16 @@ const privacypolicy = () => {
 
         <div className={style.section}>
           <p className={style.header}>Changes of business ownership and control</p>
-          27. NUVA NFT may, from time to time, expand or reduce our business and this may involve the sale and/or the transfer of control of all or part of  NUVA NFT . Data provided by Users will, where it is relevant to any part of our business so transferred, be transferred along with that part and the new owner or newly controlling party will, under the terms of this privacy policy, be permitted to use the Data for the purposes for which it was originally supplied to us.<br/><br/>
+          27. NUVA NFT may, from time to time, expand or reduce our business and this may involve the sale and/or the transfer of control of all or part of NUVA NFT. Data provided by Users will, where it is relevant to any part of our business so transferred, be transferred along with that part and the new owner or newly controlling party will, under the terms of this privacy policy, be permitted to use the Data for the purposes for which it was originally supplied to us.<br/><br/>
           28. We may also disclose Data to a prospective purchaser of our business or any part of it.<br/><br/>
           29. In the above instances, we will take steps with the aim of ensuring your privacy is protected.
         </div>
 
         <div className={style.section}>
           <p className={style.header}>Cookies</p>
-          30. This Website may place and access certain Cookies on your computer. NUVA NFT uses Cookies to improve your experience of using the Website and to improve our range of products and services.   NUVA NFT has carefully chosen these Cookies and has taken steps to ensure that your privacy is protected and respected at all times.<br/><br/>
+          30. This Website may place and access certain Cookies on your computer. NUVA NFT uses Cookies to improve your experience of using the Website and to improve our range of products and services. NUVA NFT has carefully chosen these Cookies and has taken steps to ensure that your privacy is protected and respected at all times.<br/><br/>
           31. All Cookies used by this Website are used in accordance with current UK and EU Cookie Law.<br/><br/>
-          32. Before the Website places Cookies on your computer, you will be presented with a message bar requesting your consent to set those Cookies. By giving your consent to the placing of Cookies, you are enabling NUVA NFT to provide a better experience and service to you. You may, if you wish, deny consent to the placing of Cookies; however certain features of the Website may not function fully or as intended.<br/><br/>
+          32. Before the Website places Cookies on your computer, you will be presented with a message bar requesting your consent to set those Cookies. By giving your consent to the placing of Cookies, you are enabling NUVA NFT to provide a better experience and service to you. You may, if you wish, deny consent to the placing of Cookies; however certain features of the Website may not function fully or as intended.<br/><br/>
           33. This Website may place the following Cookies:
           <div className={style.table}>
             <div className={`${style.tableRow} border-b-0 rounded-xl ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
@@ -340,7 +340,7 @@ const privacypolicy = () => {
 
         <div className={style.section}>
           <p className={style.header}>Changes to this privacy policy</p>
-          44. NUVA NFT reserves the right to change this privacy policy as we may deem necessary from time to time or as may be required by law. Any changes will be immediately posted on the Website and you are deemed to have accepted the terms of the privacy policy on your first use of the Website following the alterations. You may contact NUVA NFT by email at <a href="mailto:support@metanuva.com" className="underline text-blue-500">support@metanuva.com</a>
+          44. NUVA NFT reserves the right to change this privacy policy as we may deem necessary from time to time or as may be required by law. Any changes will be immediately posted on the Website and you are deemed to have accepted the terms of the privacy policy on your first use of the Website following the alterations. You may contact NUVA NFT by email at <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a>
 
         </div>
       </div>

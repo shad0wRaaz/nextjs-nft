@@ -44,15 +44,6 @@ const style = {
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080' 
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 function reducer(state, action) {
   switch (action.type) {
     case 'CHANGE_NAME':
@@ -126,7 +117,7 @@ const CreateNFT = ({uuid}) => {
       tokenid: '',
     },
   })
-  const {dark} = useSettingsContext()
+  const {dark, errorToastStyle, successToastStyle} = useSettingsContext()
   const fileInputRef = useRef(null)
   const [file, setFile] = useState()
   const signer = useSigner()

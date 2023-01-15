@@ -43,15 +43,6 @@ const style = {
     'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 const chainnum = {
   "80001": "mumbai",
   "137": "polygon",
@@ -63,12 +54,11 @@ const chainnum = {
   "43114": "avalanche",
 }
 
-
 const Header = () => {
   
   const address = useAddress();
   const chainid = useChainId();
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const disconnectWallet = useDisconnect();
   const { setCoinPrices } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
@@ -154,6 +144,7 @@ const Header = () => {
     if (!address) {
       setIsLogged(false);
       setIsAdmin(false);
+      setMyUser();
       return
     }
     ;(async () => {
@@ -190,13 +181,13 @@ const Header = () => {
     setSelectedBlockchain(chainnum[chainid]);
   }, [chainid])
 
-  const handleDisconnect = () => {
-    setIsLogged(false)
-    localStorage.removeItem(`${address}`)
-    disconnectWallet()
-    setMyUser()
-    disconnectNotification()
-  }
+  // const handleDisconnect = () => {
+  //   setIsLogged(false)
+  //   localStorage.removeItem(`${address}`)
+  //   disconnectWallet()
+  //   setMyUser()
+  //   disconnectNotification()
+  // }
 
   const disconnectNotification = (toastHandler = toast) => {
     toastHandler.success(`You have been disconnected !`, successToastStyle)
@@ -210,7 +201,6 @@ const Header = () => {
   return (
     <div className={style.wrapper}>
       <div className="container flex items-center justify-between ">
-      <Toaster position="top-center" reverseOrder={false} />
       <Link href="/">
         <div className={style.logoContainer} style={{ marginLeft: 0 }}>
           <img src={nuvanftLogo.src} height={55} width={90} />

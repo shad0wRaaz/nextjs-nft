@@ -38,15 +38,6 @@ const style = {
     'rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white border border-slate-400 hover:border-slate-600',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 function reducer(state, action) {
   switch (action.type) {
     case 'CHANGE_NAME':
@@ -132,7 +123,7 @@ const CreateAVNFT = ({uuid}) => {
       tokenid: '',
     },
   })
-  const {dark} = useSettingsContext()
+  const {dark, errorToastStyle, successToastStyle } = useSettingsContext()
   const signer = useSigner()
   const chainid = useChainId()
   const router = useRouter()

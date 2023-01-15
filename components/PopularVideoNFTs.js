@@ -1,13 +1,10 @@
 
 import Slider from 'react-slick'
 import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import VideoNFTCard from './VideoNFTCard'
-
+import "slick-carousel/slick/slick-theme.css";
 import React, {useState, useEffect} from 'react'
-import { useKeenSlider } from 'keen-slider/react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { HiArrowSmRight, HiArrowSmLeft } from 'react-icons/hi'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 

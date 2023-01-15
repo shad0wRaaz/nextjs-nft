@@ -9,15 +9,6 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { getMarketOffers } from '../../fetchers/Web3Fetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-  }
-const successToastStyle = {
-style: { background: '#10B981', padding: '16px', color: '#fff' },
-iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 const chainExplorer = {
   '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
   '80001': process.env.NEXT_PUBLIC_EXPLORER_MUMBAI,
@@ -41,7 +32,7 @@ const style = {
   transactionTable: 'ttable max-h-[500px] overflow-y-auto',
 }
 const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain }) => {
-  const { dark } = useThemeContext();
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [toggle, setToggle] = useState(true);
   const [marketOffer, setMarketOffer] = useState([]);
   const [coinMultiplier, setCoinMultiplier] = useState();

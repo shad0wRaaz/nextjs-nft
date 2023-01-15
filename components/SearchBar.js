@@ -1,10 +1,9 @@
-import { Fragment, useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { config } from '../lib/sanityClient'
-import { Combobox, Transition } from '@headlessui/react'
 import { RiSearchLine } from 'react-icons/ri'
-import { useSearchContext } from '../contexts/SearchContext'
+import { Combobox, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { Fragment, useCallback, useMemo, useState } from 'react'
 
 const style = {
   comboMenu: `absolute mt-1 max-h-xl w-full overflow-auto rounded-3xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm sm:w-[300px] searchOutputBox`,
@@ -29,6 +28,10 @@ const SearchBar = () => {
       const collectionData = await sanityClient.fetch(query)
       setCollectionArray(collectionData)
     })()
+    
+    return() => {
+      //do nothing
+    }
   }, [])
 
   const filteredCollection =

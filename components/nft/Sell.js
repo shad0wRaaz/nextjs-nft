@@ -39,14 +39,6 @@ const style = {
     'flex gap-2 items-center gradBlue rounded-xl cursor-pointer p-3 m-3 px-6 ease-linear transition text-white',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 const blockchainCurrency = {
 "mumbai" : {currency: "MATIC", icon: <IconPolygon />, DATABASE_COIN_NAME: "maticprice"},
 "polygon": {currency: "MATIC", icon: <IconPolygon />, DATABASE_COIN_NAME: "maticprice"},
@@ -59,7 +51,7 @@ const blockchainCurrency = {
 }
 
 const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTblockchain }) => {
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
   const { loadingNewPrice, setLoadingNewPrice, coinPrices } = useSettingsContext();

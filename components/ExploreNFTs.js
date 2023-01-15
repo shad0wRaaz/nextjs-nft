@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { useAddress } from '@thirdweb-dev/react'
+import toast from 'react-hot-toast'
 
 
 const style = {
@@ -29,8 +30,13 @@ const style = {
 
 const ExploreNFTs = () => {
   const address = useAddress();
-  const { dark } = useThemeContext();
+  const { dark, successToastStyle } = useThemeContext();
   const { latestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
+
+  const changeBlockchain = (selectedChainName) => {
+    setSelectedBlockchain(selectedChainName);
+    toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
+  }
 
   return (
     <div className={style.wrapper}>
@@ -51,7 +57,7 @@ const ExploreNFTs = () => {
                 selectedBlockchain == 'goerli' &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => setSelectedBlockchain('goerli')}
+              onClick={() => changeBlockchain('goerli')}
               >
               <img src={ethereumlogo.src} width="20px" />
               <span className="pl-2">Ethereum</span>
@@ -65,7 +71,7 @@ const ExploreNFTs = () => {
                 selectedBlockchain == 'binance-testnet' &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => setSelectedBlockchain('binance-testnet')}
+              onClick={() => changeBlockchain('binance-testnet')}
             >
               <img src={bsclogo.src} width="20px" />
               <span className="pl-2">Binance</span>
@@ -79,7 +85,7 @@ const ExploreNFTs = () => {
                 selectedBlockchain == 'mumbai' &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => setSelectedBlockchain('mumbai')}
+              onClick={() => changeBlockchain('mumbai')}
             >
               <img src={maticlogo.src} width="18px" />
               <span className="pl-2">Polygon</span>
@@ -93,7 +99,7 @@ const ExploreNFTs = () => {
                 selectedBlockchain == 'avalanche-fuji' &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => setSelectedBlockchain('avalanche-fuji')}
+              onClick={() => changeBlockchain('avalanche-fuji')}
             >
               <img src={avalancelogo.src} width="18px" />
               <span className="pl-1">Avalance</span>

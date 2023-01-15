@@ -24,15 +24,6 @@ const style = {
   priceValue: 'text-2xl font-bold',
   buttons: 'flex',
 }
-
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 const blockchainNum = {
   "mumbai" : 80001,
   "polygon": 137,
@@ -68,7 +59,7 @@ var listed = true
     listed = false
   }
   const { coinPrices, loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
-  const { dark } = useThemeContext();
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const chainId = useChainId();
   const [,switchNetwork] = useNetwork();
   const address = useAddress();
@@ -152,7 +143,6 @@ var listed = true
       //do nothing
     }
   }, [listingData, coinPrices])
-console.log(listed)
 
   //function to make offer for nfts
   const makeAnOffer = async (

@@ -2,8 +2,8 @@ import React from 'react'
 import Link from 'next/link'
 import { ImFilePicture } from 'react-icons/im'
 import { BsCollection, BsTags } from 'react-icons/bs'
-import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
 
 
 const HowToInfo = () => {
@@ -52,8 +52,7 @@ const HowToInfo = () => {
               }
             >
               Once you've set up your wallet of choice, connect it to Nuva NFT
-              by clicking the wallet icon in the top right corner. Learn about
-              the wallets we support.
+              by clicking the 'Connect Wallet' button in the top right corner. We support a range of wallets.
             </p>
           </div>
 
@@ -83,9 +82,7 @@ const HowToInfo = () => {
                     : style.contentDescription + ' text-black'
                 }
               >
-                Click My Collections and set up your collection. Add social
-                links, a description, profile & banner images, and set a
-                secondary sales fee.
+                Once your Wallet is connected, set up your collection from My Account menu. Add metadata to the NFT like name, image, etc., set up royalties. 
               </p>
             </div>
           </Link>

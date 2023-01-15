@@ -12,17 +12,8 @@ const style = {
     wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[4rem]  pb-0 mt-0',
 }
 
-const errorToastStyle = {
-style: { background: '#ef4444', padding: '16px', color: '#fff' },
-iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-style: { background: '#10B981', padding: '16px', color: '#fff' },
-iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 const SubscribeSection = () => {
-    const {dark} = useThemeContext();
+    const {dark, errorToastStyle, successToastStyle} = useThemeContext();
     const [subscriberEmail, setSubscriberEmail] = useState('');
 
     const handleSubscribe = async (e, sanityClient = config, toastHandler = toast) => {

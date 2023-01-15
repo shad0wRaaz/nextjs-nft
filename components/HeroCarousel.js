@@ -9,7 +9,7 @@ const style = {
   container: `pt-[8rem]`,
   contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2`,
-  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl leading-[5rem] text-white`,
+  title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl leading-[3.5rem] md:leading-[5rem] lg:leading-[5rem] xl:leading-[5rem] text-white`,
   description: `container-[400px] mt-[0.8rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
   ctaContainer: `flex justify-start gap-[20px] px-[20px] mt-5 mb-8`,
   accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,

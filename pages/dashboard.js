@@ -1,4 +1,7 @@
+import axios from 'axios'
 import Head from 'next/head'
+import millify from 'millify'
+import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { TiHeart } from 'react-icons/ti'
@@ -13,22 +16,11 @@ import { getImagefromWeb3 } from '../fetchers/s3'
 import React, { useEffect, useState } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { getTotals } from '../fetchers/SanityFetchers'
-import { getTotalsforAdmin, updateListings } from '../fetchers/Web3Fetchers'
+import { useThemeContext } from '../contexts/ThemeContext'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
 import { BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
+import { getTotalsforAdmin, updateListings } from '../fetchers/Web3Fetchers'
 import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../components/icons/CustomIcons'
-import toast from 'react-hot-toast'
-import axios from 'axios'
-import millify from 'millify'
-
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-style: { background: '#10B981', padding: '16px', color: '#fff' },
-iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const chainnum = {
     "80001": "mumbai",
@@ -53,17 +45,18 @@ const blockchain = {
 }
 
 const dashboard = () => {
-    const address = useAddress();
     const router = useRouter();
-    const [selectedChain, setSelectedChain] = useState();
-    const [totalNftSale, setTotalNftSale] = useState(0);
-    const [totalPlatformFees, setTotalPlatformFees] = useState(0)
+    const address = useAddress();
     const [loggedIn, setLoggedIn] = useState(false);
     const [popularNfts, setPopularNfts] = useState();
     const [ethloading, setethloading] = useState(false);
+    const [totalNftSale, setTotalNftSale] = useState(0);
     const [bnbloading, setbnbloading] = useState(false);
-    const [maticloading, setmaticloading] = useState(false);
+    const [selectedChain, setSelectedChain] = useState();
     const [avaxloading, setavaxloading] = useState(false);
+    const [maticloading, setmaticloading] = useState(false);
+    const [totalPlatformFees, setTotalPlatformFees] = useState(0);
+    const { errorToastStyle, successToastStyle } = useThemeContext();
 
     const getAllAdminUsers = async () => {
         const query = '*[_type == "settings"]{adminusers}';

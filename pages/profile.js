@@ -1,23 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import { config } from '../lib/sanityClient'
 import toast from 'react-hot-toast'
-import { useAddress } from '@thirdweb-dev/react'
+import { useRouter } from 'next/router'
 import FileBase from 'react-file-base64'
 import Loader from '../components/Loader'
-import { useRouter } from 'next/router'
-import { useThemeContext } from '../contexts/ThemeContext'
-import { useUserContext } from '../contexts/UserContext'
-import { IconLoading } from '../components/icons/CustomIcons'
+import Header from '../components/Header'
 import { QueryClient } from 'react-query'
-import axios from 'axios'
-import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
-import noProfileImage from '../assets/noProfileImage.png'
-import noBannerImage from '../assets/noBannerImage.png'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { ThirdwebStorage } from '@thirdweb-dev/storage'
+import Footer from '../components/Footer'
 import { BsUpload } from 'react-icons/bs'
+import { config } from '../lib/sanityClient'
+import { useAddress } from '@thirdweb-dev/react'
+import { useUserContext } from '../contexts/UserContext'
+import React, { useState, useEffect, useRef } from 'react'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { IconLoading } from '../components/icons/CustomIcons'
+import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
 
 const style = {
   wrapper: '',
@@ -38,22 +33,13 @@ const style = {
     'aspect-video w-[97%] relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg flex items-center border-dashed border-2 border-sky-500',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
-
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080'
 
 const profile = () => {
   const address = useAddress()
   const [userDoc, setUserDoc] = useState()
   const [isSaving, setIsSaving] = useState(false)
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const { myUser, setMyUser } = useUserContext()
   const queryClient = new QueryClient()
   const [profile, setProfile] = useState()
@@ -106,29 +92,34 @@ const profile = () => {
   ) => {
     e.preventDefault()
     if (!address) return
-    setIsSaving(true) 
+    setIsSaving(true);
     try {
       
       if(profile){
-        const formdata = new FormData()
+        console.log('profile pic changed');
+        const formdata = new FormData();
         formdata.append('imagefile', profile);
         
         const uri =  await saveImageToWeb3(formdata);
+        console.log(uri);
         setUserDoc({...userDoc, web3imageprofile: uri});
       }
-
+      
       //saving banner image
       if(banner){
+        console.log('banner pic changed');
         const bannerData = new FormData();
         bannerData.append('imagefile', banner);
         
         const uri  = await saveImageToWeb3(bannerData);
+        console.log(uri);
         setUserDoc({...userDoc, web3imagebanner: uri});
       }
     } catch (error) {
       console.log(error)
     }
     try {
+      console.log(userDoc)
       await sanityClient
         .patch(address)
         .set({

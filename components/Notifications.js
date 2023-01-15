@@ -17,16 +17,9 @@ import { changeNotificationReadStatus, deleteNotifications } from '../mutators/S
 const style = {
   background: `icon hover:bg-neutral-100 p-2 pb-0 rounded-xl cursor-pointer z-20`,
 }
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const Notifications = () => {
+  const { errorToastStyle, successToastStyle } = useThemeContext();
   const { myUser } = useUserContext()
   const { dark, queryStaleTime } = useThemeContext()
   const queryClient = useQueryClient()

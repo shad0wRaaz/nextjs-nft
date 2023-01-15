@@ -25,11 +25,6 @@ const style = {
   coinLogo: 'inline mr-[3px] ml-[5px] h-[15px] w-auto',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-
 const people = [
   { name: '24hr' },
   { name: 'Weekly' },
@@ -39,7 +34,7 @@ const people = [
 ]
 
 const TopCollections = () => {
-  const { dark } = useThemeContext();
+  const { dark, errorToastStyle } = useThemeContext();
   const [showTop, setShowTop] = useState(true);
   const [allCollections, setAllCollections] = useState();
   const { topTradedCollections, setTopTradedCollections, selectedBlockchain } = useMarketplaceContext();

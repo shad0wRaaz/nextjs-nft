@@ -15,17 +15,9 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useAddress, useChainId, useNetwork, useSigner } from '@thirdweb-dev/react'
 
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-    style: { background: '#10B981', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMarketAddress, thisNFTblockchain}) => {
-    const { dark } = useThemeContext();
+    const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const address = useAddress();
     const chainid = useChainId();
     const router = useRouter();

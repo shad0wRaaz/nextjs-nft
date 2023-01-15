@@ -1,22 +1,13 @@
+import axios from 'axios';
 import React from 'react'
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { config } from '../lib/sanityClient';
+import { IconLoading } from './icons/CustomIcons';
 import { useMutation, useQueryClient } from 'react-query';
 import { useThemeContext } from '../contexts/ThemeContext';
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext';
 import { updateCollectionMetaData } from '../mutators/Web3Mutators'
-import axios from 'axios';
-import { IconLoading } from './icons/CustomIcons';
-
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-  }
-const successToastStyle = {
-style: { background: '#10B981', padding: '16px', color: '#fff' },
-iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext';
 
 const style = {
     formRow: 'flex flex-wrap flex-row gap-3 items-center mt-3',
@@ -30,7 +21,7 @@ const style = {
 
 const EditCollection = ({collection, profileImageUrl, bannerImageUrl}) => {
     const qc = useQueryClient()
-    const { dark } = useThemeContext()
+    const { dark, errorToastStyle, successToastStyle } = useThemeContext()
     const [banner, setBanner] = useState()
     const [profile, setProfile] = useState()
     const { rpcUrl } = useMarketplaceContext()

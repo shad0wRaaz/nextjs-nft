@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { config } from '../lib/sanityClient'
 import { IconWallet } from './icons/CustomIcons'
 import React, { useState, useEffect } from 'react'
-import { useThemeContext } from '../contexts/ThemeContext'
 import { BsFillPlayFill, BsPause } from 'react-icons/bs'
+import { useThemeContext } from '../contexts/ThemeContext'
 
 const VideoNFTCard = ({nft}) => {
     const { dark } = useThemeContext();

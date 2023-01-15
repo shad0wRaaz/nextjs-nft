@@ -38,18 +38,10 @@ const style = {
   subscribeButton:
     'transition linear rounded-[10px] p-3 px-6 gradBlue text-white',
 }
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const Footer = () => {
   const [subscriberEmail, setSubscriberEmail] = useState('')
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const addSubscriber = async (
     e,
     sanityClient = config,

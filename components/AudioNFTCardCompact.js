@@ -6,7 +6,8 @@ import { useThemeContext } from '../contexts/ThemeContext'
 
 const AudioNFTCardCompact = ({nft}) => {
     const {dark} = useThemeContext();
-    const [play, setPlay] = useState(false)
+    const [play, setPlay] = useState(false);
+    
   return (
     <div className={`relative flex justify-between p-2 space-x-2 rounded-3xl ${dark ? 'bg-slate-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
         <Link href={`/nfts/${nft.asset.properties?.tokenid}`} passHref>

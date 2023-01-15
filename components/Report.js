@@ -3,11 +3,12 @@ import { BigNumber } from 'ethers'
 import toast from 'react-hot-toast'
 import { BsCheck } from 'react-icons/bs'
 import { CgSelect } from 'react-icons/cg'
+import { useMutation } from 'react-query'
+import { useAddress } from '@thirdweb-dev/react'
 import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
-import { useMutation } from 'react-query'
+import { useThemeContext } from '../contexts/ThemeContext'
 import { sendNotificationFrom } from '../mutators/SanityMutators'
-import { useAddress } from '@thirdweb-dev/react'
 
 const reportType = [
     { name: 'Explicit and Sensitive content' },
@@ -30,6 +31,7 @@ const style = {
 }
 
 const Report = ({ setShowModal, dark, itemType, metaDataFromSanity, nftContractData}) => {
+    const { successToastStyle } = useThemeContext()
     const address = useAddress()
     const [selected, setSelected] = useState(reportType[0])
     const [otherDescription, setOtherDescription] = useState()

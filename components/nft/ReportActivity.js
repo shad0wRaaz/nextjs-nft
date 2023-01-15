@@ -19,14 +19,9 @@ const style = {
     reportWrapper: 'p-4 px-6 flex flex-col gap-3 max-h-96 overflow-y-scroll',
 }
 
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-
 const ReportActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
     const [toggle, setToggle] = useState(true)
-    const { dark } = useThemeContext()
+    const { dark, errorToastStyle } = useThemeContext()
     const { data:reportActivities, status } = useQuery(
         ['reportactivities', metaDataFromSanity?._id],
         getReportActivities(metaDataFromSanity?._id),

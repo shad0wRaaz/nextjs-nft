@@ -8,6 +8,7 @@ import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getActivities } from '../../fetchers/SanityFetchers'
 import toast from 'react-hot-toast'
+
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
   title: `px-6 py-4 flex items-center cursor-pointer`,
@@ -23,19 +24,11 @@ const style = {
   transactionTable: 'ttable max-h-[500px] overflow-y-auto',
 }
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
   
   const [toggle, setToggle] = useState(false)
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
 
   const { data: activityData, status } = useQuery(
     ['activities', metaDataFromSanity?._id],

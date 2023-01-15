@@ -25,14 +25,6 @@ import { RiShareBoxLine , RiAuctionLine } from 'react-icons/ri'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const style = {
   wrapper: `flex`,
@@ -53,7 +45,7 @@ const style = {
 
 const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) => {
   const { marketAddress } = useMarketplaceContext()
-  const { dark } = useThemeContext()
+  const { dark, successToastStyle, errorToastStyle } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
   const [auctionedItem, setAuctionedItem] = useState(false)

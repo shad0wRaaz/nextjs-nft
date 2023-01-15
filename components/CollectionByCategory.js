@@ -7,13 +7,9 @@ import { getUnsignedImagePath } from '../fetchers/s3'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { getNFTCollectionsByCategory } from '../fetchers/SanityFetchers'
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
 
 const CollectionByCategory = ({ categoryName }) => {
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle } = useThemeContext()
   const { data, status } = useQuery(
     ['collection', categoryName],
     getNFTCollectionsByCategory(),

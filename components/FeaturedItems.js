@@ -2,14 +2,17 @@ import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { getImagefromWeb3 } from '../fetchers/s3'
 import { getFullListings } from '../fetchers/Web3Fetchers'
-import { IconBNB, IconEthereum, IconPolygon, IconWallet } from './icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconEthereum, IconPolygon, IconWallet } from './icons/CustomIcons'
 
 const chainIcon = {
     '97': <IconBNB width="1.0rem" height="1.0rem" />,
+    '56': <IconBNB width="1.0rem" height="1.0rem" />,
     '80001': <IconPolygon width="1.0rem" height="1.0rem" />,
     '137': <IconPolygon width="1.0rem" height="1.0rem" />,
     '5': <IconEthereum width="1.0rem" height="1.0rem" />,
-    '4': <IconEthereum width="1.0rem" height="1.0rem" />
+    '4': <IconEthereum width="1.0rem" height="1.0rem" />,
+    '43113': <IconAvalanche width="1.0rem" height="1.0rem" />,
+    '43114': <IconAvalanche width="1.0rem" height="1.0rem" />,
   }
 
 const FeaturedItems = ({ item }) => {

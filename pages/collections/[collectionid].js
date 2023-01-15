@@ -31,14 +31,6 @@ import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
 import HelmetMetaData from '../../components/HelmetMetaData'
 
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
 const style = {
@@ -94,7 +86,7 @@ const blockchainName = {
 }
 
 const chainIcon = {
-  '80001': <IconPolygon/>,
+  '80001': <IconPolygon className="mr-0" />,
   '137': <IconPolygon/>,
   '43113': <IconAvalanche width="40px" height="40px" />,
   '43114': <IconAvalanche/>,
@@ -106,16 +98,16 @@ const chainIcon = {
 }
 
 const Collection = () => {
-  const router = useRouter()
-  const bannerRef = useRef()
-  const qc = useQueryClient()
-  const { dark } = useThemeContext();
+  const router = useRouter();
+  const bannerRef = useRef();
+  const qc = useQueryClient();
   const { collectionid } = router.query;
   const [owners, setOwners] = useState();
   const [showModal, setShowModal] = useState(false);
   const { myUser, queryStaleTime } = useUserContext();
   const [showUnlisted, setShowUnlisted] = useState(false);
   const [newCollectionData, setNewCollectionData] = useState()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
 
@@ -337,13 +329,13 @@ const Collection = () => {
               <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
                 <div className="flex w-full justify-between">
                   <div>
-                    <h2 className="inline-block text-2xl font-semibold sm:text-3xl lg:text-4xl">
+                    <h2 className="flex gap-2 text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-center">
                       {!newCollectionData && 'Unknown NFT Collection'}
-                      {chainIcon[collectionData[0]?.chainId]} {collectionData[0]?.name}
+                      <div className="p-2 rounded-xl border-sky-700/50 border w-[40px] h-[40px] flex items-center justify-center">{chainIcon[collectionData[0]?.chainId]}</div> {collectionData[0]?.name}
                     </h2>
                     
                     <div className="flex lg:gap-3 flex-wrap ">
-                      <div className={`border border-t-0 border-l-0 border-b-0 ${dark ? 'lg:border-r-sky-700/30' : 'lg:border-r-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
+                      <div className={`md:border md:border-t-0 md:border-l-0 md:border-b-0 ${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
                         <span 
                           className="relative block w-fit mt-3 rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
                           onClick={() => {
@@ -425,7 +417,7 @@ const Collection = () => {
                       <Menu as="div" className="relative inline-block">
                         <div>
                           <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
-                            <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> Settings
+                            <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> <span className="hidden md:block">Settings</span>
                           </Menu.Button>
                         </div>
 
@@ -554,15 +546,16 @@ const Collection = () => {
                   <div
                     className={`${
                       dark
-                        ? ' border border-sky-400/20'
-                        : ' border border-neutral-50'
+                      ? ' border border-sky-400/20'
+                      : ' border border-neutral-50'
                     } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                   >
                     <span className="text-sm">Owners</span>
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
                       {owners && owners.length != 0 ? owners.length : '1'}
                     </span>
-                    <span className="mt-1 text-xs text-green-500"> --</span>
+                    <span className="mt-1 text-xs">total</span>
+                    {/* <span className="mt-1 text-xs text-green-500"> --</span> */}
                   </div>
                 </div>
               </div>

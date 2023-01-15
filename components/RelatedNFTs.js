@@ -1,9 +1,9 @@
+import SearchItem from './SearchItem'
+import { TbRefresh } from 'react-icons/tb'
+import { useState, useEffect, useMemo } from 'react'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { useState, useEffect, useMemo } from 'react'
-import SearchItem from './SearchItem'
-import { TbRefresh } from 'react-icons/tb'
 
 
 const style= {
@@ -15,6 +15,7 @@ const style= {
     buttonContainer: 'mt-[4rem] flex justify-center items-center',
     btnRefresh: 'rounded-xl p-3 px-6 gradBlue text-white inline-flex items-center gap-1'
 }
+
 const RelatedNFTs = ({collection}) => {
     const { dark } = useThemeContext()
     const { activeListings } = useMarketplaceContext()

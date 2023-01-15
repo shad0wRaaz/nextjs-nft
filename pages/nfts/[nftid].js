@@ -4,16 +4,22 @@ import { useEffect, useState } from 'react'
 import Footer from '../../components/Footer'
 import { BiChevronUp } from 'react-icons/bi'
 import Header from '../../components/Header'
+import { MdAudiotrack } from 'react-icons/md'
 import { Disclosure } from '@headlessui/react'
 import { config } from '../../lib/sanityClient'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { BsPause, BsPlay } from 'react-icons/bs'
 import Purchase from '../../components/nft/Purchase'
+import RelatedNFTs from '../../components/RelatedNFTs'
+import ItemOffers from '../../components/nft/ItemOffers'
+import BurnCancel from '../../components/nft/BurnCancel'
 import ItemActivity from '../../components/nft/ItemActivity'
 import AuctionTimer from '../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import ReportActivity from '../../components/nft/ReportActivity'
+import BrowseByCategory from '../../components/BrowseByCategory'
 import GeneralDetails from '../../components/nft/GeneralDetails'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
-import BrowseByCategory from '../../components/BrowseByCategory'
-import RelatedNFTs from '../../components/RelatedNFTs'
 import { IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
@@ -21,12 +27,6 @@ import {
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi'
-import { BsPause, BsPlay } from 'react-icons/bs'
-import { MdAudiotrack } from 'react-icons/md'
-import ReportActivity from '../../components/nft/ReportActivity'
-import ItemOffers from '../../components/nft/ItemOffers'
-import BurnCancel from '../../components/nft/BurnCancel'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -34,14 +34,6 @@ const style = {
   topContent: `flex`,
   nftImgContainer: `flex-1 mr-4`,
   detailsContainer: `flex-[2] ml-4`,
-}
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
 }
 const chainIcon = {
   '97': <IconBNB width="1.3rem" height="1.3rem" />,
@@ -71,7 +63,7 @@ const Nft = (props) => { //props are from getServerSideProps
 
   const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain } = props;
   const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
-  const { dark } = useThemeContext();
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
   const signer = useSigner();
   const [isLiked, setIsLiked] = useState(false)

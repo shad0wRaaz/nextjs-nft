@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
-import { useThemeContext } from '../contexts/ThemeContext'
-import Countdown from 'react-countdown'
-import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
-import { BigNumber } from 'ethers'
 import { MdAudiotrack } from 'react-icons/md'
 import { useAddress } from '@thirdweb-dev/react'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
 const NFTItem = ({ nftItem }) => {
   const { dark } = useThemeContext();
@@ -25,8 +22,10 @@ const NFTItem = ({ nftItem }) => {
       }`
       const res = await sanityClient.fetch(query);
       settNftData(res[0]);
-      
     })()
+    return() => {
+      //do nothing
+    }
   }, [nftItem])
 
   useEffect(() => {
@@ -45,13 +44,17 @@ const NFTItem = ({ nftItem }) => {
     } else {
       setIsLiked(false)
     }
+
+    return() => {
+      //do nothing
+    }
   }, [address])
 
   return (
     <div
       className={`relative ${
         dark ? ' bg-slate-800' : ' bg-white'
-      } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl`}
+      } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
     >
       <Link
       href={`/nfts/${nftItem.asset.properties?.tokenid}`}

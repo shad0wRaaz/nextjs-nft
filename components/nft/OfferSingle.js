@@ -14,21 +14,13 @@ import { useSettingsContext } from '../../contexts/SettingsContext';
 import { useAddress, useChainId, useSigner } from '@thirdweb-dev/react';
 import { addVolumeTraded, saveTransaction } from '../../mutators/SanityMutators';
 
-const errorToastStyle = {
-    style: { background: '#ef4444', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-  }
-const successToastStyle = {
-    style: { background: '#10B981', padding: '16px', color: '#fff' },
-    iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDataFromSanity, selectedNft, thisNFTMarketAddress, thisNFTblockchain }) => {
     const signer = useSigner();
     const router = useRouter();
     const address = useAddress();
     const chainId = useChainId();
-    const { dark } = useThemeContext();
+    const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const queryClient = useQueryClient();
     const { setLoadingNewPrice } = useSettingsContext();
     const [isAccepting, setIsAccepting] = useState(false);

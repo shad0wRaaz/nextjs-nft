@@ -28,6 +28,9 @@ const SearchItem = ({ nftItem }) => {
       
       setLikers(res[0])
     })()
+    return () => {
+      //do nothing
+    }
   }, [nftItem])
 
   useEffect(() => {

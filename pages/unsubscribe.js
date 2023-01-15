@@ -15,17 +15,9 @@ const style = {
   button:
     'flex gap-2 items-center justify-center gradBlue rounded-lg cursor-pointer p-1 m-3 ease-linear transition mx-auto',
 }
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
 
 const unsubscribe = () => {
-  const { dark } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const router = useRouter()
   const email = router.query.email
 

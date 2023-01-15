@@ -1,5 +1,6 @@
 import moment from 'moment'
 import Link from 'next/link'
+import millify from 'millify'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
@@ -9,6 +10,7 @@ import Footer from '../../components/Footer'
 import Loader from '../../components/Loader'
 import { useMutation, useQuery } from 'react-query'
 import { useEffect, useRef, useState } from 'react'
+import { getImagefromWeb3 } from '../../fetchers/s3'
 import { MdOutlineCollections } from 'react-icons/md'
 import { BiUserPlus, BiUserCheck } from 'react-icons/bi'
 import noBannerImage from '../../assets/noBannerImage.png'
@@ -20,22 +22,7 @@ import { IconCopy } from '../../components/icons/CustomIcons'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { removeFollower, saveFollower } from '../../mutators/SanityMutators'
-import {
-  getMyCollections,
-  getMintedNFTs,
-  getUser,
-} from '../../fetchers/SanityFetchers'
-import { getImagefromWeb3 } from '../../fetchers/s3'
-import millify from 'millify'
-
-const errorToastStyle = {
-  style: { background: '#ef4444', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#ef4444' },
-}
-const successToastStyle = {
-  style: { background: '#10B981', padding: '16px', color: '#fff' },
-  iconTheme: { primary: '#ffffff', secondary: '#10B981' },
-}
+import { getMyCollections, getMintedNFTs, getUser,} from '../../fetchers/SanityFetchers'
 
 const style = {
   collectionWrapper:
@@ -47,15 +34,15 @@ const style = {
 }
 
 const User = () => {
-  const router = useRouter()
-  const address = router.query.useraddress
-  const { dark } = useThemeContext()
-  const { myUser, queryCacheTime, queryStaleTime } = useUserContext()
-  const [isFollower, setIsFollower] = useState(false)
-  const [followerCount, setFollowerCount] = useState(0)
+  const router = useRouter();
+  const address = router.query.useraddress;
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const { myUser, queryCacheTime, queryStaleTime } = useUserContext();
+  const [isFollower, setIsFollower] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
   // const [userCollections, setUserCollections] = useState([])
-  const [userData, setUserData] = useState()
-  const bannerRef = useRef()
+  const [userData, setUserData] = useState();
+  const bannerRef = useRef();
 
   useEffect(() => {
     if (!address) return

@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { config } from '../lib/sanityClient'
-import { useThemeContext } from '../contexts/ThemeContext'
-import Countdown from 'react-countdown'
-import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
+import Image from 'next/image'
 import { BigNumber } from 'ethers'
-import { useUserContext } from '../contexts/UserContext'
+import Countdown from 'react-countdown'
+import { useEffect, useState } from 'react'
+import { config } from '../lib/sanityClient'
 import { MdAudiotrack } from 'react-icons/md'
+import { useUserContext } from '../contexts/UserContext'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
 const style = {
   wrapper: `bg-[#1E293BEE] shadow-[inset_0_0_0_1px_rgb(255,255,255,0.1)] flex-auto max-w-[17rem] w-[17rem] h-[29rem] mb-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
@@ -80,7 +80,7 @@ const NFTCard = ({
         <div
           className={`relative ${
             dark ? ' bg-slate-800' : ' bg-white'
-          } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl`}
+          } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
         >
           <Link
             href={ nftItem?.metadata?.properties?.tokenid ? `/nfts/${nftItem?.metadata?.properties?.tokenid}` : "#"}
