@@ -72,9 +72,11 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
   const [endAuctionDate, setAuctionEndDate] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
+  const [directorauction, setdirectorauction] = useState(true);
 
   useEffect(() => {
     const t = thisNFTblockchain;
+    console.log(t)
     if(!t) return
     if(t == "mumbai" || t == "polygon") { setThisNFTBlockchainCurrency(coinPrices?.maticprice); } 
     else if(t == "mainnet" || t == "goerli") { setThisNFTBlockchainCurrency(coinPrices?.ethrice); }
@@ -168,21 +170,30 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
       const tx = await contract?.direct.createListing(listing);
+
       //update market listing id in database
       const marketListingId = tx.id.toString();
       ;(async(id = marketListingId , dbClient = sanityClient)=> {
         await dbClient.patch(nftContractData?.metadata?.properties?.tokenid).set({ 'listingid': id }).commit();
       })()
 
+       //update Floor Price
+      ;(async( dbClient = sanityClient) => {
+        console.log(listingPrice, nftCollection);
+        if(nftCollection?.floorPrice == 0 || nftCollection?.floorPrice > listingPrice){
+          await dbClient.patch(nftCollection?._id).set({ 'floorPrice': Number(listingPrice) }).commit();
+        }
+      })()
+
 
       //saving transaction data
       mutateSaveTransaction({
         transaction: tx,
-        id: nftContractData.metadata.id.toString(),
-        eventName: 'List',
-        itemid: nftContractData.metadata.properties.tokenid,
-        price: listingPrice,
         chainid: chainid,
+        eventName: 'List',
+        price: listingPrice,
+        id: nftContractData.metadata.id.toString(),
+        itemid: nftContractData.metadata.properties.tokenid,
       })
 
       queryClient.invalidateQueries(['activities']);
@@ -195,7 +206,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
         await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
           router.reload(window.location.pathname);
           router.replace(router.asPath);
-          setLoadingNewPrice(false)
+          setLoadingNewPrice(false);
         })
       })()
 
@@ -286,26 +297,33 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
     setIsLoading(false)
   }
 
-  const showDirect = () => {
-    if (!address) return
-    directListingPanel.current.style.visibility = 'visible'
-    auctionListingPanel.current.style.visibility = 'hidden'
-  }
+  // const showDirect = () => {
+  //   if (!address) return
+  //   setdirectorauction(true);
+    
+  // }
+  // useEffect(() => {
+  //   console.log(directorauction)
+  //   if(!address) return;
+  //   if(directorauction){
+  //     directListingPanel.current.style.display = 'block';
+  //     auctionListingPanel.current.style.display = 'none';
+  //     return;
+  //   }
+  //   directListingPanel.current.style.display = 'none'
+  //   auctionListingPanel.current.style.display = 'block'
+  // }, [directorauction])
 
-  const showAuction = () => {
-    if (!address) return
-    directListingPanel.current.style.visibility = 'hidden'
-    auctionListingPanel.current.style.visibility = 'visible'
-  }
-  //show direct listing by default
-  useEffect(() => {
-    if (!address) return
-    showDirect()
+  // //show direct listing by default
+  // useEffect(() => {
+  //   if (!address) return
+  //   showDirect()
 
-    return() =>{ 
-      //do nothing
-    }
-  }, [])
+  //   return() =>{ 
+  //     //do nothing
+  //   }
+  // }, [])
+  
   return (
     <>
       <Script src="https://unpkg.com/flowbite@1.4.7/dist/datepicker.js" />
@@ -342,265 +360,262 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
                   Choose type of listing
                   <div className="flex flex-row gap-4">
                     <div
-                      className="directListing flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border border-slate-700 p-5 transition hover:bg-slate-800"
-                      onClick={showDirect}
+                      className={`directListing flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border p-5 ${directorauction ? 'bg-slate-700 border-blue-500' :'border-slate-700'} transition hover:bg-slate-800`}
+                      onClick={() => setdirectorauction(true)}
                     >
                       <MdOutlineSell fontSize="25px" />
                       <span className="text-md text-white">Direct Listing</span>
                     </div>
                     <div
-                      className="autionListing flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border border-slate-700 p-5 transition hover:bg-slate-800"
-                      onClick={showAuction}
+                      className={`autionListing flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border border-slate-700 p-5 ${!directorauction ? 'bg-slate-700 border-blue-500' :'border-slate-700'} transition hover:bg-slate-800`}
+                      onClick={() => setdirectorauction(false)}
                     >
                       <RiAuctionLine fontSize="25px" /> Auction Listing
                     </div>
                   </div>
-                  <div
-                    className="directListingPanel absolute top-[130px] w-full"
-                    ref={directListingPanel}
-                  >
-                    <div className="">
-                      <p className={style.label}>Price*</p>
-                      <div className="flex flex-row items-center gap-5">
-                        <input
-                          className={style.input}
-                          style={{ margin: '0' }}
-                          type="number"
-                          name="listingPrice"
-                          value={listingPrice}
-                          onChange={(e) => setListingPrice(e.target.value)}
-                        />
-                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                          {blockchainCurrency[thisNFTblockchain].icon}
-                          {blockchainCurrency[thisNFTblockchain].currency}
-                        </div>
-                      </div>
-                      <div className="p-2 text-sm">
-                        ≈ $ {parseFloat(listingPrice * thisNFTBlockchainCurrency).toFixed(2)} 
-                        <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-4">
-                      <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
-                      <p className={style.smallText}>List this NFT for only selected period of time</p>
-                      <div className="flex flex-col items-center mt-4">
-                        <div className="relative w-full">
-                          <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
-                            From:
-                          </div>
-                          <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
-                            <svg
-                              className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </div>
-
-                          <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={startDate}
-                            minDate={new Date()}
-                            onChange={(date) => setStartDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                  {directorauction ? (
+                    <div className=" absolute top-[130px] w-full">
+                      <div className="">
+                        <p className={style.label}>Price*</p>
+                        <div className="flex flex-row items-center gap-5">
+                          <input
+                            className={style.input}
+                            style={{ margin: '0' }}
+                            type="number"
+                            name="listingPrice"
+                            value={listingPrice}
+                            onChange={(e) => setListingPrice(e.target.value)}
                           />
+                          <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                            {blockchainCurrency[thisNFTblockchain].icon}
+                            {blockchainCurrency[thisNFTblockchain].currency}
+                          </div>
                         </div>
-                        <div className="relative mt-4 w-full">
-                          <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
-                            To:
-                          </div>
-                          <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
-                            <svg
-                              className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </div>
+                        <div className="p-2 text-sm">
+                          ≈ $ {parseFloat(listingPrice * thisNFTBlockchainCurrency).toFixed(2)} 
+                          <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
+                        </div>
+                      </div>
 
-                          <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={endDate}
-                            minDate={startDate}
-                            onChange={(date) => setEndDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                      <div className="pt-4">
+                        <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
+                        <p className={style.smallText}>List this NFT for only selected period of time</p>
+                        <div className="flex flex-col items-center mt-4">
+                          <div className="relative w-full">
+                            <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
+                              From:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
+                              <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
+
+                            <DatePicker
+                              dateFormat="dd/MM/yyyy HH:mm:SS"
+                              selected={startDate}
+                              minDate={new Date()}
+                              onChange={(date) => setStartDate(date)}
+                              className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="relative mt-4 w-full">
+                            <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
+                              To:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
+                              <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
+
+                            <DatePicker
+                              dateFormat="dd/MM/yyyy HH:mm:SS"
+                              selected={endDate}
+                              minDate={startDate}
+                              onChange={(date) => setEndDate(date)}
+                              className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between pt-8">
+                        <span>Platform Fees</span>
+                        <span>5%</span>
+                      </div>
+
+                      <div className="pt-8">
+                        {isLoading ? (
+                          <button
+                            className={
+                              style.button + ' cursor-not-allowed opacity-80'
+                            }
+                            disabled
+                          >
+                            <IconLoading dark="inbutton" />
+                            {/* <CgSpinner className="animate-spin" fontSize="20px" />{' '} */}
+                            Processing...
+                          </button>
+                        ) : (
+                          <button
+                            className={style.button}
+                            onClick={() => directListItem()}
+                            style={{ opacity: '1' }}
+                          >
+                            <MdOutlineSell fontSize="20px" /> Complete Listing
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ): (
+                    <div className="absolute top-[130px] w-full">
+                      <div className="">
+                        <p className={style.label}>Buyout Price*</p>
+                        <div className="flex flex-row items-center gap-5">
+                          <input
+                            className={style.input}
+                            style={{ margin: '0' }}
+                            type="number"
+                            name="buyoutPrice"
+                            value={buyoutPrice}
+                            onChange={(e) => setBuyoutPrice(e.target.value)}
                           />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between pt-8">
-                      <span>Platform Fees</span>
-                      <span>5%</span>
-                    </div>
-
-                    <div className="pt-8">
-                      {isLoading ? (
-                        <button
-                          className={
-                            style.button + ' cursor-not-allowed opacity-80'
-                          }
-                          disabled
-                        >
-                          <IconLoading dark="inbutton" />
-                          {/* <CgSpinner className="animate-spin" fontSize="20px" />{' '} */}
-                          Processing...
-                        </button>
-                      ) : (
-                        <button
-                          className={style.button}
-                          onClick={() => directListItem()}
-                          style={{ opacity: '1' }}
-                        >
-                          <MdOutlineSell fontSize="20px" /> Complete Listing
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div
-                    className="auctionListingPanel absolute top-[130px] w-full"
-                    ref={auctionListingPanel}
-                  >
-                    <div className="">
-                      <p className={style.label}>Buyout Price*</p>
-                      <div className="flex flex-row items-center gap-5">
-                        <input
-                          className={style.input}
-                          style={{ margin: '0' }}
-                          type="number"
-                          name="buyoutPrice"
-                          value={buyoutPrice}
-                          onChange={(e) => setBuyoutPrice(e.target.value)}
-                        />
-                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                          {blockchainCurrency[thisNFTblockchain].icon}
-                          {blockchainCurrency[thisNFTblockchain].currency}
-                        </div>
-                      </div>
-                      <div className="p-2 text-sm">
-                        ≈ $ {parseFloat(buyoutPrice * thisNFTBlockchainCurrency).toFixed(2)} 
-                        <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
-                      </div>
-                    </div>
-
-                    <div className="relative mt-4 w-full">
-                      <p className={style.label}>Minimum Bidding Price*</p>
-                      <div className="flex flex-row items-center gap-5">
-                        <input
-                          className={style.input}
-                          style={{ margin: '0', width: '100%' }}
-                          type="number"
-                          name="minimumPrice"
-                          value={reservePrice}
-                          onChange={(e) => setReservePrice(e.target.value)}
-                        />
-                        <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                          {blockchainCurrency[thisNFTblockchain].icon}
-                          {blockchainCurrency[thisNFTblockchain].currency}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4">
-                      <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
-                      <p className={style.smallText}>List this NFT for only specified period of time.</p>
-                      <div className="flex flex-col items-center mt-4">
-                        <div className="relative w-full">
-                          <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
-                            From:
+                          <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                            {blockchainCurrency[thisNFTblockchain].icon}
+                            {blockchainCurrency[thisNFTblockchain].currency}
                           </div>
-                          <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
-                            <svg
-                              className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </div>
+                        </div>
+                        <div className="p-2 text-sm">
+                          ≈ $ {parseFloat(buyoutPrice * thisNFTBlockchainCurrency).toFixed(2)} 
+                          <span className="text-sm text-slate-500 pl-2">(1$ = {thisNFTBlockchainCurrency})</span>
+                        </div>
+                      </div>
 
-                          <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={startAuctionDate}
-                            minDate={new Date()}
-                            onChange={(date) => setAuctionStartDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                      <div className="relative mt-4 w-full">
+                        <p className={style.label}>Minimum Bidding Price*</p>
+                        <div className="flex flex-row items-center gap-5">
+                          <input
+                            className={style.input}
+                            style={{ margin: '0', width: '100%' }}
+                            type="number"
+                            name="minimumPrice"
+                            value={reservePrice}
+                            onChange={(e) => setReservePrice(e.target.value)}
                           />
-                        </div>
-                        <div className="relative mt-4 w-full">
-                          <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
-                            To:
+                          <div className="text-sm inline-flex justify-center items-center rounded-md bg-[#1e293b] p-3 font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                            {blockchainCurrency[thisNFTblockchain].icon}
+                            {blockchainCurrency[thisNFTblockchain].currency}
                           </div>
-                          <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
-                            <svg
-                              className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </div>
-
-                          <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={endAuctionDate}
-                            minDate={startAuctionDate}
-                            onChange={(date) => setAuctionEndDate(date)}
-                            className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-                          />
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex justify-between pt-8">
-                      <span>Platform Fees</span>
-                      <span>5%</span>
-                    </div>
+                      <div className="pt-4">
+                        <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
+                        <p className={style.smallText}>List this NFT for only specified period of time.</p>
+                        <div className="flex flex-col items-center mt-4">
+                          <div className="relative w-full">
+                            <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
+                              From:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
+                              <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
 
-                    <div className="pt-8">
-                      {isLoading ? (
-                        <button
-                          className={style.button}
-                          style={{ opacity: '0.8', cursor: 'disabled' }}
-                          disabled
-                        >
-                          <IconLoading dark="in-button" /> {' '}
-                          Processing...
-                        </button>
-                      ) : (
-                        <button
-                          className={style.button}
-                          onClick={auctionListItem}
-                          style={{ opacity: '1' }}
-                        >
-                          <MdOutlineSell fontSize="20px" /> Put on Auction
-                        </button>
-                      )}
+                            <DatePicker
+                              dateFormat="dd/MM/yyyy HH:mm:SS"
+                              selected={startAuctionDate}
+                              minDate={new Date()}
+                              onChange={(date) => setAuctionStartDate(date)}
+                              className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="relative mt-4 w-full">
+                            <div className="pointer-events-none absolute inset-y-0 left-2 z-10 flex h-[40px] items-center pl-3">
+                              To:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-0 right-4 z-10 flex h-[40px] items-center pl-3">
+                              <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
+
+                            <DatePicker
+                              dateFormat="dd/MM/yyyy HH:mm:SS"
+                              selected={endAuctionDate}
+                              minDate={startAuctionDate}
+                              onChange={(date) => setAuctionEndDate(date)}
+                              className="opacity-1 block w-full cursor-pointer rounded-lg bg-slate-800 p-2.5 pl-[6.5rem] text-slate-200 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between pt-8">
+                        <span>Platform Fees</span>
+                        <span>5%</span>
+                      </div>
+
+                      <div className="pt-8">
+                        {isLoading ? (
+                          <button
+                            className={style.button}
+                            style={{ opacity: '0.8', cursor: 'disabled' }}
+                            disabled
+                          >
+                            <IconLoading dark="in-button" /> {' '}
+                            Processing...
+                          </button>
+                        ) : (
+                          <button
+                            className={style.button}
+                            onClick={auctionListItem}
+                            style={{ opacity: '1' }}
+                          >
+                            <MdOutlineSell fontSize="20px" /> Put on Auction
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </>
             )}

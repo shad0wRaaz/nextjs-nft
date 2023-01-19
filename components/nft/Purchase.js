@@ -442,7 +442,7 @@ var listed = true
               </div>
             ) : (
               <div
-                className="gradBlue relative inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base"
+                className={`gradBlue ${offerLoading && 'pointer-events-none opacity-60'} relative inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base`}
                 onClick={() => buyItem()}
               >
                 <IconWallet />
@@ -456,7 +456,7 @@ var listed = true
                   </div>
                   ):(
                       <div
-                        className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
+                        className={`transition ${buyLoading && 'pointer-events-none opacity-60'} relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
                         onClick={() => openOfferSetting('block')}
                       >
                         <IconOffer />
@@ -472,7 +472,7 @@ var listed = true
           listingData.sellerAddress != address && (
             <div className="flex justify-between items-center flex-grow gap-2 flex-col md:flex-row">
               <div className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
-              <IconWallet /> <span className="ml-2.5">Buy</span>
+                <IconWallet /> <span className="ml-2.5">Buy</span>
               </div>
               {bidLoading ? (
                 <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
@@ -493,34 +493,36 @@ var listed = true
       </div>
 
       {/* Offer Section */}
-      <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>
-          <div className="flex flex-wrap gap-4">
-            <div className="inputControls flex flex-1">
-              <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
-                { currency[thisNFTblockchain].offerCurrency }
+      {!buyLoading && (
+        <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>
+            <div className="flex flex-wrap gap-4">
+              <div className="inputControls flex flex-1">
+                <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
+                  { currency[thisNFTblockchain].offerCurrency }
+                </div>
+                <input 
+                  type="number" 
+                  className={`border flex-1  text-sm p-3 ring-0 outline-0 rounded-r-xl ${dark ? 'bg-slate-700 border-slate-700/50' : 'bg-white border-neutral-200 border-l-0'}`} 
+                  placeholder="Enter amount to offer"
+                  value={offerAmount}
+                  onChange={(e) => setOfferAmount(e.target.value)} />
               </div>
-              <input 
-                type="number" 
-                className={`border flex-1  text-sm p-3 ring-0 outline-0 rounded-r-xl ${dark ? 'bg-slate-700 border-slate-700/50' : 'bg-white border-neutral-200 border-l-0'}`} 
-                placeholder="Enter amount to offer"
-                value={offerAmount}
-                onChange={(e) => setOfferAmount(e.target.value)} />
+              <div className="buttonControls flex flex-1">
+                <button 
+                  className={`gradBlue p-3 text-white rounded-xl px-6 flex items-center gap-2 w-full justify-center`}
+                  onClick={() => makeAnOffer()}>
+                    <MdOutlineCheckCircle /> Offer
+                </button>
+                <button 
+                  className={`${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-blue-600 text-slate-800 hover:text-white border-netural-200'} transition border p-3 text-white items-center rounded-xl ml-3 px-6 flex gap-2 w-full justify-center`}
+                  onClick={() => openOfferSetting('none')}>
+                    <MdOutlineCancel /> Cancel
+                </button>
+              </div>
             </div>
-            <div className="buttonControls flex flex-1">
-              <button 
-                className={`gradBlue p-3 text-white rounded-xl px-6 flex items-center gap-2 w-full justify-center`}
-                onClick={() => makeAnOffer()}>
-                  <MdOutlineCheckCircle /> Offer
-              </button>
-              <button 
-                className={`${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-blue-600 text-slate-800 hover:text-white border-netural-200'} transition border p-3 text-white items-center rounded-xl ml-3 px-6 flex gap-2 w-full justify-center`}
-                onClick={() => openOfferSetting('none')}>
-                  <MdOutlineCancel /> Cancel
-              </button>
-            </div>
-          </div>
-          <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped Token to make an offer.</p>
-      </div>
+            <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped Token to make an offer.</p>
+        </div>
+      )}
       {/* End of Offer Section */}
 
       {/* Bidding Section */}
