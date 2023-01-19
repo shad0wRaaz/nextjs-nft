@@ -1,4 +1,4 @@
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import FileBase from 'react-file-base64'
 import Loader from '../components/Loader'
@@ -13,7 +13,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconLoading } from '../components/icons/CustomIcons'
 import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
-import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapper: '',
@@ -23,15 +22,15 @@ const style = {
   formWrapper: 'flex flex-wrap flex-col',
   pageTitle: 'text-4xl font-bold text-center text-white',
   smallText: 'text-sm m-2 text-slate-400 mt-0',
-  input: 'm-2 outline-none p-3 border rounded-xl transition linear',
+  input: 'my-1 w-full outline-none p-3 border rounded-xl transition linear',
   inputgroup: 'p-3 border rounded-xl transition linear',
   label: 'font-bold m-2 mt-6',
   button:
     'accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500',
   profileImageContainer:
-    'aspect-square relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-400 flex items-center',
+    'aspect-square relative h-[200px] overflow-hidden rounded-lg border-dashed border border-slate-400 flex items-center',
   bannerImageContainer:
-    'aspect-video w-[97%] relative mr-[1rem] h-[200px] overflow-hidden m-[10px] rounded-lg flex items-center border-dashed border-2 border-sky-500',
+    'aspect-video w-[97%] relative h-[200px] overflow-hidden rounded-lg flex items-center border-dashed border-2 border-sky-500',
 }
 
 const profile = () => {
@@ -118,15 +117,14 @@ const profile = () => {
       console.log(error)
     }
     try {
-      console.log(userDoc)
       await sanityClient
         .patch(address)
         .set({
           userName: userDoc.userName,
           biography: userDoc.biography,
-          twitterHandle: userDoc.twitterHandle,
           igHandle: userDoc.igHandle,
           fbhHandle: userDoc.fbhHandle,
+          twitterHandle: userDoc.twitterHandle,
           web3imagebanner: userDoc.web3imagebanner,
           web3imageprofile: userDoc.web3imageprofile,
         })
@@ -154,7 +152,7 @@ const profile = () => {
               : style.pageBanner + ' bg-sky-100'
           }
         >
-          <h2 className={style.pageTitle}>Profile</h2>
+          <h2 className={style.pageTitle}>My Profile</h2>
         </div>
         {myUser && (
           <div className={style.container}>
