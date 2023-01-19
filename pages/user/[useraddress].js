@@ -199,7 +199,7 @@ const User = () => {
         </div>
 
         <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
-        <div
+          <div
               className={`flex flex-col rounded-3xl ${
                 dark ? 'darkGray/30 border border-sky-700/30' : 'bg-white/30'
               } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
@@ -293,7 +293,7 @@ const User = () => {
                     {userData?.userName}
                   </h2>
                   <span className="mt-4 inline-block text-sm font-bold">
-                    {userData?.walletAddress.slice(0, 7)}..
+                    {userData?.walletAddress.slice(0, 7)}...
                     {userData?.walletAddress.slice(-4)}
                   </span>
                   <span

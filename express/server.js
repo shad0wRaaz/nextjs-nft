@@ -390,12 +390,12 @@ app.get('/api/nft/listing/:id', async (req, res) => {
       if(result.length > 0) { found = true;}
     })
   }
-  if(!found){
-    await redis.get("activelistings-arbitrum-goerli").then((res) =>{
-      result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
-      if(result.length > 0) { found = true;}
-    })
-  }
+  // if(!found){
+  //   await redis.get("activelistings-arbitrum-goerli").then((res) =>{
+  //     result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
+  //     if(result.length > 0) { found = true;}
+  //   })
+  // }
   if(found){
     res.status(200).json(result[0])
   }else {

@@ -28,7 +28,8 @@ import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
-import { IconAvalanche, IconBNB, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
+import EditCollectionPayment from '../../components/EditCollectionPayment'
 
 const style = {
   bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -57,10 +58,11 @@ const style = {
   errorBox:
     'border rounded-xl p-[2rem] mx-auto text-center lg:w-[44vw] md:w-[80vw] sm:w-full max-w-[700px]',
   errorTitle: 'block text-[1.5rem] mb-3',
+  previewImage : 'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
 }
 
 const chainIcon = {
-  '80001': <IconPolygon className="mr-0" width="30px" height="30px" />,
+  '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
   '137': <IconPolygon width="30px" height="30px"/>,
   '43113': <IconAvalanche width="40px" height="40px" />,
   '43114': <IconAvalanche/>,
@@ -80,11 +82,15 @@ const Collection = () => {
   const [showModal, setShowModal] = useState(false);
   const { myUser, queryStaleTime } = useUserContext();
   const [showUnlisted, setShowUnlisted] = useState(false);
+  const [showPaymentModal, setPaymentModal] = useState(false);
   const [newCollectionData, setNewCollectionData] = useState()
   const { blockchainName, marketplace } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
+  const [externalLink, setExternalLink] = useState();
+
+  
 
   //collections' sanity data
   const { data: collectionData, status: collectionStatus } = useQuery(
@@ -110,6 +116,16 @@ const Collection = () => {
       },
     }
   )
+
+  useEffect(() => {
+    if(!collectionData) return
+    if(collectionData[0]?.external_link != '' && !collectionData[0].external_link.startsWith('https') && !collectionData[0].external_link.startsWith('http') ){
+      setExternalLink('https://' + collectionData[0].external_link);
+    }
+      return() => {
+        //do nothing, clean up function
+      }
+  }, [collectionData])
 
   //get all nfts from blockchain
   const { data: nftData, status: nftStatus } = useQuery(
@@ -220,19 +236,35 @@ const Collection = () => {
           contractAddress={collectionData[0]?.contractAddress}>
         </HelmetMetaData>
       )}
+
       {showModal && (
-        <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl w-[55.5rem] h-[50rem] overflow-y-scroll z-50 relative`}>
+        <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[55.5rem] h-[50rem] overflow-y-scroll z-50 relative`}>
             <div
-              className="absolute top-5 right-5 bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition-all cursor-pointer"
+              className="absolute top-5 right-6 md:right-12  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
               onClick={() => setShowModal(false)}
             >
               <RiCloseFill fontSize={25}/>
             </div>
-            <EditCollection collection={newCollectionData} profileImageUrl={collectionData[0]?.web3imageprofile} bannerImageUrl={collectionData[0]?.web3imagebanner}/>
+            <EditCollection collection={collectionData} setShowModal={setShowModal} />
           </div>
         </div>
       )}
+
+      {showPaymentModal && (
+        <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+            <div
+              className="absolute top-5 right-6 md:right-12  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
+              onClick={() => setPaymentModal(false)}
+            >
+              <RiCloseFill fontSize={25}/>
+            </div>
+            <EditCollectionPayment collection={collectionData} setPaymentModal={setPaymentModal} />
+          </div>
+        </div>
+      )}
+
       {collectionStatus == 'success' && (
         <div className="w-full">
           <div className="relative h-96 w-full md:h-60 2xl:h-96">
@@ -276,11 +308,7 @@ const Collection = () => {
                     {collectionData[0]?.external_link && collectionData[0]?.external_link != '' && (
                         <div className="relative inline-block text-center justify-center flex">
                           <a
-                            href={
-                              collectionData[0].external_link != ''
-                                ? collectionData[0].external_link
-                                : ''
-                            }
+                            href={externalLink ? externalLink : collectionData[0].category}
                             className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
                               dark
                                 ? ' bg-slate-700 hover:bg-slate-600'
@@ -303,13 +331,116 @@ const Collection = () => {
 
               <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
                 <div className="flex w-full justify-between">
-                  <div>
-                    <h2 className="flex gap-2 text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-start">
-                      {!newCollectionData && 'Unknown NFT Collection'}
-                      {newCollectionData && chainIcon[collectionData[0]?.chainId]}
-                      {newCollectionData && collectionData[0]?.name}
-                    </h2>
-                    
+                  <div className="w-full">
+                    <div className="flex flex-row w-full justify-between">
+                      <div className="flex-grow">
+                        <h2 className="flex gap-2 text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-start">
+                          {!newCollectionData && 'Unknown NFT Collection'}
+                          {newCollectionData && collectionData[0]?.name}
+                        </h2>
+                        <span className="mt-4 inline-block text-sm font-bold">
+                          {collectionData[0]?.contractAddress?.slice(0, 7)}...
+                          {collectionData[0]?.contractAddress?.slice(-4)}
+                        </span>
+                        <span
+                          className="relative top-1 inline-block cursor-pointer pl-2"
+                          onClick={() => {
+                            navigator.clipboard.writeText(collectionData[0]?.contractAddress)
+                            toast.success('NFT Collection\'s Contract Address copied !', successToastStyle);
+                          }}
+                        >
+                          <IconCopy />
+                        </span>
+                      </div>
+                      {/* this option is only available if the user is creator of this collection */}
+                      {newCollectionData && collectionData[0]?.createdBy._ref ==
+                        myUser?.walletAddress && (
+                        <div className="z-20">
+                          <Menu as="div" className="relative inline-block">
+                            <div>
+                              <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
+                                <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> <span className="hidden md:block">Settings</span>
+                              </Menu.Button>
+                            </div>
+
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <Menu.Items
+                                className={`${
+                                  dark ? 'bg-slate-700' : 'bg-white'
+                                } absolute p-4 right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                              >
+                                <div className="px-1 py-1 ">
+                                  <Menu.Item>
+                                    {({active}) => (
+                                      <div 
+                                        className={`flex w-full rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
+                                        onClick={() => setShowModal(curVal => !curVal)}
+                                        >
+                                        <TbEdit fontSize={20} className="ml-[4px]"/> <span className="ml-1">Edit Collection Metadata</span>
+                                      </div>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({active}) => (
+                                      <div 
+                                        className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
+                                        onClick={() => setPaymentModal(curVal => !curVal)}
+                                        >
+                                        <IconDollar className="" /> <span className="ml-1">Update Payment Settings</span>
+                                      </div>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <div
+                                        className={`group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
+                                      >
+                                        Show Unlisted to Others
+                                        <Switch
+                                          checked={showUnlisted}
+                                          onChange={() =>
+                                            updateShowListed({
+                                              collectionid: collectionid,
+                                              showUnlisted: showUnlisted,
+                                            })
+                                          }
+                                          className={`${
+                                            showUnlisted
+                                              ? 'bg-sky-500'
+                                              : dark
+                                              ? 'bg-slate-500'
+                                              : 'bg-neutral-300'
+                                          }
+                                            relative inline-flex h-[24px] w-[48px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                        >
+                                          <span
+                                            aria-hidden="true"
+                                            className={`${
+                                              showUnlisted
+                                                ? 'translate-x-6'
+                                                : 'translate-x-0'
+                                            }
+                                              pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                                          />
+                                        </Switch>
+                                      </div >
+                                    )}
+                                  </Menu.Item>
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </Menu>
+                        </div>
+                      )} 
+                    </div>
                     <div className="flex lg:gap-3 flex-wrap ">
                       <div className={`md:border md:border-t-0 md:border-l-0 md:border-b-0 ${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
                         <span 
@@ -385,95 +516,6 @@ const Collection = () => {
                     </div>
                     
                   </div>
-
-                  {/* this option is only available if the user is creator of this collection */}
-                  {newCollectionData && collectionData[0]?.createdBy._ref ==
-                    myUser?.walletAddress && (
-                    <div>
-                      <Menu as="div" className="relative inline-block">
-                        <div>
-                          <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
-                            <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> <span className="hidden md:block">Settings</span>
-                          </Menu.Button>
-                        </div>
-
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
-                        >
-                          <Menu.Items
-                            className={`${
-                              dark ? 'bg-slate-700' : 'bg-white'
-                            } absolute p-4 right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
-                          >
-                            <div className="px-1 py-1 ">
-                              <Menu.Item>
-                                {({active}) => (
-                                  <div 
-                                    className={`flex w-full rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
-                                    onClick={() => setShowModal(curVal => !curVal)}
-                                    >
-                                    <TbEdit fontSize={20} className="ml-[4px]"/> <span className="ml-1">Edit Collection Metadata</span>
-                                  </div>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({active}) => (
-                                  <div 
-                                    className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
-                                    onClick={() => setShowModal(curVal => !curVal)}
-                                    >
-                                    <IconDollar className="" /> <span className="ml-1">Update Payment Settings</span>
-                                  </div>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <div
-                                    className={`group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
-                                  >
-                                    Show Unlisted to Others
-                                    <Switch
-                                      checked={showUnlisted}
-                                      onChange={() =>
-                                        updateShowListed({
-                                          collectionid: collectionid,
-                                          showUnlisted: showUnlisted,
-                                        })
-                                      }
-                                      className={`${
-                                        showUnlisted
-                                          ? 'bg-sky-500'
-                                          : dark
-                                          ? 'bg-slate-500'
-                                          : 'bg-neutral-300'
-                                      }
-                                        relative inline-flex h-[24px] w-[48px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                                    >
-                                      <span
-                                        aria-hidden="true"
-                                        className={`${
-                                          showUnlisted
-                                            ? 'translate-x-6'
-                                            : 'translate-x-0'
-                                        }
-                                          pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                                      />
-                                    </Switch>
-                                  </div >
-                                )}
-                              </Menu.Item>
-                            </div>
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
-                    </div>
-                  )} 
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 xl:mt-8 xl:gap-6">
@@ -486,9 +528,9 @@ const Collection = () => {
                   >
                     <span className="text-sm text-center">Floor Price</span>
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                      ${collectionData[0]?.floorPrice}
+                      {newCollectionData && chainIcon[collectionData[0]?.chainId]}{collectionData[0]?.floorPrice}
                     </span>
-                    <span className="mt-1 text-xs">total</span>
+                    {/* <span className="mt-1 text-xs">total</span> */}
                   </div>
 
                   <div
@@ -498,11 +540,11 @@ const Collection = () => {
                         : ' border border-neutral-50'
                     } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                   >
-                    <span className="text-sm">Volume</span>
+                    <span className="text-sm">Volume Traded</span>
                     <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
                       ${millify(collectionData[0]?.volumeTraded)}
                     </span>
-                    <span className="mt-1 text-xs">total</span>
+                    {/* <span className="mt-1 text-xs">total</span> */}
                   </div>
 
                   <div
@@ -512,11 +554,11 @@ const Collection = () => {
                         : ' border border-neutral-50'
                     } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                   >
-                    <span className="text-sm">Items</span>
+                    <span className="text-sm">NFTs</span>
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
                       {nftData?.length}
                     </span>
-                    <span className="mt-1 text-xs">total</span>
+                    {/* <span className="mt-1 text-xs">total</span> */}
                   </div>
 
                   <div
@@ -530,7 +572,7 @@ const Collection = () => {
                     <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
                       {owners && owners.length != 0 ? owners.length : '1'}
                     </span>
-                    <span className="mt-1 text-xs">total</span>
+                    {/* <span className="mt-1 text-xs">total</span> */}
                     {/* <span className="mt-1 text-xs text-green-500"> --</span> */}
                   </div>
                 </div>

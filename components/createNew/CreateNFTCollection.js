@@ -200,7 +200,11 @@ const CreateNFTCollection = () => {
     })
   }
   useEffect(() => {
-    fetchCategoryData()
+    fetchCategoryData();
+    
+    return() => {
+      //do nothing
+    }
   }, [])
 
   const urlPatternValidation = (URL) => {
@@ -304,7 +308,7 @@ const CreateNFTCollection = () => {
   }
   return (
     <div className={style.wrapper}>
-      <Toaster position="bottom-center" reverseOrder={false} />
+      <Toaster position="bottom-right" reverseOrder={false} />
       {!isNaN(address) ? (
         <div className={style.container}>
           <h1 className={style.pageTitle}>
