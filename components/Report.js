@@ -91,7 +91,7 @@ const Report = ({ setShowModal, dark, itemType, metaDataFromSanity, nftContractD
                     <p className={style.label}>I think this {itemType} is</p>
                     <Listbox value={selected} onChange={setSelected}>
                         <div className="relative mt-1">
-                            <Listbox.Button className={`relative w-full cursor-default rounded-lg border ${dark ? 'bg-slate-700 border-sky-700/30' : 'bg-white border-neutral-200'} py-4 pl-3 pr-10 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm`}>
+                            <Listbox.Button className={`relative w-full cursor-pointer rounded-lg border ${dark ? 'bg-slate-700 border-slate-700' : 'bg-white border-neutral-200'} py-4 pl-3 pr-10 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm`}>
                                 <span className="block truncate">{selected.name}</span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <CgSelect
@@ -110,7 +110,7 @@ const Report = ({ setShowModal, dark, itemType, metaDataFromSanity, nftContractD
                                         <Listbox.Option
                                             key={personIdx}
                                             className={({ active }) =>
-                                                `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                `relative select-none py-2 pl-10 pr-4 mx-2 rounded-lg cursor-pointer ${
                                                 active ? 'bg-red-100 text-amber-900' : dark ? 'text-neutral-100' : 'text-gray-900'
                                                 }`
                                             }
@@ -137,7 +137,7 @@ const Report = ({ setShowModal, dark, itemType, metaDataFromSanity, nftContractD
                         </div>
                     </Listbox>
                     <p className={style.label}>Description</p>
-                    <textarea className={style.input} rows={5} value={otherDescription} onChange={(e) => setOtherDescription(e.target.value)} placeholder="Please provide any additional information or context that will help us understand and handle the situation."></textarea>
+                    <textarea className={`outline-none p-3 border rounded-xl transition linear ${dark ? 'bg-slate-700 border-slate-700' : 'bg-white'}`} rows={5} value={otherDescription} onChange={(e) => setOtherDescription(e.target.value)} placeholder="Please provide any additional information or context that will help us understand and handle the situation."></textarea>
                     <input type="submit" value="Report" className={style.button}/>
                 </div>
             </form>
