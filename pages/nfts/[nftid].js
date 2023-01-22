@@ -564,13 +564,16 @@ const Nft = (props) => { //props are from getServerSideProps
               thisNFTMarketAddress={thisNFTMarketAddress}
               thisNFTblockchain={thisNFTblockchain}
               />
-            <ItemOffers
-              selectedNft={nftContractData}
-              listingData={listingData}
-              metaDataFromSanity={metaDataFromSanity}
-              thisNFTMarketAddress={thisNFTMarketAddress}
-              thisNFTblockchain={thisNFTblockchain}
-              />
+
+            {isAuctionItem && (
+              <ItemOffers
+                selectedNft={nftContractData}
+                listingData={listingData}
+                metaDataFromSanity={metaDataFromSanity}
+                thisNFTMarketAddress={thisNFTMarketAddress}
+                thisNFTblockchain={thisNFTblockchain}
+                />
+            )}
 
             <ItemActivity
               collectionAddress={metaDataFromSanity?.collection?.contractAddress}
