@@ -22,7 +22,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
     const chainid = useChainId();
     const router = useRouter();
     const { selectedBlockchain } = useMarketplaceContext()
-    const { setLoadingNewPrice } = useSettingsContext();
+    const { setLoadingNewPrice, HOST } = useSettingsContext();
     const [showBurnModal, setBurnModal] = useState(false);
     const [showCancelModal, setCancelModal] = useState(false);
     const queryClient = useQueryClient();
@@ -115,9 +115,9 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
         return
       }
       
-      if(!contract) {
+      if(!collectionAddress) {
         toast.error("Collection not found", errorToastStyle);
-        return
+        return;
       }
 
       if(!signer){
@@ -168,7 +168,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
                 
                 //update listing data
                 ;(async() => {
-                  await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
+                  await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
                     router.reload(window.location.pathname);
                     router.replace(router.asPath);
                   })
