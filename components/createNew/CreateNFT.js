@@ -163,24 +163,6 @@ const CreateNFT = ({uuid}) => {
 
     const res = await sanityClient.fetch(query);
     setSanityCollection(res);
-    // .then(async (res) => {
-    //   const unresolved = res.map(async (collection) => {
-    //     const obj = {}
-    //     const imgPath = await getUnsignedImagePath(collection.profileImage)
-    //     obj['name'] = collection.name
-    //     obj['profileImage'] = imgPath?.data.url
-    //     obj['contractAddress'] = collection.contractAddress
-    //     obj['createdBy'] = collection.createdBy
-    //     obj['volumeTraded'] = collection.volumeTraded
-    //     return obj
-    //   })
-
-    //   const resolvedPaths = await Promise.all(unresolved)
-
-    //   if (resolvedPaths) {
-    //     setSanityCollection(resolvedPaths)
-    //   }
-    // })
   }
 
   useEffect(() => {
@@ -481,35 +463,7 @@ const CreateNFT = ({uuid}) => {
 
                 </div>
               </div>
-
-              {/* {file ? (
-                <img
-                  src={URL.createObjectURL(file)}
-                  className={style.imagePreview}
-                  onClick={() => setFile(undefined)}
-                />
-              ) : (
-                <div
-                  className={style.imageInput}
-                  onClick={uploadFile}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setFile(e.dataTransfer.files[0]);
-                  }}
-                >
-                  Drag and drop an image here to upload it!
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/png, image/gif, image/jpeg"
-                id="profile-picture-input"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-              /> */}
-
-
+              
               <p className={style.label}>Item Description</p>
               <p className={style.smallText}>
                 The item description will be added in this NFT's detail page.
