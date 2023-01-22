@@ -121,10 +121,7 @@ const CreateNFTCollection = () => {
           trusted_forwarders: [],
         }
         const itemID = uuidv4();
-        // console.log(profileLink, bannerLink)
-        // console.log(metadata)
-        // console.log(itemID)
-      
+
         //deploy NFT Collection
         const res = await sdk.deployer.deployNFTCollection(metadata);
 
@@ -218,7 +215,6 @@ const CreateNFTCollection = () => {
   const handleDeployNFTCollection = (e, toastHandler = toast) => {
     e.preventDefault()
     const form = e.target;
-    // console.log(form)
 
     if (
       form.itemName.value == '' ||
