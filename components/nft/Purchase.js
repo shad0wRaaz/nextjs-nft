@@ -58,7 +58,7 @@ var listed = true
   if(listingData?.message || !listingData) {
     listed = false
   }
-  const { coinPrices, loadingNewPrice, setLoadingNewPrice } = useSettingsContext();
+  const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const chainId = useChainId();
   const [,switchNetwork] = useNetwork();
@@ -176,7 +176,7 @@ var listed = true
       setOfferLoading(true); 
       const sdk = new ThirdwebSDK(signer);
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-     
+
       const tx = await contract.direct.makeOffer(
         listingId,
         quantityDesired,
@@ -271,6 +271,7 @@ var listed = true
     qc = queryClient,
     sanityClient = config
     ) => {
+      console.log(listingId)
       if(!listingData) {
         toastHandler.error('NFT listing not found', errorToastStyle);
         return;
@@ -336,7 +337,7 @@ var listed = true
       
       //update listing data
       ;(async() => {
-        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
+        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
           setLoadingNewPrice(false);
           setBuyLoading(false)
           router.reload(window.location.pathname);
@@ -410,7 +411,7 @@ var listed = true
               <>
               {isburnt ? (
                 <div className="flex gap-2 text-md text-neutral-100 xl:text-md">
-                  <BsLightningCharge className="text-xl" /> This NFT has been burnt.
+                  <BsLightningCharge className="text-xl" /> Burnt NFT
                 </div>
               ) : (
                 <span className="text-xl text-red-500 xl:text-md">
@@ -449,7 +450,7 @@ var listed = true
                 <span className="ml-2.5">Buy</span>
               </div>
             )}
-                {offerLoading ? (
+                {/* {offerLoading ? (
                   <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
                     <IconLoading dark={dark ? 'inbutton' : ''}/>
                     <span className="ml-2.5">Processing...</span>
@@ -463,7 +464,7 @@ var listed = true
           
                         <span className="ml-2.5"> Make an offer</span>
                       </div>  
-                )}
+                )} */}
           </>
         )}
 
@@ -493,7 +494,7 @@ var listed = true
       </div>
 
       {/* Offer Section */}
-      {!buyLoading && (
+      {/* {!buyLoading && (
         <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>
             <div className="flex flex-wrap gap-4">
               <div className="inputControls flex flex-1">
@@ -522,7 +523,7 @@ var listed = true
             </div>
             <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped Token to make an offer.</p>
         </div>
-      )}
+      )} */}
       {/* End of Offer Section */}
 
       {/* Bidding Section */}
