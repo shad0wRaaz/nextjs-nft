@@ -13,6 +13,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconLoading } from '../components/icons/CustomIcons'
 import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
+import axios from 'axios'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapper: '',
@@ -39,9 +41,10 @@ const profile = () => {
   const bannerInputRef = useRef()
   const profileInputRef = useRef()
   const queryClient = new QueryClient()
-  const [banner, setBanner] = useState()
-  const [profile, setProfile] = useState()
-  const [userDoc, setUserDoc] = useState()
+  const { HOST } = useSettingsContext();
+  const [banner, setBanner] = useState('')
+  const [profile, setProfile] = useState('')
+  const [userDoc, setUserDoc] = useState('')
   const { myUser, setMyUser } = useUserContext()
   const [isSaving, setIsSaving] = useState(false)
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
@@ -55,34 +58,6 @@ const profile = () => {
     }
   }, [myUser])
 
-  // useEffect(() => {
-  //   if(!address) {
-  //     router.push('/');
-  //   }
-  // },[address])
-
-  // function previewImage(target) {
-  //   const files = document.getElementById(
-  //     target == 'profile' ? 'profileImg' : 'bannerImg'
-  //   )
-  //   if (files.files.length > 0) {
-  //     var reader = new FileReader()
-  //     reader.readAsDataURL(files.files[0])
-  //     // console.log(files.files[0])
-  //     reader.onload = function (e) {
-  //       var image = new Image()
-  //       image.src = e.target.result
-  //       image.onload = function () {
-  //         document.getElementById(
-  //           target == 'profile' ? 'pImage' : 'bImage'
-  //         ).src = image.src
-  //       }
-  //     }
-  //   } else {
-  //     // Not supported
-  //   }
-  // }
-
   const handleSubmit = async (
     e,
     toastHandler = toast,
@@ -91,31 +66,50 @@ const profile = () => {
     e.preventDefault()
     if (!address) return
     setIsSaving(true);
+    
+    var profileLink = { data : userDoc?.web3imageprofile ? userDoc?.web3imageprofile : '' };
+    var bannerLink =  { data: userDoc?.web3imagebanner ? userDoc?.web3imagebanner : '' } ;
+
     try {
       
       if(profile){
         console.log('profile pic changed');
-        const formdata = new FormData();
-        formdata.append('imagefile', profile);
-        
-        const uri =  await saveImageToWeb3(formdata);
-        console.log(uri);
-        setUserDoc({...userDoc, web3imageprofile: uri});
+        const pfd = new FormData();
+        pfd.append('imagefile', profile);
+
+        profileLink = await axios.post(
+          `${HOST}/api/saveweb3image`,
+          pfd,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        console.log(profileLink)
+        // setUserDoc({...userDoc, web3imageprofile: profileLink?.data});
       }
       
       //saving banner image
       if(banner){
-        console.log('banner pic changed');
-        const bannerData = new FormData();
-        bannerData.append('imagefile', banner);
-        
-        const uri  = await saveImageToWeb3(bannerData);
-        console.log(uri);
-        setUserDoc({...userDoc, web3imagebanner: uri});
-      }
+        const bfd = new FormData();
+        bfd.append("imagefile", banner);
+        bannerLink = await axios.post(
+          `${HOST}/api/saveweb3image`,
+          bfd,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+          )
+          console.log(bannerLink)
+          // setUserDoc({...userDoc, web3imagebanner: bannerLink?.data});
+        }
     } catch (error) {
       console.log(error)
     }
+
     try {
       await sanityClient
         .patch(address)
@@ -125,8 +119,8 @@ const profile = () => {
           igHandle: userDoc.igHandle,
           fbhHandle: userDoc.fbhHandle,
           twitterHandle: userDoc.twitterHandle,
-          web3imagebanner: userDoc.web3imagebanner,
-          web3imageprofile: userDoc.web3imageprofile,
+          web3imagebanner: bannerLink.data,
+          web3imageprofile: profileLink.data,
         })
         .commit()
         .then(() => {
@@ -173,7 +167,7 @@ const profile = () => {
                         : style.input +
                           ' border-neutral-200 hover:bg-neutral-100 '
                     }
-                    value={userDoc?.userName}
+                    value={userDoc?.userName ? userDoc?.userName : ''}
                     onChange={(e) =>
                       setUserDoc({ ...userDoc, userName: e.target.value })
                     }
@@ -188,7 +182,7 @@ const profile = () => {
                         : style.input +
                           ' border-neutral-200 hover:bg-neutral-100 '
                     }
-                    value={userDoc?.biography}
+                    value={userDoc?.biography ? userDoc?.biography : ''}
                     onChange={(e) =>
                       setUserDoc({ ...userDoc, biography: e.target.value })
                     }
@@ -203,7 +197,7 @@ const profile = () => {
                         : style.input +
                           ' border-neutral-200 hover:bg-neutral-100 '
                     }
-                    value={userDoc?.walletAddress}
+                    value={userDoc?.walletAddress ? userDoc?.walletAddress : ''}
                     disabled
                   />
                   <p className={style.label}>Profile Image</p>
@@ -290,33 +284,6 @@ const profile = () => {
                     />
                   </div>
 
-                  {/* <div className={style.bannerImageContainer}>
-                      <img
-                        id="bImage"
-                        src={userDoc?.web3imagebanner ? getImagefromWeb3(userDoc?.web3imagebanner) : noProfileImage.src}
-                        className="w-full object-cover"
-                      />
-                      <img
-                        id="bImage"
-                        src={bannerImageUrl ? bannerImageUrl?.data?.url : noBannerImage.src}
-                        className="w-full object-cover"
-                      />
-                  </div>
-                  <input
-                    id="bannerImg"
-                    type="file"
-                    onChange={(e) => {
-                      setBanner(e.target.files[0])
-                      previewImage('banner')
-                    }}
-                  /> */}
-                  {/* <FileBase
-                    type="file"
-                    multiple={false}
-                    onDone={({ base64 }) =>
-                      setUserDoc({ ...userDoc, bannerImage: base64 })
-                    }
-                  /> */}
                   <p className={style.label}>Twitter Link</p>
                   <div className="flex w-full">
                     <div className={
