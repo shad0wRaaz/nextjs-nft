@@ -54,8 +54,6 @@ const Collection = () => {
     ['createdItems', address],
     getMintedNFTs(),
     {
-      cacheTime: queryCacheTime,
-      staleTime: queryStaleTime,
       enabled: Boolean(address),
       onError: () => {
         toast.error(
@@ -73,8 +71,6 @@ const Collection = () => {
     ['collectedItems', address],
     getCollectedNFTs(),
     {
-      cacheTime: queryCacheTime,
-      staleTime: queryStaleTime,
       enabled: Boolean(address),
       onError: () => {
         toast.error(
@@ -92,8 +88,6 @@ const Collection = () => {
     ['favouriteItems', address],
     getFavouriteNFTs(),
     {
-      cacheTime: queryCacheTime,
-      staleTime: queryStaleTime,
       enabled: Boolean(address),
       onError: () => {
         toast.error(

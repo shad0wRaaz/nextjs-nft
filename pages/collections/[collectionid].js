@@ -2,34 +2,37 @@ import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
-import { useQuery } from 'react-query'
+import { MdAdd } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { TbEdit } from 'react-icons/tb'
 import React, { useState } from 'react'
-import { useMutation } from 'react-query'
-import { CgWebsite } from 'react-icons/cg'
-import { FiSettings } from 'react-icons/fi'
+import { BiGlobe } from 'react-icons/bi'
 import { Fragment, useEffect } from 'react'
 import Loader from '../../components/Loader'
 import Header from '../../components/Header'
+import { FiSettings } from 'react-icons/fi'
 import Footer from '../../components/Footer'
 import { useQueryClient } from 'react-query'
 import { RiCloseFill } from 'react-icons/ri'
+import { BsChevronDown } from 'react-icons/bs'
 import NFTCard from '../../components/NFTCard'
+import Property from '../../components/Property'
+import { useQuery, useMutation } from 'react-query'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
-import { Menu, Transition, Switch } from '@headlessui/react'
 import EditCollection from '../../components/EditCollection'
 import noProfileImage from '../../assets/noProfileImage.png'
+import { Menu, Transition, Switch } from '@headlessui/react'
 import HelmetMetaData from '../../components/HelmetMetaData'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { changeShowUnlisted } from '../../mutators/SanityMutators'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import EditCollectionPayment from '../../components/EditCollectionPayment'
 import { getAllNFTs, getActiveListings } from '../../fetchers/Web3Fetchers'
 import { getNFTCollection, getAllOwners } from '../../fetchers/SanityFetchers'
-import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconPolygon } from '../../components/icons/CustomIcons'
-import EditCollectionPayment from '../../components/EditCollectionPayment'
+import { useCollectionFilterContext } from '../../contexts/CollectionFilterContext'
+import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon } from '../../components/icons/CustomIcons'
 
 const style = {
   bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -79,7 +82,9 @@ const Collection = () => {
   const qc = useQueryClient();
   const { collectionid } = router.query;
   const [owners, setOwners] = useState();
+  const [showFilter, setShowFilter] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [externalLink, setExternalLink] = useState();
   const { myUser, queryStaleTime } = useUserContext();
   const [showUnlisted, setShowUnlisted] = useState(false);
   const [showPaymentModal, setPaymentModal] = useState(false);
@@ -88,16 +93,15 @@ const Collection = () => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
-  const [externalLink, setExternalLink] = useState();
-
-  
+  const [properties, setProperties] = useState([]);
+  const {selectedPropertyValue, setSelectedPropertyValue} = useCollectionFilterContext();
+  const [filteredNftData, setFilteredNftData] = useState();
 
   //collections' sanity data
   const { data: collectionData, status: collectionStatus } = useQuery(
     ['collection', collectionid],
     getNFTCollection(),
     {
-      staleTime: queryStaleTime,
       enabled: Boolean(collectionid),
       onError: () => {
         toast.error(
@@ -119,20 +123,30 @@ const Collection = () => {
 
   useEffect(() => {
     if(!collectionData) return
-    if(collectionData[0]?.external_link != '' && !collectionData[0].external_link.startsWith('https') && !collectionData[0].external_link.startsWith('http') ){
-      setExternalLink('https://' + collectionData[0].external_link);
+    if(collectionData[0]?.external_link){
+      if(!collectionData[0].external_link?.startsWith('https') && !collectionData[0]?.external_link.startsWith('http') ){
+        setExternalLink('https://' + collectionData[0].external_link);
+      }
     }
       return() => {
         //do nothing, clean up function
       }
   }, [collectionData])
 
+    useEffect(() => {
+      if(!filteredNftData || !nftData || !selectedPropertyValue) return;
+      const f = nftData.filter(nft => {
+        const thisNftTraits = nft.metadata.properties.traits.map(t => t.propertyValue)
+        if(selectedPropertyValue.some(sp => thisNftTraits.includes(sp))) { return true; }
+      });
+      setFilteredNftData(f);
+    }, [selectedPropertyValue])
+
   //get all nfts from blockchain
   const { data: nftData, status: nftStatus } = useQuery(
     ['allnftss', newCollectionData?.contractAddress],
     getAllNFTs(thisCollectionBlockchain),
     {
-      staleTime: queryStaleTime,
       enabled: Boolean(thisCollectionBlockchain) && Boolean(newCollectionData?._id),
       onError: (error) => {
         console.log(error)
@@ -141,6 +155,16 @@ const Collection = () => {
           errorToastStyle
         )
       },
+      onSuccess: (res) => {
+        setFilteredNftData(res);
+        const properties = new Set();
+        res?.map(nft => {
+          nft?.metadata?.properties?.traits?.map(props => {
+            properties.add(props.propertyKey);
+          })
+        })
+        setProperties(Array.from(properties));
+      }
     }
   )
 
@@ -203,10 +227,6 @@ const Collection = () => {
     setShowUnlisted(!showUnlisted)
     updateShowListed(collectionid)
   }
-
-  useEffect(() => {
-    // console.log(showUnlisted)
-  }, [showUnlisted])
 
   //parallax scrolling effect in banner
   useEffect(() => {
@@ -321,7 +341,7 @@ const Collection = () => {
                             aria-haspopup="true"
                             aria-expanded="false"
                           >
-                            <CgWebsite fontSize={20}/>
+                            <BiGlobe fontSize={20}/>
                           </a>
                         </div>                      
                     )}
@@ -441,7 +461,7 @@ const Collection = () => {
                         </div>
                       )} 
                     </div>
-                    <div className="flex lg:gap-3 flex-wrap ">
+                    <div className="flex lg:gap-3 flex-wrap md:flex-nowrap ">
                       <div className={`md:border md:border-t-0 md:border-l-0 md:border-b-0 ${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
                         <span 
                           className="relative block w-fit mt-3 rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
@@ -475,7 +495,7 @@ const Collection = () => {
                               />
                             </div>
 
-                            <span className="ml-2.5 flex cursor-pointer flex-col">
+                            <span className="ml-2.5 w-max flex cursor-pointer flex-col">
                               <span className="text-sm">Creator</span>
                               <span className="flex items-center font-medium">
                                 <span>{newCollectionData?.creator.userName}</span>
@@ -606,28 +626,67 @@ const Collection = () => {
             nftData.length > 0 && (
               <>
                 <div className={style.nftWrapperContainer}>
-                  <h2 className="text-2xl font-semibold sm:text-xl lg:text-2xl text-center mb-8">NFT's in this Collection</h2>
+                  <div className="relative flex justify-center flex-wrap mb-8">
+                    <h2 className="text-2xl font-semibold sm:text-xl lg:text-2xl text-center mb-4">NFT's in this Collection</h2>
+                    <button
+                      className="relative md:absolute md:top-0 md:right-0 inline-flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
+                      onClick={() => setShowFilter(curval => !curval)}
+                    >
+                      <span className="ml-2.5 block truncate">Filter by Properties</span>
+                      <span className="absolute top-1/2 right-5 -translate-y-1/2">
+                        <BsChevronDown
+                          className={`${showFilter && 'rotate-180'} transition`}
+                        />
+                      </span>
+                    </button>
+                  </div>
+                  {showFilter && (
+                    <div className="fixed w-full h-full bg-slate-700 bg-opacity-75 top-0 left-0 z-30 backdrop-blur-sm flex align-items-center justify-center">
+                        <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} mx-4 my-auto md:m-auto`}>
+                          <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
+                          <div className="w-full pt-4">
+                            <div className="mx-auto w-full max-w-md max-h-96 overflow-y-scroll py-4">
+                              {properties && properties?.map((prop) => (
+                                <Property propertyName={prop} nftData={nftData} />
+                              ))}
+                            </div>
+                          </div>
+                          <div 
+                            className="absolute top-3 transition duration-[300] px-2.5 right-3 cursor-pointer z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70"
+                            onClick={() => setShowFilter(false)}>
+                            <MdAdd className="inline-block text-xl -mt-1 rotate-45" />
+                          </div>
+                          <div className="rounded-xl bg-sky-500 hover:bg-sky-600 w-max py-3 p-4 mt-4 cursor-pointer"
+                          onClick={() => {
+                            setSelectedPropertyValue([]);
+                            setFilteredNftData([...nftData]); 
+                            setShowFilter(false);
+                              }
+                            }>
+                                Clear All
+                          </div>
+                        </div>
+                    </div>
+                  )}
                   <div className={style.nftwrapper}>
                     {
-                      nftData.map((nftItem, id) => (
+                      filteredNftData?.map((nftItem, id) => (
                         nftItem?.metadata?.properties?.tokenid ? (
-                        <NFTCard
-                          key={id}
-                          nftItem={nftItem}
-                          title={collectionData[0]?.name}
-                          listings={marketData}
-                          showUnlisted={showUnlisted}
-                          creator={collectionData[0]?.createdBy}
-                        />) : ''
+                          <NFTCard
+                            key={id}
+                            nftItem={nftItem}
+                            title={collectionData[0]?.name}
+                            listings={marketData}
+                            showUnlisted={showUnlisted}
+                            creator={collectionData[0]?.createdBy}
+                          />) : ''
                       ))
                     }
                   </div>
                 </div>
               </>
-
             )
       }
-      
       <Footer />
     </div>
   )
