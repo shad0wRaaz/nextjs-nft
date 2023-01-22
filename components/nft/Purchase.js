@@ -402,7 +402,7 @@ var listed = true
 
       {!listed && (
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-center">
-          <div className={`relative flex flex-1 flex-col ${isburnt ? 'bg-red-500' : ''} items-baseline justify-center rounded-xl border-2 border-red-500 p-6 sm:flex-row justify-center`}>
+          <div className={`relative flex flex-1 flex-col ${isburnt ? 'bg-red-500' : ''} items-baseline justify-center rounded-xl border-2 border-red-500 p-6 sm:flex-row`}>
             {loadingNewPrice ? (
               <div className="flex gap-2 justify-center text-red-500 text-center w-full">
               <IconLoading color="rgb(239 68 68)" /> Loading

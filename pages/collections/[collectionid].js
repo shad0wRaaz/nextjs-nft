@@ -326,7 +326,7 @@ const Collection = () => {
                 <div className="mt-4 flex items-center space-x-3 sm:justify-center">
                   <div className="flex flex-col justify-center space-x-1.5">
                     {collectionData[0]?.external_link && collectionData[0]?.external_link != '' && (
-                        <div className="relative inline-block text-center justify-center flex">
+                        <div className="relative text-center justify-center flex">
                           <a
                             href={externalLink ? externalLink : collectionData[0].category}
                             className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
