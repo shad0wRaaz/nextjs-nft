@@ -1,16 +1,17 @@
-import '../styles/globals.css'
 import Head from 'next/head'
-import { ThirdwebProvider, ChainId } from '@thirdweb-dev/react'
-import { SearchProvider } from '../contexts/SearchContext'
-import { SettingsProvider } from '../contexts/SettingsContext'
+import '../styles/globals.css'
 import { UserProvider } from '../contexts/UserContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
-import { QueryClientProvider, QueryClient } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import appletouchicon from '../assets/favicon/apple-touch-icon.png'
 import icon32 from '../assets/favicon/favicon-32x32.png'
 import icon16 from '../assets/favicon/favicon-16x16.png'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import { SearchProvider } from '../contexts/SearchContext'
+import { QueryClientProvider, QueryClient } from 'react-query'
+import { SettingsProvider } from '../contexts/SettingsContext'
+import { ThirdwebProvider, ChainId } from '@thirdweb-dev/react'
+import appletouchicon from '../assets/favicon/apple-touch-icon.png'
+import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
+import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
 
 const desiredChainId = ChainId.BinanceSmartChainTestnet;
 
@@ -30,7 +31,9 @@ function MyApp({ Component, pageProps }) {
                   <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
                 </Head>
                 <SettingsProvider>
-                  <Component {...pageProps} />
+                  <CollectionFilterProvider>
+                    <Component {...pageProps} />
+                  </CollectionFilterProvider>
                 </SettingsProvider>
                 <ReactQueryDevtools />
               </MarketplaceProvider>
