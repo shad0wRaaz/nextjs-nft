@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Head from 'next/head'
 import millify from 'millify'
-import toast from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { TiHeart } from 'react-icons/ti'
@@ -139,6 +139,7 @@ const dashboard = () => {
             <>  
                 <div className="bg-slate-700">
                     <Header />
+                    <Toaster position="bottom-right" reverseOrder={false} />
                 </div>
                 <div className="flex pt-[5rem]" style={{ backgroundColor: "rgb(248, 249, 250)" }}>
                     <div className="sidebar w-64 border hidden md:block p-4 text-sm">

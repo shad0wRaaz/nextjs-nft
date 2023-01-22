@@ -179,7 +179,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
 
        //update Floor Price
       ;(async( dbClient = sanityClient) => {
-        console.log(listingPrice, nftCollection);
+        // console.log(listingPrice, nftCollection);
         if(nftCollection?.floorPrice == 0 || nftCollection?.floorPrice > listingPrice){
           await dbClient.patch(nftCollection?._id).set({ 'floorPrice': Number(listingPrice) }).commit();
         }

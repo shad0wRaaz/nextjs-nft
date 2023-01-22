@@ -52,7 +52,7 @@ export const getActiveListings =
 
   //All Listing data from all Blockchain
 export const getFullListings = () =>  async() => {
-  const blockchains = ["mumbai", "binance-testnet", "avalance-fuji", "goerli"]
+  const blockchains = ["mumbai", "binance-testnet", "avalanche-fuji", "goerli"]
   const unresolved = blockchains.map(async (chain) => await axios.get(`${HOST}/api/getAllListings/${chain}`)) 
 
   const resolved = await Promise.all(unresolved);
@@ -65,7 +65,6 @@ export const getFullListings = () =>  async() => {
   filterNull.map(chaindata => {
     chaindata.data.map(nft => fullArray.push(nft));
   });
-  
   return fullArray;
 }
 
