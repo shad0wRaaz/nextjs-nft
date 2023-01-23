@@ -6,6 +6,8 @@ import { HiMenu } from 'react-icons/hi'
 import Notifications from './Notifications'
 import ThemeSwitcher from './ThemeSwitcher'
 import { config } from '../lib/sanityClient'
+import { GoDashboard } from 'react-icons/go'
+import ChainSelection from './ChainSelection'
 import nuvanftLogo from '../assets/nuvanft.png'
 import toast, { Toaster } from 'react-hot-toast'
 import { VscDebugDisconnect } from 'react-icons/vsc'
@@ -22,8 +24,6 @@ import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
 import { IconAvalanche, IconBNB, IconEthereum, IconImage, IconMagnifier, IconOffer, IconPolygon, IconProfile } from './icons/CustomIcons'
 import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
-import { GoDashboard } from 'react-icons/go'
-
 
 const style = {
   wrapper: ` mx-auto absolute top-0 left-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10`,
@@ -167,7 +167,7 @@ const Header = () => {
 
   useEffect(() => {
     if(!chainid) return
-    setSelectedBlockchain(blockchainName[chainid]);
+        (blockchainName[chainid]);
   }, [chainid])
 
   // const handleDisconnect = () => {
@@ -467,55 +467,56 @@ const Header = () => {
         }
       >
         {!isLogged && (
-          <div
-            className={`flex items-center backdrop-blur-md justify-between gap-1 rounded-md text-xs border ${
-              dark ? ' border-sky-400/20' : ' border-neutral-200/40 bg-[#ffffff99]'
-            } p-[0.37rem]`}
-          >
-            <div className={style.headerItem}>
-              <span className="inline-block">Select Chain</span>
-            </div>
+          <ChainSelection />
+          // <div
+          //   className={`flex items-center backdrop-blur-md justify-between gap-1 rounded-md text-xs border ${
+          //     dark ? ' border-sky-400/20' : ' border-neutral-200/40 bg-[#ffffff99]'
+          //   } p-[0.37rem]`}
+          // >
+          //   <div className={style.headerItem}>
+          //     <span className="inline-block">Select Chain</span>
+          //   </div>
 
-            <div
-              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-              onClick={() => {
-                changeBlockchain('goerli')
-              }}
-            >
-              <IconEthereum/>
-              <span className="inline-block">Ethereum</span>
-            </div>
+          //   <div
+          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+          //     onClick={() => {
+          //       changeBlockchain('goerli')
+          //     }}
+          //   >
+          //     <IconEthereum/>
+          //     <span className="inline-block">Ethereum</span>
+          //   </div>
 
-            <div
-              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-              onClick={() => {
-                changeBlockchain('binance-testnet')
-              }}
-            >
-              <IconBNB/>
-              <span className="inline-block">Binance</span>
-            </div>
+          //   <div
+          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+          //     onClick={() => {
+          //       changeBlockchain('binance-testnet')
+          //     }}
+          //   >
+          //     <IconBNB/>
+          //     <span className="inline-block">Binance</span>
+          //   </div>
 
-            <div
-              className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-              onClick={() => {
-                changeBlockchain('mumbai')
-              }}
-            >
-              <IconPolygon/>
-              <span className="inline-block">Polygon</span>
-            </div>
+          //   <div
+          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+          //     onClick={() => {
+          //       changeBlockchain('mumbai')
+          //     }}
+          //   >
+          //     <IconPolygon/>
+          //     <span className="inline-block">Polygon</span>
+          //   </div>
 
-            <div
-              className={`cursor-pointer flex gap-2 rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-              onClick={() => {
-                changeBlockchain('avalanche-fuji')
-              }}
-            >
-              <IconAvalanche/>
-              <span className="inline-block">Avalance</span>
-            </div>
-          </div>
+          //   <div
+          //     className={`cursor-pointer flex gap-2 rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+          //     onClick={() => {
+          //       changeBlockchain('avalanche-fuji')
+          //     }}
+          //   >
+          //     <IconAvalanche/>
+          //     <span className="inline-block">Avalance</span>
+          //   </div>
+          // </div>
         )}
 
         {address && isLogged && (
