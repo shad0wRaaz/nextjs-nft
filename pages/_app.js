@@ -18,7 +18,7 @@ const desiredChainId = ChainId.BinanceSmartChainTestnet;
 function MyApp({ Component, pageProps }) {
   const client = new QueryClient()
   return (
-    <ThirdwebProvider desiredChainId={desiredChainId}>
+    <ThirdwebProvider desiredChainId={desiredChainId} supportedChains={[ChainId.Mumbai]}>
       <ThemeProvider>
         <UserProvider>
           <SearchProvider>

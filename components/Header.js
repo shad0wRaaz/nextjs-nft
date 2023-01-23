@@ -238,7 +238,9 @@ const Header = () => {
             >
               <div className="px-1 py-1 ">
                 {!isLogged && (
-                  <ChainSelection />
+                  <div className="p-4">
+                    <ChainSelection />
+                  </div>
                   // <Menu.Item>
                   //   {({ active }) => (
                   //     <>

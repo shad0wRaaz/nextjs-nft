@@ -36,7 +36,7 @@ const ChainSelection = () => {
 
   return (
     <div className="">
-      <Menu as="div" className="relative inline-block text-left z-30">
+      <Menu as="div" className="relative inline-block text-left z-30 w-full">
         <div>
           <Menu.Button className="inline-flex w-full justify-center items-center rounded-lg bg-black bg-opacity-20 border-slate-600/70 border px-4 py-4 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
             {chainIcon[selectedBlockchain]}
@@ -56,7 +56,7 @@ const ChainSelection = () => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right border border-slate-600 divide-y p-4 divide-slate-600 rounded-lg bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="absolute right-0 mt-2 w-60 origin-top-right border border-slate-600 divide-y p-4 divide-slate-600 rounded-lg bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="px-1 py-1 pb-3">
                 <p className="w-full px-2 text-xs mb-2">MAINNETS</p>
               <Menu.Item>

@@ -7,11 +7,12 @@ const marketplace = {
   'mumbai': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
   'goerli': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
   'avalanche-fuji': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
+  'avalanche': process.env.NEXT_PUBLIC_AVALANCE_MARKETPLACE,
   'binance-testnet': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
-  'arbitrum-goerli': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+  'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
   'mainnet': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
   'polygon': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
-  'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
+  'arbitrum-goerli': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
 }
 
 export function MarketplaceProvider({ children }) {
@@ -21,7 +22,7 @@ export function MarketplaceProvider({ children }) {
   const [auctionListings, setAuctionListings] = useState();
   const [selectedBlockchain, setSelectedBlockchain] = useState('mumbai');
   const [topTradedCollections, setTopTradedCollections] = useState();
-  const [marketAddress, setMarketAddress] = useState('0x0bfc480e8e9d391a0a601ed5b54151d3e526bacd');
+  const [marketAddress, setMarketAddress] = useState('0x0bfc480e8e9d391a0a601ed5b54151d3e526bacd'); //this is mumbai marketplace contract address
 
   useEffect(() => {
     if(!selectedBlockchain) return
