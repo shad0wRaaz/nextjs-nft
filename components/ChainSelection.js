@@ -6,7 +6,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
 
-const ChainSelection = ({}) => {
+const ChainSelection = () => {
     const { selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
     const { successToastStyle } = useThemeContext();
     const changeBlockchain = (selectedChainName) => {
