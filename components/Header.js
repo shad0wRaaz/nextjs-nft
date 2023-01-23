@@ -238,62 +238,63 @@ const Header = () => {
             >
               <div className="px-1 py-1 ">
                 {!isLogged && (
-                  <Menu.Item>
-                    {({ active }) => (
-                      <>
-                        <div
-                          className={`${
-                            active ? 'bg-blue-500 ' : ''
-                          } group rounded-md px-4 py-2 text-sm pt-4`}
-                        >
-                          <span className="flex w-full items-center ">
-                            Select Chain
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                        <div
-                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                            onClick={() => {
-                              changeBlockchain('goerli')
-                            }}
-                          >
-                            <IconEthereum />
-                            <span className="inline-block text-sm">Ethereum</span>
-                          </div>
+                  <ChainSelection />
+                  // <Menu.Item>
+                  //   {({ active }) => (
+                  //     <>
+                  //       <div
+                  //         className={`${
+                  //           active ? 'bg-blue-500 ' : ''
+                  //         } group rounded-md px-4 py-2 text-sm pt-4`}
+                  //       >
+                  //         <span className="flex w-full items-center ">
+                  //           Select Chain
+                  //         </span>
+                  //       </div>
+                  //       <div className="flex flex-col">
+                  //       <div
+                  //           className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                  //           onClick={() => {
+                  //             changeBlockchain('goerli')
+                  //           }}
+                  //         >
+                  //           <IconEthereum />
+                  //           <span className="inline-block text-sm">Ethereum</span>
+                  //         </div>
 
-                          <div
-                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                            onClick={() => {
-                              changeBlockchain('binance-testnet')
-                            }}
-                          >
-                            <IconBNB />
-                            <span className="inline-block text-sm">Binance</span>
-                          </div>
+                  //         <div
+                  //           className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                  //           onClick={() => {
+                  //             changeBlockchain('binance-testnet')
+                  //           }}
+                  //         >
+                  //           <IconBNB />
+                  //           <span className="inline-block text-sm">Binance</span>
+                  //         </div>
 
-                          <div
-                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                            onClick={() => {
-                              changeBlockchain('mumbai')
-                            }}
-                          >
-                            <IconPolygon />
-                            <span className="inline-block text-sm">Polygon</span>
-                          </div>
+                  //         <div
+                  //           className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                  //           onClick={() => {
+                  //             changeBlockchain('mumbai')
+                  //           }}
+                  //         >
+                  //           <IconPolygon />
+                  //           <span className="inline-block text-sm">Polygon</span>
+                  //         </div>
 
-                          <div
-                            className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-                            onClick={() => {
-                              changeBlockchain('avalanche-fuji')
-                            }}
-                          >
-                            <IconAvalanche/>
-                            <span className="inline-block text-sm">Avalance</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </Menu.Item>
+                  //         <div
+                  //           className={`cursor-pointer flex gap-2 items-center rounded-full p-2 px-4 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
+                  //           onClick={() => {
+                  //             changeBlockchain('avalanche-fuji')
+                  //           }}
+                  //         >
+                  //           <IconAvalanche/>
+                  //           <span className="inline-block text-sm">Avalance</span>
+                  //         </div>
+                  //       </div>
+                  //     </>
+                  //   )}
+                  // </Menu.Item>
                 )}
 
                 {isLogged && (
