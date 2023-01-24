@@ -188,7 +188,7 @@ const Collection = () => {
     {
       enabled: Boolean(newCollectionData?._id),
       onError: () => {
-        toast.error('Error in getting owner info', errorToastStyle)
+        toast.error('Error in getting owner info.', errorToastStyle)
       },
       onSuccess: (res) => {
         // console.log(collectionid)
@@ -209,7 +209,7 @@ const Collection = () => {
         if (!showUnlisted) {
           setShowUnlisted(true)
           toast.success(
-            'Unlisted NFTs can now be publicly viewable',
+            'Unlisted NFTs can now be publicly viewable.',
             successToastStyle
           )
         } else {

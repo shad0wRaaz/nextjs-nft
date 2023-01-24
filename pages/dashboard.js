@@ -114,7 +114,7 @@ const dashboard = () => {
             .then(() => {
                 toast.success(`Listings in ${blockchain} chain has been refreshed.`, successToastStyle);
             }).catch((err) => {
-                toast.error(err, errorToastStyle);
+                toast.error("Error in refreshing active listings.", errorToastStyle);
             });
         
         if(blockchain == "mumbai" || blockchain == "polygon") {setmaticloading(false);}

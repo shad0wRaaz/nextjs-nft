@@ -55,7 +55,7 @@ const EditCollectionPayment = ({ collection, setPaymentModal }) => {
         () => updatePayment(collection, signer, basisPoints, recipient),
         {
             onError:(err) => {
-                toast.error(err, errorToastStyle);
+                toast.error("Payment settings could not be updated.", errorToastStyle);
             },
             onSuccess: () => {
                 toast.success("Payout settings updated successfully.", successToastStyle);

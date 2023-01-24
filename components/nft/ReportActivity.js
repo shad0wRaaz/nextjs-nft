@@ -29,7 +29,7 @@ const ReportActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) 
             enabled: Boolean(metaDataFromSanity?._id),
             onError: (error) => {
                 console.log(error)
-                toast.error('Error fetching report activities', errorToastStyle)
+                toast.error('Error fetching report activities.', errorToastStyle)
             },
             onSuccess: (res) => {
               //  console.log(res)

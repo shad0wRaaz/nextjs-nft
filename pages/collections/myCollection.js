@@ -57,7 +57,7 @@ const Collection = () => {
       enabled: Boolean(address),
       onError: () => {
         toast.error(
-          'Error fetching minted NFTs. Refresh and try again',
+          'Error fetching minted NFTs. Refresh and try again.',
           errorToastStyle
         )
       },
@@ -74,7 +74,7 @@ const Collection = () => {
       enabled: Boolean(address),
       onError: () => {
         toast.error(
-          'Error fetching minted NFTs. Refresh and try again',
+          'Error fetching minted NFTs. Refresh and try again.',
           errorToastStyle
         )
       },
@@ -91,7 +91,7 @@ const Collection = () => {
       enabled: Boolean(address),
       onError: () => {
         toast.error(
-          'Error fetching minted NFTs. Refresh and try again',
+          'Error fetching minted NFTs. Refresh and try again.',
           errorToastStyle
         )
       },

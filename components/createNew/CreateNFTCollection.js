@@ -1,27 +1,22 @@
-import Select from 'react-select'
-import { BiCollection } from 'react-icons/bi'
-import { config } from '../../lib/sanityClient'
-import toast, { Toaster } from 'react-hot-toast'
-import {
-  useAddress,
-  useNetwork,
-  useSigner,
-  useChainId,
-} from '@thirdweb-dev/react'
 import axios from 'axios'
+import Select from 'react-select'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import { BsUpload } from 'react-icons/bs'
 import { useMutation } from 'react-query'
 import { useQueryClient } from 'react-query'
+import { BiCollection } from 'react-icons/bi'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { ConnectWallet } from '@thirdweb-dev/react'
+import { config } from '../../lib/sanityClient'
+import toast, { Toaster } from 'react-hot-toast'
 import { IconLoading } from '../icons/CustomIcons'
+import { ConnectWallet } from '@thirdweb-dev/react'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
+import { useAddress, useNetwork, useSigner, useChainId } from '@thirdweb-dev/react'
 
 const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
@@ -167,18 +162,18 @@ const CreateNFTCollection = () => {
             type: 'TYPE_ONE',
           })
 
-        toast.success('Collection created successfully', successToastStyle);
+        toast.success('Collection created successfully.', successToastStyle);
         
         router.push(`/collections/${itemID}`);
 
       } catch(err){
-          toast.error(err, errorToastStyle);
+          toast.error("Error in deploying NFT Collection.", errorToastStyle);
       }
       
     },
       {
-        onError: (error) => {
-          toast.error(error.message, errorToastStyle)
+        onError: (err) => {
+          toast.error("Error in deploying NFT Collection.", errorToastStyle)
         },
     }
   )
@@ -215,13 +210,16 @@ const CreateNFTCollection = () => {
   const handleDeployNFTCollection = (e, toastHandler = toast) => {
     e.preventDefault()
     const form = e.target;
-
+    if(!signer){
+      toastHandler.error("Wallet not connected.", errorToastStyle);
+      return;
+    }
     if (
       form.itemName.value == '' ||
       form.primary_sale_recipient.value == '' ||
       typeof selectedCategory == 'undefined'
     ) {
-      toastHandler.error('Fields marked * are required', errorToastStyle)
+      toastHandler.error('Fields marked * are required.', errorToastStyle)
       return
     }
 
@@ -234,14 +232,18 @@ const CreateNFTCollection = () => {
     }
 
       // setIsDeploying(true)
-      mutate(form);
-
-      if (status === 'success') {
-        e.target.reset()
-        setSelectedCategory('')
-        setProfile()
-        setBanner()
+      try{
+        mutate(form);
+      }catch(err){
+        toastHandler.error("Error in deploying NFT Collection.", errorToastStyle);
       }
+
+      // if (status === 'success') {
+      //   e.target.reset()
+      //   setSelectedCategory('')
+      //   setProfile()
+      //   setBanner()
+      // }
   }
 
   const customSelectStyles = {
@@ -281,27 +283,28 @@ const CreateNFTCollection = () => {
     }),
   }
 
-  function previewImage(target) {
-    const files = document.getElementById(
-      target == 'profile' ? 'profileImg' : 'bannerImg'
-    )
-    if (files.files.length > 0) {
-      var reader = new FileReader()
-      reader.readAsDataURL(files.files[0])
-      // console.log(files.files[0])
-      reader.onload = function (e) {
-        var image = new Image()
-        image.src = e.target.result
-        image.onload = function () {
-          document.getElementById(
-            target == 'profile' ? 'pImage' : 'bImage'
-          ).src = image.src
-        }
-      }
-    } else {
-      // Not supported
-    }
-  }
+  // function previewImage(target) {
+  //   const files = document.getElementById(
+  //     target == 'profile' ? 'profileImg' : 'bannerImg'
+  //   )
+  //   if (files.files.length > 0) {
+  //     var reader = new FileReader()
+  //     reader.readAsDataURL(files.files[0])
+  //     // console.log(files.files[0])
+  //     reader.onload = function (e) {
+  //       var image = new Image()
+  //       image.src = e.target.result
+  //       image.onload = function () {
+  //         document.getElementById(
+  //           target == 'profile' ? 'pImage' : 'bImage'
+  //         ).src = image.src
+  //       }
+  //     }
+  //   } else {
+  //     // Not supported
+  //   }
+  // }
+
   return (
     <div className={style.wrapper}>
       <Toaster position="bottom-right" reverseOrder={false} />

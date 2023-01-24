@@ -103,7 +103,7 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
         {
           onError: () => {
             toast.error(
-              'Error saving transaction. Contact administrator',
+              'Error saving transaction. Contact administrator.',
               errorToastStyle
             )
           },

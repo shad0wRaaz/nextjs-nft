@@ -58,7 +58,7 @@ const Notifications = () => {
     {
       onError: () => {
         toast.error(
-          'Error in deleting notifications. Refresh and try again',
+          'Error in deleting notifications. Refresh and try again.',
           errorToastStyle
         )
       },

@@ -35,7 +35,7 @@ const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) =>
     {
       enabled: Boolean(metaDataFromSanity?._id),
       onError: () => {
-        toast.error('Cannot fetch Item activities', errorToastStyle)
+        toast.error('Cannot fetch Item activities.', errorToastStyle)
       },
       onSuccess: (res) => {
         //  console.log(res)

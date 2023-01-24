@@ -90,7 +90,7 @@ var listed = true
     {
       onError: () => {
         toast.error(
-          'Error saving transaction. Contact administrator',
+          'Error saving transaction. Contact administrator.',
           errorToastStyle
         )
       },

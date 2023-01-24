@@ -116,7 +116,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
       }
       
       if(!collectionAddress) {
-        toast.error("Collection not found", errorToastStyle);
+        toast.error("Collection not found.", errorToastStyle);
         return;
       }
 

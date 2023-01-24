@@ -80,7 +80,7 @@ const User = () => {
       enabled: Boolean(address), //only run this query if address is provided
       onError: () => {
         toast.error(
-          'Error fetching collection data. Refresh and try again',
+          'Error fetching collection data. Refresh and try again.',
           errorToastStyle
         )
       },
@@ -95,7 +95,7 @@ const User = () => {
       enabled: Boolean(address),
       onError: () => {
         toast.error(
-          'Error fetching minted NFTs. Refresh and try again',
+          'Error fetching minted NFTs. Refresh and try again.',
           errorToastStyle
         )
       },
@@ -110,7 +110,7 @@ const User = () => {
       },
       onSuccess: (res) => {
         toast.success(
-          `You are now following ${res.userName}`,
+          `You are now following ${res.userName}.`,
           successToastStyle
         )
         setFollowerCount((prevCount) => prevCount + 1)

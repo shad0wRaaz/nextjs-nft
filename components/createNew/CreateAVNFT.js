@@ -143,7 +143,7 @@ const CreateAVNFT = ({uuid}) => {
     if(!file) return
     console.log(file.type)
       if(file.size > 2097152) { //file limit is 2MB
-        toast.error("File is too large", errorToastStyle);
+        toast.error("File is too large.", errorToastStyle);
         setFile(undefined);
       }
     return() => {
@@ -157,7 +157,7 @@ const CreateAVNFT = ({uuid}) => {
       if(animatedFile.type.search(/ideo/) > 0) { setFileType("video"); } 
       if(animatedFile.type.search(/udio/) > 0) { setFileType("audio"); } 
       if(animatedFile.size > 5097152) { //file limit is 2MB
-        toast.error("File is too large", errorToastStyle)
+        toast.error("File is too large.", errorToastStyle)
         setAnimatedFile(undefined);
       }
     return() => {
@@ -222,7 +222,7 @@ const CreateAVNFT = ({uuid}) => {
     e.preventDefault()
 
     if (state.name == '' || file == undefined || animatedFile == undefined) {
-      toastHandler.error('Fields marked * are required', errorToastStyle)
+      toastHandler.error('Fields marked * are required.', errorToastStyle)
       return
     }
     if (
@@ -243,7 +243,7 @@ const CreateAVNFT = ({uuid}) => {
     if (!nftCollection) {
       //Some issue is there
       toastHandler.error(
-        'Error in minting. Cannot find NFT Collection',
+        'Error in minting. Cannot find NFT Collection.',
         errorToastStyle
       )
       return;
@@ -317,14 +317,14 @@ const CreateAVNFT = ({uuid}) => {
 
           setIsMinting(false)
 
-          toastHandler.success('NFT minted successfully', successToastStyle)
+          toastHandler.success('NFT minted successfully.', successToastStyle)
           dispatch({ type: 'CLEAR_OUT_ALL' })
 
           router.push(
             `/nfts/${uuid}`
           )
         } catch (error) {
-          toastHandler.error(error.message, errorToastStyle)
+          toastHandler.error("Error in minting NFT.", errorToastStyle)
           // console.log(error.message)
           setIsMinting(false)
         }

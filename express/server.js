@@ -51,14 +51,15 @@ const chainEnum = {
 }
 
 const marketplace = {
-  'mumbai': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
+  'mainnet': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+  'polygon': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
+  'avalanche': process.env.NEXT_PUBLIC_AVALANCE_MARKETPLACE,
+  'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
   'goerli': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
+  'mumbai': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
   'avalanche-fuji': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
   'binance-testnet': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
   'arbitrum-goerli': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
-  'mainnet': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
-  'polygon': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
-  'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
 
 }
 

@@ -101,7 +101,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
     {
       onError: () => {
         toast.error(
-          'Error saving transaction. Contact administrator',
+          'Error saving transaction. Contact administrator.',
           errorToastStyle
         )
       },

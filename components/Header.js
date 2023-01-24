@@ -122,7 +122,7 @@ const Header = () => {
   useEffect(
     (toastHandler = toast) => {
       if (!error) return
-      toastHandler.error(error.message, errorToastStyle)
+      toastHandler.error("Error in connecting wallet", errorToastStyle)
 
       return() => {
         //do nothing
