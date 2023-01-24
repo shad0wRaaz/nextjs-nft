@@ -308,8 +308,7 @@ const CreateNFT = ({uuid}) => {
       
       // })
     } catch (error) {
-      toastHandler.error(error, errorToastStyle)
-      console.log(error.message)
+      toastHandler.error("Error in minting NFT.", errorToastStyle)
       setIsMinting(false)
     }
   }
