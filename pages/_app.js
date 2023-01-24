@@ -13,19 +13,19 @@ import appletouchicon from '../assets/favicon/apple-touch-icon.png'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
 
-const desiredChainId = ChainId.BinanceSmartChainTestnet;
+const desiredChainId = ChainId.Polygon;
 
 function MyApp({ Component, pageProps }) {
   const client = new QueryClient()
   return (
-    <ThirdwebProvider desiredChainId={desiredChainId} supportedChains={[ChainId.Mumbai]}>
+    <ThirdwebProvider desiredChainId={desiredChainId}>
       <ThemeProvider>
         <UserProvider>
           <SearchProvider>
             <QueryClientProvider client={client}>
               <MarketplaceProvider>
                 <Head>
-                  <title>Nuva NFT</title>
+                  <title>Nuva NFT: A Multichain NFT Marketplace</title>
                   <link rel="apple-touch-icon" sizes="180x180" href={appletouchicon.src} key={'apple-touch-icon'} />
                   <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
                   <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
