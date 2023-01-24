@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import SearchBar from './SearchBar'
-import { TiLink } from 'react-icons/ti'
+import toast from 'react-hot-toast'
+import { useQuery } from 'react-query'
 import { BiUser } from 'react-icons/bi'
 import { HiMenu } from 'react-icons/hi'
 import Notifications from './Notifications'
@@ -9,24 +10,21 @@ import { config } from '../lib/sanityClient'
 import { GoDashboard } from 'react-icons/go'
 import ChainSelection from './ChainSelection'
 import nuvanftLogo from '../assets/nuvanft.png'
-import toast, { Toaster } from 'react-hot-toast'
-import { VscDebugDisconnect } from 'react-icons/vsc'
 import { Menu, Transition } from '@headlessui/react'
+import { HiOutlineUserCircle } from 'react-icons/hi'
 import { useState, useEffect, Fragment } from 'react'
-import { useQuery, useQueryClient } from 'react-query'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext'
-import { HiChevronDown, HiOutlineUserCircle } from 'react-icons/hi'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
-import { MdOutlineCollections, MdOutlineWallpaper, MdOutlineWidgets, MdOutlineWorkspaces } from 'react-icons/md'
+import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
+import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
+import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
-import { IconAvalanche, IconBNB, IconEthereum, IconImage, IconMagnifier, IconOffer, IconPolygon, IconProfile } from './icons/CustomIcons'
 import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
-import { getActiveListings, getAuctionItems, getLatestNfts } from '../fetchers/Web3Fetchers'
 
 const style = {
-  wrapper: ` mx-auto absolute top-0 left-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10`,
+  wrapper: ` mx-auto absolute top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
   searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
@@ -55,6 +53,7 @@ const Header = () => {
   const [{ data: { chain, chains }, loading, error }, switchNetwork] = useNetwork();
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
   const [isAdmin, setIsAdmin] = useState(false);
+
   const getAllAdminUsers = async () => {
     const query = '*[_type == "settings"]{adminusers}';
     const res = await config.fetch(query)
@@ -106,6 +105,7 @@ const Header = () => {
     ['marketplace', selectedBlockchain],
     getActiveListings(),
     {
+      enabled: false,
       onError: () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',
@@ -178,18 +178,18 @@ const Header = () => {
   //   disconnectNotification()
   // }
 
-  const disconnectNotification = (toastHandler = toast) => {
-    toastHandler.success(`You have been disconnected !`, successToastStyle)
-  }
+  // const disconnectNotification = (toastHandler = toast) => {
+  //   toastHandler.success(`You have been disconnected !`, successToastStyle)
+  // }
 
-  const changeBlockchain = (selectedChainName) => {
-    setSelectedBlockchain(selectedChainName);
-    toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
-  }
+  // const changeBlockchain = (selectedChainName) => {
+  //   setSelectedBlockchain(selectedChainName);
+  //   toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
+  // }
 
   return (
     <div className={style.wrapper}>
-      <div className="container flex items-center justify-between ">
+      <div className="container flex items-center justify-between">
       <Link href="/">
         <div className={style.logoContainer} style={{ marginLeft: 0 }}>
           <img src={nuvanftLogo.src} height={55} width={90} />
