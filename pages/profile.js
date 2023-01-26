@@ -86,7 +86,6 @@ const profile = () => {
             },
           }
         )
-        console.log(profileLink)
         // setUserDoc({...userDoc, web3imageprofile: profileLink?.data});
       }
       
@@ -103,7 +102,6 @@ const profile = () => {
             },
           }
           )
-          console.log(bannerLink)
           // setUserDoc({...userDoc, web3imagebanner: bannerLink?.data});
         }
     } catch (error) {
