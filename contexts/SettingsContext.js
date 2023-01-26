@@ -47,7 +47,7 @@ export function SettingsProvider({children}) {
         '43114': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE,
       }
 
-    const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8888' : 'http://localhost:8080'
+    const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io/8080' : 'http://localhost:8080'
 
     return (
         <SettingsContext.Provider value={{ 
