@@ -15,8 +15,8 @@ import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 
 const app = express()
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
-// app.use(cors({origin: "*"}))
+// app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
+app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -86,6 +86,16 @@ const config = sanityClient({
   token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
   useCdn: false,
   ignoreBrowserTokenWarning: true,
+})
+
+const client = new SMTPClient({
+  user: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+  password: process.env.NEXT_PUBLIC_SMTP_PASSWORD,
+  host: process.env.NEXT_PUBLIC_SMTP_HOST,
+  port: process.env.NEXT_PUBLIC_SMTP_PORT,
+  ssl: process.env.NEXT_PUBLIC_SMTP_SSL,
+  tls: true,
+  timeout: process.env.NEXT_PUBLIC_SMTP_TIMEOUT,
 })
 
 
@@ -369,28 +379,53 @@ app.get('/api/nft/listing/:id', async (req, res) => {
   //search in each chain individually
   await redis.get("activelistings-binance-testnet").then((res) => {
     // console.log(res)
-    result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
-    if(result.length > 0) { found = true;}
+    result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+    if(result?.length > 0) { found = true;}
+  })
+
+  await redis.get("activelistings-binance").then((res) => {
+    // console.log(res)
+    result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+    if(result?.length > 0) { found = true;}
   })
   
   if(!found){
     await redis.get("activelistings-mumbai").then((res) =>{
-      result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
-      if(result.length > 0) { found = true;}
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
+    })
+  }
+  if(!found){
+    await redis.get("activelistings-polygon").then((res) =>{
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
     })
   }
   if(!found){
     await redis.get("activelistings-goerli").then((res) =>{
-      result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
-      if(result.length > 0) { found = true;}
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
+    })
+  }
+  if(!found){
+    await redis.get("activelistings-mainnet").then((res) =>{
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
     })
   }
   if(!found){
     await redis.get("activelistings-avalanche-fuji").then((res) =>{
-      result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
-      if(result.length > 0) { found = true;}
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
     })
   }
+  if(!found){
+    await redis.get("activelistings-avalanche").then((res) =>{
+      result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
+      if(result?.length > 0) { found = true;}
+    })
+  }
+  
   // if(!found){
   //   await redis.get("activelistings-arbitrum-goerli").then((res) =>{
   //     result = JSON.parse(res).filter(item => item.asset.properties.tokenid == nftId)
@@ -448,7 +483,134 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
   }
 })
 
-app.post('/api/sendemail', async (req,res) => {
+app.post('/api/getintouch', async(req, res) => {
+  const { name, email, message } = req.body;
+  const subject = "Message from Meta Nuva Landing Page";
+  const emailBody = `
+    <html><body>
+    Dear Admin,<br/>
+    You have received an email from 'Get In Touch' form from Meta Nuva Landing Page. <br/><br/>
+    The details are:<br/><br/>
+    Name: ${name}<br/><br/>
+    Email: ${email}<br/><br/>
+    Message: ${message}<br/><br/><br/><br/>
+    Thank you.<br/>
+    Meta Nuva`;
+
+    try {
+      const message = await client.sendAsync({
+        text: emailBody,
+        attachment: [{ data: emailBody, alternative: true }],
+        from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+        to: email,
+        subject
+      })
+    } catch (err) {
+      res.status(400).send(JSON.stringify({ message: err.message }))
+      return
+    }
+    res.status(200).send(JSON.stringify({ message: 'success' }))
+
+})
+
+app.post('/api/sendemail', async (req, res) => {
+  const {email} = req.body
+  const emailBody = `<!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100&display=swap"
+        rel="stylesheet"
+      />
+    </head>
+  
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+    <body style="font-family:'Montserrat', arial, sans-serif;">
+      <div style="margin-left: auto; margin-right: auto; margin: 10px">
+        <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center">
+          <div style="margin-top: 50px;">
+            <h1
+              class="style="font-size: 60px; font-weight: bold; color: #00086f; align-items: center; text-align: left">
+              WE VALUE <br />
+              <span>YOUR INTEREST IN</span> <br />
+              <span
+                class="text-[40px] md:text-[100px] md:relative md:-top-5 bg-clip-text text-transparent bg-gradient-to-r from-[#0146c6] to-[#020f4e]"
+                style="font-size: 100px; position: relative; top: -5px; background-clip: text; color: transparent; background-image: linear-gradient(to right, #0146c6 , #020f4e);">META NUVA</span
+              >
+            </h1>
+            <div class="text-left m-10 md:m-0 md:w-[600px]" style="text-align: center; margin: 10px; width: 600px;">
+              <p class="font-normal">
+                We work tirelessly to support our community members, and
+                transparency and ethical conduct are of paramount importance to
+                us. Please speak to the person who introduced you to Meta Nuva and
+                ask them for their referral link to enable you to join our
+                community.
+              </p>
+              <p class="mt-5" style="margin-top: 5px;">
+                If you don't have a referee, we ask you to email us at
+                <b>Support@metanuva.com</b>, and we will gladly help you with your
+                onboarding.
+              </p>
+            </div>
+          </div>
+          <div>
+            <img
+              src="https://nuvatoken.com/wp-content/uploads/2023/03/logo-transparent-2.png"
+              class="h-[60px] md:h-[100px] absolute top-5 right-0 md:right-[150px]" style="height: 100px; top: 5px; right: 150px;  position: absolute; "
+            />
+            <img
+              src="https://nuvatoken.com/wp-content/uploads/2023/03/Layer-4.png"
+              class="absolute md:left-[720px] -top-[20px] h-[1200px]" style="position: absolute; left: 720px; top: -20px; height: 1200px;"
+            />
+            <img src="https://nuvatoken.com/wp-content/uploads/2023/03/Layer-2.png" class="absolute -top-[300px] right-0" style="position: absolute; top: -300px; right: 0;" />
+            <img
+              src="https://nuvatoken.com/wp-content/uploads/2023/03/mail-one.png"
+              class="h-[450px] -mt-[10px] md:mt-[200px]" style="height: 450px; margin-top: -200px;"
+            />
+          </div>
+        </div>
+        <div class="m-10 md:m-24 relative md:-top-[120px]" style="margin: 24px; position: relative; top: -120px;">
+          <p class="italic font-semibold" style="font-style: italic; font-weight: 500;">
+            This email and any attachments to it may be confidential and are
+            intended solely for the use of the individual to whom it is addressed.
+            Any views or opinions expressed are solely those of the author and do
+            not necessarily represent those of Meta Nuva. Please disregard this
+            email if you have received it by mistake or were not expecting it.
+          </p>
+         
+        </div>
+        
+      </div>
+    </body>
+  </html>`;
+
+  try {
+    const message = await client.sendAsync({
+      text: emailBody,
+      attachment: [{ data: emailBody, alternative: true }],
+      from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+      to: email,
+      subject: 'Meta Nuva Registration',
+    })
+  } catch (err) {
+    res.status(400).send(JSON.stringify({ message: err.message }))
+    return
+  }
+  res.status(200).send(JSON.stringify({ message: 'success' }))
+})
+app.post('/api/Oldsendemail', async (req, res) => {
   //get registration link
   const query = `*[_type == "settings"] {registrationlink}`
   const result = await config.fetch(query);
@@ -462,12 +624,12 @@ app.post('/api/sendemail', async (req,res) => {
         </tr>
         <tr>
             <td>
-                <p style="line-height: 28px; font-size: 24px;">Welcome to Meta Nuva, your number one source for all things innovation.</p>
-                <p style="line-height: 28px;">Thank you for taking an interest in us. You can now use the following register button to register. Alternatively, you can also copy the given registration link and paste in your browser. </p>
-                <p style="line-height:28px;"><a href="${result[0].registrationlink}" target="_blank" style="padding: 10px 20px; border-radius: 7px; background: #ffffff; text-decoration: none; ">Register</a></p>
+                <p style="line-height: 28px; font-size: 24px;">Welcome to Meta Nuva, your number-one source for all things innovation.</p>
+                <p style="line-height: 28px;">Thank you for helping us to protect the interests of our community.  We hope this demonstrates our commitment to you.  Please find below your registration link. </p>
                 <p style="line-height: 28px;"><a style="color: #ffffff;" href="${result[0].registrationlink}">${result[0].registrationlink}</a></p>
+                <p style="line-height: 28px;">We look forward to welcoming you to our Neta Nuva community and assisting you with your onboarding.  If you have any further questions, please do let us know.</p>
                 <p style="line-height: 28px; margin-top: 5em;">Be sure to join the Meta Nuva Community social media channels to access our full range of resources or drop an email to <a href="mailto:support@metanuva.com" style="color: rgb(255,255,255);">support@metanuva.com</a></p>
-                <p style="line-height: 28px; font-size: 12px; font-style: italic">This email and any attachments to it may be confidential and are intended solely for the use of the individual to whom it is addressed. Any views or opinions expressed are solely those of the author and do not necessarily represent those of Meta Nuva. If you have received this by mistake or were not expecting it, please disregard this email.</p>
+                <p style="line-height: 28px; font-size: 12px; font-style: italic">This email and any attachments to it may be confidential and are intended solely for the use of the individual to whom it is addressed. Any views or opinions expressed are solely those of the author and do not necessarily represent those of Meta Nuva. Please disregard this email if you have received it by mistake or were not expecting it.</p>
             </td>
         </tr>
         <tr>
@@ -476,28 +638,16 @@ app.post('/api/sendemail', async (req,res) => {
                 <a href="https://twitter.com/nuvacommunity" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Twitter</a> |
                 <a href="https://www.instagram.com/nuva.community/" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Instagram</a> |
                 <a href="https://www.facebook.com/METANUVA" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Facebook</a> |
-                <a href="https://www.linkedin.com/company/nuvatoken" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Linked In</a> |
-                <a href="https://t.me/metanuva" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Telegram</a> |
+                <a href="https://www.linkedin.com/company/metanuva" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Linked In</a> |
                 <a href="https://www.youtube.com/c/NUVAGAMERSESPORT" target="_blank" style="color: rgb(255,255,255); font-size: 12px;">Youtube</a>
             </td>
         </tr>
         <tr>
-            <td><p style="font-size: 12px;">Copyright @ 2022 Meta Nuva.</p>
+            <td><p style="font-size: 12px;">Copyright @ 2023 Meta Nuva.</p>
             </td>
         </tr>
       </table>
     </body></html>`;
-
-
-  const client = new SMTPClient({
-    user: process.env.NEXT_PUBLIC_SMTP_EMAIL,
-    password: process.env.NEXT_PUBLIC_SMTP_PASSWORD,
-    host: process.env.NEXT_PUBLIC_SMTP_HOST,
-    port: process.env.NEXT_PUBLIC_SMTP_PORT,
-    ssl: process.env.NEXT_PUBLIC_SMTP_SSL,
-    tls: true,
-    timeout: process.env.NEXT_PUBLIC_SMTP_TIMEOUT,
-  })
 
   try {
     const message = await client.sendAsync({
