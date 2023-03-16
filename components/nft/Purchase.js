@@ -133,13 +133,13 @@ var listed = true
     const currencySymbol = listingData?.buyoutCurrencyValuePerToken?.symbol;
 
     if (currencySymbol == 'MATIC') {
-      setCoinMultiplier(coinPrices?.maticprice)
+      setCoinMultiplier(coinPrices?.maticprice);
     } else if (currencySymbol == 'ETH') {
-      setCoinMultiplier(coinPrices?.ethprice)
+      setCoinMultiplier(coinPrices?.ethprice);
     } else if (currencySymbol == 'AVAX') {
-      setCoinMultiplier(coinPrices?.avaxprice)
+      setCoinMultiplier(coinPrices?.avaxprice);
     } else if (currencySymbol == 'BNB' || currencySymbol == "TBNB") {
-      setCoinMultiplier(coinPrices?.bnbprice)
+      setCoinMultiplier(coinPrices?.bnbprice);
     }
 
     //get minimum next bid

@@ -69,7 +69,8 @@ const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 
 
 const Nft = (props) => { //props are from getServerSideProps
 
-  const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain } = props;
+  const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket } = props;
+
   const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
@@ -269,18 +270,18 @@ const Nft = (props) => { //props are from getServerSideProps
   // )
 
   useEffect(() => {
-    setIsLiked(false)
-    if (!address) return
+    setIsLiked(false);
+    if (!address) return;
     //check if current user has liked this NFT or not and set isLiked state accordingly
     if (metaDataFromSanity?.likedBy?.length > 0) {
       const amILiker = metaDataFromSanity.likedBy.find(
         (likers) => likers._ref == address
       )
       if (amILiker) {
-        setIsLiked(true)
+        setIsLiked(true);
       }
     } else {
-      setIsLiked(false)
+      setIsLiked(false);
     }
 
     return() => {
@@ -605,7 +606,7 @@ const Nft = (props) => { //props are from getServerSideProps
           </div>
         </div>
       </main>
-      <RelatedNFTs collection={metaDataFromSanity.collection} listingData={listingData} />
+      <RelatedNFTs collection={metaDataFromSanity.collection} listingData={listingData} allNfts={listedItemsFromThisMarket} />
       <BrowseByCategory />
       <Footer />
     </div>
@@ -619,6 +620,7 @@ export async function getServerSideProps(context){
   var nftdata = "";
   var sanityData = "";
   var nftcontractdata = "";
+  var allListedFromThisChain = "";
 
   const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`); 
   if(response.status == 200) {nftdata = await response.json();}
@@ -631,8 +633,9 @@ export async function getServerSideProps(context){
   const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
   if(response3.status == 200) { nftcontractdata = await response3.json(); }
 
+  
   //determine which marketplace is current NFT is in
-
+  
   const nftChainid = sanityData?.collection.chainId;
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
@@ -657,6 +660,9 @@ export async function getServerSideProps(context){
     '1': 'mainnet',
   }
   const marketAddress = marketplace[nftChainid];
+  
+  const response4 = await fetch(`${HOST}/api/getAllListings/${blockchainName[nftChainid]}`);
+  allListedFromThisChain = await response4.json();
 
   return {
     props: {
@@ -664,7 +670,8 @@ export async function getServerSideProps(context){
       metaDataFromSanity: sanityData,
       nftContractData: nftcontractdata,
       thisNFTMarketAddress: marketAddress,
-      thisNFTblockchain: blockchainName[nftChainid]
+      thisNFTblockchain: blockchainName[nftChainid],
+      listedItemsFromThisMarket: allListedFromThisChain,
     }
   }
 }

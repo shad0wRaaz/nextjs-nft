@@ -16,36 +16,35 @@ const style= {
     btnRefresh: 'rounded-xl p-3 px-6 gradBlue text-white inline-flex items-center gap-1'
 }
 
-const RelatedNFTs = ({collection}) => {
-    const { dark } = useThemeContext()
-    const { activeListings } = useMarketplaceContext()
-    const [relatedItems, setRelatedItems] = useState()
+const RelatedNFTs = ({collection, allNfts}) => {
+    const { dark } = useThemeContext();
+    const { activeListings } = useMarketplaceContext();
+    const [relatedItems, setRelatedItems] = useState();
 
     useEffect(() => {
-      if(!activeListings) return
+      if(!allNfts) return;
       // const filtered = activeListings.filter(item => item.assetContractAddress == collection.contractAddress)
       //set 4 items randomly
       getRandomItems();
-    }, [activeListings])
+    }, [allNfts])
 
     const getRandomItems = () => {
-      if(!activeListings) return
-      const filtered = activeListings.filter(item => item.assetContractAddress == collection?.contractAddress)
+      const filtered = allNfts.filter(item => item.assetContractAddress == collection?.contractAddress);
       
       if(filtered.length > 0) {
-        var randomItems = []
+        var randomItems = [];
   
         for(var i = 0; i < 4; i++){
-          var idx = Math.floor(Math.random() * filtered.length)
-          randomItems.push(filtered[idx])
+          var idx = Math.floor(Math.random() * filtered.length);
+          randomItems.push(filtered[idx]);
           filtered.splice(idx,1) //remove selected item from the array so it wont be selected again
         }
 
         //removing undefined elements from the array
-        const noUndefined = randomItems.filter((item) => item != undefined)
+        const noUndefined = randomItems.filter((item) => item != undefined);
         
         if(noUndefined.length > 0) {
-          setRelatedItems(noUndefined)
+          setRelatedItems(noUndefined);
         }
       }
     }
