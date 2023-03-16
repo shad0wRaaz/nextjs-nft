@@ -2,14 +2,14 @@ import { useQuery } from 'react-query'
 import { FiTag } from 'react-icons/fi'
 import OfferSingle from './OfferSingle'
 import { BiChevronUp } from 'react-icons/bi'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { useSigner } from '@thirdweb-dev/react'
 import { IconLoading } from '../icons/CustomIcons'
 import React, { useEffect, useState } from 'react'
 import { getUser } from '../../fetchers/SanityFetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getMarketOffers } from '../../fetchers/Web3Fetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { useSigner } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
