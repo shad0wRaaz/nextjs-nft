@@ -20,7 +20,7 @@ import ReportActivity from '../../components/nft/ReportActivity'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import GeneralDetails from '../../components/nft/GeneralDetails'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
-import { IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
   HiOutlineStar,
@@ -37,24 +37,32 @@ const style = {
 }
 const chainIcon = {
   '97': <IconBNB width="1.3rem" height="1.3rem" />,
+  '56': <IconBNB width="1.3rem" height="1.3rem" />,
   '80001': <IconPolygon width="1.3rem" height="1.3rem" />,
+  '137': <IconPolygon width="1.3rem" height="1.3rem" />,
   '5': <IconEthereum width="1.3rem" height="1.3rem" />,
-  '4': <IconEthereum width="1.3rem" height="1.3rem" />
+  '4': <IconEthereum width="1.3rem" height="1.3rem" />,
+  '43114': <IconAvalanche width="1.3rem" height="1.3rem" />,
+  '43113': <IconAvalanche width="1.3rem" height="1.3rem" />,
 }
 const chainName = {
   '80001': 'Mumbai',
-  '97': 'Binance Smart Chain Testnet',
-  '4': 'Rinkeby',
   '137': 'Polygon',
+  '97': 'Binance Smart Chain Testnet',
+  '56': 'Binance Smart Chain',
+  '4': 'Rinkeby',
   '5': 'Goerli',
+  '1': 'Ethereum',
+  '43114': 'Avalanche',
+  '43113': 'Avalanche Fuji',
 }
-const rpcChains = {
-  '80001': process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL,
-  '97': process.env.NEXT_PUBLIC_INFURA_TBNB_URL,
-  '4': process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL,
-  '137': process.env.NEXT_PUBLIC_INFURA_POLYGON_URL,
-  '5': process.env.NEXT_PUBLIC_INFURA_GOERLI_URL,
-}
+// const rpcChains = {
+//   '80001': process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL,
+//   '97': process.env.NEXT_PUBLIC_INFURA_TBNB_URL,
+//   '4': process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL,
+//   '137': process.env.NEXT_PUBLIC_INFURA_POLYGON_URL,
+//   '5': process.env.NEXT_PUBLIC_INFURA_GOERLI_URL,
+// }
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 'http://localhost:3000' 
@@ -565,7 +573,7 @@ const Nft = (props) => { //props are from getServerSideProps
               thisNFTblockchain={thisNFTblockchain}
               />
 
-            {isAuctionItem && (
+            {/* {isAuctionItem && ( */}
               <ItemOffers
                 selectedNft={nftContractData}
                 listingData={listingData}
@@ -573,7 +581,7 @@ const Nft = (props) => { //props are from getServerSideProps
                 thisNFTMarketAddress={thisNFTMarketAddress}
                 thisNFTblockchain={thisNFTblockchain}
                 />
-            )}
+             {/* )} */}
 
             <ItemActivity
               collectionAddress={metaDataFromSanity?.collection?.contractAddress}

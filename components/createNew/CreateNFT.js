@@ -281,13 +281,13 @@ const CreateNFT = ({uuid}) => {
         dateStamp: new Date(),
       }
       
-      await sanityClient.createIfNotExists(transactionData)
+      await sanityClient.createIfNotExists(transactionData);
       
-      setIsMinting(false)
+      setIsMinting(false);
 
-      toastHandler.success('NFT minted successfully', successToastStyle)
-      dispatch({ type: 'CLEAR_OUT_ALL' })
-      setIsMinting(false)
+      toastHandler.success('NFT minted successfully', successToastStyle);
+      dispatch({ type: 'CLEAR_OUT_ALL' });
+      setIsMinting(false);
       
       router.push(`/nfts/${uuid}`);
 

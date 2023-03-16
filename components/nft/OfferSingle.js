@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import React, { useState } from 'react'
 import { useRouter } from 'next/router';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import { FaRegCheckCircle } from 'react-icons/fa';
+import { FaCrown, FaRegCheckCircle } from 'react-icons/fa';
 import { IconLoading } from '../icons/CustomIcons';
 import { getImagefromWeb3 } from '../../fetchers/s3';
 import { useMutation, useQueryClient } from 'react-query';
@@ -15,7 +15,16 @@ import { useAddress, useChainId, useSigner } from '@thirdweb-dev/react';
 import { addVolumeTraded, saveTransaction } from '../../mutators/SanityMutators';
 
 
-const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDataFromSanity, selectedNft, thisNFTMarketAddress, thisNFTblockchain }) => {
+const OfferSingle = ({
+  offer, 
+  isAuctionItem, 
+  listingData, 
+  coinMultiplier, 
+  metaDataFromSanity, 
+  selectedNft, 
+  thisNFTMarketAddress, 
+  thisNFTblockchain, 
+  winningBid }) => {
     const signer = useSigner();
     const router = useRouter();
     const address = useAddress();
@@ -24,7 +33,10 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
     const { setLoadingNewPrice, HOST } = useSettingsContext();
     const [isAccepting, setIsAccepting] = useState(false);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-    console.log(offer)
+    // const [isThisWinner, setIsThisWinner] = useState();
+    // console.log(winningBid)
+
+    const isThisWinningBid = offer?.offeredBy.walletAddress == winningBid.buyerAddress ? true : false;
 
     const acceptOffer = async (listingId, offeror, totalOfferAmount) => {
         try {
@@ -38,7 +50,7 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
           const sdk = new ThirdwebSDK(signer);
           const marketContract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
           const tx = await marketContract.direct.acceptOffer(listingId.toString(), offeror);
-          console.log(tx)
+          // console.log(tx)
           //convert hex BigNumber in Decimal
           const offeredAmountInDollar = parseFloat(BigNumber.from(totalOfferAmount)/(BigNumber.from(10).pow(18)) * coinMultiplier);
       
@@ -69,7 +81,7 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
             volume: offeredAmountInDollar
           });
       
-          toast.success("NFT offer accepted.", successToastStyle);
+          toast.success("Offer acceptance request is in the queue. Page will automatically refresh once the request goes through.", successToastStyle);
       
           //update listing data
           ;(async() => {
@@ -128,10 +140,15 @@ const OfferSingle = ({offer, isAuctionItem, listingData, coinMultiplier, metaDat
 
   return (
     <tr>
-        <td className={`p-4 pl-8 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
+        <td className={`relative p-4 pl-8 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
             <div className="rounded-full w-[48px] h-[48px] mr-0 border border-1 border-white overflow-hidden">
-            <img src={getImagefromWeb3(offer?.offeredBy?.web3imageprofile)} alt={offer?.offeredBy?.userName} className="object-cover h-full w-full"/>
+              <img src={getImagefromWeb3(offer?.offeredBy?.web3imageprofile)} alt={offer?.offeredBy?.userName} className="object-cover h-full w-full"/>
             </div>
+            {isThisWinningBid ? (
+              <div className="absolute top-8 left-2">
+                <FaCrown color='#ffff00' />
+              </div>
+            ) : null}
         </td>
         <td className={`p-4 border-t pl-0 ${dark ? 'border-slate-700' : 'border-slate-200'}`}>
             <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">

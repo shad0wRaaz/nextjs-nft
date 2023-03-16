@@ -14,6 +14,7 @@ import { ConnectWallet } from '@thirdweb-dev/react'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { checkCollectionName } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useAddress, useNetwork, useSigner, useChainId } from '@thirdweb-dev/react'
@@ -72,6 +73,8 @@ const CreateNFTCollection = () => {
       
       var profileLink = "";
       var bannerLink = "";
+
+      const res = checkCollectionName(form.itemName.value, null); //contractAddress is null for non existent or new Collection.
       
       try{
         // upload profile and banner in IPFS

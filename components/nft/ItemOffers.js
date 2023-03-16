@@ -8,6 +8,8 @@ import { getUser } from '../../fetchers/SanityFetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getMarketOffers } from '../../fetchers/Web3Fetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { useSigner } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
@@ -30,7 +32,10 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
   const [coinMultiplier, setCoinMultiplier] = useState();
   const [isAuctionItem, setIsAuctionItem] = useState(false);
   const { coinPrices } = useSettingsContext();
+  const signer = useSigner();
 
+  const [winningBid, setWinningBid] = useState();
+  
   useEffect(() => {
     if(!marketOffer) return
     const marketArray = [
@@ -42,9 +47,25 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
       process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
       process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE
-      ];
+    ];
     if (marketArray.includes(selectedNft?.owner)) {
+      // mark this item as Auctioned Item
       setIsAuctionItem(true);
+      
+      //get winning bid and send to offer array
+      ;(async() => {
+        let sdk = '';
+        let contract = '';
+        if(signer){
+          sdk = new ThirdwebSDK(signer);
+        }
+        else {
+          sdk = new ThirdwebSDK(thisNFTblockchain);
+        }
+        contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+        const winningBid = await contract.auction.getWinningBid(listingData?.id);
+        setWinningBid(winningBid);
+      })();
       return;
     }
 
@@ -157,7 +178,8 @@ useEffect(() => {
                 coinMultiplier={coinMultiplier} 
                 metaDataFromSanity={metaDataFromSanity}
                 thisNFTMarketAddress={thisNFTMarketAddress} 
-                thisNFTblockchain={thisNFTblockchain} />
+                thisNFTblockchain={thisNFTblockchain} 
+                winningBid={winningBid}/>
               ))
             }
           </tbody>

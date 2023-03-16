@@ -10,8 +10,10 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from 'react-icons/fa'
+import { CgReadme } from 'react-icons/cg'
 import axios from 'axios'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { BsArrowRightShort } from 'react-icons/bs'
 import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { HiOutlineNewspaper } from 'react-icons/hi'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
@@ -26,7 +28,7 @@ const style = {
     'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
   header: 'text-lg mb-3 inline-flex items-center gap-1 mt-[40px]',
   text: '',
-  leftBox: 'lg:max-w-[40%] sm:max-w-[300px]',
+  leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
   socialWrapper: 'flex flex-wrap gap-3',
   socialItem:
     'transition linear hover:bg-[#f55d6d] curosr-pointer gradBlue rounded-md p-[7px] flex justify-center items-center',
@@ -87,7 +89,7 @@ const Footer = () => {
         axios.post('/api/email', {
           email: subscriberEmail,
           subjectText: 'Nuva NFT Newsletter Subscription',
-          emailBody: `<html>You have subscribed to Nuva Nft Newsletter. <a href='http://localhost:3000/unsubscribe?email=${subscriberEmail}'>Click here to unsubscribe</a></html>`,
+          emailBody: `<html>You have subscribed to Nuva Nft Newsletter. <a href='http://nuvanft.io/unsubscribe?email=${subscriberEmail}'>Click here to unsubscribe</a></html>`,
         })
         toastHandler.success(
           'Thank you for subscribing our newsletter.',
@@ -158,38 +160,47 @@ const Footer = () => {
           </div>
 
           <div className={style.RightBox}>
-            <h2 className={style.header}><BiGroup/> Join the Community</h2>
+            <h2 className={style.header}><CgReadme/> Tutorials</h2>
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">How to get started?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Create a Wallet</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
+            </div>
             
+          </div>
+          <div className={style.RightBox}>
+            <h2 className={style.header}><BiGroup/> Join the Community</h2>
             <div className={style.socialWrapper}>
-              <Link href="https://t.me/+6qVi9uU9KzY2YzE0">
+              <Link href="https://t.me/metanuva">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem}>
                     <FaTelegramPlane color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://twitter.com/nuvatoken">
+              <Link href="https://twitter.com/nuvacommunity">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem}>
                     <FaTwitter color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.instagram.com/nuvatoken/">
+              <Link href="https://www.instagram.com/nuva.community/">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem}>
                     <FaInstagram color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.facebook.com/Nuva-Token-106516075262562">
+              <Link href="https://www.facebook.com/METANUVA">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem}>
                     <FaFacebookF color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.linkedin.com/company/nuvatoken">
+              <Link href="https://www.linkedin.com/company/metanuva/">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem}>
                     <FaLinkedinIn color="white" fontSize="1.1rem" />
@@ -204,7 +215,6 @@ const Footer = () => {
                 </a>
               </Link>
             </div>
-            <div className="my-8"></div>
           </div>
         </div>
       </div>

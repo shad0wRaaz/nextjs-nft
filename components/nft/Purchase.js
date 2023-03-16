@@ -3,7 +3,7 @@ import Sell from './Sell'
 import { BigNumber } from 'ethers'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { RiAuctionLine } from 'react-icons/ri'
+import { RiAuctionFill, RiAuctionLine } from 'react-icons/ri'
 import { config } from '../../lib/sanityClient'
 import { BsLightningCharge } from 'react-icons/bs'
 import { useEffect, useRef, useState } from 'react'
@@ -73,9 +73,11 @@ var listed = true
   const [bidLoading, setBidLoading] = useState(false);
   const [offerLoading, setOfferLoading] = useState(false);
   const [coinMultiplier, setCoinMultiplier] = useState();
+  const [closeBidLoading, setCloseBidLoading] = useState();
   const burntOwnerAddress = "0x0000000000000000000000000000000000000000";
   const isburnt = nftContractData.owner == burntOwnerAddress ? true : false;
   const router = useRouter();
+  const [minNextBig, setMinNextBig] = useState(0);
 
   const { mutate: mutateSaveTransaction } = useMutation(
     ({ transaction, id, eventName, price, chainid, itemid }) =>
@@ -139,6 +141,17 @@ var listed = true
     } else if (currencySymbol == 'BNB' || currencySymbol == "TBNB") {
       setCoinMultiplier(coinPrices?.bnbprice)
     }
+
+    //get minimum next bid
+    ;(async() => {
+      const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      const minBid = await contract.auction.getMinimumNextBid(listingData?.id);
+      setMinNextBig(minBid);
+      // console.log(minBid);
+
+    })()
+
     return() => {
       //do nothing
     }
@@ -227,6 +240,10 @@ var listed = true
       )
       return
     }
+    if(bidAmount <= 0 || (bidAmount < Number(minNextBig.displayValue))){
+      toastHandler.error('Bidding amount must be higher than minimum bidding amount.', errorToastStyle);
+      return
+    }
     try {
 
       //check if the conencted wallet is in same chain
@@ -254,7 +271,7 @@ var listed = true
         chainid: chainId,
       });
       qc.invalidateQueries(['activities']);
-      queryClient.invalidateQueries(['eventData']);
+      qc.invalidateQueries(['eventData']);
       qc.invalidateQueries(['marketplace']);
     } catch (error) {
       // console.log(error)
@@ -271,7 +288,7 @@ var listed = true
     qc = queryClient,
     sanityClient = config
     ) => {
-      console.log(listingId)
+
       if(!listingData) {
         toastHandler.error('NFT listing not found', errorToastStyle);
         return;
@@ -354,12 +371,72 @@ var listed = true
     }
   }
   const openOfferSetting = (value) => {
+    if(!address) {
+      toast.error(
+        'Wallet not connected. Connect wallet first.',
+        errorToastStyle
+        )
+      return
+    }
     setOfferAmount(0);
     settingRef.current.style.display = value;
   }
   const openBidSetting = (value) => {
     setBidAmount(0);
     bidsettingRef.current.style.display = value;
+  }
+  const executeBiddingSales = async(
+    listingId = listingData?.id?.toString(),
+    toastHandler = toast,
+    qc = queryClient,
+    sanityClient = config
+  ) => {
+    if(!listingData) {
+      toastHandler.error('NFT listing not found', errorToastStyle);
+      return;
+    }
+    if (!address) {
+      toastHandler.error(
+        'Wallet not connected. Connect wallet first.',
+        errorToastStyle
+        )
+        return
+    }
+    if(!signer){
+      toast.error("Wallet not connected. Connect wallet first.", errorToastStyle);
+      return
+    }
+    try{
+      setCloseBidLoading(true);
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      
+      const tx = await contract.auction.executeSale(listingId);
+      
+      //save transaction
+      mutateSaveTransaction({
+        transaction: tx,
+        id: nftContractData.metadata.id.toString(),
+        eventName: 'Offer',
+        itemid: nftContractData.metadata.properties.tokenid,
+        price: offerAmount.toString(),
+        chainid: chainId,
+      });
+
+      qc.invalidateQueries(['activities']);
+      qc.invalidateQueries(['eventData']);
+      qc.invalidateQueries(['marketplace']);
+      
+      toastHandler.success('Bidding has been closed and the sales has been executed.', successToastStyle);
+      
+      setCloseBidLoading(false);
+    }catch(error){
+      console.log(error)
+      toastHandler.error("Error in closing the auction.", errorToastStyle);
+    }
+
+
+
   }
 
   // console.log(nftContractData)
@@ -450,7 +527,7 @@ var listed = true
                 <span className="ml-2.5">Buy</span>
               </div>
             )}
-                {/* {offerLoading ? (
+                {offerLoading ? (
                   <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
                     <IconLoading dark={dark ? 'inbutton' : ''}/>
                     <span className="ml-2.5">Processing...</span>
@@ -464,7 +541,7 @@ var listed = true
           
                         <span className="ml-2.5"> Make an offer</span>
                       </div>  
-                )} */}
+                )}
           </>
         )}
 
@@ -491,10 +568,22 @@ var listed = true
               )}
             </div>
           )}
+
+          {listed && auctionItem &&
+            listingData.sellerAddress == address && (
+              <div className="flex justify-between items-center flex-grow gap-2 flex-col md:flex-row">
+                <div 
+                  className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base"
+                  onClick={() => executeBiddingSales()}>
+                  <RiAuctionFill /> <span className="ml-2.5">Close Auction and Execute Sale</span>
+                </div>
+              </div>
+            )
+          }
       </div>
 
-      {/* Offer Section */}
-      {/* {!buyLoading && (
+      {/* Offer Section Modal */}
+      {!buyLoading && (
         <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${offerLoading ? 'pointer-events-none opacity-40' : ''}`} ref={settingRef}>
             <div className="flex flex-wrap gap-4">
               <div className="inputControls flex flex-1">
@@ -523,12 +612,12 @@ var listed = true
             </div>
             <p className="text-neutral-500 mt-2 text-center text-xs">You need to have Wrapped Token to make an offer.</p>
         </div>
-      )} */}
-      {/* End of Offer Section */}
+      )}
+      {/* End of Offer Modal Section */}
 
-      {/* Bidding Section */}
+      {/* Bidding Section Modal*/}
       <div className={`offerSetting w-full mt-4 p-4 rounded-xl hidden ${dark ? 'bg-slate-800' : 'bg-neutral-100'} ${bidLoading ? 'pointer-events-none opacity-40' : ''}`} ref={bidsettingRef}>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 items-center">
           <div className="inputControls flex flex-1">
             <div 
               className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
@@ -541,9 +630,14 @@ var listed = true
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value)} />
           </div>
+          {minNextBig ? (
+            <p className="text-xs">
+              Minimum Bid: {minNextBig.displayValue} {minNextBig.symbol}
+            </p>
+          ) : null}
           <div className="buttonControls flex flex-1">
             <button 
-              className={`gradBlue p-3 text-white rounded-xl ml-3 px-6 flex items-center gap-2 w-full text-center justify-center`}
+              className={`gradBlue p-3 text-white rounded-xl ml-0 px-6 flex items-center gap-2 w-full text-center justify-center`}
               onClick={() => bidItem()}>
                 <MdOutlineCheckCircle /> Bid
             </button>
@@ -555,7 +649,7 @@ var listed = true
           </div>
         </div>
       </div>
-      {/* End of Bidding Section */}
+      {/* End of Bidding Modal Section */}
     </div>
   )
 }

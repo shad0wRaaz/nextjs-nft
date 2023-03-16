@@ -11,6 +11,31 @@ export const getUser = async (address) => {
   return res[0]
 }
 
+export const checkUsername = async (username, walletaddress) => {
+
+  const query = `*[_type == "users" && userName == "${username}"]`
+  const res = await config.fetch(query);
+  if(res.length > 0) {
+    if (res[0].walletAddress == walletaddress){
+      return true;
+    }
+  }
+  return false;
+}
+
+export const checkCollectionName = async (collectioname, collectionaddress) => {
+
+  const query = `*[_type == "nftCollection" && name == "${collectioname}"]`
+  const res = await config.fetch(query);
+  
+  if(res.length > 0) {
+    if (res[0].contractAddress == collectionaddress){
+      return true;
+    }
+  }
+  return false;
+}
+
 export const getUserContinuously =
   () =>
   async ({ queryKey }) => {

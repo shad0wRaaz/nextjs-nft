@@ -20,7 +20,7 @@ import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { OffCanvas, OffCanvasMenu, OffCanvasBody } from 'react-offcanvas'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon, IconWallet } from '../icons/CustomIcons'
-import { useChainId, useAddress, useContract, ConnectWallet, useSigner } from '@thirdweb-dev/react'
+import { useChainId, useAddress, useContract, ConnectWallet, useSigner, useNetworkMismatch, useNetwork } from '@thirdweb-dev/react'
 
 
 const style = {
@@ -50,6 +50,17 @@ const blockchainCurrency = {
 "avalanche-fuji":{currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
 }
 
+const blockchainId = {
+  'mumbai': '80001',
+  'polygon': '137',
+  'avalanche-fuji': '43113',
+  'avalanche': '43114',
+  'binance-testnet': '97',
+  'binance': '56',
+  'goerli': '5',
+  'mainnet': '1',
+}
+
 const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTblockchain }) => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const address = useAddress()
@@ -74,15 +85,23 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
   const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
   const [directorauction, setdirectorauction] = useState(true);
 
+  const isMismatch = useNetworkMismatch();
+  const [{ data, error, loading }, switchNetwork] = useNetwork();
+
+
   useEffect(() => {
     const t = thisNFTblockchain;
-    console.log(t)
+    // console.log(t)
     if(!t) return
     if(t == "mumbai" || t == "polygon") { setThisNFTBlockchainCurrency(coinPrices?.maticprice); } 
     else if(t == "mainnet" || t == "goerli") { setThisNFTBlockchainCurrency(coinPrices?.ethrice); }
     else if (t == "binance" || t == "binance-testnet") { setThisNFTBlockchainCurrency(coinPrices?.bnbprice); }
     else if(t == "avalanche" || t == "avalanche-fuji") { setThisNFTBlockchainCurrency(coinPrices?.avaxprice); }
 
+    if(isMismatch) {
+      toast.error('Wallet is connected to wrong chain. Switching network now.', errorToastStyle)
+      switchNetwork(Number(blockchainId[thisNFTblockchain]));
+    }
     return() => {
       // do nothing
     } 
@@ -137,7 +156,7 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
   const directListItem = async (
     e,
     toastHandler = toast,
-    sanityClient = config
+    sanityClient = config,
   ) => {
 
     if (!listingPrice) {
@@ -149,6 +168,9 @@ const Sell = ({ nftContractData, nftCollection,thisNFTMarketAddress, thisNFTbloc
       toastHandler.error("NFT Collection Address could not be located.", errorToastStyle);
       return
     }
+    //check for correct network
+    
+
 
     setIsLoading(true);
     setLoadingNewPrice(true);

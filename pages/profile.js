@@ -1,3 +1,4 @@
+import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import FileBase from 'react-file-base64'
@@ -11,10 +12,10 @@ import { useAddress } from '@thirdweb-dev/react'
 import { useUserContext } from '../contexts/UserContext'
 import React, { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { checkUsername } from '../fetchers/SanityFetchers'
 import { IconLoading } from '../components/icons/CustomIcons'
-import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
-import axios from 'axios'
 import { useSettingsContext } from '../contexts/SettingsContext'
+import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
 
 const style = {
   wrapper: '',
@@ -65,13 +66,19 @@ const profile = () => {
   ) => {
     e.preventDefault()
     if (!address) return
-    setIsSaving(true);
+    // setIsSaving(true);
     
     var profileLink = { data : userDoc?.web3imageprofile ? userDoc?.web3imageprofile : '' };
     var bannerLink =  { data: userDoc?.web3imagebanner ? userDoc?.web3imagebanner : '' } ;
+    
+    //check for duplicate username
+    const res =  await checkUsername(userDoc.userName, userDoc.walletAddress);
+    if(!res) {
+      toastHandler.error('Username is already taken.', errorToastStyle);
+      return
+    }
 
     try {
-      
       if(profile){
         console.log('profile pic changed');
         const pfd = new FormData();
