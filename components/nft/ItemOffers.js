@@ -25,12 +25,12 @@ const style = {
   accent: `text-[#2081e2]`,
   transactionTable: 'ttable max-h-[500px] overflow-y-auto',
 }
-const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain }) => {
+const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, isAuctionItem }) => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [toggle, setToggle] = useState(true);
   const [marketOffer, setMarketOffer] = useState([]);
   const [coinMultiplier, setCoinMultiplier] = useState();
-  const [isAuctionItem, setIsAuctionItem] = useState(false);
+  // const [isAuctionItem, setIsAuctionItem] = useState(false);
   const { coinPrices } = useSettingsContext();
   const signer = useSigner();
 
@@ -46,12 +46,11 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
       process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
       process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
       process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE
+      process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
     ];
-    if (marketArray.includes(selectedNft?.owner)) {
-      // mark this item as Auctioned Item
-      setIsAuctionItem(true);
-      
+
+
+    if(isAuctionItem) {
       //get winning bid and send to offer array
       ;(async() => {
         let sdk = '';
@@ -66,8 +65,15 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
         const winningBid = await contract.auction.getWinningBid(listingData?.id);
         setWinningBid(winningBid);
       })();
-      return;
     }
+
+    // if (marketArray.includes(selectedNft?.owner)) {
+    //   // mark this item as Auctioned Item
+    //   setIsAuctionItem(true);
+      
+      
+    //   return;
+    // }
 
     return() => {
       //do nothing, just clean up function

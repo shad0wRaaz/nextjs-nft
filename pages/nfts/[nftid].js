@@ -581,6 +581,7 @@ const Nft = (props) => { //props are from getServerSideProps
                 metaDataFromSanity={metaDataFromSanity}
                 thisNFTMarketAddress={thisNFTMarketAddress}
                 thisNFTblockchain={thisNFTblockchain}
+                isAuctionItem={isAuctionItem}
                 />
              {/* )} */}
 

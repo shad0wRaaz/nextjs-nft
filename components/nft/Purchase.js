@@ -142,15 +142,17 @@ var listed = true
       setCoinMultiplier(coinPrices?.bnbprice);
     }
 
-    //get minimum next bid
-    ;(async() => {
-      const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
-      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-      const minBid = await contract.auction.getMinimumNextBid(listingData?.id);
-      setMinNextBig(minBid);
-      // console.log(minBid);
-
-    })()
+    if(auctionItem){
+      //get minimum next bid
+      ;(async() => {
+        const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
+        const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+        const minBid = await contract.auction.getMinimumNextBid(listingData?.id);
+        setMinNextBig(minBid);
+        // console.log(minBid);
+  
+      })()
+    }
 
     return() => {
       //do nothing

@@ -36,7 +36,7 @@ const OfferSingle = ({
     // const [isThisWinner, setIsThisWinner] = useState();
     // console.log(winningBid)
 
-    const isThisWinningBid = offer?.offeredBy.walletAddress == winningBid.buyerAddress ? true : false;
+    const isThisWinningBid = isAuctionItem ? offer?.offeredBy.walletAddress == winningBid.buyerAddress ? true : false : false;
 
     const acceptOffer = async (listingId, offeror, totalOfferAmount) => {
         try {
