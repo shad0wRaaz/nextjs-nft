@@ -1,21 +1,24 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import FileBase from 'react-file-base64'
 import Loader from '../components/Loader'
 import Header from '../components/Header'
 import { QueryClient } from 'react-query'
 import Footer from '../components/Footer'
 import { BsUpload } from 'react-icons/bs'
+import { MdVerified } from 'react-icons/md'
 import { config } from '../lib/sanityClient'
 import { useAddress } from '@thirdweb-dev/react'
+import { GoCheck, GoUnverified } from 'react-icons/go'
 import { useUserContext } from '../contexts/UserContext'
 import React, { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { checkUsername } from '../fetchers/SanityFetchers'
 import { IconLoading } from '../components/icons/CustomIcons'
 import { useSettingsContext } from '../contexts/SettingsContext'
 import { getImagefromWeb3, saveImageToWeb3 } from '../fetchers/s3'
+import { saveEmailVerificationCode } from '../mutators/SanityMutators'
+import { checkValidEmail, generateRandomCode } from '../utils/utilities'
+import { checkDuplicateEmail, checkUsername } from '../fetchers/SanityFetchers'
 
 const style = {
   wrapper: '',
@@ -37,18 +40,19 @@ const style = {
 }
 
 const profile = () => {
-  const router = useRouter()
-  const address = useAddress()
-  const bannerInputRef = useRef()
-  const profileInputRef = useRef()
-  const queryClient = new QueryClient()
+  const router = useRouter();
+  const address = useAddress();
+  const bannerInputRef = useRef();
+  const profileInputRef = useRef();
+  const queryClient = new QueryClient();
   const { HOST } = useSettingsContext();
-  const [banner, setBanner] = useState('')
-  const [profile, setProfile] = useState('')
-  const [userDoc, setUserDoc] = useState('')
-  const { myUser, setMyUser } = useUserContext()
-  const [isSaving, setIsSaving] = useState(false)
-  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
+  const [banner, setBanner] = useState('');
+  const [profile, setProfile] = useState('');
+  const [userDoc, setUserDoc] = useState('');
+  const { myUser, setMyUser } = useUserContext();
+  const [isSaving, setIsSaving] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
 
   useEffect(() => {
     if (!myUser) return
@@ -73,8 +77,16 @@ const profile = () => {
     
     //check for duplicate username
     const res =  await checkUsername(userDoc.userName, userDoc.walletAddress);
-    if(!res) {
+    if(res) {
       toastHandler.error('Username is already taken.', errorToastStyle);
+      return
+    }
+    
+    //check for correct email address and duplicate email address
+    const res2 = await checkDuplicateEmail(userDoc.email, userDoc.walletAddress);
+
+    if(res2){
+      toastHandler.error('Duplicate email address is not allowed.', errorToastStyle);
       return
     }
 
@@ -121,6 +133,7 @@ const profile = () => {
         .set({
           userName: userDoc.userName,
           biography: userDoc.biography,
+          email: userDoc.email,
           igHandle: userDoc.igHandle,
           fbhHandle: userDoc.fbhHandle,
           twitterHandle: userDoc.twitterHandle,
@@ -136,6 +149,42 @@ const profile = () => {
       console.log(error)
     }
     setIsSaving(false)
+  }
+
+  const initiateEmailVerification = async (email, toastHandler = toast) => {
+    //check email pattern first
+    
+    if(!checkValidEmail(email)){
+      toastHandler.error("Invalid email address", errorToastStyle);
+      return
+    }
+
+    try{
+      setSendingEmail(true);
+      //send verification code in email
+      const randomCode = generateRandomCode();
+      
+      //save this code in database and send the link to user
+      const saveinDb = await saveEmailVerificationCode(userDoc._id, randomCode);
+      if(!saveinDb){
+        //if code is not saved in database
+        toastHandler.error('Error in saving verification code. Please try again later', errorToastStyle);
+        return;
+      }
+      //send email now with code
+      const sendEmail = await axios.post(
+        `${HOST}/api/sendconfirmationemail`,
+        {email, randomCode, id: userDoc._id}
+        );
+
+      if(sendEmail.data.message == "success"){
+        toastHandler.success('Verification email sent. Click the link the email to verify the email address.', successToastStyle);
+      }
+
+      setSendingEmail(false);
+    }catch(error){
+      setSendingEmail(false);
+    } 
   }
 
   return (
@@ -205,6 +254,38 @@ const profile = () => {
                     value={userDoc?.walletAddress ? userDoc?.walletAddress : ''}
                     disabled
                   />
+                  <p className={style.label}>Email Address</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className={
+                        dark
+                          ? style.input +
+                            ' border-slate-600 bg-slate-700 hover:bg-slate-600'
+                          : style.input +
+                            ' border-neutral-200 hover:bg-neutral-100 '
+                      }
+                      value={userDoc?.email ? userDoc?.email : ''}
+                      onChange={(e) =>
+                        setUserDoc({ ...userDoc, email: e.target.value })
+                      }
+                    />
+                    {userDoc.verified ? (
+                      <div className="bg-green-400 py-2 px-4 my-1 text-green-700 rounded-lg text-sm flex justify-center items-center w-32 font-bold">
+                        <MdVerified fontSize={20} /> Verified
+                      </div>
+                    ) : (
+                      <div 
+                        className={
+                          `${sendingEmail ? 'pointer-events-none' : ''}
+                           bg-yellow-400 py-2 px-4 my-1 text-yellow-700 rounded-lg text-xs flex justify-center items-center w-44 font-bold gap-1
+                           ${myUser?.email == undefined ? ' opacity-80 pointer-events-none cursor-not-allowed': ' cursor-pointer'}
+                          `}
+                        onClick={() => initiateEmailVerification(userDoc?.email)}>
+                          <GoUnverified fontSize={20}/> {sendingEmail ? ' Sending Email' : 'Verify Email'}
+                      </div>
+                    )}
+                  </div>
                   <p className={style.label}>Profile Image</p>
                   <div
                     className={style.profileImageContainer}
