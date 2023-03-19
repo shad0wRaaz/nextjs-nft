@@ -348,6 +348,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
           floorPrice,
           volumeTraded,
           "creator": createdBy->userName,
+          "verified": createdBy->verified,
           "creatorAddress" : createdBy->walletAddress,
           "allOwners" : owners[]->
       }`;
@@ -484,6 +485,28 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
   }
 })
 
+app.post('/api/sendconfirmationemail', async (req, res) => {
+// console.log(req.body);
+ const { email, randomCode, id } = req.body;
+ const subject = "Email Confirmation";
+ const emailBody = `<a href="http://localhost:3000/emailconfirm?e=${id}&c=${randomCode}">Verify Email</a>`;
+
+ try {
+  const message = await client.sendAsync({
+    text: emailBody,
+    attachment: [{ data: emailBody, alternative: true }],
+    from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+    to: email,
+    subject,
+  })
+} catch (err) {
+  res.status(400).send(JSON.stringify({ message: err.message }))
+  return
+}
+res.status(200).send(JSON.stringify({ message: 'success' }))
+
+})
+
 app.post('/api/getintouch', async(req, res) => {
   const { name, email, message } = req.body;
   const subject = "Message from Meta Nuva Landing Page";
@@ -504,7 +527,7 @@ app.post('/api/getintouch', async(req, res) => {
         attachment: [{ data: emailBody, alternative: true }],
         from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
         to: email,
-        subject
+        subject,
       })
     } catch (err) {
       res.status(400).send(JSON.stringify({ message: err.message }))
