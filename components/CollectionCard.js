@@ -8,12 +8,13 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { IconEthereum, IconPolygon, IconBNB, IconAvalanche } from './icons/CustomIcons'
 import { getImagefromWeb3 } from '../fetchers/s3'
 import { useSettingsContext } from '../contexts/SettingsContext'
+import { GoVerified } from 'react-icons/go'
 
 const style = {
   card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer backdrop-blur-md',
   bannerContainer:
     'cursor-pointer  relative w-full h-[150px] rounded-3xl overflow-hidden',
-  creator: 'text-center text-sm mb-3',
+  creator: 'text-center text-sm mb-3 flex items-center justify-center gap-1',
   bannerImage: '',
   profile:
     'cursor-pointer rounded-full overflow-hidden ring ring-white relative mx-auto top-[-25px] h-[70px] w-[70px] mb-[2rem]',
@@ -35,6 +36,7 @@ const chainIcon = {
 const CollectionCard = ({
   id,
   name,
+  verified,
   description,
   contractAddress,
   profileImage,
@@ -124,6 +126,7 @@ const CollectionCard = ({
                 {creator}
               </span>
             </Link>
+            {verified ? <GoVerified className='text-sky-500'/> : ''}
           </p>
           {/* <p className={style.description}>{description.slice(0, 32)}...</p> */}
         </div>
