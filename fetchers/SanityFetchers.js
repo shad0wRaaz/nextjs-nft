@@ -12,12 +12,44 @@ export const getUser = async (address) => {
 }
 
 export const checkUsername = async (username, walletaddress) => {
-
+console.log(username, walletaddress)
   const query = `*[_type == "users" && userName == "${username}"]`
   const res = await config.fetch(query);
+  console.log(res[0])
   if(res.length > 0) {
-    if (res[0].walletAddress == walletaddress){
+    if (res[0].walletAddress != walletaddress){
       return true;
+    }
+  }
+  return false;
+}
+
+export const checkDuplicateEmail = async (email, walletaddress) => {
+  
+  const query = `*[_type == "users" && email == "${email}"]`;
+  const res = await config.fetch(query);
+
+  if(res.length > 0){
+    if(res[0].walletAddress != walletaddress){
+      return true; //duplicate is found
+    }
+  }
+  return false;
+}
+
+export const checkEmailVerification = async (id, randomCode) => {
+  const query = `*[_type == "users" && _id == "${id}"]`
+  const res = await config.fetch(query);
+  console.log(res[0])
+  if(res.length > 0){
+    if(res[0].verified == true){
+      // console.log('already verified')
+      return true;
+    }
+    if(res[0].verificationcode == randomCode){
+      //change verification status
+      await config.patch(id).set({verified: true}).commit();
+      return true; //email can be verified
     }
   }
   return false;
