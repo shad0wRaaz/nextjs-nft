@@ -142,5 +142,16 @@ export const addVolumeTraded = async ({
   return await config
     .patch(id)
     .inc({ volumeTraded: volume })
-    .commit()
+    .commit();
+}
+export const saveEmailVerificationCode = async(id, randomCode) => {
+  try{
+    await config
+                .patch(id)
+                .set({verificationcode: randomCode})
+                .commit();
+    return true;
+  }catch(err){
+    return false;
+  }
 }
