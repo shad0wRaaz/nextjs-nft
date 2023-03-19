@@ -11,6 +11,7 @@ import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { IconLoading } from '../icons/CustomIcons'
 import { ConnectWallet } from '@thirdweb-dev/react'
+import { checkValidURL } from '../../utils/utilities'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
@@ -202,13 +203,6 @@ const CreateNFTCollection = () => {
     }
   }, [])
 
-  const urlPatternValidation = (URL) => {
-    const regex = new RegExp(
-      '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?'
-    )
-    return regex.test(URL)
-  }
-
   //handling Create NFT Collection button
   const handleDeployNFTCollection = (e, toastHandler = toast) => {
     e.preventDefault()
@@ -222,16 +216,16 @@ const CreateNFTCollection = () => {
       form.primary_sale_recipient.value == '' ||
       typeof selectedCategory == 'undefined'
     ) {
-      toastHandler.error('Fields marked * are required.', errorToastStyle)
-      return
+      toastHandler.error('Fields marked * are required.', errorToastStyle);
+      return;
     }
 
     if (
       form.external_link.value !== '' &&
-      !urlPatternValidation(form.external_link.value)
+      !checkValidURL(form.external_link.value)
     ) {
-      toastHandler.error('External link is not valid.', errorToastStyle)
-      return
+      toastHandler.error('External link is not valid.', errorToastStyle);
+      return;
     }
 
       // setIsDeploying(true)

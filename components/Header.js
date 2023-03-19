@@ -110,10 +110,10 @@ const Header = () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',
           errorToastStyle
-        )
+        );
       },
       onSuccess: (res) => {
-        setActiveListings(res)
+        setActiveListings(res);
       },
     }
   )
@@ -122,7 +122,7 @@ const Header = () => {
   useEffect(
     (toastHandler = toast) => {
       if (!error) return
-      toastHandler.error("Error in connecting wallet", errorToastStyle)
+      toastHandler.error("Error in connecting wallet", errorToastStyle);
 
       return() => {
         //do nothing
@@ -143,17 +143,18 @@ const Header = () => {
         userName: 'Unnamed',
         walletAddress: address,
         volumeTraded: 0,
+        verified: false,
       }
 
       //saves new user if not present otherwise returns the user data
       const user = await config.createIfNotExists(userDoc);
-      setMyUser(user)
-      setIsLogged(true)
+      setMyUser(user);
+      setIsLogged(true);
     })();
 
     ;(async() => {
       const adminList = await getAllAdminUsers();
-      const isThisUserAdmin = adminList.filter(user => user._ref == address)
+      const isThisUserAdmin = adminList.filter(user => user._ref == address);
       if(isThisUserAdmin.length > 0){
           setIsAdmin(true);
       }
@@ -167,7 +168,12 @@ const Header = () => {
 
   useEffect(() => {
     if(!chainid) return
-        (blockchainName[chainid]);
+      (blockchainName[chainid]);
+    
+      return(() => {
+        //do nothing , just clean up function
+      })
+
   }, [chainid])
 
   // const handleDisconnect = () => {

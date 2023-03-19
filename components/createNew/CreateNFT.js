@@ -16,6 +16,7 @@ import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useAddress, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
+import { checkValidURL } from '../../utils/utilities'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -188,14 +189,6 @@ const CreateNFT = ({uuid}) => {
     }
   }, [uuid])
 
-
-  const urlPatternValidation = (URL) => {
-    const regex = new RegExp(
-      '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?'
-    )
-    return regex.test(URL)
-  }
-
   //handling Create NFT button
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault();
@@ -208,7 +201,7 @@ const CreateNFT = ({uuid}) => {
       return
     }
     if (
-      !urlPatternValidation(state.properties.external_link) &&
+      !checkValidURL(state.properties.external_link) &&
       state.properties.external_link !== '') {
       toastHandler.error('External link is not valid.', errorToastStyle)
       return
