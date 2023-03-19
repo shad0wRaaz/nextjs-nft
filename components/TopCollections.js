@@ -51,6 +51,7 @@ const TopCollections = () => {
         )
       },
       onSuccess: async (res) => {
+        console.log(res)
         setAllCollections(res)
 
         // const unresolved = res.map(async (item) => {
@@ -94,7 +95,7 @@ const TopCollections = () => {
         <div className="flex-between flex flex-col md:flex-row items-center relative z-10">
           <h2 className={style.title}><span className="textGradGreen">{showTop ? 'Top Traded' : 'Latest'}</span> Collections</h2>
           <div>
-            <div className={`z-20  w-[3rem] h-[3rem] border flex justify-center items-center mb-[2rem] py-1 px-2 rounded-xl items-center ${dark ? ' bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : ' bg-slate-100 hover:bg-slate-200'} cursor-pointer`}  onClick={() => setShowTop(current => !current)}>
+            <div className={`z-20  w-[3rem] h-[3rem] border flex justify-center items-center mb-[2rem] py-1 px-2 rounded-xl ${dark ? ' bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : ' bg-slate-100 hover:bg-slate-200'} cursor-pointer`}  onClick={() => setShowTop(current => !current)}>
               <RiArrowUpDownLine className="cursor-pointer text-lg" />
             </div>
           </div>
@@ -107,6 +108,7 @@ const TopCollections = () => {
                   key={id}
                   id={coll.id}
                   name={coll.name}
+                  verified={coll.verified}
                   contractAddress={coll.contractAddress}
                   profileImage={coll.web3imageprofile}
                   bannerImage={coll.web3imagebanner}
