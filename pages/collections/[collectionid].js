@@ -151,7 +151,7 @@ const Collection = () => {
     {
       enabled: Boolean(thisCollectionBlockchain) && Boolean(newCollectionData?._id),
       onError: (error) => {
-        console.log(error)
+        // console.log(error)
         toast.error(
           'Error fetching NFTs. Refresh and try again.',
           errorToastStyle

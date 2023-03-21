@@ -47,39 +47,6 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
   const [showModal, setShowModal] = useState(false)
   const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`
 
-  // const { data: collectionData, status: collectionStatus } = useQuery(
-  //   ['collection', router.query.c],
-  //   getNFTCollection(),
-  //   {
-  //     staleTime: queryStaleTime,
-  //     enabled: false && Boolean(router.query.c),
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching collection data. Refresh and try again.',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: (res) => {
-  //       console.log(res)
-  //       ;(async () => {
-  //         setCollectionProfile(await getUnsignedImagePath(res[0]?.profileImage))
-  //       })()
-  //     },
-  //   }
-  // )
-
-  //get collection profile image
-  // useEffect(() => {
-  //   if(!metaDataFromSanity) return
-  //   ;(async()=>{
-  //     setCollectionProfile(await getUnsignedImagePath(metaDataFromSanity?.collection?.profileImage))
-  //   })()
-
-  //   return(() => {
-  //     //do nothing, clean up function
-  //   });
-  // }, [metaDataFromSanity])
-
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
     ['user', nftContractData?.owner],
@@ -109,125 +76,19 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
       },
     }
   )
- 
-  // const burn = (e, sanityClient = config, toastHandler = toast) => {
-  //   if (Boolean(listingData)) {
-  //     toastHandler.error(
-  //       'Cannot burn a listed NFT. Delist this NFT first.',
-  //       errorToastStyle
-  //     )
-  //     return
-  //   }
-  //   ;(async () => {
-  //     try {
-  //       const tx = await contract.burn(nftContractData.metadata.id.toString())
-
-  //       //saving transaction in sanity
-  //       const transactionData = {
-  //         _type: 'activities',
-  //         _id: tx.receipt.transactionHash,
-  //         transactionHash: tx.receipt.transactionHash,
-  //         from: tx.receipt.from,
-  //         contractAddress: collectionAddress,
-  //         tokenid: nftContractData.metadata.id.toString(),
-  //         to: tx.receipt.to,
-  //         event: 'Burn',
-  //         price: '-',
-  //         chainId: chainid,
-  //         dateStamp: new Date(),
-  //       }
-  //       console.log(transactionData)
-  //       await sanityClient
-  //         .createIfNotExists(transactionData)
-  //         .then(() => {
-  //           queryClient.invalidateQueries(['marketplace'])
-  //           queryClient.invalidateQueries(['activities'])
-  //           queryClient.invalidateQueries(['user'])
-  //         })
-  //         .catch((err) => {
-  //           console.log(err)
-  //           toastHandler.error(
-  //             'Error saving Transaction Activity. Contact administrator.',
-  //             errorToastStyle
-  //           )
-  //           return
-  //         })
-  //     } catch (error) {
-  //       toastHandler.error(error, errorToastStyle)
-  //     }
-  //   })()
-  // }
-
-  // const cancelListing = (
-  //   e,
-  //   module = market,
-  //   sanityClient = config,
-  //   toastHandler = toast
-  // ) => {
-  //   if (!Boolean(listingData)) return
-  //   ;(async () => {
-  //     try {
-  //       const tx = await module.direct.cancelListing(listingData.id)
-  //       // console.log(tx.receipt)
-  //       if (tx) {
-  //         toastHandler.success(
-  //           'The NFT has been delisted from the marketplace.',
-  //           successToastStyle
-  //         )
-
-  //             //update listing data
-  //         ;(async() => {
-  //           await axios.get(process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080/api/updateListings' : 'http://localhost:8080/api/updateListings')
-  //         })()
-
-  //         //saving transaction in sanity
-  //         const transactionData = {
-  //           _type: 'activities',
-  //           _id: tx.receipt.transactionHash,
-  //           transactionHash: tx.receipt.transactionHash,
-  //           from: tx.receipt.from,
-  //           tokenid: nftContractData.metadata.id.toString(),
-  //           to: tx.receipt.to,
-  //           event: 'Delist',
-  //           nftItem: { _ref: nftContractData.metadata.properties.tokenid, _type: 'reference'},
-  //           price: '-',
-  //           chainId: chainid,
-  //           dateStamp: new Date(),
-  //         }
-  //         // console.log(transactionData)
-  //         await sanityClient
-  //           .createIfNotExists(transactionData)
-  //           .then(() => {
-  //             queryClient.invalidateQueries(['marketplace'])
-  //             queryClient.invalidateQueries(['activities'])
-  //           })
-  //           .catch((err) => {
-  //             console.log(err)
-  //             toastHandler.error(
-  //               'Error saving Transaction Activity. Contact administrator.',
-  //               errorToastStyle
-  //             )
-  //             return
-  //           })
-  //       }
-  //     } catch (err) {
-  //       console.error(err)
-  //       toastHandler.error('Error in delisting this NFT.', errorToastStyle)
-  //       return
-  //     }
-  //   })()
-  // }
 
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
-      <HelmetMetaData 
-        title={nftContractData?.metadata?.name}
-        description={nftContractData?.metadata?.description}
-        image={nftContractData?.metadata?.image}
-        tokenId={nftContractData?.metadata?.properties?.tokenid}
-        contractAddress={metaDataFromSanity?.collection?.contractAddress}>
-          
-      </HelmetMetaData>
+      {nftContractData ? (
+        <HelmetMetaData 
+          title={nftContractData?.metadata?.name}
+          description={nftContractData?.metadata?.description}
+          image={nftContractData?.metadata?.image}
+          tokenId={nftContractData?.metadata?.properties?.tokenid}
+          contractAddress={metaDataFromSanity?.collection?.contractAddress}>
+            
+        </HelmetMetaData>
+      ) : ''}
       {/* Modal window*/}
       {showModal &&  
         <Report 
