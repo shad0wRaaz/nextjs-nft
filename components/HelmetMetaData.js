@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet'
 import nuvanft from '../assets/nuvanft.png'
 
 const HelmetMetaData = (props) => {
+  console.log(props);
     let tokenId = props.tokenId != undefined ? props.tokenId : ""
     let currentUrl = "https://nuvanft.io/nfts/" + tokenId;
     let quote = props.quote != undefined ? props.quote : "";
@@ -13,12 +14,12 @@ const HelmetMetaData = (props) => {
   return (
     <Helmet>
         <title>{title} - Nuva NFT</title>
-        <meta charset="utf-8" />
+        <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="csrf_token" content="" />
         <meta property="type" content="website" />
         <meta property="url" content={currentUrl} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
@@ -38,6 +39,11 @@ const HelmetMetaData = (props) => {
         <meta property="og:url" content={currentUrl} />
         <meta property="og:site_name" content="Nuva NFT" />
         <meta property="og:description" content={description} />    
+
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
+        <meta name="twitter:card" content={image} />
     </Helmet>
   )
 }
