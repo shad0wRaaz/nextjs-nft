@@ -51,7 +51,7 @@ const TopCollections = () => {
         )
       },
       onSuccess: async (res) => {
-        console.log(res)
+        // console.log(res)
         setAllCollections(res)
 
         // const unresolved = res.map(async (item) => {
