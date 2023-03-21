@@ -116,7 +116,7 @@ const CreateNFTCollection = () => {
           primary_sale_recipient: form.primary_sale_recipient.value,
           seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
           platform_fee_basis_points: 500,
-          platform_fee_recipient: '0xa22d92ee43C892eebD01fa1166e1e45F67E28311',
+          platform_fee_recipient: '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e',
           trusted_forwarders: [],
         }
         const itemID = uuidv4();
