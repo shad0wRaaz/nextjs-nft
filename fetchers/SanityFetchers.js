@@ -73,7 +73,7 @@ export const getUserContinuously =
   async ({ queryKey }) => {
     const [_, address] = queryKey
     const query = `*[_type == "users" && walletAddress == "${address}"] {
-      web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt
+      web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt, verified
     }`
     const res = await config.fetch(query)
     return res[0]
@@ -173,8 +173,7 @@ export const getActivities =
   (tokenid) =>
   async ({ queryKey }) => {
     // const [_, collectionAddress] = queryKey
-    // const query = `*[_type == "activities" && contractAddress == "${collectionAddress}" && tokenid == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
-    const query = `*[_type == "activities" && nftItem._ref == "${tokenid}"] {...} | order(dateTime(_createdAt) desc)`
+    const query = `*[_type == "activities" && "${tokenid}" in nftItems[]._ref] {...} | order(dateTime(_createdAt) desc)`
     const res = await config.fetch(query)
     return res
   }
@@ -203,10 +202,10 @@ export const getCollectedNFTs =
 export const getFavouriteNFTs =
   () =>
   async ({ queryKey }) => {
-    const [_, address] = queryKey
-    const query = `*["${address}" in likedBy[]._ref] {...,collection->}`
-    const res = await config.fetch(query)
-    return res
+    const [_, address] = queryKey;
+    const query = `*["${address}" in likedBy[]._ref] {...,collection->}`;
+    const res = await config.fetch(query);
+    return res;
   }
 export const getAllOwners =
   () =>

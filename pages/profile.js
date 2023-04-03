@@ -70,7 +70,7 @@ const profile = () => {
   ) => {
     e.preventDefault()
     if (!address) return
-    // setIsSaving(true);
+    setIsSaving(true);
     
     var profileLink = { data : userDoc?.web3imageprofile ? userDoc?.web3imageprofile : '' };
     var bannerLink =  { data: userDoc?.web3imagebanner ? userDoc?.web3imagebanner : '' } ;

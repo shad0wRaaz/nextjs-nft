@@ -120,7 +120,7 @@ export const saveTransaction = async ({
     transactionHash: receipt.transactionHash,
     from: receipt.from,
     to: receipt.to,
-    nftItem: { _ref: itemid, _type: 'reference' },
+    nftItems: [{ _ref: itemid, _type: 'reference', _key: itemid }],
     tokenid: id,
     event: eventName,
     price: price,

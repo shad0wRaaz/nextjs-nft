@@ -144,7 +144,7 @@ const Nft = (props) => { //props are from getServerSideProps
         .unset(likerToRemove)
         .commit()
         .then(() => {
-;          //remove from state variable too , to reflect updated likes count value
+          //remove from state variable too , to reflect updated likes count value
           const filteredLikers = metaDataFromSanity.likedBy.filter((likers) => {
             return likers._ref != address
           })
@@ -303,7 +303,7 @@ const Nft = (props) => { //props are from getServerSideProps
               className={
                 nftContractData?.owner?.toString() ==
                 '0x0000000000000000000000000000000000000000'
-                  ? 'disabled pointer-none relative opacity-50'
+                  ? 'disabled pointer-none relative opacity-50 grayscale cursor-not-allowed'
                   : 'relative'
               }
             >

@@ -39,6 +39,7 @@ const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) =>
       },
       onSuccess: (res) => {
         //  console.log(res)
+
       },
     }
   )
