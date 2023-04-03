@@ -14,6 +14,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import CreateAVNFT from '../components/createNew/CreateAVNFT'
 import CreateNFTDrop from '../components/createNew/CreateNFTDrop'
 import CreateEdition from '../components/createNew/CreateEdition'
+import CreateNFTBatch from '../components/createNew/CreateNFTBatch'
 import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
@@ -38,6 +39,8 @@ function reducer(state, action){
   switch (action.type) {
     case 'OPEN_NFT':
       return { isMenuOpened: true, canvasMenu: 'NFT'}
+    case 'OPEN_NFT_BATCH':
+      return { isMenuOpened: true, canvasMenu: 'NFT_BATCH'}
     case 'OPEN_NFT_AUDIOVIDEO':
       return {isMenuOpened: true, canvasMenu: 'NFT_AUDIOVIDEO'}
     case 'OPEN_NFT_COLLECTION':
@@ -72,7 +75,8 @@ const contracts = () => {
             >
               <AiOutlinePlus />
             </div>
-            <h2 className="text-center font-bold text-2xl mb-[2rem]">Mint</h2>
+            <h2 className="text-center font-bold text-2xl">Mint</h2>
+            <p className="mb-[2rem] text-center">Mint a single NFT</p>
             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
               <div 
                 className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
@@ -93,6 +97,28 @@ const contracts = () => {
                 >
                 <FiVideo size={40} className="mb-3" />
                 <span>Audio/Video NFT</span>
+              </div>
+            </div>
+            <h2 className="text-center font-bold text-2xl mt-[3rem]">Mint Multiple Items</h2>
+            <p className="mb-[2rem] text-center">Mint multiple NFTs at once</p>
+            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
+              <div 
+                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                onClick={() => {
+                  setShowModal(curVal => !curVal)
+                  dispatch({ type: 'OPEN_NFT_BATCH'})
+                }}
+                >
+                <FiImage size={40} className="mb-3"/>
+                <span>Image NFTs</span>
+              </div>
+              <div 
+                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                
+                >
+                <FiVideo size={40} className="mb-3" />
+                <span>Audio/Video NFTs</span>
+                <p className="text-center text-xs">Coming Soon</p>
               </div>
             </div>
             
@@ -155,6 +181,9 @@ const contracts = () => {
 
               {state.canvasMenu == "NFT" &&
                 <CreateNFT uuid={nftId}/>
+              }
+              {state.canvasMenu == "NFT_BATCH" &&
+                <CreateNFTBatch />
               }
               {state.canvasMenu == "NFT_AUDIOVIDEO" && 
                 <CreateAVNFT uuid={nftAVId}/>
