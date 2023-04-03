@@ -27,6 +27,7 @@ import {
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -78,6 +79,7 @@ const Nft = (props) => { //props are from getServerSideProps
   const [isLiked, setIsLiked] = useState(false)
   const [playItem, setPlayItem] = useState(false)
   const [thisNFTMarketContract, setThisNFTMarketContract] = useState();
+  const { chainExplorer } = useSettingsContext();
 
   //get Market Contract signed with connected wallet otherwise get generic
   useEffect(()=>{
@@ -289,8 +291,6 @@ const Nft = (props) => { //props are from getServerSideProps
     }
   }, [metaDataFromSanity, address])
 
-  
-
   return (
     <div
       className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}
@@ -493,18 +493,15 @@ const Nft = (props) => { //props are from getServerSideProps
                     </Disclosure.Button>
                     <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
                       <div>
-                        <div className="flex flex-row justify-between py-2">
+                        <div className="flex flex-row justify-between py-2 flex-wrap break-words">
                           <span>Contract Address</span>
-                          <span className="line-clamp-1 text-base">
-                            {metaDataFromSanity?.collection?.contractAddress?.slice(0, 7)}...
-                            {metaDataFromSanity?.collection?.contractAddress?.slice(-5)}
-                          </span>
+                          <a href={`${chainExplorer[metaDataFromSanity?.chainId]}address/${metaDataFromSanity?.collection?.contractAddress}`} target="_blank">
+                            <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{metaDataFromSanity?.collection?.contractAddress}</span>
+                          </a>
                         </div>
-                        <div className="flex flex-row justify-between py-2">
+                        <div className="flex flex-row justify-between py-2 flex-wrap break-words">
                           <span>Token ID</span>
-                          <span className="line-clamp-1 text-base">
-                            {nftContractData?.metadata?.properties?.tokenid}
-                          </span>
+                          <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.properties?.tokenid}</span>
                         </div>
                         <div className="flex flex-row justify-between py-2">
                           <span>Token Standard</span>
