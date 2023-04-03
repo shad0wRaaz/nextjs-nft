@@ -38,7 +38,7 @@ const EventItem = ({ event }) => {
       <td className={style.event}>
         <div className={style.eventIcon}>
           <div className={style.eventName + pillcolor[event.event]}>
-            <a href={`${chainExplorer[event.chainId]}${event.transactionHash}`} target="_blank">
+            <a href={`${chainExplorer[event.chainId]}tx/${event.transactionHash}`} target="_blank">
               <div className="flex items-center justify-center gap-1">
                 <RiCheckboxCircleFill fontSize={14} />{event.event}
               </div>
