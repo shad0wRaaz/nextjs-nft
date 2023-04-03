@@ -295,7 +295,7 @@ const CreateAVNFT = ({uuid}) => {
           const transactionData = {
             _type: 'activities',
             _id: receipt.transactionHash,
-            nftItem: { _ref: uuid, _type: 'reference'},
+            nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
             transactionHash: receipt.transactionHash,
             from: receipt.from,
             to: receipt.to,

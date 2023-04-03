@@ -263,7 +263,7 @@ const CreateNFT = ({uuid}) => {
       const transactionData = {
         _type: 'activities',
         _id: receipt.transactionHash,
-        nftItem: { _ref: uuid, _type: 'reference' },
+        nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
         transactionHash: receipt.transactionHash,
         from: receipt.from,
         to: receipt.to,
@@ -283,23 +283,6 @@ const CreateNFT = ({uuid}) => {
       setIsMinting(false);
       
       router.push(`/nfts/${uuid}`);
-
-      // await axios.post(HOST.concat('/api/uploadnft'), formdata, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   },
-      // }).then(async (res) => 
-      // {
-      //   const filePath = '/assets/nfts/' + res.data.filename
-
-      //   //update filepath in state
-      //   dispatch({
-      //     type: 'CHANGE_IMAGE',
-      //     payload: { image: filePath },
-      //   })
-      
-      
-      // })
     } catch (error) {
       toastHandler.error("Error in minting NFT.", errorToastStyle)
       setIsMinting(false)
