@@ -31,14 +31,14 @@ const style = {
   leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
   socialWrapper: 'flex flex-wrap gap-3',
   socialItem:
-    'transition linear hover:bg-[#f55d6d] curosr-pointer gradBlue rounded-md p-[7px] flex justify-center items-center',
+    'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
   copyright: 'text-sm',
   footerLinksWrapper: 'flex gap-3',
   footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
-  subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row',
+  subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
   subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
   subscribeButton:
-    'transition linear rounded-[10px] p-3 px-6 gradBlue text-white',
+    'transition linear rounded-[10px] p-3 px-6 gradBlue text-white sm:w-full lg:w-auto',
 }
 
 const Footer = () => {
@@ -162,10 +162,10 @@ const Footer = () => {
           <div className={style.RightBox}>
             <h2 className={style.header}><CgReadme/> Tutorials</h2>
             <div className="flex flex-col gap-3 text-sm">
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">How to get started?</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Create a Wallet</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/howto'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">How to get started?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create a Crypto Wallet</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
             </div>
             
           </div>
@@ -174,42 +174,42 @@ const Footer = () => {
             <div className={style.socialWrapper}>
               <Link href="https://t.me/metanuva">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' telegram'}>
                     <FaTelegramPlane color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://twitter.com/nuvacommunity">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' twitter'}>
                     <FaTwitter color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.instagram.com/nuva.community/">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' instagram'}>
                     <FaInstagram color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.facebook.com/METANUVA">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' facebook'}>
                     <FaFacebookF color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.linkedin.com/company/metanuva/">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' linkedin'}>
                     <FaLinkedinIn color="white" fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.youtube.com/c/NUVAGAMERSESPORT">
                 <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem}>
+                  <div className={style.socialItem + ' youtube'}>
                     <FaYoutube color="white" fontSize="1.1rem" />
                   </div>
                 </a>
