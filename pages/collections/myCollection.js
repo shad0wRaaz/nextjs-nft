@@ -9,7 +9,7 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import { useState, useEffect, useRef } from 'react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
-import { MdOutlineCollections } from 'react-icons/md'
+import { MdOutlineCollections, MdVerified } from 'react-icons/md'
 import NFTCardLocal from '../../components/NFTCardLocal'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
@@ -21,7 +21,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { IconCopy, IconLoading } from '../../components/icons/CustomIcons'
+import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
 
 const style = {
@@ -106,7 +106,6 @@ const Collection = () => {
       router.push('/')
       return
     }
-
     return() => {
       //do nothing
     }
@@ -208,9 +207,12 @@ const Collection = () => {
 
             <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
               <div className="max-w-screen-sm ">
-                <h2 className="block text-2xl font-semibold sm:text-3xl lg:text-4xl">
-                  {myUser?.userName}
-                </h2>
+                <div className="flex flex-start gap-2 items-center">
+                  <h2 className="block text-2xl font-semibold sm:text-3xl lg:text-4xl">
+                    {myUser?.userName}
+                  </h2>
+                  {myUser?.verified ? <IconVerified fontSize={8} /> : ''}
+                </div>
                 <span className="mt-4 inline-block text-sm font-bold">
                   {myUser?.walletAddress.slice(0, 7)}..
                   {myUser?.walletAddress.slice(-4)}
