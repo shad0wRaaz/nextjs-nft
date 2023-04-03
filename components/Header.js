@@ -11,7 +11,6 @@ import { GoDashboard } from 'react-icons/go'
 import ChainSelection from './ChainSelection'
 import nuvanftLogo from '../assets/nuvanft.png'
 import { Menu, Transition } from '@headlessui/react'
-import { HiOutlineUserCircle } from 'react-icons/hi'
 import { useState, useEffect, Fragment } from 'react'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -174,24 +173,7 @@ const Header = () => {
         //do nothing , just clean up function
       })
 
-  }, [chainid])
-
-  // const handleDisconnect = () => {
-  //   setIsLogged(false)
-  //   localStorage.removeItem(`${address}`)
-  //   disconnectWallet()
-  //   setMyUser()
-  //   disconnectNotification()
-  // }
-
-  // const disconnectNotification = (toastHandler = toast) => {
-  //   toastHandler.success(`You have been disconnected !`, successToastStyle)
-  // }
-
-  // const changeBlockchain = (selectedChainName) => {
-  //   setSelectedBlockchain(selectedChainName);
-  //   toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
-  // }
+  }, [chainid]);
 
   return (
     <div className={style.wrapper}>
@@ -199,9 +181,6 @@ const Header = () => {
       <Link href="/">
         <div className={style.logoContainer} style={{ marginLeft: 0 }}>
           <img src={nuvanftLogo.src} height={55} width={90} />
-          {/* <div className={style.logoText}>
-            <p className={dark ? 'text-neutral-100' : ''}>NUVA NFT</p>
-          </div> */}
         </div>
       </Link>
       
@@ -477,62 +456,13 @@ const Header = () => {
       >
         {!isLogged && (
           <ChainSelection />
-          // <div
-          //   className={`flex items-center backdrop-blur-md justify-between gap-1 rounded-md text-xs border ${
-          //     dark ? ' border-sky-400/20' : ' border-neutral-200/40 bg-[#ffffff99]'
-          //   } p-[0.37rem]`}
-          // >
-          //   <div className={style.headerItem}>
-          //     <span className="inline-block">Select Chain</span>
-          //   </div>
-
-          //   <div
-          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "goerli" || selectedBlockchain == "mainnet") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-          //     onClick={() => {
-          //       changeBlockchain('goerli')
-          //     }}
-          //   >
-          //     <IconEthereum/>
-          //     <span className="inline-block">Ethereum</span>
-          //   </div>
-
-          //   <div
-          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "binance-testnet" || selectedBlockchain == "binance") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-          //     onClick={() => {
-          //       changeBlockchain('binance-testnet')
-          //     }}
-          //   >
-          //     <IconBNB/>
-          //     <span className="inline-block">Binance</span>
-          //   </div>
-
-          //   <div
-          //     className={`cursor-pointer flex rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''}  ${(selectedBlockchain == "Polygon" || selectedBlockchain == "mumbai") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-          //     onClick={() => {
-          //       changeBlockchain('mumbai')
-          //     }}
-          //   >
-          //     <IconPolygon/>
-          //     <span className="inline-block">Polygon</span>
-          //   </div>
-
-          //   <div
-          //     className={`cursor-pointer flex gap-2 rounded-full p-2 px-2 ${dark ? 'hover:bg-slate-700' : ''} ${(selectedBlockchain == "avalanche-fuji" || selectedBlockchain == "avalanche") ? (dark ? 'bg-slate-700': 'bg-sky-100 hover:bg-sky-100') : ''}`}
-          //     onClick={() => {
-          //       changeBlockchain('avalanche-fuji')
-          //     }}
-          //   >
-          //     <IconAvalanche/>
-          //     <span className="inline-block">Avalance</span>
-          //   </div>
-          // </div>
         )}
 
         {address && isLogged && (
           <>
             <Menu as="div" className="relative inline-block text-left">
-                <Menu.Button className={`px-5 py-3 flex text-white hover:text-black items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100'} rounded-xl`}>
-                  <HiOutlineUserCircle fontSize={22}/> My Account
+                <Menu.Button className={`py-3 px-2 flex text-white hover:text-black items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100'} rounded-xl`}>
+                  <IconImage />  <span className="hidden lg:block">My Account</span>
                 </Menu.Button>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                   <Menu.Items className={` ${
@@ -564,12 +494,14 @@ const Header = () => {
                   </Menu.Items>
               </Transition>
             </Menu>
-            <div className="flex flex-row items-center gap-4 px-5">
-              <a href="/dashboard">
-                <div className={`${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100 text-white hover:text-black'} p-2 -mr-2 rounded-xl cursor-pointer`}>
-                  <GoDashboard fontSize={23}/>
-                </div>
-              </a>
+            <div className="flex flex-row items-center gap-4 pl-2 pr-5">
+              {isAdmin ? (
+                <a href="/dashboard">
+                  <div className={`${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100 text-white hover:text-black'} p-2 -mr-2 rounded-xl cursor-pointer`}>
+                    <GoDashboard fontSize={23}/>
+                  </div>
+                </a>
+              ) : ''}
               <ThemeSwitcher />
               <Notifications />
             </div>
