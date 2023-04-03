@@ -9,6 +9,7 @@ import HelmetMetaData from '../HelmetMetaData'
 import { HiOutlineMail } from 'react-icons/hi'
 import { useAddress } from '@thirdweb-dev/react'
 import { TbBrandTelegram } from 'react-icons/tb'
+import { IconVerified } from '../icons/CustomIcons'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
@@ -19,7 +20,6 @@ import { FiMoreVertical, FiFacebook, FiTwitter } from 'react-icons/fi'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
-import { IconVerified } from '../icons/CustomIcons'
 
 
 const style = {
