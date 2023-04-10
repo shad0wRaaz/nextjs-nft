@@ -23,7 +23,7 @@ import { getMyCollections, getCoinPrices, getBlockedItems } from '../fetchers/Sa
 import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 
 const style = {
-  wrapper: ` mx-auto absolute top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
+  wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
   logoContainer: `flex items-center cursor-pointer m-0`,
   logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
   searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,

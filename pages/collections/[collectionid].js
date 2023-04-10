@@ -258,7 +258,7 @@ const Collection = () => {
  
 
   return (
-    <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+    <div className={`relative z-0 overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       {/* {collectionStatus == 'loading' && <Loader />} */}
       {!isBlocked && collectionData && (

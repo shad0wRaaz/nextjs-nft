@@ -53,7 +53,7 @@ const SearchItem = ({ nftItem }) => {
   return (
     <>
       {nftItem.asset.properties?.tokenid && (
-        <div className={`group relative flex p-2 flex-col !border-0 shadow-sm rounded-3xl ${dark ? 'bg-slate-700': 'bg-white'}`}>
+        <div className={`group relative z-0 flex p-2 flex-col !border-0 shadow-sm rounded-3xl ${dark ? 'bg-slate-700': 'bg-white'}`}>
           {!nftItem && (
             <div className="flex w-full h-full justify-center items-center">Not Available</div>)}
           {nftItem && (

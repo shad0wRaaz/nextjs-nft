@@ -11,7 +11,7 @@ import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
 import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
-  wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-1 relative',
+  wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-0 relative',
   wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]',
   title: 'font-bold mb-[2rem] grow text-center flex flex-col md:flex-row justify-center items-center gap-2 text-white text-[3rem]',
   collectionWrapper:

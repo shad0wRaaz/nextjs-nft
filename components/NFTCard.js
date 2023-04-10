@@ -84,7 +84,7 @@ const NFTCard = ({
         ''
       ) : (
         <div
-          className={`relative ${
+          className={`relative z-0 ${
             dark ? ' bg-slate-800' : ' bg-white'
           } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
         >

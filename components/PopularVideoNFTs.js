@@ -19,7 +19,7 @@ const PopularVideoNFTs = () => {
     }, [activeListings])
 
   return (
-    <div className="container mx-auto lg:p-[8rem] p-[2rem] mt-0">
+    <div className="container mx-auto lg:p-[8rem] p-[2rem] mt-0 relative z-0">
       <div className="relative flex flex-col sm:flex-row sm:items-end justify-between md:mb-8 gap-4">
           <div className="max-w-2xl">
               <h2 className="flex items-center  flex-wrap  text-3xl md:text-4xl font-semibold">Explore <span className="textGradRed pl-3">Video NFTs</span></h2>

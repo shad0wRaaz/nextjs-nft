@@ -7,7 +7,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 const style = {
-    wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0',
+    wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0 z-0 relative',
   }
 
 const PopularAudioNFTs = () => {

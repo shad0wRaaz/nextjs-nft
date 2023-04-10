@@ -11,7 +11,7 @@ const HowToInfo = () => {
   
   const style = {
     wrapper:
-      'container text-center text-white mx-auto lg:p-[8rem] p-[2rem]',
+      'container text-center text-white mx-auto lg:p-[8rem] p-[2rem] z-0 relative',
     contentWrapper:
       'howToContentContainer relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4',
     content:
