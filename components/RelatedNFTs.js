@@ -7,7 +7,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 
 const style= {
-    container: 'container p-6 my-[4rem] mx-auto relative sm:px[2rem] lg:px-[8rem]',
+    container: 'container p-6 my-[4rem] mx-auto relative sm:px[2rem] lg:px-[8rem] relative z-0',
     headTitle: 'text-center py-3 px-8 text-white w-fit mx-auto z-10 relative',
     divider: 'h-[1px] w-full  z-1 relative -mt-8',
     nftContainer: 'mt-[4rem] rounded-3xl p-[1rem] lg:p-[4rem]',
