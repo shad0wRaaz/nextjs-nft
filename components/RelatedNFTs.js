@@ -8,8 +8,8 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 const style= {
     container: 'container p-6 my-[4rem] mx-auto relative sm:px[2rem] lg:px-[8rem]',
-    headTitle: 'text-center py-3 px-8 bg-slate-600 text-white w-fit rounded-full mx-auto z-10 relative',
-    divider: 'h-[1px] w-full  z-1 relative -mt-6',
+    headTitle: 'text-center py-3 px-8 text-white w-fit mx-auto z-10 relative',
+    divider: 'h-[1px] w-full  z-1 relative -mt-8',
     nftContainer: 'mt-[4rem] rounded-3xl p-[1rem] lg:p-[4rem]',
     nftWrapper: 'grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-8 mt-[4rem]',
     buttonContainer: 'mt-[4rem] flex justify-center items-center',
@@ -52,7 +52,7 @@ const RelatedNFTs = ({collection, allNfts}) => {
   return (
     <div className={style.container}>
       <div className={style.nftContainer.concat(dark ? ' bg-slate-800': ' bg-slate-100')}>
-        <h2 className={style.headTitle + ' text-sm'}>More NFTs from <span className="text-xl textGradGreen">{collection?.name}</span></h2>
+        <h2 className={style.headTitle + ' text-xs'}>More NFTs from <p className="text-base block gradPurple p-2 px-6 rounded-full mt-2">{collection?.name}</p></h2>
         <div className={style.divider.concat(dark ? ' bg-slate-700' : ' bg-slate-300')}></div>
         <div className={style.nftWrapper}>
           {!relatedItems || relatedItems.length == 0 && ('No NFTs available')}

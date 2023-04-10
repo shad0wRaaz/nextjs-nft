@@ -24,7 +24,7 @@ const VideoNFTCard = ({nft}) => {
     }, [nft])
     
   return (
-    <div className={`relative flex flex-col group shadow-md p-2 rounded-3xl ${dark ? 'bg-slate-700' : ' bg-neutral-200'}`}>
+    <div className={`relative flex max-w-md flex-col group shadow-md p-2 rounded-3xl mr-6 ${dark ? 'bg-slate-700' : ' bg-neutral-200'}`}>
         <div className="relative flex-shrink-0 rounded-3xl overflow-hidden">
             <div className="">
                 <div className="flex aspect-video z-0">
@@ -58,33 +58,12 @@ const VideoNFTCard = ({nft}) => {
         <div className="p-5">
             <div className="flex justify-between items-center">
                 <h2 className="sm:text-lg font-semibold">{nft.asset.name}</h2>
-                {/* <div className="ml-2 flex items-center space-x-3 hidden">
-                    <div className="hidden sm:flex -space-x-1 ">
-                        <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
-                            <span className="wil-avatar__name">J</span>
-                        </div>
-                        <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
-                            <span className="wil-avatar__name">J</span>
-                        </div>
-                        <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
-                            <span className="wil-avatar__name">J</span>
-                        </div>
-                        <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-900">
-                            <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="" alt="John Doe"/>
-                            <span className="wil-avatar__name">J</span>
-                        </div>
-                    </div>
-                    <span className="text-neutral-700 dark:text-neutral-400 text-xs hidden">1 of 100</span>
-                </div> */}
             </div>
-            <div className="flex justify-between items-center mt-3.5">
+            <div className="flex justify-between items-center mt-3.5 flex-wrap">
                 <div className="pt-3">
                     <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 md:py-2 px-2.5 md:px-3.5 text-sm sm:text-base font-semibold ">
                         <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
-                        <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} {nft.buyoutCurrencyValuePerToken.symbol}</span>
+                        <span className="text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} <span className="text-xs">{nft.buyoutCurrencyValuePerToken.symbol}</span></span>
                     </div>
                 </div>
                 <div className="pt-3">
@@ -92,16 +71,6 @@ const VideoNFTCard = ({nft}) => {
                         <IconWallet/> <span className="pl-2">Buy Now</span>
                     </div>
                 </div>
-                {/* {nft && nft.startTimeInSeconds.toNumber() != nft.secondsUntilEnd.toNumber() && ( */}
-                {/* {nft && (parseInt(nft.startTimeInSeconds?.hex, 16) != parseInt(nft.secondsUntilEnd?.hex, 16)) && (
-                    <div className="text-right ">
-                        <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-normal tracking-wide">Remaining time</span>
-                        <span className="block font-semibold mt-0.5">
-                            <Countdown date={nft.secondsUntilEnd.toNumber() * 1000}/>
-                            <Countdown date={parseInt(nft.secondsUntilEnd?.hex, 16) * 1000}/>
-                        </span>
-                    </div>
-                )} */}
             </div>
         </div>
         <Link href={`/nfts/${nft?.asset.properties.tokenid}`} passHref>

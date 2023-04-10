@@ -5,6 +5,8 @@ const SettingsContext = createContext();
 export function SettingsProvider({children}) {
     const [coinPrices, setCoinPrices] = useState();
     const [loadingNewPrice, setLoadingNewPrice] = useState(false);
+    const [blockedNfts, setBlockedNfts] = useState([]);
+    const [blockedCollections, setBlockedCollections] = useState([]);
     const blockchainName = { '80001': 'mumbai',
         '5': 'goerli',
         '43113': 'avalanche-fuji',
@@ -59,7 +61,11 @@ export function SettingsProvider({children}) {
             blockchainName,
             currencyByChainId,
             chainExplorer,
-            marketplace }}>
+            marketplace,
+            blockedCollections,
+            setBlockedCollections,
+            blockedNfts,
+            setBlockedNfts }}>
                 {children}
         </SettingsContext.Provider>
     )

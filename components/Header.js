@@ -19,7 +19,7 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
-import { getMyCollections, getCoinPrices } from '../fetchers/SanityFetchers'
+import { getMyCollections, getCoinPrices, getBlockedItems } from '../fetchers/SanityFetchers'
 import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 
 const style = {
@@ -46,7 +46,7 @@ const Header = () => {
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const disconnectWallet = useDisconnect();
-  const { setCoinPrices, blockchainName } = useSettingsContext();
+  const { setCoinPrices, blockchainName, setBlockedNfts, setBlockedCollections } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
   const { setMyUser,setMyCollections } = useUserContext()
   const [{ data: { chain, chains }, loading, error }, switchNetwork] = useNetwork();
@@ -104,7 +104,6 @@ const Header = () => {
     ['marketplace', selectedBlockchain],
     getActiveListings(),
     {
-      enabled: false,
       onError: () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',
@@ -116,6 +115,18 @@ const Header = () => {
       },
     }
   )
+
+  const { data:blockedItems, status:blockedItemStatus } = useQuery(
+      "blockedItems", 
+      getBlockedItems(), {
+          onSuccess: (res) => {
+            if(res){
+              setBlockedCollections(res[0]?.blockedcollections);
+              setBlockedNfts(res[0]?.blockednfts);
+            }
+          }
+      }
+  );
 
   //show error if any error during wallet connection
   useEffect(
@@ -461,7 +472,7 @@ const Header = () => {
         {address && isLogged && (
           <>
             <Menu as="div" className="relative inline-block text-left">
-                <Menu.Button className={`py-3 px-2 flex text-white hover:text-black items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100'} rounded-xl`}>
+                <Menu.Button className={`py-3 px-2 flex items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl`}>
                   <IconImage />  <span className="hidden lg:block">My Account</span>
                 </Menu.Button>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">

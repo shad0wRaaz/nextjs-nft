@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Footer from '../../components/Footer'
 import { BiChevronUp } from 'react-icons/bi'
 import Header from '../../components/Header'
-import { MdAudiotrack } from 'react-icons/md'
+import { MdAudiotrack, MdBlock } from 'react-icons/md'
 import { Disclosure } from '@headlessui/react'
 import { config } from '../../lib/sanityClient'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
@@ -79,7 +79,25 @@ const Nft = (props) => { //props are from getServerSideProps
   const [isLiked, setIsLiked] = useState(false)
   const [playItem, setPlayItem] = useState(false)
   const [thisNFTMarketContract, setThisNFTMarketContract] = useState();
-  const { chainExplorer } = useSettingsContext();
+  const { chainExplorer, blockedNfts, blockedCollections } = useSettingsContext();
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    if(!blockedNfts) return;
+    const items = blockedNfts?.filter(item => item._id == metaDataFromSanity._id);
+    if(items?.length > 0){
+      setIsBlocked(true);
+    }
+    //check for blocked collections
+    const collitems = blockedCollections?.filter(coll => coll._id == metaDataFromSanity?.collection._id);
+    if(collitems?.length > 0){
+      setIsBlocked(true);
+    }
+    return() => {
+      //do nothing, cleanup functions
+    }
+  }, [metaDataFromSanity, blockedNfts])
+
 
   //get Market Contract signed with connected wallet otherwise get generic
   useEffect(()=>{
@@ -296,314 +314,323 @@ const Nft = (props) => { //props are from getServerSideProps
       className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}
     >
       <Header />
-      <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex pt-[5rem] md:pt-[8rem]">
-        <div className="grid w-full grid-cols-1 gap-10 px-[1.2rem] md:gap-14 lg:grid-cols-2">
-          <div className="space-y-8">
-            <div
-              className={
-                nftContractData?.owner?.toString() ==
-                '0x0000000000000000000000000000000000000000'
-                  ? 'disabled pointer-none relative opacity-50 grayscale cursor-not-allowed'
-                  : 'relative'
-              }
-            >
-              <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl max-h-[38rem]">
-                {playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
-                  <video className="w-full h-full" autoPlay loop>
-                    <source src={nftContractData?.metadata?.animation_url}/>
-                    Your browser does not support video tag. Upgrade your browser.
-                  </video>
-                )}
-                {playItem && nftContractData?.metadata?.properties.itemtype == "audio" && (
-                  <>
-                    <audio className="w-full h-full" autoPlay loop>
+      {isBlocked ? (
+        <div className="p-[4rem] text-center">
+          <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
+          <h2 className=" text-3xl font-bold mb-4">This NFT is blocked.</h2>
+          <p className="leading-10">If you own this NFT and if you think there has been a mistake, please contact us at <a href="mailto:support@metanuva.com" className="p-2 border border-slate-600 rounded-md">support@metanuva.com</a></p>
+        </div>
+      ): (
+        <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex pt-[5rem] md:pt-[8rem]">
+          <div className="grid w-full grid-cols-1 gap-10 px-[1.2rem] md:gap-14 lg:grid-cols-2">
+            <div className="space-y-8">
+              <div
+                className={
+                  nftContractData?.owner?.toString() ==
+                  '0x0000000000000000000000000000000000000000'
+                    ? 'disabled pointer-none relative opacity-50 grayscale cursor-not-allowed'
+                    : 'relative'
+                }
+              >
+                <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl max-h-[38rem] cursor-zoom-in">
+                  {playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
+                    <video className="w-full h-full" autoPlay loop>
                       <source src={nftContractData?.metadata?.animation_url}/>
                       Your browser does not support video tag. Upgrade your browser.
-                    </audio>
+                    </video>
+                  )}
+                  {playItem && nftContractData?.metadata?.properties.itemtype == "audio" && (
+                    <>
+                      <audio className="w-full h-full" autoPlay loop>
+                        <source src={nftContractData?.metadata?.animation_url}/>
+                        Your browser does not support video tag. Upgrade your browser.
+                      </audio>
+                      <img
+                        src={nftContractData?.metadata?.image}
+                        className="h-full w-full object-cover"
+                      />
+                    </>
+                  )}
+                  {!playItem && (
                     <img
                       src={nftContractData?.metadata?.image}
                       className="h-full w-full object-cover"
                     />
-                  </>
-                )}
-                {!playItem && (
-                  <img
-                    src={nftContractData?.metadata?.image}
-                    className="h-full w-full object-cover"
-                  />
-                  // <img
-                  //   src={selectedNft?.metadata?.image}
-                  //   className="h-full w-full object-cover"
-                  // />
-                )}
-              </div>
-
-              <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
-                {nftContractData?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> : nftContractData?.metadata?.properties?.itemtype  == "video" ? <IconVideo /> : <IconImage />}
-              </div>
-
-              {(nftContractData?.metadata?.properties?.itemtype == "audio" || nftContractData?.metadata?.properties?.itemtype == "video") && 
-                (<div 
-                    className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
-                    onClick={() => setPlayItem(curVal => !curVal)}>
-                    { playItem ? <BsPause size={25} /> : <BsPlay size={25}/> }
+                    // <img
+                    //   src={selectedNft?.metadata?.image}
+                    //   className="h-full w-full object-cover"
+                    // />
+                  )}
                 </div>
-                )
-              }
 
-              <button
-                className="absolute right-3 top-3 flex h-10 items-center justify-center rounded-full bg-black/50 px-3.5 text-white "
-                onClick={addRemoveLike}
-              >
-                <IconHeart color={isLiked ? '#ef4444' : ''} />
-                {totalLikers > 0 ? (
-                  <span className="ml-2 text-sm">
-                    {millify(totalLikers)}
-                  </span>
-                ) : (
-                  <span className="ml-2 text-sm">0</span>
-                )}
-              </button>
-            </div>
+                <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
+                  {nftContractData?.metadata?.properties?.itemtype == "audio" ? <MdAudiotrack /> : nftContractData?.metadata?.properties?.itemtype  == "video" ? <IconVideo /> : <IconImage />}
+                </div>
 
-            <GeneralDetails
-              nftContractData={nftContractData}
-              listingData={listingData}
-              metaDataFromSanity={ metaDataFromSanity }
-              />
+                {(nftContractData?.metadata?.properties?.itemtype == "audio" || nftContractData?.metadata?.properties?.itemtype == "video") && 
+                  (<div 
+                      className="absolute left-3 bottom-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white md:h-10 md:w-10 cursor-pointer"
+                      onClick={() => setPlayItem(curVal => !curVal)}>
+                      { playItem ? <BsPause size={25} /> : <BsPlay size={25}/> }
+                  </div>
+                  )
+                }
 
-            <div className="mt-4 w-full rounded-2xl">
-              <Disclosure>
-                {({ open }) => (
-                  <>
-                    <Disclosure.Button
-                      className={`flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                        dark
-                          ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                          : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                      } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                    >
-                      <div className="flex items-center gap-1 font-bold">
-                        <HiOutlineDocumentText fontSize={18} />
-                        <span className="text-lg">Description</span>
-                      </div>
-                      <BiChevronUp
-                        className={`${
-                          open ? 'transform transition' : 'rotate-180'
-                        } h-5 w-5 text-neutral-500 transition`}
-                      />
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                      {nftContractData?.metadata?.description}
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
+                <button
+                  className="absolute right-3 top-3 flex h-10 items-center justify-center rounded-full bg-black/50 px-3.5 text-white "
+                  onClick={addRemoveLike}
+                >
+                  <IconHeart color={isLiked ? '#ef4444' : ''} />
+                  {totalLikers > 0 ? (
+                    <span className="ml-2 text-sm">
+                      {millify(totalLikers)}
+                    </span>
+                  ) : (
+                    <span className="ml-2 text-sm">0</span>
+                  )}
+                </button>
+              </div>
 
-              <Disclosure>
-                {({ open }) => (
-                  <>
-                    <Disclosure.Button
-                      className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                        dark
-                          ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                          : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                      } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                    >
-                      <div className="flex items-center gap-1 font-bold">
-                        <HiOutlineStar fontSize={18} />
-                        <span className="text-lg">Properties</span>
-                      </div>
-                      <BiChevronUp
-                        className={`${
-                          open ? 'transform transition' : 'rotate-180 '
-                        } h-5 w-5 text-neutral-500 transition`}
-                      />
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
-                      {nftContractData?.metadata?.properties?.traits?.map(
-                        (props, id) => (
-                          <div key={id}>
-                            {props.propertyKey != "" ? (
-
-                            <div
-                              className={`w-[130px] rounded-xl border border-solid ${
-                                dark
-                                  ? 'border-slate-600 bg-slate-700'
-                                  : 'border-sky-200/70 bg-sky-100'
-                              } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
-                              key={id}
-                            >
-                              <p
-                                className={
-                                  dark
-                                    ? 'text-sm font-bold text-neutral-200'
-                                    : 'text-sm font-bold text-sky-400'
-                                }
-                              >
-                                {props.propertyKey}
-                              </p>
-                              <p
-                                className={
-                                  dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
-                                }
-                              >
-                                {props.propertyValue}
-                              </p>
-                              {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
-                                <span
-                                  className={`w-fit rounded-md ${
-                                    dark
-                                      ? ' border border-slate-500 px-2 text-neutral-50'
-                                      : 'border border-sky-300 px-2 text-sky-500'
-                                  }`}
-                                >
-                                  100% Match
-                                </span>
-                              </p> */}
-                            </div>
-                            ) : (<span className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No properties defined.</span>)}
-                          </div>
-                        )
-                      )}
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
-
-              <Disclosure>
-                {({ open }) => (
-                  <>
-                    <Disclosure.Button
-                      className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                        dark
-                          ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                          : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                      } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                    >
-                      <div className="flex items-center gap-1 font-bold">
-                        <HiOutlineDotsVertical fontSize={18} />
-                        <span className="text-lg">Details</span>
-                      </div>
-                      <BiChevronUp
-                        className={`${
-                          open ? 'transform transition' : 'rotate-180 '
-                        } h-5 w-5 text-neutral-500 transition`}
-                      />
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                      <div>
-                        <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                          <span>Contract Address</span>
-                          <a href={`${chainExplorer[metaDataFromSanity?.chainId]}address/${metaDataFromSanity?.collection?.contractAddress}`} target="_blank">
-                            <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{metaDataFromSanity?.collection?.contractAddress}</span>
-                          </a>
-                        </div>
-                        <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                          <span>Token ID</span>
-                          <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.properties?.tokenid}</span>
-                        </div>
-                        <div className="flex flex-row justify-between py-2">
-                          <span>Token Standard</span>
-                          <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
-                            {nftContractData?.type}
-                          </span>
-                        </div>
-                        <div className="flex flex-row justify-between py-2">
-                          <span>Blockchain</span>
-                          <span className="line-clamp-1 text-base">
-                            {chainIcon[metaDataFromSanity?.collection?.chainId]}
-                            {chainName[metaDataFromSanity?.collection?.chainId]}
-                          </span>
-                        </div>
-                      </div>
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
-
-              <Disclosure>
-                {({ open }) => (
-                  <>
-                    <Disclosure.Button
-                      className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                        dark
-                          ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                          : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                      } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                    >
-                      <div className="flex items-center gap-1 font-bold">
-                        <HiOutlineQuestionMarkCircle fontSize={18} />
-                        <span className="text-lg">
-                          About { metaDataFromSanity?.collection?.name }
-                        </span>
-                      </div>
-                      <BiChevronUp
-                        className={`${
-                          open ? 'transform transition' : 'rotate-180 '
-                        } h-5 w-5 text-neutral-500 transition`}
-                      />
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                      { metaDataFromSanity?.collection?.description }
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
-            </div>
-          </div>
-          <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
-            
-            {/* {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
-              <AuctionTimer
-              selectedNft={selectedNft}
-              listingData={listingData}
-              auctionItem={isAuctionItem}
-              />
-              )} */}
-
-            <Purchase
-              nftContractData={nftContractData}
-              listingData={listingData}
-              nftCollection={metaDataFromSanity?.collection}
-              auctionItem={isAuctionItem}
-              thisNFTMarketAddress={thisNFTMarketAddress}
-              thisNFTblockchain={thisNFTblockchain}
-              />
-
-            {/* {isAuctionItem && ( */}
-              <ItemOffers
-                selectedNft={nftContractData}
+              <GeneralDetails
+                nftContractData={nftContractData}
                 listingData={listingData}
-                metaDataFromSanity={metaDataFromSanity}
+                metaDataFromSanity={ metaDataFromSanity }
+                />
+
+              <div className="mt-4 w-full rounded-2xl">
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineDocumentText fontSize={18} />
+                          <span className="text-lg">Description</span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180'
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
+                        {nftContractData?.metadata?.description}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineStar fontSize={18} />
+                          <span className="text-lg">Properties</span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180 '
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
+                        {nftContractData?.metadata?.properties?.traits?.map(
+                          (props, id) => (
+                            <div key={id}>
+                              {props.propertyKey != "" ? (
+
+                              <div
+                                className={`w-[130px] rounded-xl border border-solid ${
+                                  dark
+                                    ? 'border-slate-600 bg-slate-700'
+                                    : 'border-sky-200/70 bg-sky-100'
+                                } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
+                                key={id}
+                              >
+                                <p
+                                  className={
+                                    dark
+                                      ? 'text-sm font-bold text-neutral-200'
+                                      : 'text-sm font-bold text-sky-400'
+                                  }
+                                >
+                                  {props.propertyKey}
+                                </p>
+                                <p
+                                  className={
+                                    dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
+                                  }
+                                >
+                                  {props.propertyValue}
+                                </p>
+                                {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
+                                  <span
+                                    className={`w-fit rounded-md ${
+                                      dark
+                                        ? ' border border-slate-500 px-2 text-neutral-50'
+                                        : 'border border-sky-300 px-2 text-sky-500'
+                                    }`}
+                                  >
+                                    100% Match
+                                  </span>
+                                </p> */}
+                              </div>
+                              ) : (<span className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No properties defined.</span>)}
+                            </div>
+                          )
+                        )}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineDotsVertical fontSize={18} />
+                          <span className="text-lg">Details</span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180 '
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
+                        <div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Contract Address</span>
+                            <a href={`${chainExplorer[metaDataFromSanity?.chainId]}address/${metaDataFromSanity?.collection?.contractAddress}`} target="_blank">
+                              <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{metaDataFromSanity?.collection?.contractAddress}</span>
+                            </a>
+                          </div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Token ID</span>
+                            <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.properties?.tokenid}</span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Token Standard</span>
+                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
+                              {nftContractData?.type}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Blockchain</span>
+                            <span className="line-clamp-1 text-base">
+                              {chainIcon[metaDataFromSanity?.collection?.chainId]}
+                              {chainName[metaDataFromSanity?.collection?.chainId]}
+                            </span>
+                          </div>
+                        </div>
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineQuestionMarkCircle fontSize={18} />
+                          <span className="text-lg">
+                            About { metaDataFromSanity?.collection?.name }
+                          </span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180 '
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
+                        { metaDataFromSanity?.collection?.description }
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+              </div>
+            </div>
+            <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
+              
+              {/* {listingData && (parseInt(listingData?.secondsUntilEnd.hex, 16) != parseInt(listingData?.startTimeInSeconds.hex, 16)) && (
+                <AuctionTimer
+                selectedNft={selectedNft}
+                listingData={listingData}
+                auctionItem={isAuctionItem}
+                />
+                )} */}
+
+              <Purchase
+                nftContractData={nftContractData}
+                listingData={listingData}
+                nftCollection={metaDataFromSanity?.collection}
+                auctionItem={isAuctionItem}
                 thisNFTMarketAddress={thisNFTMarketAddress}
                 thisNFTblockchain={thisNFTblockchain}
-                isAuctionItem={isAuctionItem}
                 />
-             {/* )} */}
 
-            <ItemActivity
-              collectionAddress={metaDataFromSanity?.collection?.contractAddress}
-              selectedNft={nftContractData}
-              metaDataFromSanity={ metaDataFromSanity }
-              />
-            {address && (
-              <ReportActivity
+              {/* {isAuctionItem && ( */}
+                <ItemOffers
+                  selectedNft={nftContractData}
+                  listingData={listingData}
+                  metaDataFromSanity={metaDataFromSanity}
+                  thisNFTMarketAddress={thisNFTMarketAddress}
+                  thisNFTblockchain={thisNFTblockchain}
+                  isAuctionItem={isAuctionItem}
+                  />
+              {/* )} */}
+
+              <ItemActivity
                 collectionAddress={metaDataFromSanity?.collection?.contractAddress}
                 selectedNft={nftContractData}
                 metaDataFromSanity={ metaDataFromSanity }
-              />
-            )}
-            <BurnCancel 
-              nftContractData={nftContractData} 
-              listingData={listingData} 
-              collectionAddress={metaDataFromSanity?.collection?.contractAddress}
-              thisNFTMarketAddress={thisNFTMarketAddress}
-              thisNFTblockchain={thisNFTblockchain}
-              />
+                />
+              {address && (
+                <ReportActivity
+                  collectionAddress={metaDataFromSanity?.collection?.contractAddress}
+                  selectedNft={nftContractData}
+                  metaDataFromSanity={ metaDataFromSanity }
+                />
+              )}
+              <BurnCancel 
+                nftContractData={nftContractData} 
+                listingData={listingData} 
+                collectionAddress={metaDataFromSanity?.collection?.contractAddress}
+                thisNFTMarketAddress={thisNFTMarketAddress}
+                thisNFTblockchain={thisNFTblockchain}
+                />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+
+      )}
       <RelatedNFTs collection={metaDataFromSanity.collection} listingData={listingData} allNfts={listedItemsFromThisMarket} />
       <BrowseByCategory />
       <Footer />

@@ -1,21 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import millify from 'millify'
 import Image from 'next/image'
+import { GoVerified } from 'react-icons/go'
+import { getImagefromWeb3 } from '../fetchers/s3'
 import noBannerImage from '../assets/noBannerImage.png'
 import noProfileImage from '../assets/noProfileImage.png'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { IconEthereum, IconPolygon, IconBNB, IconAvalanche } from './icons/CustomIcons'
-import { getImagefromWeb3 } from '../fetchers/s3'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSettingsContext } from '../contexts/SettingsContext'
-import { GoVerified } from 'react-icons/go'
+import { IconEthereum, IconPolygon, IconBNB, IconAvalanche } from './icons/CustomIcons'
 
 const style = {
   card: 'hover:scale-105 hover:shadow-lg transition w-full border rounded-3xl overflow-hidden p-2 pb-5 cursor-pointer backdrop-blur-md',
   bannerContainer:
     'cursor-pointer  relative w-full h-[150px] rounded-3xl overflow-hidden',
   creator: 'text-center text-sm mb-3 flex items-center justify-center gap-1',
-  bannerImage: '',
+  bannerImage: 'object-cover w-full h-full',
   profile:
     'cursor-pointer rounded-full overflow-hidden ring ring-white relative mx-auto top-[-25px] h-[70px] w-[70px] mb-[2rem]',
   title: 'cursor-pointer text-center text-md relative ',
@@ -64,7 +64,7 @@ const CollectionCard = ({
           {bannerImage ? (
             <img
               src={getImagefromWeb3(bannerImage)}
-              className={style.bannerImage + ' object-cover'}
+              className={style.bannerImage}
               alt={name}
             />
           ) : (

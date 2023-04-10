@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { Tab } from '@headlessui/react'
 import { MdClose } from 'react-icons/md'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -33,6 +34,9 @@ const style = {
   smallText: 'text-sm text-center mb-[2rem] text-white',
   noPointer: ' pointer-events-none',
   closeButton : 'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70'
+}
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
 }
 
 function reducer(state, action){
@@ -75,53 +79,63 @@ const contracts = () => {
             >
               <AiOutlinePlus />
             </div>
-            <h2 className="text-center font-bold text-2xl">Mint</h2>
-            <p className="mb-[2rem] text-center">Mint a single NFT</p>
-            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
-              <div 
-                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                onClick={() => {
-                  setShowModal(curVal => !curVal)
-                  dispatch({ type: 'OPEN_NFT'})
-                }}
-                >
-                <FiImage size={40} className="mb-3"/>
-                <span>Image NFT</span>
-              </div>
-              <div 
-                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                onClick={() => {
-                  setShowModal(curVal => !curVal)
-                  dispatch({ type: 'OPEN_NFT_AUDIOVIDEO'})
-                }}
-                >
-                <FiVideo size={40} className="mb-3" />
-                <span>Audio/Video NFT</span>
-              </div>
-            </div>
-            <h2 className="text-center font-bold text-2xl mt-[3rem]">Mint Multiple Items</h2>
-            <p className="mb-[2rem] text-center">Mint multiple NFTs at once</p>
-            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
-              <div 
-                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                onClick={() => {
-                  setShowModal(curVal => !curVal)
-                  dispatch({ type: 'OPEN_NFT_BATCH'})
-                }}
-                >
-                <FiImage size={40} className="mb-3"/>
-                <span>Image NFTs</span>
-              </div>
-              <div 
-                className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                
-                >
-                <FiVideo size={40} className="mb-3" />
-                <span>Audio/Video NFTs</span>
-                <p className="text-center text-xs">Coming Soon</p>
-              </div>
-            </div>
-            
+
+            <h2 className="text-center font-bold text-2xl mb-5">Mint</h2>
+
+            <Tab.Group>
+              <Tab.List className="flex space-x-3 rounded-xl p-1 justify-center">
+              <Tab className={({ selected }) => classNames('rounded-lg p-2.5 text-sm font-medium leading-5',selected? 'bg-slate-500 shadow ring-0 outline-0 border-0': ' hover:bg-white/[0.12] hover:text-white')}>
+                Single NFT
+              </Tab>
+              <Tab className={({ selected }) => classNames('rounded-lg p-2.5 text-sm font-medium leading-5',selected? 'bg-slate-500 shadow ring-0 outline-0 border-0': ' hover:bg-white/[0.12] hover:text-white')}>
+                Multiple NFTs at once
+              </Tab>
+              </Tab.List>
+              <Tab.Panels className="mt-2">
+                <Tab.Panel className="rounded-xl p-3">
+                  <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
+                    <div 
+                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                      onClick={() => {
+                        setShowModal(curVal => !curVal)
+                        dispatch({ type: 'OPEN_NFT'})
+                      }}
+                      >
+                      <FiImage size={40} className="mb-3"/>
+                      <span>Image NFT</span>
+                    </div>
+                    <div 
+                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                      onClick={() => {
+                        setShowModal(curVal => !curVal)
+                        dispatch({ type: 'OPEN_NFT_AUDIOVIDEO'})
+                      }}
+                      >
+                      <FiVideo size={40} className="mb-3" />
+                      <span>Audio/Video NFT</span>
+                    </div>
+                  </div>
+                </Tab.Panel>
+                <Tab.Panel className="rounded-xl p-3">
+                  <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
+                    <div 
+                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                      onClick={() => {
+                        setShowModal(curVal => !curVal)
+                        dispatch({ type: 'OPEN_NFT_BATCH'})
+                      }}
+                      >
+                      <FiImage size={40} className="mb-3"/>
+                      <span>Image NFTs</span>
+                    </div>
+                    <div className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}>
+                      <FiVideo size={40} className="mb-3" />
+                      <span>Audio/Video NFTs</span>
+                    </div>
+                  </div>
+                </Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>            
           </div>
         </div>
       )}

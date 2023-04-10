@@ -228,7 +228,7 @@ const Footer = () => {
               : style.footerContainer + ' border-neutral-200'
           }
           >
-          <p className={style.copyright}>&copy; {new Date().getFullYear()} Meta Nuva Ltd.</p>
+          <p className={style.copyright}>&copy; {new Date().getFullYear()} Nuva NFT.</p>
           <div className={style.footerLinksWrapper}>
             <Link href="/termsandconditions">
               <a

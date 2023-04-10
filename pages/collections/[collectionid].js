@@ -2,7 +2,7 @@ import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
-import { MdAdd } from 'react-icons/md'
+import { MdAdd, MdBlock } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { TbEdit } from 'react-icons/tb'
 import React, { useState } from 'react'
@@ -89,13 +89,26 @@ const Collection = () => {
   const [showUnlisted, setShowUnlisted] = useState(false);
   const [showPaymentModal, setPaymentModal] = useState(false);
   const [newCollectionData, setNewCollectionData] = useState()
-  const { blockchainName, marketplace } = useSettingsContext();
+  const { blockchainName, marketplace, chainExplorer } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionBlockchain, setThisCollectionBlockchain] = useState();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
   const [properties, setProperties] = useState([]);
   const {selectedPropertyValue, setSelectedPropertyValue} = useCollectionFilterContext();
   const [filteredNftData, setFilteredNftData] = useState();
+  const { blockedCollections } = useSettingsContext();
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    if(!blockedCollections) return;
+    const blockedCollection = blockedCollections?.filter(coll => coll._id == collectionid);
+    if(blockedCollection.length > 0) {
+      setIsBlocked(true);
+    }
+    return() => {
+      //do nothing
+    }
+  }, [collectionid])
 
   //collections' sanity data
   const { data: collectionData, status: collectionStatus } = useQuery(
@@ -110,7 +123,6 @@ const Collection = () => {
         )
       },
       onSuccess: (res) => {
-
         if(res){
           setNewCollectionData(res[0]);
           setShowUnlisted(res[0]?.showUnlisted);
@@ -249,7 +261,7 @@ const Collection = () => {
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <Header />
       {/* {collectionStatus == 'loading' && <Loader />} */}
-      {collectionData && (
+      {!isBlocked && collectionData && (
         <HelmetMetaData
           title={collectionData[0]?.name}
           description={collectionData[0]?.description}
@@ -287,7 +299,7 @@ const Collection = () => {
         </div>
       )}
 
-      {collectionStatus == 'success' && (
+      {!isBlocked && collectionStatus == 'success' && (
         <div className="w-full">
           <div className="relative h-96 w-full md:h-60 2xl:h-96">
             <div className="nc-NcImage absolute inset-0" ref={bannerRef}>
@@ -360,10 +372,11 @@ const Collection = () => {
                           {!newCollectionData && 'Unknown NFT Collection'}
                           {newCollectionData && collectionData[0]?.name}
                         </h2>
-                        <span className="mt-4 inline-block text-sm font-bold">
-                          {collectionData[0]?.contractAddress?.slice(0, 7)}...
-                          {collectionData[0]?.contractAddress?.slice(-4)}
-                        </span>
+                        <a href={`${chainExplorer[Number(collectionData[0].chainId)]}address/${collectionData[0]?.contractAddress}`} target="_blank" className="hover:text-sky-600 transition">
+                          <span className="mt-4 inline-block text-sm">
+                            {collectionData[0]?.contractAddress}
+                          </span>
+                        </a>
                         <span
                           className="relative top-1 inline-block cursor-pointer pl-2"
                           onClick={() => {
@@ -582,27 +595,30 @@ const Collection = () => {
         </div>
       )}
 
-      <div className="mt-[5rem]">
-        {nftStatus == 'loading' && <Loader />}
-        {nftStatus == 'success' && nftData.length == 0 && (
-          <div
-            className={
-              dark ? style.errorBox + ' border-sky-400/20' : style.errorBox
-            }
-          >
-            <h2 className={style.errorTitle}>No NFT Minted yet.</h2>
-            {collectionData[0]?.createdBy._ref == myUser?.walletAddress && (
-              <Link href="/contracts">
-                <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center font-bold text-white">
-                  Mint NFT
-                </button>
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
+      {!isBlocked && (
+        <div className="mt-[5rem]">
+          {nftStatus == 'loading' && <Loader />}
+          {nftStatus == 'success' && nftData.length == 0 && (
+            <div
+              className={
+                dark ? style.errorBox + ' border-sky-400/20' : style.errorBox
+              }
+            >
+              <h2 className={style.errorTitle}>No NFT Minted yet.</h2>
+              {collectionData[0]?.createdBy._ref == myUser?.walletAddress && (
+                <Link href="/contracts">
+                  <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center font-bold text-white">
+                    Mint NFT
+                  </button>
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+
+      )}
       
-      {nftStatus == 'success' &&
+      {!isBlocked && nftStatus == 'success' &&
             nftData.length > 0 && (
               <>
                 <div className={style.nftWrapperContainer}>
@@ -659,7 +675,8 @@ const Collection = () => {
                             listings={marketData}
                             showUnlisted={showUnlisted}
                             creator={collectionData[0]?.createdBy}
-                          />) : ''
+                          />
+                          )   : ''
                       ))
                     }
                   </div>
@@ -667,55 +684,16 @@ const Collection = () => {
               </>
             )
       }
+      {isBlocked && (
+        <div className="p-[4rem] text-center">
+          <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
+          <h2 className="text-3xl font-bold mb-4">This NFT Collection is blocked.</h2>
+          <p className="leading-10">If you own this collection and if you think there has been a mistake, please contact us at <a href="mailto:support@metanuva.com" className="block md:inline p-2 border border-slate-600 rounded-md">support@metanuva.com</a></p>
+        </div>
+      )}
       <Footer />
     </div>
   )
 }
 
 export default Collection
-
-// export async function getServerSideProps(context){
-//   const { query } = context;
-
-//   const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`);
-//   const nftdata = await response.json();
-
-//   const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
-//   const sanityData = await response2.json();
-
-
-//   const collectionAddress = sanityData.collection?.contractAddress;
-//   const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
-
-//   const nftcontractdata = await response3.json();
-
-//   //determine which marketplace is current NFT is in
-//   const nftChainid = sanityData?.collection.chainId;
-//   const marketplace = {
-//     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
-//     '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
-//     '43114': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
-//     '97': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
-//     '421563': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
-//     '1': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
-//     '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
-//     '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
-//   }
-//   const blockchainName = {
-//     '80001': 'mumbai',
-//     '5': 'goerli',
-//     '43114': 'avalanche-fuji',
-//     '97': 'binance-testnet',
-//     '421563': 'arbitrum-goerli',
-//     '1': 'mainnet',
-//     '137': 'polygon',
-//     '56': 'binance',
-//   }
-//   const marketAddress = marketplace[nftChainid];
-
-//   return {
-//     props: {
-//      activeListings: ''
-//     }
-//   }
-// }

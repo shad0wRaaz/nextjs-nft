@@ -59,20 +59,12 @@ const AudioNFTCard = ({nft}) => {
             href={`/nfts/${nft.asset.properties?.tokenid}`}>
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">{nft.asset.name}</h2>
-                    {/* <div className="flex -space-x-1.5 hover:-space-x-0.5 transition duration-300">
-                        {likersProfile && likersProfile?.map((likers) => (
-                            <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-800">
-                                <img className="absolute inset-0 w-full h-full object-cover rounded-full" src={likers?.data?.url} alt="NFT Likers" />
-                                <span className="wil-avatar__name">J</span>
-                            </div>
-                        ))}
-                    </div> */}
                 </div>
                 <div className="w-full mt-1.5 flex justify-between items-center ">
                     <div className="pt-3">
                         <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 md:py-2 px-2.5 md:px-3.5 text-sm sm:text-base font-semibold ">
                         <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
-                            <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} {nft.buyoutCurrencyValuePerToken.symbol}</span>
+                            <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} <span className="text-xs">{nft.buyoutCurrencyValuePerToken.symbol}</span></span>
                         </div>
                     </div>
                     <div className="pt-3">

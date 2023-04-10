@@ -1,7 +1,6 @@
 import axios from 'axios'
 import Head from 'next/head'
 import millify from 'millify'
-import toast, { Toaster } from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { TiHeart } from 'react-icons/ti'
@@ -11,14 +10,18 @@ import { GoPackage } from 'react-icons/go'
 import { config } from '../lib/sanityClient'
 import * as style from '@dicebear/pixel-art';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import toast, { Toaster } from 'react-hot-toast'
 import { createAvatar } from '@dicebear/avatars';
 import { getImagefromWeb3 } from '../fetchers/s3'
 import React, { useEffect, useState } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { getTotals } from '../fetchers/SanityFetchers'
+import BlockedNFTs from '../components/admin/BlockedNFTs'
+import AddCategory from '../components/admin/AddCategory'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
 import { BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
+import BlockedCollections from '../components/admin/BlockedCollections'
 import { getTotalsforAdmin, updateListings } from '../fetchers/Web3Fetchers'
 import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../components/icons/CustomIcons'
 
@@ -56,7 +59,7 @@ const dashboard = () => {
     const [avaxloading, setavaxloading] = useState(false);
     const [maticloading, setmaticloading] = useState(false);
     const [totalPlatformFees, setTotalPlatformFees] = useState(0);
-    const { errorToastStyle, successToastStyle } = useThemeContext();
+    const { dark, errorToastStyle, successToastStyle } = useThemeContext();
 
     const getAllAdminUsers = async () => {
         const query = '*[_type == "settings"]{adminusers}';
@@ -123,10 +126,12 @@ const dashboard = () => {
         else if(blockchain == "avalanche-fuji" || blockchain == "avalanche") {setavaxloading(false);}
         
     }
+
+    
     
 
   return (
-    <div className="">
+    <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-gray'}`}>
         <Head>
             <title>Dashboard: Nuva NFT</title>
         </Head>
@@ -141,9 +146,9 @@ const dashboard = () => {
                     <Header />
                     <Toaster position="bottom-right" reverseOrder={false} />
                 </div>
-                <div className="flex pt-[5rem]" style={{ backgroundColor: "rgb(248, 249, 250)" }}>
-                    <div className="sidebar w-64 border hidden md:block p-4 text-sm">
-                         <div className="mx-2 p-2 px-4 flex justify-between items-center">
+                <div className="flex pt-[5rem]">
+                    <div className={`sidebar w-64 border ${dark ? 'border-slate-700' : ''} border-l-0 hidden md:block p-4 text-sm`}>
+                         <div className="mx-2 p-2 px-4 flex justify-between items-center hidden">
                             <span className="">Select Chain</span> 
                             {selectedChain && (
                                 <div className="transition hover:scale-125 cursor-pointer"
@@ -152,119 +157,119 @@ const dashboard = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="chainHolder flex flex-col">
-                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "goerli" ? ' bg-white shadow-md' : ''}`}
+                        <div className="chainHolder flex flex-col hidden">
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "goerli" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("goerli")}>
                                 <IconEthereum/> Ethereum
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "mumbai" ? ' bg-white shadow-md' : ''}`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "mumbai" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("mumbai")}>
                                 <IconPolygon/> Polygon 
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "binance-test" ? ' bg-white shadow-md' : ''}`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "binance-test" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("binance-test")}>
                                 <IconBNB/> Binance
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md rounded-lg mx-2 flex gap-1 items-center p-4 mb-1 cursor-pointer ${selectedChain == "avalanche-fuji" ? ' bg-white shadow-md' : ''}`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 flex gap-1 items-center p-4 mb-1 cursor-pointer ${selectedChain == "avalanche-fuji" ? ' bg-white shadow-md' : ''}`}
                                 onClick={() => setSelectedChain("avalanche-fuji")}>
                                 <IconAvalanche/>  Avalanche
                             </div>
                         </div>
-                        <h2 className="mt-5">Refresh Active Listings</h2>
+                        <h2 className="mt-5 mb-3 font-semibold">Refresh Active Listings</h2>
                         <div className="flex flex-col flex-wrap">
-                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
                                 onClick={() => refreshListings("goerli")}>
                                 <div>
-                                    <IconEthereum/> Ethereum 
+                                    <IconEthereum/>Goerli 
                                 </div>
                                 {ethloading && <IconLoading />}
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
                                 onClick={() => refreshListings("mumbai")}>
                                 <div>
-                                    <IconPolygon/> Polygon
+                                    <IconPolygon/> Mumbai
                                 </div> 
                                 {maticloading && <IconLoading />}
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 p-4 mb-1 cursor-pointer`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
                                 onClick={() => refreshListings("binance-testnet")}>
                                 <div>
-                                    <IconBNB/> Binance
+                                    <IconBNB/> Binance Test Chain
                                 </div> 
                                 {bnbloading && <IconLoading />}
                             </div>
-                            <div className={`hover:bg-white hover:shadow-md flex justify-between rounded-lg mx-2 gap-1 items-center p-4 mb-1 cursor-pointer`}
+                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 gap-1 p-2 items-center mb-1 cursor-pointer`}
                                 onClick={() => refreshListings("avalanche-fuji")}>
                                 <div>
-                                    <IconAvalanche/> Avalanche
+                                    <IconAvalanche/> Avalanche Fuji
                                 </div>
                                     {avaxloading && <IconLoading />}
                             </div>
                         </div>
                     </div>
                     <main className="flex-grow p-4">
-                        <div className="pt-10 h-[100vh]">
+                        <div className="pt-10">
                             <div className="container mx-auto">
                                 <div className="cards-container">
-                                    <div className="card flex justify-between items-center flex-row">
+                                    <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header">
+                                            <div className={`card-header ${dark ? '!text-white' : ''}`}>
                                                 Total NFTs
                                             </div>
                                             <div className="card-body">
-                                                <h5>{totalData?.totalNfts}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>{totalData?.totalNfts}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
                                             <GoPackage fontSize={20}/>
                                         </div>
                                     </div>
-                                    <div className="card flex justify-between items-center flex-row">
+                                    <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header">
+                                            <div className={`card-header ${dark ? '!text-white' : ''}`}>
                                                 Total NFTs on Sale
                                             </div>
                                             <div className="card-body">
-                                                <h5>{totalNFTData?.totalNFTs}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>{totalNFTData?.totalNFTs}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
                                             <GoPackage fontSize={20}/>
                                         </div>
                                     </div>
-                                    <div className="card flex justify-between items-center flex-row">
+                                    <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header">
+                                            <div className={`card-header ${dark ? '!text-white' : ''}`}>
                                                 Total Collections
                                             </div>
                                             <div className="card-body">
-                                                <h5>{totalData?.totalCollections}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>{totalData?.totalCollections}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
                                             <BiCollection fontSize={20}/>
                                         </div>
                                     </div>
-                                    <div className="card flex justify-between items-center flex-row">
+                                    <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header">
+                                            <div className={`card-header ${dark ? '!text-white' : ''}`}>
                                                 Total Users
                                             </div>
                                             <div className="card-body">
-                                                <h5>{totalData?.totalUsers}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>{totalData?.totalUsers}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
                                             <BiUser fontSize={20}/>
                                         </div>
                                     </div>
-                                    <div className="card flex justify-between items-center flex-row">
+                                    <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header">
+                                            <div className={`card-header ${dark ? '!text-white' : ''}`}>
                                                 Total Platform Fees
                                             </div>
                                             <div className="card-body">
-                                                <h5>${totalData?.platformfee?.platformfee}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>${totalData?.platformfee?.platformfee}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
@@ -274,10 +279,48 @@ const dashboard = () => {
                                 </div>
                                 {/* End of first row */}
 
+                                {/* Start of second row*/}
                                 <div className="cards-container">
-                                    <div className="card">
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header font-semibold">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Add New Category
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <AddCategory/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Block NFTs from Display
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <BlockedNFTs />
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Block Collections from Display
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <BlockedCollections />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                                {/* End of second row*/}
+
+                                <div className="cards-container">
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
                                                 Most Popular NFTs
                                             </div>
                                             <div className="card-body pt-4">
@@ -288,17 +331,21 @@ const dashboard = () => {
                                                             <div className="user-info flex-grow flex flex-row gap-2 p-4 py-2 items-center">
                                                                 {Boolean(item.itemContractdata?.metadata.image) && (
                                                                     <div className="w-[2.5rem] h-[2.5rem] rounded-full overflow-hidden border border-neutral-200">
-                                                                        <img src={item.itemContractdata?.metadata.image} />
+                                                                        <img src={item.itemContractdata?.metadata.image} className="h-full w-full object-cover" />
                                                                     </div>
                                                                 )}
-                                                                <div className="user-text flex flex-col text-sm">
+                                                                <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
                                                                     <span>{item.itemContractdata?.metadata.name}</span>
                                                                     <div className="flex gap-1"><TiHeart fill='#ff0000' fontSize={20}/> {item.likers}</div>
                                                                 </div>
                                                             </div>
                                                             <a href={`/nfts/${item?.itemContractdata?.metadata?.properties.tokenid}`} target="_blank">
-                                                                <div className="viewer rounded-xl border border-neutral-200 cursor-pointer p-2 hover:bg-neutral-100">
-                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45"/>
+                                                                <div className={`viewer rounded-xl border ${dark ? ' border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'} cursor-pointer p-2`}>
+                                                                    {dark ? 
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>
+                                                                    :
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" />
+                                                                    }
                                                                 </div>
                                                             </a>
                                                         </div>
@@ -307,9 +354,9 @@ const dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="card">
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header font-semibold">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
                                                 Top Collections
                                             </div>
                                             <div className="card-body pt-4">
@@ -320,17 +367,21 @@ const dashboard = () => {
                                                             <div className="user-info flex-grow flex flex-row gap-2 p-4 py-2 items-center">
                                                                 {Boolean(collection.web3imageprofile) && (
                                                                     <div className="w-[2.5rem] h-[2.5rem] rounded-full overflow-hidden border border-neutral-200">
-                                                                        <img src={getImagefromWeb3(collection.web3imageprofile)} />
+                                                                        <img src={getImagefromWeb3(collection.web3imageprofile)} className="h-full w-full object-cover" />
                                                                     </div>
                                                                 )}
-                                                                <div className="user-text flex flex-col text-sm">
+                                                                <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
                                                                     <span>{collection.name}</span>
                                                                     <span>${millify(collection.volumeTraded)}</span>
                                                                 </div>
                                                             </div>
                                                             <a href={`/collections/${collection?._id}`} target="_blank">
-                                                                <div className="viewer rounded-xl border border-neutral-200 cursor-pointer p-2 hover:bg-neutral-100">
-                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45"/>
+                                                                <div className={`viewer rounded-xl border ${dark ? ' border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'} cursor-pointer p-2`}>
+                                                                    {dark ? 
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>
+                                                                    :
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" />
+                                                                    }
                                                                 </div>
                                                             </a>
                                                         </div>
@@ -339,9 +390,9 @@ const dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="card">
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className="card-header font-semibold">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
                                                 Top Active Users
                                             </div>
                                             <div className="card-body pt-4">
@@ -352,19 +403,23 @@ const dashboard = () => {
                                                             <div className="user-info flex-grow flex flex-row gap-2 p-4 py-2 items-center">
                                                                 <div className="w-[2.5rem] h-[2.5rem] rounded-full overflow-hidden border border-neutral-200">
                                                                     {Boolean(user.web3imageprofile) ? (
-                                                                        <img src={getImagefromWeb3(user.web3imageprofile)} />    
+                                                                        <img src={getImagefromWeb3(user.web3imageprofile)} className="h-full w-full object-cover" />    
                                                                     ): (
                                                                         <div dangerouslySetInnerHTML={{ __html: createAvatar(style,  {seed: user?.walletAddress}) }} />
                                                                     )}
                                                                 </div>
-                                                                <div className="user-text flex flex-col text-sm">
+                                                                <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
                                                                     <span>{user.userName}</span>
                                                                     <span>${millify(user.volumeTraded)}</span>
                                                                 </div>
                                                             </div>
                                                             <a href={`/user/${user?._id}`} target="_blank">
-                                                                <div className="viewer rounded-xl border border-neutral-200 cursor-pointer p-2 hover:bg-neutral-100">
-                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45"/>
+                                                                <div className={`viewer rounded-xl border ${dark ? ' border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'} cursor-pointer p-2`}>
+                                                                    {dark ? 
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>
+                                                                    :
+                                                                    <BsArrowRightShort fontSize={20} className="-rotate-45" />
+                                                                    }
                                                                 </div>
                                                             </a>
                                                         </div>

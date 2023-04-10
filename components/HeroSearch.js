@@ -34,15 +34,15 @@ const HeroSearch = () => {
             dark
               ? ' border-slate-600 bg-slate-700/70 text-neutral-100'
               : ' border-neutral-100/70 bg-[#ffffff99]'
-          } divide-y  lg:divide-y-0 backdrop-blur-md`}
+          } backdrop-blur-md`}
         >
-          <div className="searchfields border-slate-500  relative flex">
-            <div className="relative flex flex-1 flex-shrink-0 cursor-pointer items-center space-x-3 text-left focus:outline-none  ">
+          <div className="searchfields mb-4 md:md-0 border-slate-500  relative flex">
+            <div className="relative flex justify-center flex-1 flex-shrink-0 cursor-pointer items-center space-x-3 text-left focus:outline-none  ">
               <div className={`searchfieldicon pl-5 ${dark ? ' text-white' : ' text-black'}`}>
                 <IconSearch />
               </div>
 
-              <div className="flex-grow">
+              <div className="">
                 <input
                   className="block w-full truncate border-none bg-transparent p-0 font-semibold placeholder-neutral-300 focus:placeholder-neutral-300/20 focus:outline-none focus:ring-0  xl:text-lg"
                   placeholder="Search NFTs"
@@ -59,15 +59,15 @@ const HeroSearch = () => {
             </div>
           </div>
 
-          <div className="searchfields border-slate-500 relative flex">
+          <div className="searchfields mb-4 md:md-0 border-slate-500 relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
-                <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
+                <Menu.Button className="flex justify-center w-full cursor-pointer items-center gap-3">
                   <div className={`${dark ? ' text-white': 'text-black'}`}>
                     <IconImage />
                   </div>
 
-                  <div className="flex-grow">
+                  <div className="">
                     <span className="block min-w-[130px] text-left font-semibold xl:text-lg">
                       Item type
                     </span>
@@ -178,15 +178,15 @@ const HeroSearch = () => {
             </Menu>
           </div>
 
-          <div className="searchfields border-slate-500 relative flex">
+          <div className="searchfields mb-4 md:md-0 border-slate-500 relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
-                <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
+                <Menu.Button className="flex justify-center w-full cursor-pointer items-center gap-3">
                   <div className={`${dark ? ' text-white' : ' text-black'}`}>
                     <IconBulb />
                   </div>
 
-                  <div className="flex-grow">
+                  <div className="">
                     <span className="block min-w-[130px] text-left font-semibold xl:text-lg">
                       Sale type
                     </span>
@@ -305,15 +305,15 @@ const HeroSearch = () => {
             </Menu>
           </div>
 
-          <div className="searchfields border-slate-500  relative flex">
+          <div className="searchfields mb-4 md:md-0 border-slate-500  relative flex">
             <Menu as="div" className="relative inline-block text-left flex-grow">
               <div>
-                <Menu.Button className="inline-flex w-full cursor-pointer items-center gap-3">
+                <Menu.Button className="flex justify-center w-full cursor-pointer items-center gap-3">
                   <div className={`${dark ? ' text-white' : ' text-black'}`}>
                     <IconDollar />
                   </div>
 
-                  <div className="flex-grow">
+                  <div className="">
                     <span className="block min-w-[130px] text-left font-semibold xl:text-lg">
                       {priceRange[0]} ~ {priceRange[1]}
                     </span>
@@ -358,7 +358,7 @@ const HeroSearch = () => {
           <div className="py-4 pl-4 lg:py-0 border-slate-500">
             <button
               type="button"
-              className="flex h-14 w-full items-center justify-center rounded-full bg-blue-600 text-neutral-50 hover:bg-blue-700 focus:outline-none md:h-16 md:w-16"
+              className="flex h-14 w-full items-center justify-center rounded-full bg-blue-600 text-neutral-50 hover:bg-blue-700 focus:outline-none lg:h-16 lg:w-16"
               onClick={() => {
                 router.push({
                   pathname: '/search',
@@ -376,7 +376,7 @@ const HeroSearch = () => {
                 })
               }}
             >
-              <span className="mr-3 md:hidden">Search</span>
+              <span className="mr-3 lg:hidden">Search</span>
               <RiSearchLine fontSize="25px" />
             </button>
           </div>

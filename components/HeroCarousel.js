@@ -1,7 +1,9 @@
 import Slider from 'react-slick'
 import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
+import "slick-carousel/slick/slick.css";
 import FeaturedItems from './FeaturedItems'
+import "slick-carousel/slick/slick-theme.css";
 import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
@@ -51,10 +53,6 @@ const HeroCarousel = (props) => {
             >
               Discover, Collect, Mint, Sell and Buy NFTs 🖼
             </div>
-            {/* <div className={style.description}>
-              Discover the most outstanding NFTs in all topics of life. Create 
-              your own, Mint, Sell  Buy
-            </div> */}
             <div className={style.ctaContainer}>
               <button
                 className={style.accentedButton}

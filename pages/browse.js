@@ -24,6 +24,7 @@ const browse = () => {
   const { dark } = useThemeContext()
   const [categoryData, setCategoryData] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
+  console.log(categoryData)
 
   const fetchCategoryData = async (sanityClient = config) => {
     const query = `*[_type == "category"] | order(name asc) {
@@ -41,34 +42,6 @@ const browse = () => {
       //just clean up codes, nothing else here
     }
   }, [])
-
-  // useEffect(() => {
-    
-  //   const param = router.query?.c
-  //   if(!param) { return }
-  //   console.log(param)
-  //   if(param == 'Sports') {
-  //     // setSelectedTab(4);
-  //   }
-  //   // switch(router.query.c){
-  //   //   case 'Collectibles':
-  //   //     setSelectedIndex(4);
-  //   //     console.log('i changed')
-  //   //     default:
-  //   //       setSelectedIndex(1);
-  //   //       console.log('i changed 00')
-  //   // }
-  //   return() => {
-  //     //do nothing 
-  //   }
-  // },[router.query.c])
-
-  // useEffect(() => {
-  //     console.log(selectedTab)
-  // }, [selectedTab])
-  // useEffect(() => {
-  //     setSelectedTab(5)
-  // }, [])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -98,14 +71,14 @@ const browse = () => {
                   data-headlessui-state=""
                   className={({ selected }) =>
                     classNames(
-                      'flex items-center justify-center space-x-2 rounded-full border-0 text-sm font-medium leading-5 focus:border-0 focus:ring-0',
+                      'flex items-center justify-center space-x-2 rounded-full border-0 text-sm font-medium leading-5 outline-0',
                       selected
                         ? dark
-                          ? ' bg-slate-600 ring-0'
-                          : 'bg-sky-200 border-0 ring-0 focus-within:ring-0 focus:ring-0'
+                          ? ' bg-slate-600'
+                          : 'bg-sky-200'
                         : dark
                         ? ' text-neutral-100 hover:bg-slate-600 hover:text-neutral-200'
-                        : 'text-black ring-0 hover:bg-sky-100 hover:text-slate-600 focus:ring-0'
+                        : 'text-black ring-0 hover:bg-sky-100 hover:text-slate-600'
                     )
                   }
                 >

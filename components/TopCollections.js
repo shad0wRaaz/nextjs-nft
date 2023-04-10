@@ -8,6 +8,7 @@ import { RiArrowUpDownLine } from 'react-icons/ri'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-1 relative',
@@ -25,18 +26,11 @@ const style = {
   coinLogo: 'inline mr-[3px] ml-[5px] h-[15px] w-auto',
 }
 
-const people = [
-  { name: '24hr' },
-  { name: 'Weekly' },
-  { name: 'Monthly' },
-  { name: 'Yearly' },
-  { name: 'All Time' },
-]
-
 const TopCollections = () => {
   const { dark, errorToastStyle } = useThemeContext();
   const [showTop, setShowTop] = useState(true);
   const [allCollections, setAllCollections] = useState();
+  const { blockedCollections } = useSettingsContext();
   const { topTradedCollections, setTopTradedCollections, selectedBlockchain } = useMarketplaceContext();
 
   const { data, status, isFetching } = useQuery(
@@ -51,35 +45,25 @@ const TopCollections = () => {
         )
       },
       onSuccess: async (res) => {
-        // console.log(res)
         setAllCollections(res)
-
-        // const unresolved = res.map(async (item) => {
-        //   const obj = { ...item }
-        //   const profilePath = await getUnsignedImagePath(item.profileImage)
-        //   const bannerPath = await getUnsignedImagePath(item.bannerImage)
-        //   obj['profileImage'] = profilePath?.data.url
-        //   obj['bannerImage'] = bannerPath?.data.url
-        //   return obj
-        // })
-
-        // const resolvedPaths = await Promise.all(unresolved)
-
-        // setAllCollections(resolvedPaths)
       },
     }
   )
 
   useEffect(() => {
     if(!allCollections) return
+    //remove blocked Collections
+    
+    const filteredCollections = allCollections?.filter( obj => !blockedCollections.some( obj2 => obj.id === obj2._id ));
+    
     if(showTop){
-      var latestCollection = allCollections.sort((a,b) => {return (b.volumeTraded - a.volumeTraded)})
+      var latestCollection = filteredCollections.sort((a,b) => {return (b.volumeTraded - a.volumeTraded)})
       latestCollection = latestCollection.slice(0, 8)
 
       setTopTradedCollections(latestCollection)
     }
     else {
-      var latestCollection = allCollections.sort((a,b) => {return (new Date(b._createdAt) - new Date(a._createdAt))})
+      var latestCollection = filteredCollections.sort((a,b) => {return (new Date(b._createdAt) - new Date(a._createdAt))})
       latestCollection = latestCollection.slice(0, 8)
       setTopTradedCollections(latestCollection)
     }

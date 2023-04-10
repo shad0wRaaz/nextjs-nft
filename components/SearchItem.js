@@ -101,7 +101,7 @@ const SearchItem = ({ nftItem }) => {
 
                         <span className=" !leading-none text-green-500">
                           {nftItem.buyoutCurrencyValuePerToken.displayValue}{' '}
-                          {nftItem.buyoutCurrencyValuePerToken.symbol}
+                          <span className="text-xs">{nftItem.buyoutCurrencyValuePerToken.symbol}</span>
                         </span>
                       </div>
                     </div>

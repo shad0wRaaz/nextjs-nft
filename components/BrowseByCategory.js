@@ -1,11 +1,9 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import Slider from 'react-slick'
+import { Rerousel } from 'rerousel';
 import { config } from '../lib/sanityClient'
-import React, { useEffect, useState } from 'react'
-import { useThemeContext } from '../contexts/ThemeContext'
-import { HiArrowSmRight, HiArrowSmLeft } from 'react-icons/hi'
 import { getImagefromWeb3 } from '../fetchers/s3'
+import React, { useEffect, useRef, useState } from 'react'
+import { useThemeContext } from '../contexts/ThemeContext'
 
 const style = {
   wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-0 lg:pb-0 overflow-hidden',
@@ -26,7 +24,7 @@ const style = {
 const settings = {
   dots: false,
   infinite: true,
-  speed: 500,
+  speed: 800,
   slidesToShow: 5,
   slidesToScroll: 1,
   autoplay: true,
@@ -72,8 +70,7 @@ const settings = {
 };
 
 const BrowseByCategory = () => {
-  // const glideTrack = useRef(0)
-  // const slide = useRef(0)
+  const sliderRef = useRef(null);
   const [categoryData, setCategoryData] = useState([])
   const { dark } = useThemeContext()
 
@@ -93,40 +90,9 @@ const BrowseByCategory = () => {
     return() =>{
       //do nothing
     }
-  }, [])
+  }, []);
 
-  const randomCircle = (id) => {
-    const defaultStyles = 'h-[40px] w-[40px] rounded-full'
-    switch (id) {
-      case 0:
-        return defaultStyles.concat(' bg-blue-500')
-      case 1:
-        return defaultStyles.concat(' bg-green-500')
-      case 2:
-        return defaultStyles.concat(' bg-red-500')
-      case 3:
-        return defaultStyles.concat(' bg-yellow-500')
-      case 4:
-        return defaultStyles.concat(' bg-purple-500')
-      case 5:
-        return defaultStyles.concat(' bg-pink-500')
-      case 6:
-        return defaultStyles.concat(' bg-blue-500')
-      default:
-        return defaultStyles.concat(' bg-slate-500')
-    }
-  }
-
-  // function moveLeft() {
-  //   if (slide.current <= -800) return
-  //   slide.current = slide.current - 800
-  //   glideTrack.current.style.transform = `translate(${slide.current}px)`
-  // }
-  // function moveRight() {
-  //   if (slide.current == 0) return
-  //   slide.current = slide.current + 800
-  //   glideTrack.current.style.transform = `translate(${slide.current}px)`
-  // }
+  const randomCircle = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-blue-500', 'bg-slate-500'];
 
   return (
     <div className={style.wrapper}>
@@ -141,82 +107,39 @@ const BrowseByCategory = () => {
           <span>
             Browse <span className="textGradBlue">Collections</span> by Category
           </span>
-          {/* <div className={style.controls}>
-            <HiArrowSmLeft
-              fontSize="25px"
-              onClick={moveLeft}
-              className="transition hover:scale-125"
-            />
-            <HiArrowSmRight
-              fontSize="25px"
-              onClick={moveRight}
-              className="transition hover:scale-125"
-            />
-          </div> */}
         </h2>
+        <div ref={sliderRef}>
+          {categoryData && (
+            <Rerousel className="browsebycategory" itemRef={sliderRef}>
+              {categoryData.map((category, id) => (
 
-        {categoryData && (
-          <Slider {...settings} className="browsebycategory">
-            {categoryData.map((category, id) => (
-
-              <div key={id} className="relative">
-                <Link href={`/browse/?c=${category?.name}`}>
-                  <div className={style.collectionCard}>
-                    <div className={style.imageContainer}>
-                      <img
-                        src={getImagefromWeb3(category.profileImage)}
-                        className="h-[160px] w-[100%] cursor-pointer object-cover transition hover:scale-125"
-                      />
-                    </div>
-                    <div className={style.collectionCardName}>
-                      <div className={randomCircle(id)}></div>
-                      <div>
-                        <p className={`${!dark && ' text-black'}`}>
-                          {category?.name}
-                        </p>
-                        <span className="text-sm font-normal text-slate-500">
-                          {category?.totalCollection} Collections{' '}
-                        </span>
+                <div key={id} className="relative">
+                  <Link href={`/browse/?c=${category?.name}`}>
+                    <div className={style.collectionCard}>
+                      <div className={style.imageContainer}>
+                        <img
+                          src={getImagefromWeb3(category.profileImage)}
+                          className="h-[160px] w-[100%] cursor-pointer object-cover transition hover:scale-125"
+                        />
+                      </div>
+                      <div className={style.collectionCardName}>
+                        <div className={`h-[40px] w-[40px] rounded-full ${randomCircle[id]}`}></div>
+                        <div>
+                          <p className={`${!dark && ' text-black'}`}>
+                            {category?.name}
+                          </p>
+                          <span className="text-sm font-normal text-slate-500">
+                            {category?.totalCollection} Collections{' '}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </Slider>
-        )}
-        {/* <div className="translate-x-[-15px] overflow-hidden " style={{display: 'none'}}>
-          <div
-            ref={glideTrack}
-            className="linear duration-600 flex translate-x-0 flex-row justify-start transition"
-          >
-            {categoryData.map((category, id) => (
-              <div key={id} className="relative">
-                <Link href={`/browse/?c=${category?.name}`}>
-                  <div className={style.collectionCard}>
-                    <div className={style.imageContainer}>
-                      <img
-                        src={getImagefromWeb3(category.profileImage)}
-                        className="h-[160px] w-[100%] cursor-pointer object-cover transition hover:scale-125"
-                      />
-                    </div>
-                    <div className={style.collectionCardName}>
-                      <div className={randomCircle(id)}></div>
-                      <div>
-                        <p className={`${!dark && ' text-black'}`}>
-                          {category?.name}
-                        </p>
-                        <span className="text-sm font-normal text-slate-500">
-                          {category?.totalCollection} Collections{' '}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div> */}
+                  </Link>
+                </div>
+              ))}
+            </Rerousel>
+          )}
+        </div>
       </div>
     </div>
   )

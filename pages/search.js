@@ -83,7 +83,7 @@ const search = ({category}) => {
       //nothing, just clean up codes
     }
   }
-
+  
   useEffect(() => {
     ;(async() => {
       const query = `*[_type == "category"] {name}`;
@@ -108,14 +108,6 @@ const search = ({category}) => {
     setIncludeDirect(curval =>data?.d === 'true' ? true : curval);
     setIncludeHasOffers(curval => data?.h === 'true' ? true : curval);
     setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 10000]);
-    // setSelectedCategory(data?.c ? data.c : 'all');
-    // setIncludeImage(data?.i === 'true' ? true : false);
-    // setIncludeVideo(data?.v === 'true' ? true : false);
-    // setIncludeAudio(data?.a === 'true' ? true : false);
-    // setIncludeAuction(data?.ac === 'true' ? true : false);
-    // setIncludeDirect(data?.d === 'true' ? true : false);
-    // setIncludeHasOffers(data?.h === 'true' ? true : false);
-    // setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 100]);
 
     return() => {
       //nothing, just clean up codes

@@ -3,7 +3,8 @@ import axios from 'axios'
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' :'http://localhost:8080'
 
-export const getUser = async (address) => {
+export const getUser = 
+async (address) => {
   const query = `*[_type == "users" && walletAddress == "${address}"] {
       web3imagebanner, volumeTraded, biography, fbhHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt
     }`
@@ -11,7 +12,8 @@ export const getUser = async (address) => {
   return res[0]
 }
 
-export const checkUsername = async (username, walletaddress) => {
+export const checkUsername = 
+async (username, walletaddress) => {
 console.log(username, walletaddress)
   const query = `*[_type == "users" && userName == "${username}"]`
   const res = await config.fetch(query);
@@ -24,7 +26,8 @@ console.log(username, walletaddress)
   return false;
 }
 
-export const checkDuplicateEmail = async (email, walletaddress) => {
+export const checkDuplicateEmail = 
+async (email, walletaddress) => {
   
   const query = `*[_type == "users" && email == "${email}"]`;
   const res = await config.fetch(query);
@@ -37,7 +40,8 @@ export const checkDuplicateEmail = async (email, walletaddress) => {
   return false;
 }
 
-export const checkEmailVerification = async (id, randomCode) => {
+export const checkEmailVerification = 
+async (id, randomCode) => {
   const query = `*[_type == "users" && _id == "${id}"]`
   const res = await config.fetch(query);
   console.log(res[0])
@@ -55,7 +59,8 @@ export const checkEmailVerification = async (id, randomCode) => {
   return false;
 }
 
-export const checkCollectionName = async (collectioname, collectionaddress) => {
+export const checkCollectionName = 
+async (collectioname, collectionaddress) => {
 
   const query = `*[_type == "nftCollection" && name == "${collectioname}"]`
   const res = await config.fetch(query);
@@ -79,7 +84,8 @@ export const getUserContinuously =
     return res[0]
   }
 
-export const getReportActivities = (itemid) => async({queryKey}) => {
+export const getReportActivities = 
+(itemid) => async({queryKey}) => {
   const[_, collectionAddress] = queryKey
   const query = `*[_type == "notifications" && item._ref == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`
   const res = await config.fetch(query)
@@ -99,23 +105,24 @@ export const getNFTCollectionsByCategory =
   () =>
   async ({ queryKey }) => {
     const [_, categoryName] = queryKey
-    const query = `*[_type == "nftCollection" && category == "${categoryName}"] {
-        _id,
-        name, 
-        category, 
-        contractAddress,
-        web3imageprofile,
-        web3imagebanner,
-        description,
-        chainId,
-        floorPrice,
-        volumeTraded,
-        "creator": createdBy->userName,
-        "creatorAddress" : createdBy->walletAddress,
-        "allOwners" : owners[]->
-    }`
-    const res = await config.fetch(query)
-    return res
+    // const query = `*[_type == "nftCollection" && category == "${categoryName}"] {
+    //     _id,
+    //     name, 
+    //     category, 
+    //     contractAddress,
+    //     web3imageprofile,
+    //     web3imagebanner,
+    //     description,
+    //     chainId,
+    //     floorPrice,
+    //     volumeTraded,
+    //     "creator": createdBy->userName,
+    //     "creatorAddress" : createdBy->walletAddress,
+    //     "allOwners" : owners[]->
+    // }`
+    // const res = await config.fetch(query)
+    const result = await axios.get(`${HOST}/api/getNFTCollectionsByCategory/${categoryName}`)
+    return result?.data
   }
 
 export const getMyCollections =
@@ -139,11 +146,12 @@ export const getMyCollections =
     return res
   }
 
-export const getTopTradedNFTCollections = () => async ({queryKey}) => {
+export const getTopTradedNFTCollections = 
+() => async ({queryKey}) => {
   const [_, blockchain] = queryKey;
 
-  const collections = await axios.get(`${HOST}/api/topTradedCollections/${blockchain}`)
-    return JSON.parse(collections.data)
+  const collections = await axios.get(`${HOST}/api/topTradedCollections/${blockchain}`);
+    return JSON.parse(collections.data);
 }
 
 export const getNFTCollection =
@@ -215,13 +223,43 @@ export const getAllOwners =
     const res = await config.fetch(query)
     return res
   }
-export const getCoinPrices = () => async () => {
+
+export const getBlockedItems = 
+() => async () => {
+  const blockeditems = await axios.get(`${HOST}/api/blockeditems`);
+  return JSON.parse(blockeditems.data);
+}
+
+export const getCoinPrices = 
+() => async () => {
   const query = `*[_type == "settings"]{ethprice, maticprice, bnbprice, avaxprice, _updatedAt}`
   const res = await config.fetch(query)
   return res
 }
 
-export const getTotals = (chainid) => async() => {
+export const getAllNFTsforDashboard = 
+() => async () => {
+  const query = `*[_type == "nftItem"]{name, _id}`;
+  const result = await config.fetch(query);
+  return result;
+}
+
+export const getAllCollectionsforDashboard = 
+() => async () => {
+  const query = `*[_type == "nftCollection"]{name, _id}`;
+  const result = await config.fetch(query);
+  return result;
+}
+
+export const getAllCategories =
+() => async () => {
+  const query = `*[_type == "category"]`;
+  const result = await config.fetch(query);
+  return result;
+}
+
+export const getTotals = 
+(chainid) => async() => {
   let query1 = ''; let query2 = ''; let query3 = ''; let query4 = ''; let query5 = ''; let query6 = ''; let query7 = '';
   if(chainid){
     query1 = `count(*[_type == "nftItem" && chainId == ${chainid}])`;

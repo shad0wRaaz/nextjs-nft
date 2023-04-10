@@ -26,27 +26,12 @@ const AudioNFTCardCompact = ({nft}) => {
                 <div className="flex flex-col justify-center flex-grow">
                     <h2 className="block font-medium sm:text-lg">{nft.asset.name}</h2>
                     <div className=" flex items-center pt-3 mt-1.5">
-                        {/* <div className="hidden sm:flex -space-x-1.5">
-                            <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-800">
-                                <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-2.405c62ff9ad88c47e28c.png" alt="John Doe" />
-                                <span className="wil-avatar__name">J</span>
-                            </div>
-                            <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-800">
-                                <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-7.c88583919650f636b191.png" alt="John Doe" />
-                                <span className="wil-avatar__name">J</span>
-                            </div>
-                            <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white dark:ring-neutral-800">
-                                <img className="absolute inset-0 w-full h-full object-cover rounded-full" src="./static/media/Image-6.f9fbe7060b79c99c7a60.png" alt="John Doe" />
-                                <span className="wil-avatar__name">J</span>
-                            </div>
-                        </div> */}
                         <div className="sm:ml-3.5">
                             <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-semibold ">
                             <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
-                                <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} {nft.buyoutCurrencyValuePerToken.symbol}</span>
+                                <span className=" text-green-500 !leading-none">{nft.buyoutCurrencyValuePerToken.displayValue} <span className="text-xs">{nft.buyoutCurrencyValuePerToken.symbol}</span></span>
                             </div>
                         </div>
-                        {/* <span className="block ml-3.5 text-neutral-500 dark:text-neutral-400 text-xs">1 of 100</span> */}
                     </div>
                 </div>
             </a>

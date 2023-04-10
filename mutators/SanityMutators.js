@@ -1,4 +1,8 @@
+import axios from 'axios';
 import { config } from '../lib/sanityClient'
+const settingDocId = "3cae3666-6292-4f72-b8b7-fba643c068bf";
+
+const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' : 'http://localhost:8080';
 
 export const saveFollower = async ({ creator, admirer }) => {
   // return await config
@@ -143,6 +147,81 @@ export const addVolumeTraded = async ({
     .patch(id)
     .inc({ volumeTraded: volume })
     .commit();
+}
+export const addBlockedNft = async ({id}) => {
+  await config
+        .patch(settingDocId)
+        .setIfMissing({ blockednfts: [] })
+        .insert('before', 'blockednfts[0]', [{ _ref: id }])
+        .commit({ autoGenerateArrayKeys: true })
+        .then(() => { return true; })
+        .catch(() => { return false; })
+}
+export const removeBlockedNft = async({id}) => {
+  const nfttoremove = [`blockednfts[_ref == "${id}"]`];
+  await config
+        .patch(settingDocId)
+        .unset(nfttoremove)
+        .commit()
+        .then(() => { return true; })
+        .catch(() => { return false; })
+}
+export const addCategory = async({categoryname, image}) => {
+  if(image){
+    let profileLink = '';
+    const pfd = new FormData();
+    pfd.append("imagefile", image);
+    profileLink = await axios.post(
+      `${HOST}/api/saveweb3image`,
+      pfd,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      );
+
+      const categoryDoc = {
+        _type: 'category',
+        name: categoryname,
+        totalCollection: 0,
+        profileImage: profileLink?.data,
+      }
+      
+      await config.create(categoryDoc).then(() => { return true}).catch(() => { return false;});
+
+    }
+}
+export const addBlockedCollection = async ({id}) => {
+  await config
+        .patch(settingDocId)
+        .setIfMissing({ blockedcollections: [] })
+        .insert('before', 'blockedcollections[0]', [{ _ref: id }])
+        .commit({ autoGenerateArrayKeys: true })
+        .then(() => { return true; })
+        .catch(() => { return false; })
+}
+export const removeBlockedCollection = async({id}) => {
+  const collectiontoremove = [`blockedcollections[_ref == "${id}"]`];
+  await config
+        .patch(settingDocId)
+        .unset(collectiontoremove)
+        .commit()
+        .then(() => { return true; })
+        .catch(() => { return false; })
+}
+export const removeCategory = async ({categoryname}) => {
+  //check if there are any collection under this category.. should not delete any category if there are any collection.
+  const query = `*[_type == "category" && name == "${categoryname}"]{totalCollection}`;
+  const collectionnumber = await config.fetch(query);
+
+  if(collectionnumber[0]?.totalCollection != 0) {
+    throw new Error("Only empty Categories can be deleted");
+  }
+  //if the category has 0 collection in it, delete is safe
+  await config.delete({ query: '*[_type == "category" && name == $categoryname]', params: { categoryname: categoryname}})
+              .then(() => {return true})
+              .catch(()=> {return false});
 }
 export const saveEmailVerificationCode = async(id, randomCode) => {
   try{

@@ -51,6 +51,7 @@ const PopularAudioNFTs = () => {
             //do nothing
         }
     }, [activeListings])
+console.log(activeListings)
 
   return (
     <div className={dark ? 'darkGray' : 'bg-neutral-100'}>

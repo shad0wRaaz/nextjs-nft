@@ -210,7 +210,7 @@ const NFTCard = ({
                                 listedItem?.buyoutCurrencyValuePerToken
                                   .displayValue
                               }{' '}
-                              {listedItem?.buyoutCurrencyValuePerToken.symbol}
+                              <span className="text-sm">{listedItem?.buyoutCurrencyValuePerToken.symbol}</span>
                             </span>
                           </>
                         ) : (

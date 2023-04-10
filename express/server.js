@@ -15,16 +15,16 @@ import { ThirdwebStorage } from '@thirdweb-dev/storage'
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 
 const app = express()
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
-// app.use(cors({origin: "*"}))
+// app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
+app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
-var globalActiveListings = []
+var globalActiveListings = [];
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json()); 
 
 dotenv.config() 
 //chain ENUMS
@@ -241,12 +241,73 @@ app.get('/api/getAllNfts', async(req, res) => {
 
 })
 
+app.get('/api/updateNFTCollectiosnByCategory/:category', async(req,res) => {
+  const category = req.params.category;
+  const query = `*[_type == "nftCollection" && category == "${category}"] {
+    _id,
+    name, 
+    category, 
+    contractAddress,
+    web3imageprofile,
+    web3imagebanner,
+    description,
+    chainId,
+    floorPrice,
+    volumeTraded,
+    "creator": createdBy->userName,
+    "creatorAddress" : createdBy->walletAddress,
+    "allOwners" : owners[]->,
+  }`;
+  const result = await config.fetch(query);
+  redis.set("collection-by-category-" + category, JSON.stringify(result));
+  res.status(200).json(result);
+});
+
+app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
+  const category = req.params.category;
+  const getCategories = await redis.get("collection-by-category-" + category);
+
+  if(getCategories == null){
+    const query = `*[_type == "nftCollection" && category == "${category}"] {
+      _id,
+      name, 
+      category, 
+      contractAddress,
+      web3imageprofile,
+      web3imagebanner,
+      description,
+      chainId,
+      floorPrice,
+      volumeTraded,
+      "creator": createdBy->userName,
+      "creatorAddress" : createdBy->walletAddress,
+      "allOwners" : owners[]->,
+    }`;
+    const result = await config.fetch(query);
+    redis.set("collection-by-category-" + category, JSON.stringify(result));
+    res.status(200).json(result);
+  }else {
+    res.status(200).json(JSON.parse(getCategories));
+  }
+
+});
+
 app.get('/api/getAllListings/:blockchain', async (req, res) => {
   const blockchain = req.params.blockchain;
 
   let cache = await redis.get("activelistings-" + blockchain);
   globalActiveListings = JSON.parse(cache);
-  return res.status(200).json(globalActiveListings)
+  //get blocked nfts and collections
+  const rawdata = JSON.parse(await redis.get("blockeditems"));
+  const blockednfts = rawdata[0].blockednfts;
+  const blockedcollections = rawdata[0].blockedcollections;
+
+  //remove blocked nfts.
+  let filterednfts = globalActiveListings;
+  if(blockednfts != null){
+    filterednfts = globalActiveListings?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
+  }
+  return res.status(200).json(filterednfts)
 })
 
 app.get('/api/getAllListingsCount', async (req, res) => {
@@ -287,7 +348,18 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
     else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
 
     const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
-    const latestNfts = thisChainNfts?.slice(-nftQuantity); 
+    //get blocked nfts and collections
+    const rawdata = JSON.parse(await redis.get("blockeditems"));
+    const blockednfts = rawdata[0].blockednfts;
+    const blockedcollections = rawdata[0].blockedcollections;
+
+    //remove blocked nfts.
+    let filterednfts = thisChainNfts;
+    if(blockednfts != null){
+      filterednfts = thisChainNfts?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
+    }
+
+    const latestNfts = filterednfts?.slice(-nftQuantity); 
 
     return res.status(200).json(latestNfts?.reverse())
   }
@@ -440,6 +512,7 @@ app.get('/api/nft/listing/:id', async (req, res) => {
     res.status(200).json({"message": "NFT data not found"})
   }
 })
+
 app.get('/api/nft/:id', async(req, res) => {  
   //This will return Sanity Database data of an NFT
   const tokenid = req.params.id
@@ -452,12 +525,35 @@ app.get('/api/nft/:id', async(req, res) => {
   }`;
   const sanityData = await config.fetch(query);
   if(sanityData.length > 0){
-    res.status(200).json(sanityData[0])
+    res.status(200).json(sanityData[0]);
+    return;
   }
   else {
-    res.status(200).json({"message": "NFT data not found"})
+    res.status(200).json({"message": "NFT data not found"});
+    return;
   }
 })
+
+app.get('/api/blockeditems', async(req, res) => {
+  const blockeditems = await redis.get("blockeditems");
+  if(blockeditems != null) {
+    res.status(200).json(blockeditems);
+    return;
+  }
+  
+  const query = `*[_type == "settings"]{ _id, blockednfts[]->{name, _id}, blockedcollections[]->{ name, _id }}`;
+  const result =  await config.fetch(query);
+  if(result.length > 0){
+    await redis.set("blockeditems", JSON.stringify(result), 'ex', 86400); //update every day
+    res.status(200).json(result);
+    return
+  }
+  else {
+    res.status(200).json({"message": "Error getting Blocked NFTs"});
+    return
+  }
+});
+
 app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
   //This gives Collection Contract Data of a NFT
   const collectionContractAddress = req.params.id;
@@ -470,8 +566,6 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
 
     const contract = await sdk.getContract(collectionContractAddress, "nft-collection");
     const nft = await contract.get(nftid);
-    
-    // console.log(nft)
   
     if(nft.metadata.owner != '0x0000000000000000000000000000000000000000') {
       res.status(200).json(nft);
@@ -543,57 +637,86 @@ app.post('/api/sendemail', async (req, res) => {
 
   //all email Templates
   //Registration Mail Onboarding
-  const emailBody = `
-  <div style="font-family: 'Montserrat', sans-serif; background-image: url(https://nuvatoken.com/wp-content/uploads/2023/03/emailbackround.png); background-position: right; background-size: cover; padding: 50px 10px;">
-        <p style="text-align: right; padding-right: 40px;">
-            <img src="https://nuvatoken.com/wp-content/uploads/2023/03/logo-transparent-2.png" style="width: 150px"/>
-        </p>
-        <div style="display: flex; flex-wrap: wrap; padding: 10px; padding-top: 0;">
-            <div class="text" style="">
-                <h1 style="font-size: 2rem; font-weight: bold; color: #00086f !important">WE VALUE <br />
-                    <span>YOUR INTEREST IN</span> <br />
-                    <span style="font-size: 3rem;">META NUVA</span>
-              </h1>
-              <div>
-                <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
-                  We work tirelessly to support our community members, and
-                  transparency and ethical conduct are of paramount importance to
-                  us. Please speak to the person who introduced you to Meta Nuva and
-                  ask them for their referral link to enable you to join our
-                  community.
-                </p>
-                <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
-                  If you don't have a referee, we ask you to email us at
-                  <a href="mailto:support@metanuva.com"><b style="color: #00086f !important;">support@metanuva.com</b></a>, and we will gladly help you with your
-                  onboarding.
-                </p>
-              </div>
-            </div>
-            <p><b>Best Regards,<br/>Meta Nuva Team</b></p>
-            <img src="https://nuvatoken.com/wp-content/uploads/2023/03/mailman.png" style="width:300px; padding-top: 40px;"/>
-        </div>
-        <p style="font-style: italic; font-weight: 400; font-size: 13px; padding: 0 10px;   ">
-            This email and any attachments to it may be confidential and are
-            intended solely for the use of the individual to whom it is addressed.
-            Any views or opinions expressed are solely those of the author and do
-            not necessarily represent those of Meta Nuva. Please disregard this
-            email if you have received it by mistake or were not expecting it.
-          </p>
-          <div class="socials" style="padding: 40px;">
-            <p style="text-align: center">
-                <a href="https://linktr.ee/metanuva" target="_blank"><img src="https://nuvatoken.com/wp-content/uploads/2022/12/WhatsApp-Image-2022-11-25-at-16.54.35-300x300.jpeg" style="width: 100px;"/></a>
-            </p>
-            <div class="icons" style="display: flex; justify-content: center; align-items: center;">
-                <a href="https://t.me/metanuva" title="Telegram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tl.png" style="width: 32px; margin:0 5px"/></a>
-                <a href="https://twitter.com/nuvacommunity" title="twitter" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tw.png" style="width: 32px; margin:0 5px"/></a>
-                <a href="https://www.facebook.com/METANUVA" title="facebook" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/fb.png" style="width: 32px; margin:0 5px"/></a>
-                <a href="https://www.youtube.com/c/NUVAGAMERSESPORT" title="Youtube" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/yt.png" style="width: 32px; margin:0 5px"/></a>
-                <a href="https://www.instagram.com/nuva.community/" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/ig.png" style="width: 32px; margin:0 5px"/></a>
-                <a href="https://www.linkedin.com/company/nuvatoken" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/li.png" style="width: 32px; margin:0 5px"/></a>
-            </div>
-          </div>
+  // const emailBody = `
+  // <div style="font-family: 'Montserrat', sans-serif; padding: 50px 10px;">
+  //       <p style="text-align: right; padding-right: 40px;">
+  //           <img src="https://nuvatoken.com/wp-content/uploads/2023/03/logo-transparent-2.png" style="width: 150px"/>
+  //       </p>
+  //       <div style="padding: 10px; padding-top: 0;">
+  //           <div class="text" style="">
+  //               <h1 style="font-size: 2rem; font-weight: bold; color: #00086f !important">WE VALUE <br />
+  //                   <span>YOUR INTEREST IN</span> <br />
+  //                   <span style="font-size: 3rem;">META NUVA</span>
+  //             </h1>
+  //             <div>
+  //               <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
+  //                 We work tirelessly to support our community members, and
+  //                 transparency and ethical conduct are of paramount importance to
+  //                 us. Please speak to the person who introduced you to Meta Nuva and
+  //                 ask them for their referral link to enable you to join our
+  //                 community.
+  //               </p>
+  //               <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
+  //                 If you don't have a referee, we ask you to email us at
+  //                 <a href="mailto:support@metanuva.com"><b style="color: #00086f !important;">support@metanuva.com</b></a>, and we will gladly help you with your
+  //                 onboarding.
+  //               </p>
+  //             </div>
+  //           </div>
+  //           <p><b>Best Regards,<br/>Meta Nuva Team</b></p>
+  //           <img src="https://nuvatoken.com/wp-content/uploads/2023/03/mailman.png" style="width:300px; padding-top: 40px;"/>
+  //       </div>
+  //       <p style="font-style: italic; font-weight: 400; font-size: 13px; padding: 0 10px;   ">
+  //           This email and any attachments to it may be confidential and are
+  //           intended solely for the use of the individual to whom it is addressed.
+  //           Any views or opinions expressed are solely those of the author and do
+  //           not necessarily represent those of Meta Nuva. Please disregard this
+  //           email if you have received it by mistake or were not expecting it.
+  //         </p>
+  //         <div class="socials" style="padding: 40px;">
+  //           <p style="text-align: center">
+  //               <a href="https://linktr.ee/metanuva" target="_blank"><img src="https://nuvatoken.com/wp-content/uploads/2022/12/WhatsApp-Image-2022-11-25-at-16.54.35-300x300.jpeg" style="width: 100px;"/></a>
+  //           </p>
+  //           <div class="icons" style="text-align: center">
+  //               <a href="https://t.me/metanuva" title="Telegram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tl.png" style="width: 32px; margin:0 5px"/></a>
+  //               <a href="https://twitter.com/nuvacommunity" title="twitter" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tw.png" style="width: 32px; margin:0 5px"/></a>
+  //               <a href="https://www.facebook.com/METANUVA" title="facebook" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/fb.png" style="width: 32px; margin:0 5px"/></a>
+  //               <a href="https://www.youtube.com/c/NUVAGAMERSESPORT" title="Youtube" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/yt.png" style="width: 32px; margin:0 5px"/></a>
+  //               <a href="https://www.instagram.com/nuva.community/" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/ig.png" style="width: 32px; margin:0 5px"/></a>
+  //               <a href="https://www.linkedin.com/company/nuvatoken" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/li.png" style="width: 32px; margin:0 5px"/></a>
+  //           </div>
+  //         </div>
+  //   </div>
+  // `;
+ const emailBody = `
+ <div style="max-width: 600px; margin: auto; font-family: 'Montserrat', sans-serif; padding: 30px">
+    <p style="text-align: right; padding-right: 40px;"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/logo-transparent-2.png" style="width: 150px"/></p>
+    <p style="font-size: 1rem;">Dear <span id="name">Chris Jericho</span>,</p>
+    <p style="line-height: 25px; font-size: 1rem;">You have recently requested a password change for your Meta Nuva account. If this was you, you can reset the password by clicking the button below.</p>
+
+    <div>
+      <p style="background: #0a66c2; color: #ffffff; width: max-content; font-weight: 700; font-size: 15px; padding: 10px 40px; border-radius: 50px; text-align: center; margin: auto">
+        <a href="https://metanuva.com/passwordreset.aspx" style="color: #ffffff; text-decoration: none;">Reset Password</a>
     </div>
-  `;
+
+    <p style="line-height: 25px;">If you did not make this request, we would still urge you to change your password as a priority and ensure you have 2FA activated for the security of your account.</p>
+    <p><b>Best Regards,<br/>Meta Nuva Team</b></p>
+    <img src="https://nuvatoken.com/wp-content/uploads/2023/03/mailfive.png" style="width:300px; padding-top: 40px;"/>
+      
+    <p style="font-style: italic; font-weight: 400; font-size: 13px; padding: 0 10px;">This email and any attachments to it may be confidential and are intended solely for the use of the individual to whom it is addressed. Any views or opinions expressed are solely those of the author and do not necessarily represent those of Meta Nuva. Please disregard this email if you have received it by mistake or were not expecting it.</p>
+      <div class="socials" style="padding: 40px;">
+        <p style="text-align: center"><a href="https://linktr.ee/metanuva" target="_blank"><img src="https://nuvatoken.com/wp-content/uploads/2022/12/WhatsApp-Image-2022-11-25-at-16.54.35-300x300.jpeg" style="width: 100px;"/></a></p>
+        <div class="icons" style="text-align: center">
+            <a href="https://t.me/metanuva" title="Telegram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tl.png" style="width: 32px; margin:0 5px"/></a>
+            <a href="https://twitter.com/nuvacommunity" title="twitter" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/tw.png" style="width: 32px; margin:0 5px"/></a>
+            <a href="https://www.facebook.com/METANUVA" title="facebook" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/fb.png" style="width: 32px; margin:0 5px"/></a>
+            <a href="https://www.youtube.com/c/NUVAGAMERSESPORT" title="Youtube" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/yt.png" style="width: 32px; margin:0 5px"/></a>
+            <a href="https://www.instagram.com/nuva.community/" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/ig.png" style="width: 32px; margin:0 5px"/></a>
+            <a href="https://www.linkedin.com/company/nuvatoken" title="Instagram" target="_blank" class="social-list__link"><img src="https://nuvatoken.com/wp-content/uploads/2023/03/li.png" style="width: 32px; margin:0 5px"/></a>
+        </div>
+      </div>
+  </div>
+ `  
   const emailBody_Registration_Reply = `
   <div style="font-family: 'Montserrat', sans-serif; background-image: url(https://nuvatoken.com/wp-content/uploads/2023/03/emailbackround.png); background-position: right; background-size: cover; padding: 50px 10px;">
         <p style="text-align: right; padding-right: 40px;">
@@ -1502,7 +1625,7 @@ app.post('/api/sendemail', async (req, res) => {
       attachment: [{ data: emailBody, alternative: true }],
       from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
       to: email,
-      subject: 'Meta Nuva Registration',
+      subject: 'OTP',
     })
   } catch (err) {
       res.status(400).send(JSON.stringify({ message: err.message }))
@@ -1564,6 +1687,30 @@ app.post('/api/Oldsendemail', async (req, res) => {
   }
   res.status(200).send(JSON.stringify({ message: 'success' }))
 })
+
+app.post("/api/captchaverify", async (req, res) => {
+
+  ////Destructuring response token and input field value from request body
+  const { token, inputVal } = req.body;
+
+  try {
+    // Sending secret key and response token to Google Recaptcha API for authentication.
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SECRET_KEY}&response=${token}`
+    );
+
+    // Check response status and send back to the client-side
+    if (response.data.success) {
+      res.send("Human");
+    } else {
+      res.send("Robot");
+    }
+  } catch (error) {
+    // Handle any errors that occur during the reCAPTCHA verification process
+    console.error(error);
+    res.status(500).send("Error verifying reCAPTCHA");
+   }
+});
 
 app.listen(8080, () => console.log('listening on 8080'))
 

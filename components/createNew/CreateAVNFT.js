@@ -644,9 +644,9 @@ const CreateAVNFT = ({uuid}) => {
                         Server size
                       </RadioGroup.Label>
                       <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 md:max-h-[300px] overflow-y-scroll p-4">
-                        {thisChainCollection?.map((collection) => (
+                        {thisChainCollection?.map((collection, index) => (
                           <RadioGroup.Option
-                            key={collection.name}
+                            key={collection.name + index}
                             value={collection}
                             className={({ active, checked }) =>
                               `${

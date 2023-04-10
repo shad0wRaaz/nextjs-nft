@@ -12,32 +12,43 @@ import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
 import PopularVideoNFTs from '../components/PopularVideoNFTs'
+import { useEffect, useState } from 'react'
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
 const Home = (props) => {
-  if(props.featuredNfts == 'Server error') {
-    return (
-      <div className="container bg-red-500 rounded-xl p-3 text-white text-center m-4 mx-auto">
-        Feeding server Error. Please contact administrator.
-      </div>
-      )
-  }
   const { dark } = useThemeContext();
+  const [backendAvailable, setBackendAvailable] = useState(false);
+
+  useEffect(() => {
+    if(props.featuredNfts == 'Server error') {
+      console.log('im here')
+      setBackendAvailable(false);
+    }else {
+      setBackendAvailable(true);
+    }
+  }, [props])
 
   return (
-      <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden` }>
+      <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
         <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${herobackground.src})`}}>
           <Header/>
-          <HeroCarousel featuredNfts={props.featuredNfts}/>
-          <HeroSearch />
+          {backendAvailable ? (<>
+            <HeroCarousel featuredNfts={props.featuredNfts}/>
+            <HeroSearch />
+          </>
+            ) : ('')}
         </div>
-        <TopCollections/>
+        {backendAvailable ? <TopCollections/> : ''}
         <HowToInfo/>
-        <ExploreNFTs/>
-        <BrowseByCategory/>
-        <PopularVideoNFTs />
-        <PopularAudioNFTs />
+        {backendAvailable ? 
+        <>
+          <ExploreNFTs/>
+          <BrowseByCategory/>
+          <PopularVideoNFTs />
+          <PopularAudioNFTs />
+        </>
+        : ''}
         <SubscribeSection />
         <Footer/>
       </div>

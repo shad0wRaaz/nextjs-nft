@@ -147,10 +147,11 @@ const CreateNFTBatch = ({uuid}) => {
   const fetchSanityCollectionData = async (sanityClient = config) => {
     if (!chainid || !address) return
     const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
-      name, contractAddress, profileImage, createdBy, volumeTraded, web3imageprofile
-    }`
+      name, contractAddress, profileImage, createdBy, volumeTraded, web3imageprofile, category,
+    }`;
 
     const res = await sanityClient.fetch(query);
+    console.log(res)
     setSanityCollection(res);
   }
 
@@ -168,6 +169,13 @@ const CreateNFTBatch = ({uuid}) => {
   //handling Create NFT button
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault();
+
+    //get final properties and then add it to batchmetadata
+    const tempMetadata = batchMetaData?.map(item => {return ({...item, properties: {...item.properties, traits: propertyTraits}})})
+    // console.log(tempMetadata)
+    // setBatchMetaData(tempMetadata)
+    // return
+
     // const query = `*[_type == "activities" && !defined(nftItem)]`
     // const res = await sanityClient.fetch(query);
     //   res.map(async r => {
@@ -220,7 +228,7 @@ const CreateNFTBatch = ({uuid}) => {
       setIsMinting(true);
       const sdk = new ThirdwebSDK(signer);
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress);
-      const tx = await nftCollection.erc721.mintBatchTo(address, batchMetaData);
+      const tx = await nftCollection.erc721.mintBatchTo(address, tempMetadata);
 
       const docs = tx?.map((tr, index) => {
         const nftItem = {
@@ -404,7 +412,7 @@ const CreateNFTBatch = ({uuid}) => {
   }
   const updateName = (e, index) => {
     let curval = {...batchMetaData[index], name: e.target.value};
-    console.log(curval)
+    // console.log(curval)
     let temp = batchMetaData?.map((item, i) => i != index ? item : curval );
     // console.log(temp)
     setBatchMetaData(temp);
@@ -417,28 +425,33 @@ const CreateNFTBatch = ({uuid}) => {
     setBatchMetaData(temp);
     
   }
-  const checkFileType = (base64) => {
-    let start = base64.indexOf(':') + 1
-    let end = base64.indexOf('/') - start
-    const currentFileType = base64.substr(start,end)
+  // const checkFileType = (base64) => {
+  //   let start = base64.indexOf(':') + 1
+  //   let end = base64.indexOf('/') - start
+  //   const currentFileType = base64.substr(start,end)
 
-    if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
-      toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
-      setFileType(undefined)
-      return
-    }
-    setFileType(currentFileType)
-  }
+  //   if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
+  //     toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
+  //     setFileType(undefined)
+  //     return
+  //   }
+  //   setFileType(currentFileType)
+  // }
+
   // useEffect(() => {
-  //   if(batchMetaData.length == 0) return
-  // }, [batchMetaData])
+  //   if(batchMetaData.length == 0) {
+  //     return
+  //   }
+  //   const tempMetadata = batchMetaData?.map(item => {return ({...item, properties: {...item.properties, traits: propertyTraits}})})
+  //   console.log("batch", tempMetadata)
 
-  useEffect(() => {
-
-  }, [propertyTraits])
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, [propertyTraits])
   
-  console.log(propertyTraits)
-  console.log(batchMetaData)
+  // console.log(selectedCollection)
+
   return (
     <div className={style.wrapper}>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -450,7 +463,7 @@ const CreateNFTBatch = ({uuid}) => {
           </h1>
           <form name="createNFTForm" onSubmit={handleSubmit}>
             <div className={style.formWrapper}>
-            <p className={style.label}>Collection*</p>
+              <p className={style.label}>Collection*</p>
               <p className={style.smallText}>
                 Select your collection where NFTs will be minted. Only Collections from currently connected chain are shown.
               </p>
@@ -469,9 +482,9 @@ const CreateNFTBatch = ({uuid}) => {
                         Server size
                       </RadioGroup.Label>
                       <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 md:max-h-[300px] overflow-y-scroll p-4">
-                        {thisChainCollection?.map((collection) => (
+                        {thisChainCollection?.map((collection, index) => (
                           <RadioGroup.Option
-                            key={collection.name}
+                            key={collection.name + index}
                             value={collection}
                             className={({ active, checked }) =>
                               `${
