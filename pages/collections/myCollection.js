@@ -154,7 +154,7 @@ const Collection = () => {
                   <img
                     src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : noProfileImage.src }
                     className="h-full w-full object-cover"
-                    alt="nc-imgs"
+                    alt="userprofile"
                   />
                 </div>
               </div>
