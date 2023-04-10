@@ -1,17 +1,17 @@
 import axios from 'axios';
 import Select from 'react-select'
-import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import React, { useEffect } from 'react';
+import { useRef, useState } from 'react';
+import { BsUpload } from 'react-icons/bs';
 import { config } from '../lib/sanityClient';
+import { useSigner } from '@thirdweb-dev/react';
 import { IconLoading } from './icons/CustomIcons';
+import { getImagefromWeb3 } from '../fetchers/s3';
 import { useMutation, useQueryClient } from 'react-query';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useSettingsContext } from '../contexts/SettingsContext';
 import { updateCollectionMetaData } from '../mutators/Web3Mutators';
-import { useSigner } from '@thirdweb-dev/react';
-import { BsUpload } from 'react-icons/bs';
-import { getImagefromWeb3 } from '../fetchers/s3';
 
 const style = {
     formRow: 'flex flex-wrap w-full md:w-auto flex-row md:gap-3 items-center mt-3',
@@ -87,16 +87,17 @@ const EditCollection = ({collection, setShowModal}) => {
             })
             .commit()
             .then(() => {
-              setShowModal(false);
               qc.invalidateQueries('collection'); 
               toastHandler.success('Collection metadata has been updated', successToastStyle);
+              setShowModal(false);
 
-            })
+            }).catch(err => console.log(err))
           })()
 
         },
         onError: (err) => {
           setShowModal(false);
+          console.log(err)
           toastHandler.error('Error in updating Collection metadata', errorToastStyle);
         }
       }
@@ -121,28 +122,6 @@ const EditCollection = ({collection, setShowModal}) => {
   )
   return regex.test(URL)
   }
-
-  // function previewImage(target) {
-  //     const files = document.getElementById(
-  //       target == 'profile' ? 'profileImg' : 'bannerImg'
-  //     )
-  //     if (files.files.length > 0) {
-  //       var reader = new FileReader()
-  //       reader.readAsDataURL(files.files[0])
-  //       // console.log(files.files[0])
-  //       reader.onload = function (e) {
-  //         var image = new Image()
-  //         image.src = e.target.result
-  //         image.onload = function () {
-  //           document.getElementById(
-  //             target == 'profile' ? 'pImage' : 'bImage'
-  //           ).src = image.src
-  //         }
-  //       }
-  //     } else {
-  //       // Not supported
-  //     }
-  // }
   
   const customSelectStyles = {
     control: (provided) => ({

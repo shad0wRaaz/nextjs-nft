@@ -22,7 +22,6 @@ const Home = (props) => {
 
   useEffect(() => {
     if(props.featuredNfts == 'Server error') {
-      console.log('im here')
       setBackendAvailable(false);
     }else {
       setBackendAvailable(true);

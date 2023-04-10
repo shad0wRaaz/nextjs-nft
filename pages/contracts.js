@@ -33,7 +33,7 @@ const style = {
   blur: 'filter: blur(1px)',
   smallText: 'text-sm text-center mb-[2rem] text-white',
   noPointer: ' pointer-events-none',
-  closeButton : 'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70'
+  closeButton : 'sticky top-[6rem] transition duration-[300] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70'
 }
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -69,6 +69,7 @@ const contracts = () => {
 
   return (
     <div className={dark ? 'darkBackground text-neutral-200': '' }>
+      <Header />
       {/* Modal window*/}
       {showModal && (
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">
@@ -139,6 +140,7 @@ const contracts = () => {
           </div>
         </div>
       )}
+      
       {/* End of Modal window*/}
       <OffCanvas
           width={850}
@@ -148,7 +150,6 @@ const contracts = () => {
           position={"right"}
           >
             <OffCanvasBody className={ state.isMenuOpened ? 'blur pointer-events-none ' : 'pointer-events-auto'}>
-              <Header />
               <div className={ dark ? style.pageBanner + ' darkGray' : style.pageBanner + ' bg-sky-100'}>
                   <h2 className={style.pageTitle}>Create Contracts</h2>
                   <p className={style.smallText}>List of contracts that you can deploy.</p>

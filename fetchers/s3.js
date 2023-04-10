@@ -35,7 +35,5 @@ export const saveImageToWeb3 = async (formdata) => {
 
 export const getImagefromWeb3 = (ipfsuri) => {
   const image = "https://gateway.ipfscdn.io/ipfs/" + String(ipfsuri).slice(7);
-  // const image = "https://api.ipfsbrowser.com/ipfs/get.php?hash=" + String(ipfsuri).slice(7);
-  // const image = "https://ipfs.io/ipfs/" + String(ipfsuri).slice(7);
   return image;
 }
