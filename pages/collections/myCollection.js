@@ -161,46 +161,53 @@ const Collection = () => {
 
               <div className="mt-4 flex items-center space-x-3 sm:justify-center">
                 <div className="flex space-x-1.5">
-                  <a
-                    href={myUser?.igHandle != '' ? 'https://instagram.com/'.concat(myUser?.igHandle) : ''}
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <AiOutlineInstagram fontSize="23px" />
-                  </a>
-                  <a
-                    href={
-                      myUser?.twitterHandle != '' ? 'https://twitter.com/'.concat(myUser?.twitterHandle) : ''
-                    }
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <AiOutlineTwitter fontSize="23px" />
-                  </a>
-                  <a
-                    href={
-                      myUser?.fbhHandle != '' ? 'https://facebook.com/'.concat(myUser?.fbhHandle) : ''
-                    }
-                    className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                      dark
-                        ? ' bg-slate-700 hover:bg-slate-600'
-                        : ' bg-neutral-100 hover:bg-neutral-200'
-                    } md:h-10 md:w-10`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                  >
-                    <RiFacebookFill fontSize="23px" />
-                  </a>
+                  {myUser?.igHandle != null ? (
+                    <a
+                      href={myUser?.igHandle != '' ? 'https://instagram.com/'.concat(myUser?.igHandle) : ''}
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <AiOutlineInstagram fontSize="23px" />
+                    </a>
+                  ) : ''}
+                  {myUser?.twitterhandle != null ? (
+                    <a
+                      href={
+                        myUser?.twitterHandle != '' ? 'https://twitter.com/'.concat(myUser?.twitterHandle) : ''
+                      }
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <AiOutlineTwitter fontSize="23px" />
+                    </a>
+                  ) : ''}
+                  {myUser?.fbhHandle != null ? (
+                    <a
+                      href={
+                        myUser?.fbhHandle != '' ? 'https://facebook.com/'.concat(myUser?.fbhHandle) : ''
+                      }
+                      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
+                        dark
+                          ? ' bg-slate-700 hover:bg-slate-600'
+                          : ' bg-neutral-100 hover:bg-neutral-200'
+                      } md:h-10 md:w-10`}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      <RiFacebookFill fontSize="23px" />
+                    </a>
+
+                  ) :''}
                 </div>                
               </div>
             </div>
