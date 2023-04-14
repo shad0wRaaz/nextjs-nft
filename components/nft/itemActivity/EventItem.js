@@ -7,7 +7,7 @@ import { IconPolygon, IconEthereum, IconBNB, IconAvalanche } from '../../icons/C
 const style = {
   event: `p-2 py-4 text-sm text-center whitespace-nowrap`,
   eventIcon: `mr-2 text-sm flex justify-center items-center`,
-  eventName: `p-3 min-w-[72px] text-[12px] py-0 rounded-md text-sm cursor-pointer bg-neutral-300`,
+  eventName: `p-0 min-w-[72px] text-[12px] py-0 rounded-md text-sm cursor-pointer bg-neutral-300`,
   eventPrice: `flex items-center justify-center`,
   eventPriceValue: `text-sm -ml-1`,
   ethLogo: `h-5 mr-2`,
@@ -21,8 +21,9 @@ const pillcolor = {
   'Buy': ' bg-green-200 text-green-600',
   'Delist': ' bg-slate-300 text-slate-700',
   'Burn': ' bg-red-200 text-red-600',
-  'Bid': ' bg-amber-200 text-amber-600',
-  'Offer': ' bg-amber-200 text-amber-600',
+  'Bid': ' bg-cyan-200 text-cyan-600',
+  'Offer': ' bg-teal-200 text-teal-600',
+  'Transfer': ' bg-amber-200 text-amber-600',
 }
 
 const EventItem = ({ event }) => {
@@ -50,7 +51,7 @@ const EventItem = ({ event }) => {
         <div className={`${style.eventPrice} flex-[2]`}>
           {event.event !== 'Mint' &&
             event.event != 'Delist' &&
-            event.event != 'Burn' &&
+            event.event != 'Burn' && !isNaN(Number(event.price)) &&
             (event.chainId == '80001' || event.chainId == '137' ? (
               <IconPolygon width={'15'} height={'15'} />
             ) : event.chainId == '1' || event.chainId == '5' ? (

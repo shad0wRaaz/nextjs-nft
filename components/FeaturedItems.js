@@ -17,6 +17,7 @@ const chainIcon = {
 
 const FeaturedItems = ({ item }) => {
     const [price, setPrice] = useState();
+    const design = 1;
     //get all active listings from all blockchain
   const { data: fullListingData } = useQuery(
     ['fulllistings'], 
@@ -30,6 +31,39 @@ const FeaturedItems = ({ item }) => {
 
   return (
     <div className="rounded-xl">
+      {design == 1 ? (
+        <div className="featuredCard">
+          <a href={`/nfts/${item?._id}`}>
+            <div className="p-2 flex flex-wrap h-full">
+              <img src={item?.nft?.metadata?.image} className="object-cover rounded-t-md shadow-md"/>
+              <div className="flex-grow bg-[#000000dd] rounded-b-md min-h-[150px] shadow-md text-white p-5 space-y-3">
+                <p className="text-xl font-semibold text-left">{item?.nft?.metadata?.name}</p>
+                <div className="flex items-center gap-2 pt-1 !mt-0">
+                  <div className="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
+                        <img
+                          className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
+                          src={getImagefromWeb3(item?.owner?.web3imageprofile)}
+                          alt={item?.owner?.userName}
+                        />
+                  </div>
+                  <span className="text-sm">{item?.owner?.userName}</span>
+                </div>
+                  <div className="flex justify-between">
+                    <div className="text-sm rounded-xl inline-flex cursor-pointer gradBlue py-3 px-4 text-neutral-100 max-w-fit m-sm-auto items-center">
+                        <IconWallet /> <span className="pl-2">Buy Now</span>
+                    </div>
+                    {Boolean(price) && (
+                          <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 md:py-2 px-2.5 md:px-3.5 text-sm sm:text-base font-semibold ">
+                              <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
+                              <span className=" text-green-500 !leading-none">{price?.displayValue} {price?.symbol}</span>
+                          </div>
+                    )}
+                  </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      ) : (
         <a href={`/nfts/${item?._id}`}>
             <div className="coverImage h-[485px] w-full rounded-xl relative" style={{backgroundImage : `url(${item?.nft?.metadata?.image})`, backgroundSize: 'cover'}}>
                 <div className="rounded-xl absolute -bottom-[80px] hover:translate-x-20 transition p-6 px-8 w-[95%] md:w-[400px]  m-3 z-10 shadow-2xl bg-white border border-neutral-50/30 backdrop-blur-md">
@@ -48,7 +82,7 @@ const FeaturedItems = ({ item }) => {
                             alt={item?.owner?.userName}
                           />
                     </div>
-                  <span className="text-black text-sm">{item?.owner?.userName}</span>
+                    <span className="text-black text-sm">{item?.owner?.userName}</span>
                   </div>
                   <div className="flex justify-between items-center mt-3.5">
                     {Boolean(price) && (
@@ -68,6 +102,7 @@ const FeaturedItems = ({ item }) => {
                 </div>
             </div>
         </a>
+      )}
     </div>
   )
 }

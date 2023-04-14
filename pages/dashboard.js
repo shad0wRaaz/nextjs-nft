@@ -253,7 +253,7 @@ const dashboard = () => {
                                     <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
                                             <div className={`card-header ${dark ? '!text-white' : ''}`}>
-                                                Total Users
+                                                Total Wallets
                                             </div>
                                             <div className="card-body">
                                                 <h5 className={` ${dark ? '!text-white' : ''}`}>{totalData?.totalUsers}</h5>

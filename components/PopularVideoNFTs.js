@@ -26,7 +26,7 @@ const PopularVideoNFTs = () => {
               <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click play and enjoy Video NFTs </span>
           </div>
       </div>
-      <div class="sliderContainer" ref={sliderRef}>
+      <div className="sliderContainer" ref={sliderRef}>
         {topVideoItems.length > 0 && (
             <Rerousel itemRef={sliderRef}>
               {topVideoItems?.map((nft, index) => <VideoNFTCard key={index} nft={nft} />)}

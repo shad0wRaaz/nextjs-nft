@@ -57,21 +57,11 @@ const chainName = {
   '43114': 'Avalanche',
   '43113': 'Avalanche Fuji',
 }
-// const rpcChains = {
-//   '80001': process.env.NEXT_PUBLIC_INFURA_MUMBAI_URL,
-//   '97': process.env.NEXT_PUBLIC_INFURA_TBNB_URL,
-//   '4': process.env.NEXT_PUBLIC_INFURA_RINKEBY_URL,
-//   '137': process.env.NEXT_PUBLIC_INFURA_POLYGON_URL,
-//   '5': process.env.NEXT_PUBLIC_INFURA_GOERLI_URL,
-// }
 
-const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
-const FRONTHOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io' : 'http://localhost:3000' 
-
+const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080'
 const Nft = (props) => { //props are from getServerSideProps
 
   const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket } = props;
-
   const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
@@ -525,8 +515,8 @@ const Nft = (props) => { //props are from getServerSideProps
                             </a>
                           </div>
                           <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Token ID</span>
-                            <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.properties?.tokenid}</span>
+                            <span>Item ID</span>
+                            <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.id}</span>
                           </div>
                           <div className="flex flex-row justify-between py-2">
                             <span>Token Standard</span>

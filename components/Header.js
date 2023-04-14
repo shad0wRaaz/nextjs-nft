@@ -22,23 +22,7 @@ import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices, getBlockedItems } from '../fetchers/SanityFetchers'
 import { useAddress, useNetwork, useDisconnect, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 
-const style = {
-  wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
-  logoContainer: `flex items-center cursor-pointer m-0`,
-  logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
-  searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
-  searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
-  searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
-  headerItems: `flex items-center justify-end nonMobileMenu`,
-  headerItem: `px-4 cursor-pointer font-bold`,
-  headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
-  menuWrapper: 'relative',
-  menu: 'absolute',
-  walletAddress:
-    'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
-  balance:
-    'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
-}
+
 
 const Header = () => {
   
@@ -52,6 +36,25 @@ const Header = () => {
   const [{ data: { chain, chains }, loading, error }, switchNetwork] = useNetwork();
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const style = {
+    wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
+    logoContainer: `flex items-center cursor-pointer m-0`,
+    logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
+    searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
+    searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
+    searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
+    headerItems: `flex items-center justify-end nonMobileMenu`,
+    headerItem: `px-4 cursor-pointer font-bold`,
+    headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
+    menuWrapper: 'relative',
+    menu: 'absolute',
+    menuText: `${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl p-2 cursor-pointer`,
+    walletAddress:
+      'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
+    balance:
+      'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
+  }
 
   const getAllAdminUsers = async () => {
     const query = '*[_type == "settings"]{adminusers}';
@@ -189,24 +192,30 @@ const Header = () => {
   return (
     <div className={style.wrapper}>
       <div className="container flex items-center justify-between">
-      <Link href="/">
-        <div className={style.logoContainer} style={{ marginLeft: 0 }}>
-          <img src={nuvanftLogo.src} height={55} width={90} />
+        <Link href="/">
+          <div className={style.logoContainer} style={{ marginLeft: 0 }}>
+            <img src={nuvanftLogo.src} height={55} width={90} />
+          </div>
+        </Link>
+
+        <div className="gap-4 text-sm hidden lg:flex">
+          <p className={style.menuText}><a href="/blogs/whatarenfts">What are NFTs?</a></p>
+          <p className={style.menuText}><a href="/blogs/nfttypes">NFT Types</a></p>
+          <p className={style.menuText}><a href="/blogs/nftterms">NFT Terms</a></p>
         </div>
-      </Link>
-      
-      <div
-        className={
-          dark
-            ? style.searchBar + ' border-sky-400/20 bg-[#ffffff99] text-black'
-            : style.searchBar + ' border-neutral-200 bg-[#ffffff99] text-black'
-        }
-      >
-        <div className={style.searchIcon}>
-          <IconMagnifier />
+
+        <div
+          className={
+            dark
+              ? style.searchBar + ' border-sky-400/20 bg-[#ffffff99] text-black'
+              : style.searchBar + ' border-neutral-200 bg-[#ffffff99] text-black'
+          }
+        >
+          <div className={style.searchIcon}>
+            <IconMagnifier />
+          </div>
+          <SearchBar />
         </div>
-        <SearchBar />
-      </div>
 
       {/* Mobile View Menu */}
       <div className="mobileMenu z-30 text-right">
@@ -473,7 +482,7 @@ const Header = () => {
           <>
             <Menu as="div" className="relative inline-block text-left">
                 <Menu.Button className={`py-3 px-2 flex items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl`}>
-                  <IconImage />  <span className="hidden lg:block">My Account</span>
+                  <IconImage />  <span className="hidden lg:block text-sm">My Account</span>
                 </Menu.Button>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                   <Menu.Items className={` ${

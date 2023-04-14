@@ -1,9 +1,12 @@
+import axios from 'axios';
 import Link from 'next/link'
 import { Rerousel } from 'rerousel';
 import { config } from '../lib/sanityClient'
+import {sortCategory} from '../utils/utilities';
 import { getImagefromWeb3 } from '../fetchers/s3'
 import React, { useEffect, useRef, useState } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useSettingsContext } from '../contexts/SettingsContext';
 
 const style = {
   wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-0 lg:pb-0 overflow-hidden',
@@ -21,78 +24,26 @@ const style = {
   controls: 'flex gap-4 text-slate-500 cursor-pointer transition',
 }
 
-const settings = {
-  dots: false,
-  infinite: true,
-  speed: 800,
-  slidesToShow: 5,
-  slidesToScroll: 1,
-  autoplay: true,
-  autoplaySpeed: 2000,
-  pauseOnHover: true,
-  responsive: [
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow:1,
-        slidesToScroll: 1
-      }
-    },
-    {
-      breakpoint: 1200,
-      settings: {
-        slidesToShow:2,
-        slidesToScroll: 1
-      }
-    },
-    {
-      breakpoint: 1400,
-      settings: {
-        slidesToShow:3,
-        slidesToScroll: 1
-      }
-    },
-    {
-      breakpoint: 2000,
-      settings: {
-        slidesToShow:4,
-        slidesToScroll: 1
-      }
-    },
-    {
-      breakpoint: 3800,
-      settings: {
-        slidesToShow:5,
-        slidesToScroll: 1
-      }
-    }
-  ]
-};
-
 const BrowseByCategory = () => {
   const sliderRef = useRef(null);
-  const [categoryData, setCategoryData] = useState([])
-  const { dark } = useThemeContext()
+  const [categoryData, setCategoryData] = useState([]);
+  const { dark } = useThemeContext();
+  const { HOST } = useSettingsContext();
 
-  const fetchCategoryData = async (sanityClient = config) => {
-    const query = `*[_type == "category"] | order(totalCollection desc) {
-            name,
-            profileImage,
-            bannerImage,
-            totalCollection
-        }`
-    setCategoryData(await sanityClient.fetch(query))
-  }
 
   useEffect(() => {
-    fetchCategoryData()
+    // fetchCategoryData()
+    ;(async() => {
+      const catt = await axios.get(`${HOST}/api/getcategories`);
+      setCategoryData(sortCategory(JSON.parse(catt.data)))
+    })()
 
     return() =>{
       //do nothing
     }
-  }, []);
+  }, [HOST]);
 
-  const randomCircle = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-blue-500', 'bg-slate-500'];
+  const randomCircle = ['bg-indigo-500', 'bg-cyan-500', 'bg-teal-500', 'bg-lime-500', 'bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-amber-500', 'bg-slate-500', ];
 
   return (
     <div className={style.wrapper}>
@@ -109,7 +60,7 @@ const BrowseByCategory = () => {
           </span>
         </h2>
         <div ref={sliderRef}>
-          {categoryData && (
+          {categoryData.length > 0 && (
             <Rerousel className="browsebycategory" itemRef={sliderRef}>
               {categoryData.map((category, id) => (
 

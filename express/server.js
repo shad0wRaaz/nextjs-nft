@@ -196,8 +196,8 @@ app.get('/api/getfeaturednfts', async(req, res) => {
     const filterResolved = resolvedPath.filter(Boolean);
 
     //save in redis if not present already
-    redis.set("featurednfts", JSON.stringify(filterResolved));
-    redis.expire("featurednft", 60);
+    redis.set("featurednfts", JSON.stringify(filterResolved), 'ex', 300);
+
   
     return (res.status(200).json(filterResolved))
   }
@@ -210,12 +210,12 @@ app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
     const fileURI = await web3storage.upload(file);
   
     if(fileURI){
-      res.status(200).send(fileURI);
+      return res.status(200).send(fileURI);
     }
-    res.status(200).json({ 'message': 'Error in saving image in Web3'});
+    return res.status(200).json({ 'message': 'Error in saving image in Web3'});
   }catch(err){
     console.log(err);
-    res.status(200).json({ 'message': 'Error in saving image in Web3'});
+    return res.status(200).json({ 'message': 'Error in saving image in Web3'});
   }
 })
 
@@ -260,7 +260,7 @@ app.get('/api/updateNFTCollectiosnByCategory/:category', async(req,res) => {
   }`;
   const result = await config.fetch(query);
   redis.set("collection-by-category-" + category, JSON.stringify(result));
-  res.status(200).json(result);
+  return res.status(200).json(result);
 });
 
 app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
@@ -285,9 +285,9 @@ app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
     }`;
     const result = await config.fetch(query);
     redis.set("collection-by-category-" + category, JSON.stringify(result));
-    res.status(200).json(result);
+    return res.status(200).json(result);
   }else {
-    res.status(200).json(JSON.parse(getCategories));
+    return res.status(200).json(JSON.parse(getCategories));
   }
 
 });
@@ -350,8 +350,8 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
     const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
     //get blocked nfts and collections
     const rawdata = JSON.parse(await redis.get("blockeditems"));
-    const blockednfts = rawdata[0].blockednfts;
-    const blockedcollections = rawdata[0].blockedcollections;
+    const blockednfts = rawdata[0]?.blockednfts;
+    const blockedcollections = rawdata[0]?.blockedcollections;
 
     //remove blocked nfts.
     let filterednfts = thisChainNfts;
@@ -507,9 +507,9 @@ app.get('/api/nft/listing/:id', async (req, res) => {
   //   })
   // }
   if(found){
-    res.status(200).json(result[0])
+    return res.status(200).json(result[0])
   }else {
-    res.status(200).json({"message": "NFT data not found"})
+    return res.status(200).json({"message": "NFT data not found"})
   }
 })
 
@@ -525,32 +525,27 @@ app.get('/api/nft/:id', async(req, res) => {
   }`;
   const sanityData = await config.fetch(query);
   if(sanityData.length > 0){
-    res.status(200).json(sanityData[0]);
-    return;
+    return res.status(200).json(sanityData[0]);
   }
   else {
-    res.status(200).json({"message": "NFT data not found"});
-    return;
+    return res.status(200).json({"message": "NFT data not found"});
   }
 })
 
 app.get('/api/blockeditems', async(req, res) => {
   const blockeditems = await redis.get("blockeditems");
   if(blockeditems != null) {
-    res.status(200).json(blockeditems);
-    return;
+    return res.status(200).json(blockeditems);
   }
   
   const query = `*[_type == "settings"]{ _id, blockednfts[]->{name, _id}, blockedcollections[]->{ name, _id }}`;
   const result =  await config.fetch(query);
   if(result.length > 0){
     await redis.set("blockeditems", JSON.stringify(result), 'ex', 86400); //update every day
-    res.status(200).json(result);
-    return
+    return res.status(200).json(result);
   }
   else {
-    res.status(200).json({"message": "Error getting Blocked NFTs"});
-    return
+    return res.status(200).json({"message": "Error getting Blocked NFTs"});
   }
 });
 
@@ -568,14 +563,14 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
     const nft = await contract.get(nftid);
   
     if(nft.metadata.owner != '0x0000000000000000000000000000000000000000') {
-      res.status(200).json(nft);
+      return res.status(200).json(nft);
     }
     else {
-      res.status(200).json({messsage: 'Could not get NFT metadata'});
+      return res.status(200).json({messsage: 'Could not get NFT metadata'});
     }
   }
   else {
-    res.status(200).json({messsage: 'Blockchain could not be found'});
+    return res.status(200).json({messsage: 'Blockchain could not be found'});
   }
 })
 
@@ -594,10 +589,9 @@ app.post('/api/sendconfirmationemail', async (req, res) => {
     subject,
   })
 } catch (err) {
-  res.status(400).send(JSON.stringify({ message: err.message }))
-  return
+  return res.status(400).send(JSON.stringify({ message: err.message }));
 }
-res.status(200).send(JSON.stringify({ message: 'success' }))
+return res.status(200).send(JSON.stringify({ message: 'success' }))
 
 })
 
@@ -624,10 +618,9 @@ app.post('/api/getintouch', async(req, res) => {
         subject,
       })
     } catch (err) {
-      res.status(400).send(JSON.stringify({ message: err.message }))
-      return
+      return res.status(400).send(JSON.stringify({ message: err.message }));
     }
-    res.status(200).send(JSON.stringify({ message: 'success' }))
+    return res.status(200).send(JSON.stringify({ message: 'success' }));
 
 })
 
@@ -1580,10 +1573,9 @@ app.post('/api/sendemail', async (req, res) => {
       subject: 'OTP',
     })
   } catch (err) {
-      res.status(400).send(JSON.stringify({ message: err.message }))
-    return
+      return res.status(400).send(JSON.stringify({ message: err.message }));
   }
-  res.status(200).send(JSON.stringify({ message: 'success' }))
+  return res.status(200).send(JSON.stringify({ message: 'success' }));
 })
 
 app.post('/api/Oldsendemail', async (req, res) => {
@@ -1653,15 +1645,32 @@ app.post("/api/captchaverify", async (req, res) => {
 
     // Check response status and send back to the client-side
     if (response.data.success) {
-      res.send("Human");
+      return res.send("Human");
     } else {
-      res.send("Robot");
+      return res.send("Robot");
     }
   } catch (error) {
     // Handle any errors that occur during the reCAPTCHA verification process
     console.error(error);
-    res.status(500).send("Error verifying reCAPTCHA");
+    return res.status(500).send("Error verifying reCAPTCHA");
    }
+});
+
+app.get("/api/getcategories", async(req, res) => {
+  let categories = await redis.get('categories');
+  if(categories != null){
+    return res.status(200).json(categories)
+  }
+  const query = `*[_type == "category"] | order(totalCollection desc) { name, profileImage, bannerImage, totalCollection }`;
+  const result = await config.fetch(query);
+
+  if(result.length > 0){
+    await redis.set("categories", JSON.stringify(result)); //update every day
+    return res.status(200).json(result);
+  }
+  else {
+    return res.status(200).json({"message": "Error getting categories"});
+  }
 });
 
 app.listen(8080, () => console.log('listening on 8080'))

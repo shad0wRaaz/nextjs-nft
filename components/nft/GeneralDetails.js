@@ -40,13 +40,13 @@ const style = {
 }
 
 const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) => {
-  const { marketAddress } = useMarketplaceContext()
-  const { dark, successToastStyle, errorToastStyle } = useThemeContext()
-  const address = useAddress()
-  const router = useRouter()
-  const [auctionedItem, setAuctionedItem] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`
+  const { marketAddress } = useMarketplaceContext();
+  const { dark, successToastStyle, errorToastStyle } = useThemeContext();
+  const address = useAddress();
+  const router = useRouter();
+  const [auctionedItem, setAuctionedItem] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`;
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
@@ -55,7 +55,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
     {
       enabled: Boolean(nftContractData) && Boolean(nftContractData.owner != "0x0000000000000000000000000000000000000000"),
       onError: () => {
-        toast.error('Error in getting Owner info.', errorToastStyle)
+        toast.error('Error in getting Owner info.', errorToastStyle);
       },
       onSuccess: (res) => {
         //check if the item is in auction, if in auction, owner will be marketplace
@@ -201,11 +201,10 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 items-center justify-between">
-          <div className="flow-root">
-            <div className={`my-1.5 flex gap-4 text-lg border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
+        <div className="flex flex-wrap gap-3 items-center justify-center">
+            <div className={`my-1.5 w-full flex gap-4 text-lg justify-center border ${dark ? 'border-slate-700/50' : 'border-neutral-200/80 bg-neutral-100'} rounded-xl items-center py-2 px-4`}>
               <div className="text-sm hidden md:block">
-                Share this NFT:
+                Share:
               </div>
               <FacebookShareButton className="hover:scale-125 transition"
                 quote={nftContractData?.metadata?.name}
@@ -458,7 +457,6 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
                 </Menu>
               )}
             </div>
-          </div>
         </div>
 
       </div>

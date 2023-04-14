@@ -9,11 +9,12 @@ import { config } from '../../lib/sanityClient'
 import Router, { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { RiCloseCircleLine } from 'react-icons/ri'
-import { IconLoading } from '../icons/CustomIcons'
+import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useAddress, useChainId, useNetwork, useSigner } from '@thirdweb-dev/react'
+import { BiTransferAlt } from 'react-icons/bi'
 
 
 const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMarketAddress, thisNFTblockchain}) => {
@@ -30,7 +31,9 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
     const [isBurning, setIsBurning] = useState(false);
     const signer = useSigner();
     const [,switchNetwork] = useNetwork();
-
+    const [isTransfer, setIsTransfer] = useState(false);
+    const [transferModal, setTransferModal] = useState(false);
+    const [transferAddress, setTransferAddress] = useState('');
 
     const cancelListing = (
         e,
@@ -187,6 +190,68 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
       }
     }
 
+    const transfer = (e, sanityClient = config, toastHandler = toast) => {
+      // if (!Boolean(listingData?.message == 'NFT data not found')) {
+      //   toastHandler.error('Cannot burn a listed NFT. Delist this NFT first.', errorToastStyle);
+      //   setBurnModal(false);
+      //   return
+      // }
+      
+      if(!collectionAddress) {
+        toast.error("Collection not found.", errorToastStyle);
+        return;
+      }
+
+      if(!signer){
+        toast.error("Wallet not connected.", errorToastStyle);
+        return;
+      }
+      if(transferAddress == ''){
+        toast.error("Enter wallet address to transfer to", errorToastStyle);
+        return;
+      }
+
+      try{
+        setTransferModal(false);
+        setIsTransfer(true);
+        ;(async() => {
+          const sdk = new ThirdwebSDK(signer);
+          const contract = await sdk.getContract(collectionAddress, "nft-collection");
+          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.metadata?.id);
+          
+          // console.log(tx);
+            //saving transaction in sanity
+          const transactionData = {
+            _type: 'activities',
+            _id: tx.receipt.transactionHash,
+            transactionHash: tx.receipt.transactionHash,
+            from: tx.receipt.from,
+            tokenid: nftContractData.metadata.id.toString(),
+            contractAddress: collectionAddress,
+            to: tx.receipt.to,
+            event: 'Transfer',
+            nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
+            price: '-',
+            chainId: chainid,
+            dateStamp: new Date(),
+          }
+
+          await sanityClient
+            .createIfNotExists(transactionData)
+            .catch((err) => {
+            toastHandler.error('Error saving Transaction Activity.', errorToastStyle);
+            return
+          })
+          toast.success("The NFT has been transferred to the designated wallet", successToastStyle);
+          setIsTransfer(false);
+          window.location.reload(true);
+        })()
+      }catch (error){
+        setIsTransfer(false);
+      }
+      setIsTransfer(false);
+    }
+
   return (
     <>
     {showBurnModal && (
@@ -215,12 +280,12 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
                 <p className="fw-700 text-base">Are you sure you want to cancel listing of this NFT from the marketplace ?</p>
                 <div className="flex gap-4 mt-4">
                     <div 
-                        className="bg-red-500 w-full text-center hover:bg-red-600 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
+                        className="bg-red-500 w-full text-center hover:bg-red-600 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors "
                         onClick={() => cancelListing()}>
                         <FiCheck className="inline-block text-lg" /> <span className="inline-block ml-1"> Yes, I am sure.</span>
                     </div>
                     <div 
-                        className="bg-neutral-300 text-slate-700 w-full text-center hover:bg-neutral-400 hover:text-slate-50 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
+                        className="bg-neutral-300 text-slate-700 w-full text-center hover:bg-neutral-400 hover:text-slate-50 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm transition-colors"
                         onClick={() => setCancelModal(false)}>
                         <MdAdd className="inline-block text-xl -mt-1 rotate-45" /> <span className="inline-block"> Cancel</span>
                     </div>
@@ -228,38 +293,92 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
             </div>
         </div>
     )}
+    {transferModal && (
+        <div className="fixed w-full h-full bg-slate-700 bg-opacity-75 top-0 left-0 z-30 backdrop-blur-sm flex align-items-center justify-center">
+            <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} m-auto`}>
+                <p className="fw-700 mb-3">Transfer NFT</p>
+                <p className="text-sm">Enter wallet address to transfer this NFT to</p>
+                <div className='flex flex-wrap items-center gap-3'>
+                  <div>
+                    <IconWallet />
+                  </div>
+                  <input 
+                    type="text" 
+                    className={`m-2 flex-grow outline-none p-3 rounded-lg border transition linear' + ${dark ? ' border-slate-600 bg-slate-700 hover:bg-slate-600 ' : ' border border-neutral-200 bg-neutral-100 hover:bg-neutral-200'}`}
+                    value={transferAddress} 
+                    onChange={(e) => setTransferAddress(e.target.value)}/>
+                </div>
+                <div className="flex gap-4 mt-4">
+                    <div 
+                        className="bg-red-500 w-full text-center hover:bg-red-600 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
+                        onClick={() => transfer()}>
+                        <FiCheck className="inline-block text-lg" /> <span className="inline-block ml-1"> Transfer</span>
+                    </div>
+                    <div 
+                        className="bg-neutral-300 text-slate-700 w-full text-center hover:bg-neutral-400 hover:text-slate-50 mt-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
+                        onClick={() => setTransferModal(false)}>
+                        <MdAdd className="inline-block text-xl -mt-1 rotate-45" /> <span className="inline-block"> Cancel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )}
     {nftContractData.owner == address && (
-        <div className={`flex items-center flex-1 justify-center p-4 rounded-lg mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
+        <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-lg mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
             {!Boolean(listingData?.message) && (
               <>
                 {isCanceling ? (
-                  <button
-                      className="flex gap-2 justify-center bg-slate-500 hover:bg-slate-600 w-full text-center mr-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
-                      disabled>
-                        <IconLoading dark="inbutton" />
-                          <span className="inline-block ml-1">Processing</span>
-                  </button>
+                  <div className="w-full md:w-1/3 p-2">
+                    <button
+                        className="flex gap-2 justify-center pointer-events-none bg-slate-500 hover:bg-slate-600 text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                        disabled>
+                          <IconLoading dark="inbutton" /><span className="inline-block ml-1">Cancelling</span>
+                    </button>
+                  </div>
                 ) : (
-                <button
-                    className="bg-slate-500 hover:bg-slate-600 w-full text-center mr-3 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
-                    onClick={() => setCancelModal(true)}>
-                        <RiCloseCircleLine className="inline-block text-lg -mt-1" /> <span className="inline-block ml-1">Cancel Listing</span>
-                </button>
+                  <div className="w-full md:w-1/3 p-2">
+                    <button
+                        className="bg-slate-500 hover:bg-slate-600 w-full text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                        onClick={() => setCancelModal(true)}>
+                            <RiCloseCircleLine className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Cancel Listing</span>
+                    </button>
+                  </div>
                 )}
               </>
             )}
+            {isTransfer ? (
+              <div className="w-full md:w-1/3 p-2">
+                <button 
+                      className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      onClick={() => setBurnModal(true)}>
+                        <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
+                  </button>
+              </div>
+            ) : (
+              <div className="w-full md:w-1/3 p-2">
+                <button 
+                      className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      onClick={() => setTransferModal(true)}>
+                        <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer NFT</span>
+                  </button>
+              </div>
+            )}
             {isBurning ? (
-              <button 
-                  className="flex gap-2 justify-center bg-red-500 w-full text-center hover:bg-red-600 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
-                  disabled>
-                  <IconLoading dark="inbutton" /> <span className="inline-block ml-1"> Burning NFT</span>
-              </button>
+              <div className="w-full md:w-1/3 p-2">
+                <button 
+                    className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                    disabled>
+                    <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
+                </button>
+              </div>
             ):(
-              <button 
-                  className="bg-red-500 w-full text-center hover:bg-red-600 w-xl relative h-auto cursor-pointer rounded-lg px-4 py-3 text-sm text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6"
-                  onClick={() => setBurnModal(true)}>
-                  <AiOutlineFire className="inline-block text-lg -mt-1" /> <span className="inline-block ml-1"> Burn NFT</span>
-              </button>
+              <div className="w-full md:w-1/3 p-2">
+                <button 
+                    className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                    onClick={() => setBurnModal(true)}>
+                    <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn NFT</span>
+                </button>
+              </div>
             )}
         </div>
     )}

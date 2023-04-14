@@ -73,7 +73,7 @@ const contracts = () => {
       {/* Modal window*/}
       {showModal && (
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-10 rounded-3xl max-w-2xl z-50 relative overflow-hidden`}>
+          <div className={`${dark ? 'bg-slate-800' : 'bg-neutral-100'} p-10 rounded-3xl max-w-2xl z-50 relative overflow-hidden`}>
             <div
               className={`absolute rotate-45 text-md top-5 right-5 ${dark ? 'bg-slate-600 hover:bg-slate-500' : ' bg-gray-300 hover:bg-gray-400'} p-3 rounded-full transition-all cursor-pointer`}
               onClick={() => setShowModal(false)}
@@ -85,10 +85,14 @@ const contracts = () => {
 
             <Tab.Group>
               <Tab.List className="flex space-x-3 rounded-xl p-1 justify-center">
-              <Tab className={({ selected }) => classNames('rounded-lg p-2.5 text-sm font-medium leading-5',selected? 'bg-slate-500 shadow ring-0 outline-0 border-0': ' hover:bg-white/[0.12] hover:text-white')}>
+              <Tab className={({ selected }) => 
+                classNames('rounded-lg p-2.5 text-sm font-medium leading-5',
+                selected ? (dark ? 'bg-slate-500 shadow ring-0 outline-0 border-0': 'bg-white shadow-md outline-0 ring-0') : (dark ? 'hover:bg-slate-700' : 'hover:bg-white hover:shadow-md'))}>
                 Single NFT
               </Tab>
-              <Tab className={({ selected }) => classNames('rounded-lg p-2.5 text-sm font-medium leading-5',selected? 'bg-slate-500 shadow ring-0 outline-0 border-0': ' hover:bg-white/[0.12] hover:text-white')}>
+              <Tab className={({ selected }) => 
+                classNames('rounded-lg p-2.5 text-sm font-medium leading-5', 
+                selected ? (dark ? 'bg-slate-500 shadow ring-0 outline-0 border-0': 'bg-white shadow-md outline-0 ring-0') : (dark ? 'hover:bg-slate-700' : 'hover:bg-white hover:shadow-md'))}>
                 Multiple NFTs at once
               </Tab>
               </Tab.List>
@@ -119,16 +123,12 @@ const contracts = () => {
                 </Tab.Panel>
                 <Tab.Panel className="rounded-xl p-3">
                   <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
-                    <div 
-                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                      onClick={() => {
-                        setShowModal(curVal => !curVal)
-                        dispatch({ type: 'OPEN_NFT_BATCH'})
-                      }}
-                      >
-                      <FiImage size={40} className="mb-3"/>
-                      <span>Image NFTs</span>
-                    </div>
+                    <a href='/nfts/batchupload'>
+                      <div className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}>
+                        <FiImage size={40} className="mb-3"/>
+                        <span>Image NFTs</span>
+                      </div>
+                    </a>
                     <div className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}>
                       <FiVideo size={40} className="mb-3" />
                       <span>Audio/Video NFTs</span>

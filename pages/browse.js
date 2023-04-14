@@ -1,10 +1,12 @@
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import { Tab } from '@headlessui/react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { config } from '../lib/sanityClient'
+import {sortCategory} from '../utils/utilities';
 import React, { useState, useEffect } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useSettingsContext } from '../contexts/SettingsContext'
 import CollectionByCategory from '../components/CollectionByCategory'
 
 function classNames(...classes) {
@@ -24,24 +26,21 @@ const browse = () => {
   const { dark } = useThemeContext()
   const [categoryData, setCategoryData] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
-  console.log(categoryData)
+  const { HOST } = useSettingsContext();
 
-  const fetchCategoryData = async (sanityClient = config) => {
-    const query = `*[_type == "category"] | order(name asc) {
-            name,
-            totalCollection
-        }`
 
-    setCategoryData(await sanityClient.fetch(query))
-  }
 
   useEffect(() => {
-    fetchCategoryData()
+    ;(async() => {
+      const catt = await axios.get(`${HOST}/api/getcategories`);
+      let sortedArray = sortCategory(JSON.parse(catt.data));
+      setCategoryData(sortedArray)
+    })()
 
     return () => {
       //just clean up codes, nothing else here
     }
-  }, [])
+  }, [HOST])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>

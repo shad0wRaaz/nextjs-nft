@@ -18,32 +18,11 @@ import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { HiOutlineNewspaper } from 'react-icons/hi'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
 
-const style = {
-  partnerContainer:
-    'container mx-auto bg-neutral-50 border-t border-neutral-200 p-[50px] text-center partnerContainer mt-[80px]',
-  bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
-  bottomContainer:
-    'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
-  footerContainer:
-    'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
-  header: 'text-lg mb-3 inline-flex items-center gap-1 mt-[40px]',
-  text: '',
-  leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
-  socialWrapper: 'flex flex-wrap gap-3',
-  socialItem:
-    'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
-  copyright: 'text-sm',
-  footerLinksWrapper: 'flex gap-3',
-  footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
-  subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
-  subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
-  subscribeButton:
-    'transition linear rounded-[10px] p-3 px-6 gradBlue text-white sm:w-full lg:w-auto',
-}
+
 
 const Footer = () => {
   const [subscriberEmail, setSubscriberEmail] = useState('')
-  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const addSubscriber = async (
     e,
     sanityClient = config,
@@ -102,6 +81,29 @@ const Footer = () => {
       })
   }
 
+  const style = {
+    partnerContainer:
+      'container mx-auto bg-neutral-50 border-t border-neutral-200 p-[50px] text-center partnerContainer mt-[80px]',
+    bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
+    bottomContainer:
+      'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
+    footerContainer:
+      'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
+    header: `text-lg mb-3 inline-flex items-center gap-1 mt-[40px] text-[${dark ? '#fff': '#1d1d1f'}]`,
+    text: '',
+    leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
+    socialWrapper: 'flex flex-wrap gap-3',
+    socialItem:
+      'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
+    copyright: 'text-sm',
+    footerLinksWrapper: 'flex gap-3',
+    footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
+    subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
+    subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
+    subscribeButton:
+      'transition linear rounded-[10px] p-3 px-6 gradBlue text-white sm:w-full lg:w-auto',
+  }
+
   return (
     <div className={`${dark ? 'darkNavy': 'bg-neutral-100'}`}>
       <Toaster position="bottom-right" reverseOrder={false} />
@@ -115,12 +117,7 @@ const Footer = () => {
         <div className={style.bottomContainer}>
           <div className={style.leftBox}>
             <h2
-              className={
-                dark
-                  ? style.header + ' text-neutral-200'
-                  : style.header + ' text-neutral-600'
-              }
-            >
+              className={style.header}>
               <HiOutlineNewspaper/> Get Latest Updates
             </h2>
             <p className={style.text}>
@@ -146,11 +143,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h2 className={
-                dark
-                  ? style.header + ' text-neutral-200'
-                  : style.header + ' text-neutral-600'
-              }><BiHelpCircle/> Get Test Coins</h2>
+            <h2 className={style.header}><BiHelpCircle/> Get Test Coins</h2>
             <div className="flex flex-col gap-3 text-sm">
               <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
               <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
@@ -175,42 +168,42 @@ const Footer = () => {
               <Link href="https://t.me/metanuva">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' telegram'}>
-                    <FaTelegramPlane color="white" fontSize="1.1rem" />
+                    <FaTelegramPlane color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://twitter.com/nuvacommunity">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' twitter'}>
-                    <FaTwitter color="white" fontSize="1.1rem" />
+                    <FaTwitter color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.instagram.com/nuva.community/">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' instagram'}>
-                    <FaInstagram color="white" fontSize="1.1rem" />
+                    <FaInstagram color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.facebook.com/METANUVA">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' facebook'}>
-                    <FaFacebookF color="white" fontSize="1.1rem" />
+                    <FaFacebookF color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.linkedin.com/company/metanuva/">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' linkedin'}>
-                    <FaLinkedinIn color="white" fontSize="1.1rem" />
+                    <FaLinkedinIn color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.youtube.com/c/NUVAGAMERSESPORT">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' youtube'}>
-                    <FaYoutube color="white" fontSize="1.1rem" />
+                    <FaYoutube color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
@@ -230,6 +223,19 @@ const Footer = () => {
           >
           <p className={style.copyright}>&copy; {new Date().getFullYear()} Nuva NFT.</p>
           <div className={style.footerLinksWrapper}>
+            <Link href="/blogs/aboutus">
+              <a
+                className={
+                  dark
+                    ? style.footerLinks +
+                      ' text-neutral-100'
+                    : style.footerLinks + ' text-black'
+                }
+                rel="noopener noreferrer"
+              >
+                About Us
+              </a>
+            </Link>
             <Link href="/termsandconditions">
               <a
                 className={

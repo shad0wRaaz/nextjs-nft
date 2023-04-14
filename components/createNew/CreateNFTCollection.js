@@ -526,7 +526,7 @@ const CreateNFTCollection = () => {
                   className={style.input + ' grow'}
                   name="itemBlockchain"
                   disabled
-                  value={ network[0].data.chain.name}
+                  value={ network[0]?.data?.chain?.name}
                 ></input>
               </div>
 

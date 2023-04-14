@@ -231,7 +231,7 @@ const privacypolicy = () => {
               <li>a. access to your account is controlled by a password and a username that is unique to you.</li>
               <li>b. we store your Data on secure servers.</li>
             </ol><br/>
-          18. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorised access to your Data, please let us know immediately by contacting us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a>.<br/><br/>
+          18. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorised access to your Data, please let us know immediately by contacting us via this e-mail address: <a href="mailto:enquiry@metanuva.com" className="underline text-blue-500 hover:text-blue-600">enquiry@metanuva.com</a>.<br/><br/>
           19. If you want detailed information from Get Safe Online on how to protect your information and your computers and devices against fraud, identity theft, viruses and many other online problems, please visit www.getsafeonline.org. Get Safe Online is supported by HM Government and leading businesses.<br/><br/>
         </div>
 
@@ -254,7 +254,7 @@ const privacypolicy = () => {
           </ol>
         </div>
 
-        23. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a><br/><br/>
+        23. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: <a href="mailto:enquiry@metanuva.com" className="underline text-blue-500 hover:text-blue-600">enquiry@metanuva.com</a><br/><br/>
         24. If you are not satisfied with the way a complaint you make in relation to your Data is handled by us, you may be able to refer your complaint to the relevant data protection authority. For the UK, this is the Information Commissioner's Office (ICO). The ICO's contact details can be found on their website at https://ico.org.uk/.<br/><br/>
         25. It is important that the Data we hold about you is accurate and current. Please keep us informed if your Data changes during the period for which we hold it.
         
@@ -340,7 +340,7 @@ const privacypolicy = () => {
 
         <div className={style.section}>
           <p className={style.header}>Changes to this privacy policy</p>
-          44. NUVA NFT reserves the right to change this privacy policy as we may deem necessary from time to time or as may be required by law. Any changes will be immediately posted on the Website and you are deemed to have accepted the terms of the privacy policy on your first use of the Website following the alterations. You may contact NUVA NFT by email at <a href="mailto:support@metanuva.com" className="underline text-blue-500 hover:text-blue-600">support@metanuva.com</a>
+          44. NUVA NFT reserves the right to change this privacy policy as we may deem necessary from time to time or as may be required by law. Any changes will be immediately posted on the Website and you are deemed to have accepted the terms of the privacy policy on your first use of the Website following the alterations. You may contact NUVA NFT by email at <a href="mailto:enquiry@metanuva.com" className="underline text-blue-500 hover:text-blue-600">enquiry@metanuva.com</a>
 
         </div>
       </div>

@@ -121,7 +121,7 @@ const cookiespolicy = () => {
         <div className={style.section}>
           <p className={style.header}>Contact Details</p>
           17. The Website is owned by NUVA NFT incorporated in England and Wales with registered number 13800011 whose registered office is at 75 Whitechapel road, London, E1 1DU, England.<br/><br/>
-          You may contact us by email at <a href="mailto:support@metanuva.com" className="underline text-blue-500">support@metanuva.com</a>
+          You may contact us by email at <a href="mailto:enquiry@metanuva.com" className="underline text-blue-500">enquiry@metanuva.com</a>
 
         </div>
       </div>

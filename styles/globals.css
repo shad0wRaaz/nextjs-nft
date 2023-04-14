@@ -372,9 +372,82 @@ left: 0;
 width: 100%;
 height: 100%;
 backdrop-filter: blur(60px);
-/* background: #000000; */
+background: #00000099;
 z-index: 0;
 }
+
+/** New featured card design ***/
+
+@property --rotate{
+  syntax:  "<angle>";
+  initial-value: 132deg;
+  inherits: false;
+}
+:root {
+  --card-height: 65vh;
+  --card-width: calc(var(var(var(--card-height) / 1.5)));
+}
+.featuredCard {
+
+  width: var(--card-width);
+  height: var(--card-height);
+  padding: 3px;
+  position: relative;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  font: 1.5em;
+  /* color: rgb(88 199 250 / 0%); */
+  cursor: pointer;
+}
+.featuredCard:hover {
+  /* color: rgb(88 199 250 / 100%);
+  transition: color 1s; */
+}
+.featuredCard:hover::before, .featuredCard:hover::after{
+  /* animation: none;
+  opacity: 0; */
+}
+.featuredCard::before {
+  content: '';
+  width: 100%;
+  height: 103.5%;
+  border-radius: 8px;
+  background-image: linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2);
+  position: absolute;
+  top: -1.5%;
+  left: 0;
+  z-index: -1;
+  animation: spin 8.5s linear infinite;
+}
+.featuredCard::after {
+  position: absolute;
+  content: '';
+  /* top: calc(var(--card-height) / 6); */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  /* transform: scale(0.8); */
+  filter: blur(calc(var(--card-height) / 6));
+  background-image: linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2);
+  opacity: 1;
+  transition: opacity 0.5s;
+  animation: spin 8.5s linear infinite;
+}
+@keyframes spin {
+  0% { --rotate: 0deg }
+  100% { --rotate: 359deg }
+}
+/** End of New featured card design ***/
+
+
+
 
 /************************************************************/
 /*** ADMIN CSS **/
