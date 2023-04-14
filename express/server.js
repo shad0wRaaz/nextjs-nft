@@ -649,7 +649,7 @@ app.post('/api/sendemail', async (req, res) => {
                 </p>
                 <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
                   If you don't have a referee, we ask you to email us at
-                  <a href="mailto:support@metanuva.com"><b style="color: #00086f !important;">support@metanuva.com</b></a>, and we will gladly help you with your
+                  <a href="mailto:enquiry@metanuva.com"><b style="color: #00086f !important;">enquiry@metanuva.com</b></a>, and we will gladly help you with your
                   onboarding.
                 </p>
               </div>
@@ -733,7 +733,7 @@ app.post('/api/sendemail', async (req, res) => {
                   you.
                 </p>
                 <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
-                  You may reply to this email <a href="mailto:support@metanuva.com" target="_blank">support@metanuva.com</a>
+                  You may reply to this email <a href="mailto:enquiry@metanuva.com" target="_blank">enquiry@metanuva.com</a>
                   </p>
                 <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
                   We look forward to welcoming you as one of our community members
@@ -742,7 +742,7 @@ app.post('/api/sendemail', async (req, res) => {
                 <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
                   Be sure to join the Meta Nuva Community social media channels to
                   access our full range of resources or drop an email to
-                  <a href="mailto:support@metanuva.com" target="_blank">support@metanuva.com</a>
+                  <a href="mailto:enquiry@metanuva.com" target="_blank">enquiry@metanuva.com</a>
                 </p>
               </div>
             </div>
@@ -992,7 +992,7 @@ app.post('/api/sendemail', async (req, res) => {
                 <p style="font-size: 19px; line-height: 30px; color: #000000 !important">
                   Be sure to join the Meta Nuva Community social media channels to
                   access our full range of resources or drop an email to
-                  <a href="mailto:support@metanuva.com">support@metanuva.com</a>
+                  <a href="mailto:enquiry@metanuva.com">enquiry@metanuva.com</a>
                 </p>
               </div>
             </div>
@@ -1596,7 +1596,7 @@ app.post('/api/Oldsendemail', async (req, res) => {
                 <p style="line-height: 28px;">Thank you for helping us to protect the interests of our community.  We hope this demonstrates our commitment to you.  Please find below your registration link. </p>
                 <p style="line-height: 28px;"><a style="color: #ffffff;" href="${result[0].registrationlink}">${result[0].registrationlink}</a></p>
                 <p style="line-height: 28px;">We look forward to welcoming you to our Neta Nuva community and assisting you with your onboarding.  If you have any further questions, please do let us know.</p>
-                <p style="line-height: 28px; margin-top: 5em;">Be sure to join the Meta Nuva Community social media channels to access our full range of resources or drop an email to <a href="mailto:support@metanuva.com" style="color: rgb(255,255,255);">support@metanuva.com</a></p>
+                <p style="line-height: 28px; margin-top: 5em;">Be sure to join the Meta Nuva Community social media channels to access our full range of resources or drop an email to <a href="mailto:enquiry@metanuva.com" style="color: rgb(255,255,255);">enquiry@metanuva.com</a></p>
                 <p style="line-height: 28px; font-size: 12px; font-style: italic">This email and any attachments to it may be confidential and are intended solely for the use of the individual to whom it is addressed. Any views or opinions expressed are solely those of the author and do not necessarily represent those of Meta Nuva. Please disregard this email if you have received it by mistake or were not expecting it.</p>
             </td>
         </tr>
