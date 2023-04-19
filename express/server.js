@@ -834,39 +834,39 @@ app.get("/api/getcategories", async(req, res) => {
   }
 });
 
-app.get("/api/hasthiswalletnft", async(req, res) => {
-  const {walletaddress} = req.query;
-  let isNFT = false, isCollection = false;
-  const collections = await redis.get("collections");
-  if(!collections){
-    return null;
-  }
+// app.get("/api/hasthiswalletnft", async(req, res) => {
+//   const {walletaddress} = req.query;
+//   let isNFT = false, isCollection = false;
+//   const collections = await redis.get("collections");
+//   if(!collections){
+//     return null;
+//   }
 
-  //find collection deployed by the walletaddress
-  const rawdata = JSON.parse(collections);
-  const filtered = rawdata?.filter(col => col.createdBy._ref == walletaddress);
-  if(filtered.length > 0){
-    isCollection = true;
-  }
+//   //find collection deployed by the walletaddress
+//   const rawdata = JSON.parse(collections);
+//   const filtered = rawdata?.filter(col => col.createdBy._ref == walletaddress);
+//   if(filtered.length > 0){
+//     isCollection = true;
+//   }
   
-  //find nft in all of the filtered collections
-  const unresolved = filtered?.map(async collection => {
-    const sdk = new ThirdwebSDK(chainnum[collection?.chainId]);
-    const contract = await sdk.getContract(collection?.contractAddress);
-    const balance = await contract.erc721.balanceOf(walletaddress);
-    return balance //this returns no.of nfts in hex form
-  });
+//   //find nft in all of the filtered collections
+//   const unresolved = filtered?.map(async collection => {
+//     const sdk = new ThirdwebSDK(chainnum[collection?.chainId]);
+//     const contract = await sdk.getContract(collection?.contractAddress);
+//     const balance = await contract.erc721.balanceOf(walletaddress);
+//     return balance //this returns no.of nfts in hex form
+//   });
 
-  const resolved = await Promise.allSettled(unresolved); //resolve all Promise
-  const resultConverted = resolved.map(item => Number(item.value.toString())); //converting all no.of nfts from the collection by the walletaddress from hex to string, easier to read
-  //check number of nfts > 1;
-  const nftnumber = resultConverted.filter(item => item > 0);
-  if(nftnumber.length > 0){
-    isNFT = true
-  }
+//   const resolved = await Promise.allSettled(unresolved); //resolve all Promise
+//   const resultConverted = resolved.map(item => Number(item.value.toString())); //converting all no.of nfts from the collection by the walletaddress from hex to string, easier to read
+//   //check number of nfts > 1;
+//   const nftnumber = resultConverted.filter(item => item > 0);
+//   if(nftnumber.length > 0){
+//     isNFT = true
+//   }
 
-  return res.status(200).send(isNFT && isCollection)
-});
+//   return res.status(200).send(isNFT && isCollection)
+// });
 
 app.listen(8080, () => console.log('listening on 8080'));
 
