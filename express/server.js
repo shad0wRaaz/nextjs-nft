@@ -481,16 +481,26 @@ app.get('/api/latestCollection', async (req, res) => {
   }
 });
 
-app.get('/api/getallcollections', async(req,res) => {
-  let collectionData = await redis.get("collections");
-  if(collectionData == null){
-    const query = `*[_type == "nftCollection"] { name, _id, contractAddress, createdBy, chainId}`;
+const updateCollectionData = async () => {
+  const query = `*[_type == "nftCollection"] { name, _id, contractAddress, createdBy, chainId}`;
     collectionData = await config.fetch(query);
     collectionData = JSON.stringify(collectionData);
     redis.set("collections", collectionData);
+    return collectionData;
+}
+
+app.get('/api/getallcollections', async(req,res) => {
+  let collectionData = await redis.get("collections");
+  if(collectionData == null){
+    collectionData = updateCollectionData();
   }
   return res.status(200).json(collectionData);
 });
+
+app.get('/api/updateallcollections', async(req, res) => {
+  updateCollectionData();
+  return res.status(200).send({message: "success"});
+})
 
 app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
   const blockchain = req.params.blockchain;
