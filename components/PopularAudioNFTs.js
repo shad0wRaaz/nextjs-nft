@@ -22,12 +22,15 @@ const PopularAudioNFTs = () => {
 
     useEffect(() => {
         ;(async () => {
-            let popularItems = await axios.get(`${HOST}/api/popularaudionfts/${selectedBlockchain}`);
-            popularItems = JSON.parse(popularItems.data);
-            setTopTwoNFTItems(popularItems.topItems);
-            setOtherThreeNFTItems(popularItems.otherItems);
-            // console.log(popularItems)
-        })()
+            await axios.get(`${HOST}/api/popularaudionfts/${selectedBlockchain}`).then(result => {
+                const popularItems = JSON.parse(result.data);
+                setTopTwoNFTItems(popularItems.topItems);
+                setOtherThreeNFTItems(popularItems.otherItems);
+                // console.log(popularItems)
+            }).catch(err => {
+                console.log('Error getting popular NFTs');
+            });
+        })();
         // if(!activeListings) return
         // const audioItems = activeListings.filter(item => item.asset.properties?.itemtype == "audio" && item.asset.properties?.tokenid != null)
         // const tempList = audioItems.map(async (item) => {

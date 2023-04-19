@@ -19,9 +19,12 @@ const PopularVideoNFTs = () => {
         if(!activeListings) return
         // const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video" && item.asset.properties?.tokenid != null);
         ;(async() => {
-          let popularItems = await axios.get(`${HOST}/api/popularvideonfts/${selectedBlockchain}`);
-          popularItems = JSON.parse(popularItems.data);
-          setTopVideoItems(popularItems?.topItems)
+          let popularItems = await axios.get(`${HOST}/api/popularvideonfts/${selectedBlockchain}`).then(result => {
+            const popularItems = JSON.parse(result.data);
+            setTopVideoItems(popularItems?.topItems);
+          }).catch(err => {
+            console.log("Error getting popular NFT videos.")
+          });
         })()
     }, [activeListings])
 
