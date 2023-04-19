@@ -4,9 +4,11 @@ import { RiSearchLine } from 'react-icons/ri'
 import { Combobox, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { Fragment, useCallback, useMemo, useState } from 'react'
+import { useSettingsContext } from '../contexts/SettingsContext'
+import axios from 'axios'
 
 const style = {
-  comboMenu: `absolute mt-1 max-h-xl w-full overflow-auto rounded-3xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm sm:w-[300px] searchOutputBox`,
+  comboMenu: `absolute mt-1 max-h-xl w-full overflow-auto rounded-xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm sm:w-[300px] searchOutputBox`,
 }
 
 const SearchBar = () => {
@@ -15,20 +17,17 @@ const SearchBar = () => {
   const [collectionArray, setCollectionArray] = useState([])
   const router = useRouter()
   const { dark } = useThemeContext()
+  const { HOST } = useSettingsContext();
 
   //get all collection names from sanity
   useMemo(() => {
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftCollection"] {
-        name,
-        _id,
-        contractAddress,
-        
-      }`
-      const collectionData = await sanityClient.fetch(query)
-      setCollectionArray(collectionData)
+    ;(async () => {
+
+      let collections = await axios.get(`${HOST}/api/getallcollections`);
+      collections = JSON.parse(collections.data)
+      // console.log(collections)
+      setCollectionArray(collections)
     })()
-    
     return() => {
       //do nothing
     }
@@ -99,18 +98,18 @@ const SearchBar = () => {
             >
               {filteredCollection.length === 0 && query !== '' ? (
                 <div
-                  className={`relative cursor-default select-none bg-transparent bg-none py-2 px-4 ${
+                  className={`relative cursor-default text-center select-none bg-transparent bg-none p-4 ${
                     dark ? ' text-neutral-100' : ' text-gray-700'
                   } `}
                 >
                   <span>Nothing found.</span>
                   <button
                     onClick={() => router.push('/search')}
-                    className={`mt-3 block rounded-md border ${
+                    className={`mt-3 block rounded-lg w-full border ${
                       dark
                         ? ' border-slate-500 bg-slate-600 hover:bg-slate-500'
                         : ' border-sky-200 bg-sky-100 hover:bg-sky-200'
-                    } p-1 px-2 text-[12px] `}
+                    } p-2 text-[12px] `}
                   >
                     Use Advanced Search
                   </button>
@@ -124,7 +123,7 @@ const SearchBar = () => {
                     data-headlessui-state=""
                     key={collectionArray.contractAddress}
                     className={({ active }) =>
-                      `relative select-none rounded-xl py-2 pl-4 pr-4 ${
+                      `relative select-none rounded-lg py-2 pl-4 pr-4 ${
                         active
                           ? dark
                             ? ' bg-slate-600 text-neutral-100'
@@ -171,6 +170,7 @@ const SearchBar = () => {
         </div>
       </Combobox>
     </div>
+    
   )
 }
 

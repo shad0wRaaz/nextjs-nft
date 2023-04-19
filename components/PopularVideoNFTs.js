@@ -4,18 +4,25 @@ import VideoNFTCard from './VideoNFTCard'
 import React, {useState, useEffect, useRef} from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { useSettingsContext } from '../contexts/SettingsContext';
+import axios from 'axios';
 
 
 const PopularVideoNFTs = () => {
-    const { dark } = useThemeContext()
-    const { activeListings } = useMarketplaceContext()
-    const sliderRef = useRef(null);
+  const sliderRef = useRef(null);
+    const { dark } = useThemeContext();
+    const { HOST } = useSettingsContext();
     const [topVideoItems, setTopVideoItems] = useState([])
+    const { activeListings, selectedBlockchain } = useMarketplaceContext()
 
     useEffect(() => {
         if(!activeListings) return
-        const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video" && item.asset.properties?.tokenid != null);
-        setTopVideoItems(videoItems)
+        // const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video" && item.asset.properties?.tokenid != null);
+        ;(async() => {
+          let popularItems = await axios.get(`${HOST}/api/popularvideonfts/${selectedBlockchain}`);
+          popularItems = JSON.parse(popularItems.data);
+          setTopVideoItems(popularItems?.topItems)
+        })()
     }, [activeListings])
 
   return (

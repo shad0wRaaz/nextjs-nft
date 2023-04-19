@@ -5,48 +5,58 @@ import React, { useEffect, useState } from 'react'
 import AudioNFTCardCompact from './AudioNFTCardCompact'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import axios from 'axios'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0 z-0 relative',
   }
 
 const PopularAudioNFTs = () => {
-    const { dark } = useThemeContext()
-    const {activeListings} = useMarketplaceContext()
+    const { dark } = useThemeContext();
+    const { HOST } = useSettingsContext();
+    const {activeListings, selectedBlockchain} = useMarketplaceContext()
     const [topTwoNFTItems, setTopTwoNFTItems] = useState([])
     const [otherThreeNFTItems, setOtherThreeNFTItems] = useState([])
     const router = useRouter();
 
     useEffect(() => {
-        if(!activeListings) return
-        const audioItems = activeListings.filter(item => item.asset.properties?.itemtype == "audio" && item.asset.properties?.tokenid != null)
-        const tempList = audioItems.map(async (item) => {
-            var obj = { ...item };
-            const query = `*[_type == "nftItem" && _id == "${item.asset?.properties.tokenid}"] {"likers":count(likedBy)}`;
-            const result = await config.fetch(query);
-
-            if(result[0].likers){
-                obj['likedBy'] = result[0].likers;
-            }else {
-                obj['likedBy'] = 0;
-            }
-            return obj;
-        });
         ;(async () => {
-            const updatedList = await Promise.all(tempList);
-            //sort out the array based on number of likers
-
-            const sortedList = updatedList.sort((a,b) => { return (b.likedBy - a.likedBy)});
-            if(audioItems.length < 2) {
-                setTopTwoNFTItems(sortedList)
-            }
-            else {
-                const topItems = sortedList.slice(0,2)
-                const otherItems = sortedList.slice(2, 5)
-                setTopTwoNFTItems(topItems) //First two Audio Items
-                setOtherThreeNFTItems(otherItems) //Another three Audio Items
-            }
+            let popularItems = await axios.get(`${HOST}/api/popularaudionfts/${selectedBlockchain}`);
+            popularItems = JSON.parse(popularItems.data);
+            setTopTwoNFTItems(popularItems.topItems);
+            setOtherThreeNFTItems(popularItems.otherItems);
+            // console.log(popularItems)
         })()
+        // if(!activeListings) return
+        // const audioItems = activeListings.filter(item => item.asset.properties?.itemtype == "audio" && item.asset.properties?.tokenid != null)
+        // const tempList = audioItems.map(async (item) => {
+        //     var obj = { ...item };
+        //     const query = `*[_type == "nftItem" && _id == "${item.asset?.properties.tokenid}"] {"likers":count(likedBy)}`;
+        //     const result = await config.fetch(query);
+
+        //     if(result[0].likers){
+        //         obj['likedBy'] = result[0].likers;
+        //     }else {
+        //         obj['likedBy'] = 0;
+        //     }
+        //     return obj;
+        // });
+        // ;(async () => {
+        //     const updatedList = await Promise.all(tempList);
+        //     //sort out the array based on number of likers
+
+        //     const sortedList = updatedList.sort((a,b) => { return (b.likedBy - a.likedBy)});
+        //     if(audioItems.length < 2) {
+        //         setTopTwoNFTItems(sortedList)
+        //     }
+        //     else {
+        //         const topItems = sortedList.slice(0,2)
+        //         const otherItems = sortedList.slice(2, 5)
+        //         setTopTwoNFTItems(topItems) //First two Audio Items
+        //         setOtherThreeNFTItems(otherItems) //Another three Audio Items
+        //     }
+        // })()
         return() => {
             //do nothing
         }

@@ -41,7 +41,7 @@ const Header = () => {
     wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-10 flex justify-center`,
     logoContainer: `flex items-center cursor-pointer m-0`,
     logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
-    searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-max-[520px] h-[50px] items-center border rounded-full transition linear focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50`,
+    searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] w-[50px] hover:w-[250px] h-[50px] items-center border rounded-full transition-all linear`,
     searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
     searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
     headerItems: `flex items-center justify-end nonMobileMenu`,
@@ -204,17 +204,20 @@ const Header = () => {
           <p className={style.menuText}><a href="/blogs/nftterms">NFT Terms</a></p>
         </div>
 
-        <div
-          className={
-            dark
-              ? style.searchBar + ' border-sky-400/20 bg-[#ffffff99] text-black'
-              : style.searchBar + ' border-neutral-200 bg-[#ffffff99] text-black'
-          }
-        >
-          <div className={style.searchIcon}>
-            <IconMagnifier />
+        <div className="md:w-[300px] relative justify-center flex transition-all">
+          <div
+            className={ 'shadow-md' + 
+              dark
+                ? style.searchBar + ' border-sky-400/20 bg-[#ffffff99] text-black'
+                : style.searchBar + ' border-neutral-200 bg-[#ffffff99] text-black'
+            }
+          >
+            <div className={style.searchIcon}>
+              <IconMagnifier />
+            </div>
+            <SearchBar />
           </div>
-          <SearchBar />
+
         </div>
 
       {/* Mobile View Menu */}

@@ -2,53 +2,53 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
 import { MdAudiotrack } from 'react-icons/md'
-import { useAddress } from '@thirdweb-dev/react'
+// import { useAddress } from '@thirdweb-dev/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
 const NFTItem = ({ nftItem }) => {
   const { dark } = useThemeContext();
-  const [isLiked, setIsLiked] = useState(false);
-  const address = useAddress();
-  const [nftData, settNftData] = useState();
+  // const [isLiked, setIsLiked] = useState(false);
+  // const address = useAddress();
+  // const [nftData, settNftData] = useState();
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    //getting NFT likes and ID of NFT from Sanity
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && _id == "${nftItem.asset.properties?.tokenid}"] {
-        _id,
-        likedBy
-      }`
-      const res = await sanityClient.fetch(query);
-      settNftData(res[0]);
-    })()
-    return() => {
-      //do nothing
-    }
-  }, [nftItem])
+  //   //getting NFT likes and ID of NFT from Sanity
+  //   ;(async (sanityClient = config) => {
+  //     const query = `*[_type == "nftItem" && _id == "${nftItem.asset.properties?.tokenid}"] {
+  //       _id,
+  //       likedBy
+  //     }`
+  //     const res = await sanityClient.fetch(query);
+  //     settNftData(res[0]);
+  //   })()
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, [nftItem])
 
-  useEffect(() => {
-    setIsLiked(false)
-    if(!nftData || !address) return
+  // useEffect(() => {
+  //   setIsLiked(false)
+  //   if(!nftData || !address) return
 
-    if(nftData.likedBy != null){
-      const likersArray = nftData.likedBy;
+  //   if(nftData.likedBy != null){
+  //     const likersArray = nftData.likedBy;
 
-      const amILiker = likersArray.find(
-        (user) => user._ref == address
-      )
-      if (amILiker) {
-        setIsLiked(true)
-      }
-    } else {
-      setIsLiked(false)
-    }
+  //     const amILiker = likersArray.find(
+  //       (user) => user._ref == address
+  //     )
+  //     if (amILiker) {
+  //       setIsLiked(true)
+  //     }
+  //   } else {
+  //     setIsLiked(false)
+  //   }
 
-    return() => {
-      //do nothing
-    }
-  }, [address])
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, [address])
 
   return (
     <div
@@ -74,12 +74,12 @@ const NFTItem = ({ nftItem }) => {
           </div>
 
           <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
-            <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
+            {/* <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
             <IconHeart color={isLiked ? '#ef4444' : ''} />
               <span className="ml-2 text-sm">
                 {nftData?.likedBy?.length ? nftData.likedBy.length : '0'}
               </span>
-            </button>
+            </button> */}
 
             {/* <div className="hidden md:flex -space-x-1.5">
               <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white ">

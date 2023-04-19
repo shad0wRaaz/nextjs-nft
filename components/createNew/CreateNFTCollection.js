@@ -106,7 +106,7 @@ const CreateNFTCollection = () => {
             }
             )
           }
-            
+          // 0x4313Ab900db3AddC8063ce105524e5DC1f95b52e -> Previous address
         const metadata = {
           name: form.itemName.value,
           image: profileLink?.data,
@@ -116,9 +116,10 @@ const CreateNFTCollection = () => {
           primary_sale_recipient: form.primary_sale_recipient.value,
           seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
           platform_fee_basis_points: 500,
-          platform_fee_recipient: '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e',
+          platform_fee_recipient: '0x9D2036BAfd465bAFaCFeEb6A4a97659D9f2a8A30',
           trusted_forwarders: [],
         }
+        
         const itemID = uuidv4();
 
         //deploy NFT Collection

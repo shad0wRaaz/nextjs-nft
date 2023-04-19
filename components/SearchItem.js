@@ -9,46 +9,46 @@ import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 const SearchItem = ({ nftItem }) => {
   const address = useAddress()
   const { dark } = useThemeContext()
-  const [likers, setLikers] = useState([])
-  const [isLiked, setIsLiked] = useState(false)
+  // const [likers, setLikers] = useState([])
+  // const [isLiked, setIsLiked] = useState(false)
  
-  useEffect(() => {
-    //getting NFT likes from Sanity
-    if(!nftItem) return
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && _id == "${nftItem.asset.properties?.tokenid}"] {
-            likedBy
-          }`
-      const res = await sanityClient.fetch(query)
+  // useEffect(() => {
+  //   //getting NFT likes from Sanity
+  //   if(!nftItem) return
+  //   ;(async (sanityClient = config) => {
+  //     const query = `*[_type == "nftItem" && _id == "${nftItem.asset.properties?.tokenid}"] {
+  //           likedBy
+  //         }`
+  //     const res = await sanityClient.fetch(query)
       
-      setLikers(res[0])
-    })()
-    return () => {
-      //do nothing
-    }
-  }, [nftItem])
+  //     setLikers(res[0])
+  //   })()
+  //   return () => {
+  //     //do nothing
+  //   }
+  // }, [nftItem])
 
-  useEffect(() => {
-    setIsLiked(false)
-    if(!likers) return
-    if(likers.likedBy != null){
-      const likersArray = likers.likedBy
-      // console.log(likersArray)
+  // useEffect(() => {
+  //   setIsLiked(false)
+  //   if(!likers) return
+  //   if(likers.likedBy != null){
+  //     const likersArray = likers.likedBy
+  //     // console.log(likersArray)
 
-      const amILiker = likersArray.find(
-        (user) => user._ref == address
-      )
-      if (amILiker) {
-        setIsLiked(true)
-      }
-    } else {
-      setIsLiked(false)
-    }
+  //     const amILiker = likersArray.find(
+  //       (user) => user._ref == address
+  //     )
+  //     if (amILiker) {
+  //       setIsLiked(true)
+  //     }
+  //   } else {
+  //     setIsLiked(false)
+  //   }
 
-    return() => {
-      //do nothing
-    }
-  }, [address, likers])
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, [address, likers])
   
   return (
     <>
@@ -77,12 +77,12 @@ const SearchItem = ({ nftItem }) => {
                     {nftItem.asset.properties.itemtype == "video" ? <IconVideo /> : nftItem.asset.properties.itemtype == "audio" ? <MdAudiotrack /> : <IconImage />}
                   </div>
 
-                  <button className="absolute top-3 right-3 z-10 flex h-10 !h-9 items-center justify-center rounded-full bg-black/50 px-3.5 text-white">
+                  {/* <button className="absolute top-3 right-3 z-10 flex h-10 !h-9 items-center justify-center rounded-full bg-black/50 px-3.5 text-white">
                     <IconHeart color={isLiked ? '#ef4444' : ''} />
                     <span className="ml-2 text-sm">
                       {likers?.likedBy?.length ? likers.likedBy.length : '0'}
                     </span>
-                  </button>
+                  </button> */}
 
                   <div className="absolute inset-x-3 top-3 flex"></div>
                 </div>

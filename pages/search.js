@@ -27,7 +27,7 @@ import SearchItem from '../components/SearchItem'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
-  pageBanner: 'py-[4rem] mb-[2rem]',
+  pageBanner: 'py-[4rem] mb-[2rem] gradSky',
   pageTitle: 'text-4xl text-center text-black font-bold my-4 textGradBlue',
   contractsWrapper: 'flex flex-wrap justify-center gap-[40px] pt-4',
   contractItem:
@@ -231,7 +231,7 @@ const search = ({category}) => {
             : style.pageBanner + ' bg-sky-100'
         }
       >
-        <div className="container relative -bottom-[100px] mx-auto p-4">
+        <div className="container relative -bottom-[110px] mx-auto p-4">
           <header className="mx-auto -mt-10 flex max-w-2xl flex-col lg:-mt-7">
             <form
               className="relative w-full "

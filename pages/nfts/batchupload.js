@@ -19,6 +19,7 @@ import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai'
 import { useAddress, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
 import { IconLoading } from '../../components/icons/CustomIcons'
 import Header from '../../components/Header'
+import Footer from '../../components/Footer'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -137,7 +138,7 @@ const batchupload = () => {
       'gradBlue flex gap-2 justify-center rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
     previewImage:
       'relative mr-[1rem] h-[220px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-500 flex items-center justify-center',
-    notConnectedWrapper: 'flex justify-center items-center h-screen',
+    notConnectedWrapper: 'flex justify-center items-start h-screen pt-[4rem]',
     traitsButtons:
       'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-2 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
     secondaryButton:
@@ -740,6 +741,7 @@ const batchupload = () => {
                 </div>
             )}
         </div>
+        <Footer />
     </div>
   )
 }

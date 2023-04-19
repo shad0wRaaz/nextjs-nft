@@ -688,7 +688,7 @@ const Collection = () => {
         <div className="p-[4rem] text-center">
           <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
           <h2 className="text-3xl font-bold mb-4">This NFT Collection is blocked.</h2>
-          <p className="leading-10">If you own this collection and if you think there has been a mistake, please contact us at <a href="mailto:support@metanuva.com" className="block md:inline p-2 border border-slate-600 rounded-md">support@metanuva.com</a></p>
+          <p className="leading-10">If you own this collection and if you think there has been a mistake, please contact us at <a href="mailto:enquiry@metanuva.com" className="block md:inline p-2 border border-slate-600 rounded-md">enquiry@metanuva.com</a></p>
         </div>
       )}
       <Footer />

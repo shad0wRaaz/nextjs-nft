@@ -71,6 +71,7 @@ const Nft = (props) => { //props are from getServerSideProps
   const [thisNFTMarketContract, setThisNFTMarketContract] = useState();
   const { chainExplorer, blockedNfts, blockedCollections } = useSettingsContext();
   const [isBlocked, setIsBlocked] = useState(false);
+  const [isZoom, setIsZoom] = useState(false);
 
   useEffect(() => {
     if(!blockedNfts) return;
@@ -303,12 +304,42 @@ const Nft = (props) => { //props are from getServerSideProps
     <div
       className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}
     >
+      {isZoom && (
+        <div className=" h-full fixed z-20 w-full top-0 left-0 backdrop-blur-3xl bg-[#00000022] flex justify-center items-center cursor-pointer" onClick={() => setIsZoom(false)}>
+          <div className="relative max-w-lg max-h-lg ">
+            {!playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
+              <video className="w-full h-full" autoPlay loop>
+                <source src={nftContractData?.metadata?.animation_url}/>
+                Your browser does not support video tag. Upgrade your browser.
+              </video>
+            )}
+            {!playItem && nftContractData?.metadata?.properties.itemtype == "audio" && (
+              <>
+                <audio className="w-full h-full" autoPlay loop>
+                  <source src={nftContractData?.metadata?.animation_url}/>
+                  Your browser does not support video tag. Upgrade your browser.
+                </audio>
+                <img
+                  src={nftContractData?.metadata?.image}
+                  className="h-full w-full object-cover"
+                />
+              </>
+            )}
+            {!playItem && nftContractData?.metadata?.properties.itemtype == "image" && (
+              <img
+                src={nftContractData?.metadata?.image}
+                className="h-full w-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+      ) }
       <Header />
       {isBlocked ? (
         <div className="p-[4rem] text-center">
           <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
           <h2 className=" text-3xl font-bold mb-4">This NFT is blocked.</h2>
-          <p className="leading-10">If you own this NFT and if you think there has been a mistake, please contact us at <a href="mailto:support@metanuva.com" className="p-2 border border-slate-600 rounded-md">support@metanuva.com</a></p>
+          <p className="leading-10">If you own this NFT and if you think there has been a mistake, please contact us at <a href="mailto:enquiry@metanuva.com" className="p-2 border border-slate-600 rounded-md">enquiry@metanuva.com</a></p>
         </div>
       ): (
         <main className="container sm:px-[2rem] lg:px-[8rem] mx-auto mt-11 flex pt-[5rem] md:pt-[8rem]">
@@ -322,7 +353,7 @@ const Nft = (props) => { //props are from getServerSideProps
                     : 'relative'
                 }
               >
-                <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-3xl max-h-[38rem] cursor-zoom-in">
+                <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-2xl max-h-[38rem] cursor-zoom-in" onClick={() => setIsZoom(true)}>
                   {playItem && nftContractData?.metadata?.properties.itemtype == "video" && (
                     <video className="w-full h-full" autoPlay loop>
                       <source src={nftContractData?.metadata?.animation_url}/>
