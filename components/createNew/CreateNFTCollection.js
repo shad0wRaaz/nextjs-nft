@@ -166,7 +166,8 @@ const CreateNFTCollection = () => {
             id: itemID,
             type: 'TYPE_ONE',
           })
-
+        //update redis database for all collections
+        await axios.get(`${HOST}/api/updateallcollections`).then().catch(err => console.log(err));
         toast.success('Collection created successfully.', successToastStyle);
         
         router.push(`/collections/${itemID}`);
