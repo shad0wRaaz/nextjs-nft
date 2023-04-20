@@ -59,7 +59,7 @@ const EditCollection = ({collection, setShowModal}) => {
                     'Content-Type': 'multipart/form-data',
                   },
                 }
-                )
+                ).catch(err => toastHandler.error('Error in uploading image to IPFS', errorToastStyle));
               }
               
             if(banner){
@@ -73,7 +73,7 @@ const EditCollection = ({collection, setShowModal}) => {
                     'Content-Type': 'multipart/form-data',
                   },
                 }
-                )
+                ).catch(err => toastHandler.error('Error in uploading image to IPFS', errorToastStyle));
               }
             await config
             .patch(newCollectionData._id)
