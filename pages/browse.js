@@ -32,10 +32,12 @@ const browse = () => {
 
   useEffect(() => {
     ;(async() => {
-      const catt = await axios.get(`${HOST}/api/getcategories`);
-      let sortedArray = sortCategory(JSON.parse(catt.data));
-      setCategoryData(sortedArray)
-    })()
+      await axios.get(`${HOST}/api/getcategories`)
+        .then(result => {
+          let sortedArray = sortCategory(JSON.parse(result.data));
+          setCategoryData(sortedArray);
+      }).catch(err => console.error(err));
+    })();
 
     return () => {
       //just clean up codes, nothing else here
