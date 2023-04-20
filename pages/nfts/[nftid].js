@@ -668,6 +668,7 @@ export async function getServerSideProps(context){
   var nftcontractdata = "";
   var allListedFromThisChain = "";
   var marketAddress = process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE; //by default, save a market address
+  var nftChainid = 56;
 
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
@@ -714,7 +715,7 @@ export async function getServerSideProps(context){
 
     //determine which marketplace is current NFT is in
 
-    const nftChainid = sanityData?.collection.chainId;
+    nftChainid = sanityData?.collection.chainId;
 
     marketAddress = marketplace[nftChainid];
 
