@@ -6,24 +6,25 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { useSettingsContext } from '../contexts/SettingsContext';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 
 const PopularVideoNFTs = () => {
   const sliderRef = useRef(null);
-    const { dark } = useThemeContext();
+    const { dark, errorToastStyle } = useThemeContext();
     const { HOST } = useSettingsContext();
-    const [topVideoItems, setTopVideoItems] = useState([])
-    const { activeListings, selectedBlockchain } = useMarketplaceContext()
+    const [topVideoItems, setTopVideoItems] = useState([]);
+    const { activeListings, selectedBlockchain } = useMarketplaceContext();
 
     useEffect(() => {
         if(!activeListings) return
         // const videoItems = activeListings.filter(item => item.asset.properties?.itemtype == "video" && item.asset.properties?.tokenid != null);
         ;(async() => {
-          let popularItems = await axios.get(`${HOST}/api/popularvideonfts/${selectedBlockchain}`).then(result => {
+          await axios.get(`${HOST}/api/popularvideonfts/${selectedBlockchain}`).then(result => {
             const popularItems = JSON.parse(result.data);
             setTopVideoItems(popularItems?.topItems);
           }).catch(err => {
-            console.log("Error getting popular NFT videos.")
+            toast.error('Error getting Popular Video NFTs', errorToastStyle);
           });
         })()
     }, [activeListings])

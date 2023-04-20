@@ -90,7 +90,7 @@ const CreateNFTCollection = () => {
                 'Content-Type': 'multipart/form-data',
               },
             }
-            )
+            ).catch(err => toast.error('Error in uplaoding image to IPFS', errorToastStyle))
           }
           
         if(banner){
@@ -104,7 +104,7 @@ const CreateNFTCollection = () => {
                 'Content-Type': 'multipart/form-data',
               },
             }
-            )
+            ).catch(err => toast.catch('Error in uploadin image to IPFS', errorToastStyle));
           }
           // 0x4313Ab900db3AddC8063ce105524e5DC1f95b52e -> Previous address
         const metadata = {
@@ -167,7 +167,7 @@ const CreateNFTCollection = () => {
             type: 'TYPE_ONE',
           })
         //update redis database for all collections
-        // await axios.get(`${HOST}/api/updateallcollections`).then(res).catch(err => console.log(err));
+        await axios.get(`${HOST}/api/updateallcollections`).catch(err => toast.error('Error refreshing cache', errorToastStyle));
         toast.success('Collection created successfully.', successToastStyle);
         
         router.push(`/collections/${itemID}`);

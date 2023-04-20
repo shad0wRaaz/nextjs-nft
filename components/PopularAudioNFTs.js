@@ -7,13 +7,14 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import axios from 'axios'
 import { useSettingsContext } from '../contexts/SettingsContext'
+import toast from 'react-hot-toast'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] mt-0 z-0 relative',
   }
 
 const PopularAudioNFTs = () => {
-    const { dark } = useThemeContext();
+    const { dark, errorToastStyle } = useThemeContext();
     const { HOST } = useSettingsContext();
     const {activeListings, selectedBlockchain} = useMarketplaceContext()
     const [topTwoNFTItems, setTopTwoNFTItems] = useState([])
@@ -28,7 +29,7 @@ const PopularAudioNFTs = () => {
                 setOtherThreeNFTItems(popularItems.otherItems);
                 // console.log(popularItems)
             }).catch(err => {
-                console.log('Error getting popular NFTs');
+                toast.error('Error getting Popular Audio NFTs', errorToastStyle);
             });
         })();
         // if(!activeListings) return
