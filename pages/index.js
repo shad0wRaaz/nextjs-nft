@@ -30,7 +30,7 @@ const Home = (props) => {
 
   return (
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
-        <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${herobackground.src})`}}>
+        {/* <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${herobackground.src})`}}>
           <Header/>
           {backendAvailable ? (<>
             <HeroCarousel featuredNfts={props.featuredNfts}/>
@@ -49,7 +49,7 @@ const Home = (props) => {
         </>
         : ''}
         <SubscribeSection />
-        <Footer/>
+        <Footer/> */}
       </div>
   )
 }
