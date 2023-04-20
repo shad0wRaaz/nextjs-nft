@@ -667,6 +667,7 @@ export async function getServerSideProps(context){
   var sanityData = "";
   var nftcontractdata = "";
   var allListedFromThisChain = "";
+  var marketAddress = process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE; //by default, save a market address
 
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
@@ -715,7 +716,7 @@ export async function getServerSideProps(context){
 
     const nftChainid = sanityData?.collection.chainId;
 
-    const marketAddress = marketplace[nftChainid];
+    marketAddress = marketplace[nftChainid];
 
     const response4 = await fetch(`${HOST}/api/getAllListings/${blockchainName[nftChainid]}`);
     allListedFromThisChain = await response4.json();
