@@ -668,15 +668,24 @@ export async function getServerSideProps(context){
   var nftcontractdata = "";
   var allListedFromThisChain = "";
 
-  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`); 
+  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`)
+                          .catch(err => {
+                            console.error('Error getting NFT Listing data')
+                          }); 
   if(response.status == 200) {nftdata = await response.json();}
 
-  const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`);
+  const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`)
+                          .catch(err => {
+                            console.error('Error getting NFT data')
+                          });
   if(response2.status == 200) { sanityData = await response2.json(); }
 
 
   const collectionAddress = sanityData.collection?.contractAddress;
-  const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`);
+  const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`)
+                          .catch(err => {
+                            console.error('Error getting Collection data')
+                          });
   if(response3.status == 200) { nftcontractdata = await response3.json(); }
 
   
