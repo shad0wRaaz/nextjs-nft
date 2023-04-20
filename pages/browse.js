@@ -31,16 +31,18 @@ const browse = () => {
 
 
   useEffect(() => {
-    ;(async() => {
-      await axios.get(`${HOST}/api/getcategories`)
-        .then(result => {
-          let sortedArray = sortCategory(JSON.parse(result.data));
-          setCategoryData(sortedArray);
-      }).catch(err => console.error(err));
-    })();
-
-    return () => {
-      //just clean up codes, nothing else here
+    if(HOST){
+      ;(async() => {
+        await axios.get(`${HOST}/api/getcategories`)
+          .then(result => {
+            let sortedArray = sortCategory(JSON.parse(result.data));
+            setCategoryData(sortedArray);
+        }).catch(err => console.error(err));
+      })();
+  
+      return () => {
+        //just clean up codes, nothing else here
+      }
     }
   }, [HOST])
 
