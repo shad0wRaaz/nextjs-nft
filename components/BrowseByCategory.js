@@ -34,9 +34,10 @@ const BrowseByCategory = () => {
   useEffect(() => {
     // fetchCategoryData()
     ;(async() => {
-      const catt = await axios.get(`${HOST}/api/getcategories`);
-      setCategoryData(sortCategory(JSON.parse(catt.data)))
-    })()
+      await axios.get(`${HOST}/api/getcategories`).then(result => {
+        setCategoryData(sortCategory(JSON.parse(result.data)))
+      }).catch(err => console.error(err));
+    })();
 
     return() =>{
       //do nothing

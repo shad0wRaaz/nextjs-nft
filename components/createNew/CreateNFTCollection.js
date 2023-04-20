@@ -90,7 +90,7 @@ const CreateNFTCollection = () => {
                 'Content-Type': 'multipart/form-data',
               },
             }
-            ).catch(err => toast.error('Error in uplaoding image to IPFS', errorToastStyle))
+            ).catch(err => toast.error('Error in uploading image to IPFS', errorToastStyle))
           }
           
         if(banner){
@@ -104,7 +104,7 @@ const CreateNFTCollection = () => {
                 'Content-Type': 'multipart/form-data',
               },
             }
-            ).catch(err => toast.catch('Error in uploadin image to IPFS', errorToastStyle));
+            ).catch(err => toast.catch('Error in uploading image to IPFS', errorToastStyle));
           }
           // 0x4313Ab900db3AddC8063ce105524e5DC1f95b52e -> Previous address
         const metadata = {
