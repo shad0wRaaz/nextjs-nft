@@ -58,8 +58,11 @@ export default Home
 
 export async function getServerSideProps(){
   try {
-    const response = await fetch(`${HOST}/api/getfeaturednfts`);
-    const featuredNfts = await response.json();
+    let featuredNfts = []
+    const response = await fetch(`${HOST}/api/getfeaturednfts`).catch(err => console.error(err));
+    if(response){
+      featuredNfts = await response.json();
+    }
     
       return {
         props: {
@@ -67,7 +70,7 @@ export async function getServerSideProps(){
         }
       }
 
-  }catch(err){
+  } catch(err){
     return {
       props : {
         featuredNfts : 'Server error'
