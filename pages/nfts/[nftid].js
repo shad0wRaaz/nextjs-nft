@@ -668,30 +668,6 @@ export async function getServerSideProps(context){
   var nftcontractdata = "";
   var allListedFromThisChain = "";
 
-  const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`)
-                          .catch(err => {
-                            console.error('Error getting NFT Listing data')
-                          }); 
-  if(response.status == 200) {nftdata = await response.json();}
-
-  const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`)
-                          .catch(err => {
-                            console.error('Error getting NFT data')
-                          });
-  if(response2.status == 200) { sanityData = await response2.json(); }
-
-
-  const collectionAddress = sanityData.collection?.contractAddress;
-  const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`)
-                          .catch(err => {
-                            console.error('Error getting Collection data')
-                          });
-  if(response3.status == 200) { nftcontractdata = await response3.json(); }
-
-  
-  //determine which marketplace is current NFT is in
-  
-  const nftChainid = sanityData?.collection.chainId;
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
     '5': process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
@@ -703,6 +679,7 @@ export async function getServerSideProps(context){
     '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
     '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
   }
+
   const blockchainName = {
     '80001': 'mumbai',
     '137': 'polygon',
@@ -714,10 +691,38 @@ export async function getServerSideProps(context){
     '5': 'goerli',
     '1': 'mainnet',
   }
-  const marketAddress = marketplace[nftChainid];
+
+  try {
+    const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`).catch(err => {
+      console.error('Error getting NFT Listing data')
+    }); 
+    if(response.status == 200) {nftdata = await response.json();}
+
+    const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`).catch(err => {
+          console.error('Error getting NFT data')
+        });
+    if(response2.status == 200) { sanityData = await response2.json(); }
+
+
+    const collectionAddress = sanityData.collection?.contractAddress;
+    const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`).catch(err => {
+          console.error('Error getting Collection data')
+        });
+    if(response3.status == 200) { nftcontractdata = await response3.json(); }
+
+
+    //determine which marketplace is current NFT is in
+
+    const nftChainid = sanityData?.collection.chainId;
+
+    const marketAddress = marketplace[nftChainid];
+
+    const response4 = await fetch(`${HOST}/api/getAllListings/${blockchainName[nftChainid]}`);
+    allListedFromThisChain = await response4.json();
+  }catch(err){
+    console.error(err)
+  }
   
-  const response4 = await fetch(`${HOST}/api/getAllListings/${blockchainName[nftChainid]}`);
-  allListedFromThisChain = await response4.json();
 
   return {
     props: {
