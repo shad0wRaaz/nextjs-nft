@@ -5,6 +5,14 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
+export const getContractData = async (collectionData) => {
+  if(!collectionData) return null
+  const sdk = new ThirdwebSDK("binance");
+
+  const contract = await sdk.getContract(collectionData[0].contractAddress);
+  return (await contract.metadata.get())
+}
+
 export const getMarketOffers = (marketAddress, blockchain) => async({queryKey}) => {
   const [_, listingId] = queryKey
   if(listingId && marketAddress && blockchain) {
@@ -13,8 +21,53 @@ export const getMarketOffers = (marketAddress, blockchain) => async({queryKey}) 
     const marketOffers = await contract.getOffers(listingId);
     return marketOffers;
   }
-  return null
+  return null;
 }
+export const INFURA_getAllNFTs = 
+(chainId) => 
+async ({ queryKey }) => {
+  const [_, collectionAddress] = queryKey;
+
+  const { data } = await axios.get(`${HOST}/api/infura/getCollection/${chainId}/${collectionAddress}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+  });
+  return data;
+}
+export const INFURA_getAllOwners = 
+(chainId) => 
+async ({ queryKey }) => {
+  const [_, collectionAddress] = queryKey;
+
+  const { data } = await axios.get(`${HOST}/api/infura/getCollectionOwners/${chainId}/${collectionAddress}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+  });
+  return data;
+}
+
+export const INFURA_getMyAllNFTs = (chainId) => async ({ queryKey }) => {
+  const [_, address] = queryKey;
+
+  const {data} = await axios.get(`${HOST}/api/infura/getNFT/${chainId}/${address}`,
+    {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return data;
+}
+
+export const INFURA_getNFTTransfers = () => async({queryKey}) => {
+  const [_, chainId, contractAddress, tokenId] = queryKey;
+  const {data} = await axios.get(`${HOST}/api/infura/getTransferData/${chainId}/${contractAddress}/${tokenId}`);
+  return (data? data.transfers: null);
+}
+
 export const getAllNFTs =
   (blockchain) =>
   async ({ queryKey }) => {
@@ -28,14 +81,14 @@ export const getAllNFTs =
     const filtered = res.filter((nft) => nft.owner != "0x0000000000000000000000000000000000000000")
     return filtered;
   }
-  
+
+
 export const getLatestNfts = (qty) => async ({queryKey}) => {
   const [_, selectedBlockchain] = queryKey;
   const result = await axios.get(`${HOST}/api/getLatestNfts/${selectedBlockchain}`,
   {
     params: { quantity: qty }
   })
-
   return result.data
 
 }

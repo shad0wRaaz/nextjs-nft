@@ -35,10 +35,10 @@ const ChainSelection = () => {
     }
 
   return (
-    <div className="">
+    <div className="mr-3">
       <Menu as="div" className="relative inline-block text-left z-30 w-full">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center items-center rounded-lg bg-black bg-opacity-20 border-slate-600/70 border px-4 py-4 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+          <Menu.Button className="inline-flex w-full justify-center items-center rounded-lg bg-black bg-opacity-20 border-slate-600/70 border px-4 py-2.5 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
             {chainIcon[selectedBlockchain]}
             {chainName[selectedBlockchain]}
             <BiChevronDown

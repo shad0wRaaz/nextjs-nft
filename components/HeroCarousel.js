@@ -2,14 +2,19 @@ import Slider from 'react-slick'
 import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
 import "slick-carousel/slick/slick.css";
+import SaveReferral from './SaveReferral'
 import FeaturedItems from './FeaturedItems'
+import { RiCloseFill } from 'react-icons/ri';
+import { useEffect, useState } from 'react';
 import "slick-carousel/slick/slick-theme.css";
+import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
+import { config } from '../lib/sanityClient';
 
 const style = {
-  wrapper: `relative`,
+  wrapper: `relative overflow-hidden`,
   container: `pt-[8rem]`,
-  contentWrapper: `flex mb-[2rem] h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
+  contentWrapper: `flex h-[70vh] container mx-auto relative justify-between sm:px-[2rem] lg:px-[8rem] flex-wrap items-center`,
   copyContainer: `lg:w-1/2`,
   title: `relative p-[20px] font-semibold text-4xl md:text-5xl xl:text-6xl leading-[3.5rem] md:leading-[5rem] lg:leading-[5rem] xl:leading-[5rem] text-white`,
   description: `container-[400px] mt-[0.8rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
@@ -38,12 +43,47 @@ const settings = {
 };
 
 const HeroCarousel = (props) => {
-  const { dark } = useThemeContext()
+  const { dark } = useThemeContext();
+  const [referralModal, setReferralModal] = useState(false);
+  const [userData, setUserData] = useState();
+  const address = useAddress();
+  const router = useRouter();
 
-  const router = useRouter()
+  useEffect(() => {
+    if(!address) return;
+    ;(async() => {
+      const data = await config.fetch(`*[_type == "users" && walletAddress == "${address}"]`);
+      setUserData(data[0]);
+
+      if(!data[0].referrer){
+
+        //check if user has opted not to see the referral again
+        const askagain = localStorage.getItem('referral');
+    
+        if(askagain == 'false' || askagain == null ){
+          setReferralModal(true);    
+        }
+      }
+    })()
+
+  }, [address])
+
   return (
     <div className={style.wrapper}>
       <div className={style.container}>
+
+          {/* Referral Modal */}
+          <div className={`fixed top-0 ${referralModal ? 'flex' : 'hidden'} mx-auto items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20`}>
+            <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+              <div
+                className="absolute top-5 right-6 md:right-10  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
+                onClick={() => setReferralModal(false) }>
+                <RiCloseFill fontSize={25}/>
+              </div>
+              <SaveReferral setReferralModal={setReferralModal} userData={userData}/>
+            </div>
+          </div>
+
         <span className={style.redBlur}></span>
         <span className={style.blueBlur}></span>
         <div className={style.contentWrapper}>
@@ -69,13 +109,13 @@ const HeroCarousel = (props) => {
             </div>
           </div>
 
-          <div className={style.cardContainer}>
+          <div className={style.cardContainer + ' hidden lg:flex'}>
             <Tilt  
               perspective={3000}
               tiltMaxAngleX={20}
               tiltMaxAngleY={20}
               transitionSpeed={1500}
-              className="parallax-effect flex justify-center items-center rounded-2xl p-2 md:left-0 sm:left-[2rem] cursor-pointer">
+              className="parallax-effect justify-center items-center rounded-2xl p-2 md:left-0 sm:left-[2rem] cursor-pointer">
                 <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
                   <Slider {...settings}>
                       {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
@@ -84,6 +124,7 @@ const HeroCarousel = (props) => {
                   </Slider>
                 </div>
               </Tilt>
+
             {/* <section id="slider">
               {featuredNfts &&
                 featuredNfts.map((nfts, index) => (
@@ -121,6 +162,15 @@ const HeroCarousel = (props) => {
                   </label>
                 ))}
             </section> */}
+          </div>
+          <div className={style.cardContainer + ' lg:hidden'}>
+            <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
+              <Slider {...settings}>
+                  {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
+                      <FeaturedItems item={nft} id={index} key={index} />
+                      )) : ''}
+              </Slider>
+            </div>
           </div>
         </div>
       </div>

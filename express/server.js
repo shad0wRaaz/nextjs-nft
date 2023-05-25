@@ -11,11 +11,13 @@ import bodyParser from 'body-parser'
 import { SMTPClient } from 'emailjs'
 import sanityClient from '@sanity/client'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { ThirdwebStorage } from '@thirdweb-dev/storage'
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { emailBody } from './emails/templates.js'
+import { ThirdwebStorage } from '@thirdweb-dev/storage'
+
+import { S3Client, PutObjectCommand, GetObjectCommand, ConditionFilterSensitiveLog } from '@aws-sdk/client-s3'
+
 const app = express()
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com'],}))
+app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
 // app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
@@ -28,6 +30,8 @@ app.use(bodyParser.json());
 
 dotenv.config();
 //chain ENUMS
+
+const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + process.env.NEXT_PUBLIC_INFURA_SECRET_KEY,).toString('base64');
 
 const chainnum = {
   "80001": "mumbai",
@@ -98,50 +102,148 @@ const client = new SMTPClient({
   timeout: process.env.NEXT_PUBLIC_SMTP_TIMEOUT,
 });
 
+const getCoinPricefromCMC = () => {
+  let response = null;
+  new Promise(async (resolve, reject) => {
+    try {
+      response = await axios.get(process.env.NEXT_PUBLIC_CMC_HOST_URL, {
+        headers: {
+          'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY,
+        },
+        params: {
+          symbol: "ETH,MATIC,BNB,AVAX",
+        }
+      });
+    } catch(ex) {
+      response = null;
+      // error
+      console.log(ex);
+      reject(ex);
+    }
+    if (response) {
+      // success
+      const json = response.data;
+      resolve(json);
 
-cron.schedule('*/500 * * * *', async() => {
-  const options = {
-    method: 'GET',
-    url: process.env.NEXT_PUBLIC_COINAPI_URL,
-    params: { 
-      referenceCurrencyUuid: 'yhjMzLPhuIDl',
-      timePeriod: '24h',
-      'tiers[0]': '1',
-      orderBy: 'marketCap',
-      orderDirection: 'desc',
-      limit: '50',
-      offset: '0'
-     },
-    headers: {
-      'X-RapidAPI-Host': process.env.NEXT_PUBLIC_COINAPI_HOST,
-      'X-RapidAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY,
-    },
-  }
-  try{
-    await axios.request(options).then(async (response) => {
-      const matic = response.data.data.coins?.filter(item => item.symbol == "MATIC");
-      const eth = response.data.data.coins?.filter(item => item.symbol == "ETH");
-      const avax = response.data.data.coins?.filter(item => item.symbol == "AVAX");
-      const bnb = response.data.data.coins?.filter(item => item.symbol == "BNB");
-  
-      //save all prices in database
-      await config.patch(process.env.NEXT_PUBLIC_SETTING_DOCUMENT_ID)
-      .set({
-        maticprice : Number(parseFloat(matic[0].price).toFixed(4)),
-        ethprice : Number(parseFloat(eth[0].price).toFixed(4)),
-        avaxprice : Number(parseFloat(avax[0].price).toFixed(4)),
-        bnbprice : Number(parseFloat(bnb[0].price).toFixed(4)),
-      })
-      .commit()
-      .then(() => { 
-        var date = new Date()
-        console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
-      })
-    })
-    console.count('Price Update Count')
-  }catch(err){
-    console.error(err)
-  }
+      const avaxprice = json.data.AVAX[0].quote.USD.price;
+      const ethprice = json.data.ETH[0].quote.USD.price;
+      const maticprice = json.data.MATIC[0].quote.USD.price;
+      const bnbprice = json.data.BNB[0].quote.USD.price;
+
+      const coins = {
+              maticprice: parseFloat(maticprice).toFixed(4), 
+              ethprice: parseFloat(ethprice).toFixed(4), 
+              avaxprice: parseFloat(avaxprice).toFixed(4),
+              bnbprice: parseFloat(bnbprice).toFixed(4)
+            };
+            redis.set('coins', JSON.stringify(coins));
+            
+            var date = new Date()
+            console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+
+    }
+  });
+}
+
+// app.get("/api/updateCoinPrices", async(req,res) => {
+//   console.log('i am called')
+//   let response = null;
+//   new Promise(async (resolve, reject) => {
+//     try {
+//       response = await axios.get(process.env.NEXT_PUBLIC_CMC_HOST_URL, {
+//         headers: {
+//           'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY,
+//         },
+//         params: {
+//           symbol: "ETH,MATIC,BNB,AVAX",
+//         }
+//       });
+//     } catch(ex) {
+//       response = null;
+//       // error
+//       console.log(ex);
+//       reject(ex);
+//     }
+//     if (response) {
+//       // success
+//       const json = response.data;
+
+//       resolve(json);
+
+//       const avaxprice = json.data.AVAX[0].quote.USD.price;
+//       const ethprice = json.data.ETH[0].quote.USD.price;
+//       const maticprice = json.data.MATIC[0].quote.USD.price;
+//       const bnbprice = json.data.BNB[0].quote.USD.price;
+
+//       const coins = {
+//               maticprice: parseFloat(maticprice).toFixed(4), 
+//               ethprice: parseFloat(ethprice).toFixed(4), 
+//               avaxprice: parseFloat(avaxprice).toFixed(4),
+//               bnbprice: parseFloat(bnbprice).toFixed(4)
+//             };
+//             redis.set('coins', JSON.stringify(coins));
+            
+//             var date = new Date()
+//             console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+//       res.send(json);
+//     }
+//   });
+// })
+
+cron.schedule('*/8 * * * *', async() => {
+  getCoinPricefromCMC();
+  // const options = {
+  //   method: 'GET',
+  //   url: process.env.NEXT_PUBLIC_COINAPI_URL,
+  //   params: { 
+  //     referenceCurrencyUuid: 'yhjMzLPhuIDl',
+  //     timePeriod: '24h',
+  //     'tiers[0]': '1',
+  //     orderBy: 'marketCap',
+  //     orderDirection: 'desc',
+  //     limit: '50',
+  //     offset: '0'
+  //    },
+  //   headers: {
+  //     'X-RapidAPI-Host': process.env.NEXT_PUBLIC_COINAPI_HOST,
+  //     'X-RapidAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY,
+  //   },
+  // }
+  // try{
+  //   await axios.request(options).then(async (response) => {
+  //     const matic = response.data.data.coins?.filter(item => item.symbol == "MATIC");
+  //     const eth = response.data.data.coins?.filter(item => item.symbol == "ETH");
+  //     const avax = response.data.data.coins?.filter(item => item.symbol == "AVAX");
+  //     const bnb = response.data.data.coins?.filter(item => item.symbol == "BNB");
+
+  //     //save in redis
+  //     const coins = {
+  //       maticprice: parseFloat(matic[0].price).toFixed(4), 
+  //       ethprice: parseFloat(eth[0].price).toFixed(4), 
+  //       avaxprice: parseFloat(avax[0].price).toFixed(4),
+  //       bnbprice: parseFloat(bnb[0].price).toFixed(4)
+  //     };
+  //     redis.set('coins', JSON.stringify(coins));
+      
+  //     var date = new Date()
+  //     console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+  //     //save all prices in database
+  //     // await config.patch(process.env.NEXT_PUBLIC_SETTING_DOCUMENT_ID)
+  //     // .set({
+  //     //   maticprice : Number(parseFloat(matic[0].price).toFixed(4)),
+  //     //   ethprice : Number(parseFloat(eth[0].price).toFixed(4)),
+  //     //   avaxprice : Number(parseFloat(avax[0].price).toFixed(4)),
+  //     //   bnbprice : Number(parseFloat(bnb[0].price).toFixed(4)),
+  //     // })
+  //     // .commit()
+  //     // .then(() => { 
+  //     // })
+  //   })
+    
+  //   console.count('Price Update Count');
+  // }catch(err){
+  //   console.error(err)
+  // }
 });
 
 const storage = multer.memoryStorage()
@@ -158,54 +260,222 @@ const nftStorage = multer.diskStorage({
 
 const nftUpload = multer({ storage: nftStorage});
 
-// const collectionStorage = multer.diskStorage({
-//   destination: function (req, file, cb,) {
-//     cb(null, '../public/assets/collections/')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, uuidv4() + path.extname(file.originalname))
+//nft transfer data
+app.get('/api/infura/getTransferData/:chainId/:contractAddress/:tokenId', async(req, res) =>{
+  const {chainId, contractAddress, tokenId} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tokens/${tokenId}/transfers`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+
+  });
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+})
+
+//market data
+app.get('/api/infura/getMarketData/:chainId/:contractAddress', async(req, res) =>{
+  const {chainId, contractAddress} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tradePrice`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+
+  })
+  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+  // console.log(data)
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+})
+
+//get NFT Owner Data
+app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
+  const {chainId, tokenAddress, tokenid} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+});
+
+//get NFT Metadata
+app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
+  const {chainId, tokenAddress, tokenid} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenid}`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+  // console.log(data)
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+});
+
+//get all owners of a collection
+//this gives nft metadata in string format and gives current owner and minter as well
+app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) =>{
+  const {chainId, address} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/owners`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+  // console.log(data)
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+})
+
+//get all NFTs based on collection address
+// app.get('/api/infura/getCollection/:chainId/:address', async(req, res) =>{
+//   const {chainId, address} = req.params;
+//   try{
+//     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/tokens`, {
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Basic ${INFURA_AUTH}`,
+//       }
+//   })
+//   // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+//   return res.send(data);
+  
+//   }catch(error){
+//     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
 //   }
 // })
-// const collectionUpload = multer({ storage: collectionStorage});
+
+//get all token transfers
+// app.get('/api/infura/getNFTtransfers/:chainId/:tokenAddress/:tokenId', async(req, res) => {
+//   const {chainId, tokenAddress, tokenId} = req.params;
+//   try{
+//     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenId}/transfers`, {
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Basic ${INFURA_AUTH}`,
+//       }
+//   })
+//   // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+//   return res.send(data);
+  
+//   }catch(error){
+//     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+//   }
+// });
+
+
+//get all NFTs based on wallet address
+app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
+  const {chainId, address} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+  return res.send(data?.assets);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+});
+
+//This will return Sanity Database data of an NFT
+app.get('/api/infura/getCollectionSanityData/:chain/:contractAddress/', async(req, res) => {  
+  const {chain, contractAddress} = req.params;
+
+  const query = `*[_type == "nftCollection" && contractAddress == "${contractAddress}"] {...}`;
+  const sanityData = await config.fetch(query);
+  if(sanityData.length > 0){
+    return res.status(200).json(sanityData[0]);
+  }
+  else {
+    return res.status(200).json({"message": "Collection data not found"});
+  }
+});
+
+app.get('/api/getcoinsprice', async(req, res) => {
+  const data = await redis.get("coins");
+  return res.send(data)
+});
 
 app.get('/api/getfeaturednfts', async(req, res) => {
+  try{
+      let featuredNfts = await redis.get("featurednfts");
 
-  let featuredNfts = await redis.get("featurednfts");
+    if(featuredNfts) {
+      return res.status(200).send(featuredNfts);
+    }else {
+      const query = `*[_type == "nftItem" && featured == true] {_id, id, name, featuredon, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
+      const featurednfts = await config.fetch(query);
 
-  if(featuredNfts) {
-    return res.status(200).send(featuredNfts);
-  }else {
-    const query = `*[_type == "nftItem" && featured == true] {_id, id, name, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
-    const featurednfts = await config.fetch(query);
+      const unresolved = featurednfts?.map(async (item) => {
+        if(item?.collection){
+          const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
+          const contract = await sdk.getContract(item?.collection?.contractAddress);
+          const nft = await contract.erc721.get(item?.id);
 
-    const unresolved = featurednfts?.map(async (item) => {
-      if(item?.collection){
-        const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
-        const contract = await sdk.getContract(item?.collection?.contractAddress);
-        const nft = await contract.erc721.get(item?.id);
+          // const getownerquery = `*[_type == "users" && _id == "${nft.owner}"] {userName, web3imageprofile}`;
+          // const ownerdata = await config.fetch(getownerquery);
 
-        const getownerquery = `*[_type == "users" && _id == "${nft.owner}"] {userName, web3imageprofile}`;
-        const ownerdata = await config.fetch(getownerquery);
+          // const obj = { ...item, nft, owner: ownerdata[0] };
+          const obj = { ...item, nft };
+          return obj;
+        }
+      })
+      const resolvedPath = await Promise.all(unresolved);
+    
+      //filtering out null and undefined objects
+      const filterResolved = resolvedPath.filter(Boolean);
 
-        const obj = { ...item, nft, owner: ownerdata[0] };
-        return obj;
-      }
-    })
-    const resolvedPath = await Promise.all(unresolved);
-  
-    //filtering out null and undefined objects
-    const filterResolved = resolvedPath.filter(Boolean);
+      //save in redis if not present already
+      redis.set("featurednfts", JSON.stringify(filterResolved), 'ex', 30000);
 
-    //save in redis if not present already
-    redis.set("featurednfts", JSON.stringify(filterResolved), 'ex', 300);
-
-  
-    return (res.status(200).json(filterResolved))
+    
+      return (res.status(200).json(filterResolved))
+    }
+  }catch(err){
+return res.status(200).send(null)
   }
 
 });
 
 app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
+  console.log(req.headers)
   const file = req.file.buffer;
   try{
     const fileURI = await web3storage.upload(file);
@@ -238,8 +508,25 @@ app.get('/api/updateListings/:blockchain', async (req, res) => {
   return res.status(200).json(listedItems);
 });
 
-app.get('/api/getAllNfts', async(req, res) => {
+app.get('/api/getAllListings/:blockchain', async (req, res) => {
+  const blockchain = req.params.blockchain;
 
+  let cache = await redis.get("activelistings-" + blockchain);
+  globalActiveListings = JSON.parse(cache);
+  //get blocked nfts and collections
+  const rawdata = JSON.parse(await redis.get("blockeditems"));
+  let filterednfts = globalActiveListings;
+
+  if(rawdata){
+    const blockednfts = rawdata[0]?.blockednfts;
+    const blockedcollections = rawdata[0]?.blockedcollections;
+  
+    //remove blocked nfts.
+    if(blockednfts != null){
+      filterednfts = globalActiveListings?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
+    }
+  }
+  return res.status(200).json(filterednfts)
 });
 
 app.get('/api/updateNFTCollectiosnByCategory/:category', async(req,res) => {
@@ -293,24 +580,6 @@ app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
 
 });
 
-app.get('/api/getAllListings/:blockchain', async (req, res) => {
-  const blockchain = req.params.blockchain;
-
-  let cache = await redis.get("activelistings-" + blockchain);
-  globalActiveListings = JSON.parse(cache);
-  //get blocked nfts and collections
-  const rawdata = JSON.parse(await redis.get("blockeditems"));
-  const blockednfts = rawdata[0].blockednfts;
-  const blockedcollections = rawdata[0].blockedcollections;
-
-  //remove blocked nfts.
-  let filterednfts = globalActiveListings;
-  if(blockednfts != null){
-    filterednfts = globalActiveListings?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
-  }
-  return res.status(200).json(filterednfts)
-});
-
 app.get('/api/getAllListingsCount', async (req, res) => {
   const testnet = req.query.testnet;
   const cacheETH = testnet == "true" ? await redis.get("activelistings-goerli"): await redis.get("activelistings-mainnet");
@@ -333,7 +602,6 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
 
   const blockchain = req.params.blockchain;
   const nftQuantity = req.query.quantity;
-  
   const cache = await redis.get("activelistings-" + blockchain);
 
   const allArr = JSON.parse(cache);
@@ -344,7 +612,7 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
   if(blockchain != undefined){
     if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
     else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
-    else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'TBNB'; } 
+    else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'tBNB'; } 
     else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
     else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
 
@@ -481,16 +749,37 @@ app.get('/api/latestCollection', async (req, res) => {
   }
 });
 
+app.get('/api/getAllNfts', async(req, res) => {
+  let allNftData = await redis.get("allnfts");
+  if(allNftData == null){
+    allNftData = updateAllNFTData();
+  }
+  return res.status(200).json(allNftData);
+});
+
+app.get('/api/updateallcollections', async(req, res) => {
+  updateAllNFTData();
+  return res.status(200).send({message: "success"});
+})
+
+const updateAllNFTData = async() => {
+  const query = `*[_type == "nftItem"] { name, _id, id, createdBy, chainId, "contractAddress": collection->contractAddress, "item": "nft"}`;
+    let allnftdata = await config.fetch(query);
+    allnftdata = JSON.stringify(allnftdata);
+    redis.set("allnfts", allnftdata);
+    return allnftdata;
+}
+
 const updateCollectionData = async () => {
-  const query = `*[_type == "nftCollection"] { name, _id, contractAddress, createdBy, chainId}`;
-    collectionData = await config.fetch(query);
+  const query = `*[_type == "nftCollection"] { name, _id, contractAddress, createdBy, chainId, "item": "collection"}`;
+    let collectionData = await config.fetch(query);
     collectionData = JSON.stringify(collectionData);
-    redis.set("collections", collectionData);
+    redis.set("allcollections", collectionData);
     return collectionData;
 }
 
 app.get('/api/getallcollections', async(req,res) => {
-  let collectionData = await redis.get("collections");
+  let collectionData = await redis.get("allcollections");
   if(collectionData == null){
     collectionData = updateCollectionData();
   }
@@ -552,6 +841,41 @@ app.post('/api/savenft', async(req, res) => {
   }
 });
 
+//this is not working
+app.get('/api/nft/marketdata/:chain/:marketplace/:contractAddress/', async (req, res) => {
+  const {chain, marketplace, contractAddress} = req.params;
+  const sdk = new ThirdwebSDK(chain,
+    {
+      readonlySettings: {
+        rpcUrl: `https://evocative-alien-meadow.bsc-testnet.discover.quiknode.pro/79af2b8cd7807ebf486078b97d9513506f578770/`, // Use this RPC URL for read operations
+        chainId: 56, // On this chain ID
+      },
+    });
+  const marketContract = await sdk.getContract(marketplace, "marketplace");
+
+  const listingdata = await marketContract.getActiveListings({
+    tokenContract: contractAddress,
+    });
+  
+  return res.send(listingdata);
+});
+
+//this will return Listing Data of a NFT
+app.get('/api/nft/marketListing/:chain/:contractAddress/:tokenId', async (req, res) => {
+  const { chain, contractAddress, tokenId } = req.params;
+
+  const tokenListings = await redis.get("activelistings-" + chain);
+
+  if(tokenListings){
+    const tokenData = JSON.parse(tokenListings).filter(item => String(item.assetContractAddress).toLowerCase() == String(contractAddress).toLowerCase() && item.asset.id == tokenId.toString());
+    if(tokenData.length > 0){
+      return res.status(200).json(tokenData);
+    }
+  }
+  return res.status(200).json({"message": "NFT data not found"})
+});
+
+//this is old endpoint, based on v4 token id, not useful for external nfts
 app.get('/api/nft/listing/:id', async (req, res) => {
   let found = false;
   //this will return Listing Data of a NFT
@@ -641,21 +965,29 @@ app.get('/api/nft/:id', async(req, res) => {
   }
 });
 
-app.get('/api/blockeditems', async(req, res) => {
-  const blockeditems = await redis.get("blockeditems");
-  if(blockeditems != null) {
-    return res.status(200).json(blockeditems);
-  }
-  
+const updateblockeditems = async() => {
   const query = `*[_type == "settings"]{ _id, blockednfts[]->{name, _id}, blockedcollections[]->{ name, _id }}`;
   const result =  await config.fetch(query);
   if(result.length > 0){
     await redis.set("blockeditems", JSON.stringify(result), 'ex', 86400); //update every day
-    return res.status(200).json(result);
   }
-  else {
-    return res.status(200).json({"message": "Error getting Blocked NFTs"});
+}
+app.get('/api/updateblockeditems', async(req, res) => {
+  await redis.del("blockeditems");
+  await updateblockeditems();
+
+})
+app.get('/api/blockeditems', async(req, res) => {
+  const blockeditems = await redis.get("blockeditems");
+  if(blockeditems == null){
+    updateblockeditems();
+    const blockeditems1 = await redis.get("blockeditems");
+    return res.status(200).json(blockeditems1);
   }
+  return res.status(200).json(blockeditems);
+  
+
+  
 });
 
 app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
@@ -747,7 +1079,7 @@ app.post('/api/sendemail', async (req, res) => {
       return res.status(400).send(JSON.stringify({ message: err.message }));
   }
   return res.status(200).send(JSON.stringify({ message: 'success' }));
-})
+});
 
 app.post('/api/Oldsendemail', async (req, res) => {
   //get registration link
@@ -812,7 +1144,7 @@ app.post("/api/captchaverify", async (req, res) => {
     // Sending secret key and response token to Google Recaptcha API for authentication.
     const response = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SECRET_KEY}&response=${token}`
-    );
+    ).catch(err => {});
 
     // Check response status and send back to the client-side
     if (response.data.success) {
@@ -877,6 +1209,85 @@ app.get("/api/hasthiswalletnft", async(req, res) => {
 
   return res.status(200).send(isNFT && isCollection)
 });
+
+const updateUsers = async () => {
+  const query = `*[_type == "users"]{walletAddress, web3imageprofile, userName, referrer, directs, refactivation, payablelevel}`;
+  let users = await config.fetch(query);
+  users = JSON.stringify(users);
+  redis.set("users", users);
+  return users;
+}
+
+app.get('/api/updateusers', async(req, res) => {
+  updateUsers();
+});
+
+app.get("/api/getusers", async(req, res) => {
+  let users = await redis.get("users");
+  if(!users){
+    const allusers = await updateUsers();
+    return res.status(200).send(JSON.stringify(allusers));
+  }else{
+    return res.status(200).send(JSON.stringify(users));
+  }
+});
+
+app.get("api/checkserver", async(req,res) => {
+  res.send(true)
+});
+
+app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req, res) => {
+  const { chain, contractAddress, tokenId } = req.params;
+
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY, chain);
+  const contract = await sdk.getContract(contractAddress);
+  const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+  
+  res.send(royalty);
+
+})
+
+app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
+  const { contractAddress, walletAddress, tokenId } = req.body;
+  const allowedContracts = ['0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed7', '0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed5', '0xb63cf439Dfa97d540AD0A8D29fE60Ae23bC123ca'];
+
+  if(allowedContracts.includes(contractAddress)){
+    const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY, "mumbai"); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+    const contract = await sdk.getContract(contractAddress);
+    const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+
+    if(royalty.fee_recipient == '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6'){
+      try{
+        const tx = await contract.royalties.setTokenRoyaltyInfo(
+          tokenId, 
+          {
+            seller_fee_basis_points: 250,
+            fee_recipient: walletAddress,
+          });
+    
+        return res.send(tx);
+      }catch(err){
+        //send notification to admin, royalty cannot be set
+        const emailBody = `Royalty could not be set for token with following details<br/>
+        Collection: ${contractAddress}<br/>
+        Token Id: ${tokenId}<br/>
+        Wallet Address: ${walletAddress}.<br/>
+        This needs to be added manually.`;
+
+        const message = await client.sendAsync({
+          text: emailBody,
+          attachment: [{ data: emailBody, alternative: true }],
+          from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+          to: 'to-arun@live.com',
+          subject: 'Royalty Setting could not be saved',
+        })
+        return res.send(null)
+      }
+    }
+  }
+  return res.send(null);
+})
+
 
 app.listen(8080, () => console.log('listening on 8080'));
 

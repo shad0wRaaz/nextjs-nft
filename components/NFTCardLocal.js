@@ -35,7 +35,7 @@ const NFTCardLocal = ({ nftItem, listings }) => {
   const [price, setPrice] = useState(0)
   const [secondsUntilEnd, setSecondsUntilEnd] = useState(0)
   const [coin, setCoin] = useState('')
-  const [likers, setLikers] = useState([])
+  // const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
   const [nftmetadata, setnftmetadata] = useState();
   const [listednftmetadata, setlistednftmetadata] = useState();
@@ -74,21 +74,21 @@ const NFTCardLocal = ({ nftItem, listings }) => {
     }
   }, [listings, nftItem])
 
-  useEffect(() => {
-    //getting NFT likes from Sanity
-    ;(async (sanityClient = config) => {
-      const query = `*[_type == "nftItem" && _id == "${
-        nftItem._id
-      }"] {
-        likedBy
-      }`
-      const res = await sanityClient.fetch(query)
-      setLikers(res[0]);
-    })()
-    return () => {
+  // useEffect(() => {
+  //   //getting NFT likes from Sanity
+  //   ;(async (sanityClient = config) => {
+  //     const query = `*[_type == "nftItem" && _id == "${
+  //       nftItem._id
+  //     }"] {
+  //       likedBy
+  //     }`
+  //     const res = await sanityClient.fetch(query)
+  //     setLikers(res[0]);
+  //   })()
+  //   return () => {
       
-    }
-  }, [nftItem])
+  //   }
+  // }, [nftItem])
 
   return (
     <div
@@ -129,12 +129,12 @@ const NFTCardLocal = ({ nftItem, listings }) => {
           </div>
 
           <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
-            <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
+            {/* <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
               <IconHeart />
               <span className="ml-2 text-sm">
                 {likers?.likedBy?.length ? likers.likedBy.length : '0'}
               </span>
-            </button>
+            </button> */}
 
             {/* <div className="hidden md:flex -space-x-1.5">
               <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center text-neutral-100 uppercase font-semibold shadow-inner rounded-full h-5 w-5 text-sm ring-2 ring-white ">

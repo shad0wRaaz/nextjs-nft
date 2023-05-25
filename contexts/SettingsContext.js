@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from "../components/icons/CustomIcons";
 
 const SettingsContext = createContext();
 
@@ -7,15 +8,32 @@ export function SettingsProvider({children}) {
     const [loadingNewPrice, setLoadingNewPrice] = useState(false);
     const [blockedNfts, setBlockedNfts] = useState([]);
     const [blockedCollections, setBlockedCollections] = useState([]);
-    const blockchainName = { '80001': 'mumbai',
+    const [testnet, setTestnet] = useState(false);
+    const [referralCommission, setReferralCommission] = useState([]); //this is coming out of royalty commission; this is ongoing everytime
+    const [referralAllowedCollections, setReferralAllowedCollections] = useState([]); // this commission will be for initial purchase
+    const blockchainName = { 
+        '1': 'mainnet',
         '5': 'goerli',
-        '43113': 'avalanche-fuji',
         '43114': 'avalanche',
+        '43113': 'avalanche-fuji',
+        '137': 'polygon',
+        '80001': 'mumbai',
+        '56': 'binance',
         '97': 'binance-testnet',
         '421563': 'arbitrum-goerli',
-        '1': 'mainnet',
-        '137': 'polygon',
-        '56': 'binance',
+        '421564': 'arbitrum',
+    }
+    const blockchainIdFromName = { 
+        'mainnet' : '1',
+        'goerli': '5',
+        'avalanche': '43114',
+        'avalanche-fuji': '43113',
+        'polygon': '137',
+        'mumbai': '80001',
+        'binance': '56',
+        'binance-testnet': '97',
+        'arbitrum-goerli': '421563',
+        'arbitrum': '421564',
     }
     const marketplace = {
         '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
@@ -48,6 +66,17 @@ export function SettingsProvider({children}) {
         '43113': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE_FUJI,
         '43114': process.env.NEXT_PUBLIC_EXPLORER_AVALANCHE,
       }
+    const chainIcon = {
+        '97': <IconBNB/>,
+        '56': <IconBNB/>,
+        '80001': <IconPolygon/>,
+        '137': <IconPolygon/>,
+        '5': <IconEthereum/>,
+        '4': <IconEthereum/>,
+        '1': <IconEthereum/>,
+        '43113': <IconAvalanche/>,
+        '43114': <IconAvalanche/>,
+    }
 
     const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
@@ -65,7 +94,15 @@ export function SettingsProvider({children}) {
             blockedCollections,
             setBlockedCollections,
             blockedNfts,
-            setBlockedNfts }}>
+            setBlockedNfts,
+            testnet,
+            setTestnet,
+            referralCommission, 
+            setReferralCommission,
+            referralAllowedCollections, 
+            setReferralAllowedCollections,
+            chainIcon,
+            blockchainIdFromName }}>
                 {children}
         </SettingsContext.Provider>
     )

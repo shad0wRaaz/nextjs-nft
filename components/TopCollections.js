@@ -37,7 +37,6 @@ const TopCollections = () => {
     ['topcollection', selectedBlockchain],
     getTopTradedNFTCollections(),
     {
-      enabled: true,
       onError: () => {
         toast.error(
           'Error fetching data. Refresh and try again.',
@@ -45,12 +44,14 @@ const TopCollections = () => {
         )
       },
       onSuccess: async (res) => {
-        setAllCollections(res)
+        setAllCollections(res);
+        // console.log(res)
       },
     }
   )
 
   useEffect(() => {
+    
     if(!allCollections) return
     //remove blocked Collections
     

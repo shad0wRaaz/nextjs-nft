@@ -35,13 +35,13 @@ const EditCollection = ({collection, setShowModal}) => {
   const [profile, setProfile] = useState();
   const [categories, setCategories] = useState([]);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-  const [newCollectionData, setNewCollectionData] = useState(collection[0]);
-  const [selectedCategory, setSelectedCategory] = useState({"value": collection[0].category, "label": collection[0].category});
+  const [newCollectionData, setNewCollectionData] = useState(collection);
+  const [selectedCategory, setSelectedCategory] = useState({"value": collection.category, "label": collection.category});
 
   const { mutate: updateMetadata, status: updateStatus } = useMutation(
       () => updateCollectionMetaData(newCollectionData, signer, profile),
       {
-        onSuccess:  (toastHandler = toast) => {
+        onSuccess:  async (toastHandler = toast) => {
           if(!newCollectionData) return
           ;(async() => {
             // upload profile and banner in IPFS
@@ -87,11 +87,10 @@ const EditCollection = ({collection, setShowModal}) => {
             })
             .commit()
             .then(() => {
-              qc.invalidateQueries('collection'); 
-              toastHandler.success('Collection metadata has been updated', successToastStyle);
-              setShowModal(false);
-
             }).catch(err => console.log(err))
+
+            qc.invalidateQueries('collection'); 
+            
           })()
 
         },
@@ -101,7 +100,15 @@ const EditCollection = ({collection, setShowModal}) => {
           toastHandler.error('Error in updating Collection metadata', errorToastStyle);
         }
       }
-    )
+  );
+  
+  useEffect(() => {
+    if(updateStatus == "success"){
+      toast.success('Collection metadata has been updated', successToastStyle);
+      setShowModal(false); 
+    }
+  }, [updateStatus])
+  
   const handleEdit = async (e, toastHandler = toast) =>{
       e.preventDefault();
       if (
@@ -113,7 +120,6 @@ const EditCollection = ({collection, setShowModal}) => {
       }
 
       updateMetadata() //Mutation function for updating collection metadata
-      
   }
 
   const urlPatternValidation = (URL) => {
@@ -360,11 +366,11 @@ const EditCollection = ({collection, setShowModal}) => {
             <div className={style.formRow + " flex-start"}>
               <p className={style.label + " hidden md:block"}><span className="invisible">Submit Button</span></p>
               {updateStatus == "loading" ? (
-                <button className={style.button + "flex w-[8rem]"}>
-                  <IconLoading dark={"inbutton"} /> Saving
+                <button className={style.button + "flex w-[8rem]"} disabled>
+                  <IconLoading dark={"inbutton"} /> Updating
                 </button>
                 ) : (
-                  <input type="submit" className={style.button} value="Save" />
+                  <input type="submit" className={style.button} value="Update"/>
                 )}
             </div>
           </div>

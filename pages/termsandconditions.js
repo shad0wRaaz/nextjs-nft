@@ -127,7 +127,7 @@ const termsandconditions = () => {
 
         <div className={style.section}>
           <p className={style.header}>NUVA NFT details</p>
-          25. NUVA NFT is a company incorporated in England and Wales with registered number 13800011 whose registered address is 75 Whitechapel Road, London, E1 1DU and it operates the Website www.nuvanft.io You can contact NUVA NFT by email on <a href="support@nuvatoken.com" className="text-blue-500 hover:text-blue-600">support@nuvatoken.com</a>
+          25. NUVA NFT is a company incorporated in England and Wales with registered number 13800011 whose registered address is 75 Whitechapel Road, London, E1 1DU and it operates the Website www.nuvanft.io You can contact NUVA NFT by email on <a href="enquiry@metanuva.com" className="text-blue-500 hover:text-blue-600">enquiry@metanuva.com</a>
         </div>
       </div>
       <Footer />

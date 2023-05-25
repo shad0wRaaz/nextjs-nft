@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 import { useMutation } from 'react-query';
-import { useSigner } from '@thirdweb-dev/react'
+import { useActiveChain, useSigner } from '@thirdweb-dev/react'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { IconLoading } from './icons/CustomIcons';
 import React, { useEffect, useState } from 'react'
@@ -19,23 +19,25 @@ const style = {
     bannerPreview: 'aspect-video flex-grow relative mr-[1rem] h-[250px] overflow-hidden m-[10px] rounded-lg flex items-center justify-center border-dashed border border-slate-400',
 }
 
-const EditCollectionPayment = ({ collection, setPaymentModal }) => {
+const EditCollectionPayment = ({ collectionContract, setPaymentModal, bp, rcp }) => {
     const signer = useSigner();
-    const [basisPoints, setBasisPoints] = useState(0);
-    const [recipient, setRecipient] = useState('');
+    const [basisPoints, setBasisPoints] = useState(bp);
+    const [recipient, setRecipient] = useState(rcp);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const sdk = new ThirdwebSDK(signer);
+    const activechain = useActiveChain();
 
-    useEffect(() => {
-        ;(async() => {
-            if(collection[0].contractAddress != undefined) {
-                const contract = await sdk.getContract(collection[0].contractAddress, "nft-collection");
-                const royaltyInfo = await contract.royalties.getDefaultRoyaltyInfo();
-                setRecipient(royaltyInfo?.fee_recipient);
-                setBasisPoints(Number(royaltyInfo?.seller_fee_basis_points)/100);
-            }
-        })()
-    },[])
+    // useEffect(() => {
+    //   if(String(activechain.chainId) != collection[0].chainId) return;
+    //     ;(async() => {
+    //         if(collection[0].contractAddress != undefined) {
+    //           const contract = await sdk.getContract(collection[0].contractAddress, "nft-collection");
+    //           const royaltyInfo = await contract.royalties.getDefaultRoyaltyInfo();
+    //           setRecipient(royaltyInfo?.fee_recipient);
+    //           setBasisPoints(Number(royaltyInfo?.seller_fee_basis_points)/100);
+    //         }
+    //     })()
+    // },[activechain])
 
     const handleEdit = async (e, toastHandler = toast) => {
       e.preventDefault();
@@ -52,7 +54,7 @@ const EditCollectionPayment = ({ collection, setPaymentModal }) => {
     }
     
     const { mutate: updateCollection, status: updateStatus} = useMutation(
-        () => updatePayment(collection, signer, basisPoints, recipient),
+        () => updatePayment(collectionContract, basisPoints, recipient),
         {
             onError:(err) => {
                 toast.error("Payment settings could not be updated.", errorToastStyle);

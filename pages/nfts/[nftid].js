@@ -1,24 +1,28 @@
 import millify from 'millify'
 import toast from 'react-hot-toast'
+import { useQuery } from 'react-query'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Footer from '../../components/Footer'
 import { BiChevronUp } from 'react-icons/bi'
 import Header from '../../components/Header'
-import { MdAudiotrack, MdBlock } from 'react-icons/md'
 import { Disclosure } from '@headlessui/react'
 import { config } from '../../lib/sanityClient'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import Purchase from '../../components/nft/Purchase'
+import { MdAudiotrack, MdBlock } from 'react-icons/md'
 import RelatedNFTs from '../../components/RelatedNFTs'
 import ItemOffers from '../../components/nft/ItemOffers'
 import BurnCancel from '../../components/nft/BurnCancel'
 import ItemActivity from '../../components/nft/ItemActivity'
 import AuctionTimer from '../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { getReferralRate } from '../../fetchers/SanityFetchers'
 import ReportActivity from '../../components/nft/ReportActivity'
 import BrowseByCategory from '../../components/BrowseByCategory'
 import GeneralDetails from '../../components/nft/GeneralDetails'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { IconAvalanche, IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../components/icons/CustomIcons'
 import {
@@ -27,7 +31,8 @@ import {
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi'
-import { useSettingsContext } from '../../contexts/SettingsContext'
+import { useCollectionFilterContext } from '../../contexts/CollectionFilterContext'
+import Link from 'next/link'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -61,7 +66,7 @@ const chainName = {
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080'
 const Nft = (props) => { //props are from getServerSideProps
 
-  const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket } = props;
+  const {nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, royaltyData } = props;
   const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
@@ -72,15 +77,28 @@ const Nft = (props) => { //props are from getServerSideProps
   const { chainExplorer, blockedNfts, blockedCollections } = useSettingsContext();
   const [isBlocked, setIsBlocked] = useState(false);
   const [isZoom, setIsZoom] = useState(false);
+  const { setReferralCommission } = useSettingsContext();
+  const router = useRouter();
+  const { setSelectedProperties } = useCollectionFilterContext();
+
+  const {data, status} = useQuery(
+    ['referralRate'],
+    getReferralRate(),
+    {
+      onSuccess:(res) => {
+        setReferralCommission(res);
+      }
+    }
+  );
 
   useEffect(() => {
     if(!blockedNfts) return;
-    const items = blockedNfts?.filter(item => item._id == metaDataFromSanity._id);
+    const items = blockedNfts?.filter(item => item._id == metaDataFromSanity?._id);
     if(items?.length > 0){
       setIsBlocked(true);
     }
     //check for blocked collections
-    const collitems = blockedCollections?.filter(coll => coll._id == metaDataFromSanity?.collection._id);
+    const collitems = blockedCollections?.filter(coll => coll._id == metaDataFromSanity?.collection?._id);
     if(collitems?.length > 0){
       setIsBlocked(true);
     }
@@ -137,8 +155,6 @@ const Nft = (props) => { //props are from getServerSideProps
       return
     }
 
-    // console.log(metaDataFromSanity)
-    // console.log(isNaN(undefined))
     if (!metaDataFromSanity?._id) return
     let filteredLikers = []
 
@@ -159,11 +175,6 @@ const Nft = (props) => { //props are from getServerSideProps
           const filteredLikers = metaDataFromSanity.likedBy.filter((likers) => {
             return likers._ref != address
           })
-          // setMetadataFromSanity({
-          //   ...metaDataFromSanity,
-          //   likedBy: filteredLikers,
-          // })
-
         })
         .catch((err) => {
           console.log(err)
@@ -186,99 +197,13 @@ const Nft = (props) => { //props are from getServerSideProps
             ...metaDataFromSanity.likedBy,
             { _ref: address, _type: 'reference' },
           ]
-          // setMetadataFromSanity({
-          //   ...metaDataFromSanity,
-          //   likedBy: filteredLikers,
-          // })
         })
         .catch((err) => {
           // console.error(err)
-          // toastHandler.error('Error in liking the NFT.', errorToastStyle)
         })
     }
   }
 
-  //get Collection Data from Sanity
-  // useEffect(() => {
-  //   if (!tokenid) return //get NFT Items' meta data
-  //   ;(async (sanityClient = config, marketplace = marketContract) => {
-  //     // console.log(await marketData.getListing(1))
-  //     const query = `*[_type == "nftItem" && _id == "${tokenid}"] {
-  //         views, filepath, likedBy, likes, _id, chainId, listingid, id, name,
-  //         ownedBy->,
-  //         createdBy->,
-  //         collection->
-  //       }`
-  //     const result = await sanityClient.fetch(query)
-
-  //     setMetadataFromSanity(result[0])
-  //     setCollectionData(result[0].collection)
-
-  //     setRpcUrl(rpcChains[result[0]?.collection?.chainId])
-      
-  //       //get nft data from contract
-  //       const sdk = new ThirdwebSDK(rpcUrl);
-  //       const contract = await sdk.getContract(result[0].collection.contractAddress, "nft-collection");
-  //       const nft = await contract.get(result[0].id)
-  //       setNftContractData(nft)
-
-  //       //get listing data of the nft from contract
-  //       //market id: 0x0bFc480e8e9D391a0A601ed5B54151D3e526BACd
-
-  //       // if(result[0].listingid != ""){
-
-  //       // await axios
-  //       //           .get(`${HOST}/api/nft/${tokenid}`)
-  //       //           .then((res) => { 
-  //       //             const data = res.data;
-  //       //             setListingData(data)
-
-  //       //             if (Boolean(data?.reservePrice)) {
-  //       //               setIsAuctionItem(true)
-  //       //             }
-
-  //       //           });
-          
-  //       // }
-
-  //   })()
-  // }, [tokenid])
-
-  // const { data: nftData, status: nftStatus } = useQuery(
-  //   ['allnftss', metaDataFromSanity?.collection?.contractAddress],
-  //   getAllNFTs(rpcUrl),
-  //   {
-  //     enabled: Boolean(metaDataFromSanity?.collection?.contractAddress) && Boolean(rpcUrl) && false,
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching NFTs. Refresh and try again.',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: (res) => {
-
-  //       const selectedNftItem = res.find(
-  //         (nft) => nft.metadata.properties.tokenid == router.query.nftid
-  //       )
-
-  //       setSelectedNft(selectedNftItem)
-
-  //       if (activeListings) {
-  //         const listingItem = activeListings?.find(
-  //           (marketNft) =>
-  //             JSON.stringify(marketNft.asset?.id) ==
-  //               JSON.stringify(selectedNftItem?.metadata.id) &&
-  //             marketNft.assetContractAddress == metaDataFromSanity?.collection?.contractAddress
-  //         )
-  //         setListingData(listingItem)
-
-  //         if (Boolean(listingItem?.reservePrice)) {
-  //           setIsAuctionItem(true)
-  //         }
-  //       }
-  //     },
-  //   }
-  // )
 
   useEffect(() => {
     setIsLiked(false);
@@ -377,10 +302,6 @@ const Nft = (props) => { //props are from getServerSideProps
                       src={nftContractData?.metadata?.image}
                       className="h-full w-full object-cover"
                     />
-                    // <img
-                    //   src={selectedNft?.metadata?.image}
-                    //   className="h-full w-full object-cover"
-                    // />
                   )}
                 </div>
 
@@ -415,6 +336,7 @@ const Nft = (props) => { //props are from getServerSideProps
               <GeneralDetails
                 nftContractData={nftContractData}
                 listingData={listingData}
+                chain={thisNFTblockchain}
                 metaDataFromSanity={ metaDataFromSanity }
                 />
 
@@ -469,7 +391,10 @@ const Nft = (props) => { //props are from getServerSideProps
                       <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
                         {nftContractData?.metadata?.properties?.traits?.map(
                           (props, id) => (
-                            <div key={id}>
+                            <div key={id} className="cursor-pointer" onClick={() => {
+                              setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                              router.push(`/collections/${metaDataFromSanity.collection._id}`)
+                            }}>
                               {props.propertyKey != "" ? (
 
                               <div
@@ -562,6 +487,16 @@ const Nft = (props) => { //props are from getServerSideProps
                               {chainName[metaDataFromSanity?.collection?.chainId]}
                             </span>
                           </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
+                            <span className="line-clamp-1 text-sm cursor-pointer">
+                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
+                                <a>
+                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                </a>
+                              </Link>
+                            </span>
+                          </div>
                         </div>
                       </Disclosure.Panel>
                     </>
@@ -607,7 +542,7 @@ const Nft = (props) => { //props are from getServerSideProps
                 auctionItem={isAuctionItem}
                 />
                 )} */}
-
+              
               <Purchase
                 nftContractData={nftContractData}
                 listingData={listingData}
@@ -669,6 +604,7 @@ export async function getServerSideProps(context){
   var allListedFromThisChain = "";
   var marketAddress = process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE; //by default, save a market address
   var nftChainid = 56;
+  var royaltyData = {}
 
   const marketplace = {
     '80001': process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
@@ -695,17 +631,38 @@ export async function getServerSideProps(context){
   }
 
   try {
+    //nft's listing data
     const response = await fetch(`${HOST}/api/nft/listing/${query.nftid}`).catch(err => {
       console.error('Error getting NFT Listing data')
     }); 
+
     if(response.status == 200) {nftdata = await response.json();}
 
+    //nfts sanity data
     const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`).catch(err => {
-          console.error('Error getting NFT data')
+          console.log('Error getting NFT data')
         });
-    if(response2.status == 200) { sanityData = await response2.json(); }
+    
+    if(response2.status == 200) { 
 
+      sanityData = await response2.json(); 
+      
+      // get royalty info for this token
+      const tokenId = sanityData?.id;
+      const contractAddress = sanityData?.collection?.contractAddress;
+      const chain = blockchainName[sanityData?.collection.chainId];
 
+      const sdk = new ThirdwebSDK(chain);
+
+      const contract = await sdk.getContract(contractAddress, "nft-collection");
+
+      const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+
+      royaltyData = {...royalty};
+
+    }
+
+    //collection's sanity data 
     const collectionAddress = sanityData.collection?.contractAddress;
     const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`).catch(err => {
           console.error('Error getting Collection data')
@@ -734,6 +691,7 @@ export async function getServerSideProps(context){
       thisNFTMarketAddress: marketAddress,
       thisNFTblockchain: blockchainName[nftChainid],
       listedItemsFromThisMarket: allListedFromThisChain,
+      royaltyData, 
     }
   }
 }

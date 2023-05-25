@@ -10,7 +10,7 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { IconLoading } from '../icons/CustomIcons'
-import { ConnectWallet } from '@thirdweb-dev/react'
+import { ConnectWallet, useActiveChain } from '@thirdweb-dev/react'
 import { checkValidURL } from '../../utils/utilities'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
@@ -18,7 +18,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { checkCollectionName } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
-import { useAddress, useNetwork, useSigner, useChainId } from '@thirdweb-dev/react'
+import { useAddress, useSigner, useChainId } from '@thirdweb-dev/react'
 
 const style = {
   container: 'my-[3rem] container mx-auto p-1 pt-0 text-gray-200',
@@ -42,7 +42,7 @@ const style = {
 }
 
 const CreateNFTCollection = () => {
-  const network = useNetwork();
+  const activechain = useActiveChain();
   const chain = useChainId();
   const { HOST } = useSettingsContext();
   const {dark, successToastStyle, errorToastStyle} = useThemeContext();
@@ -106,7 +106,7 @@ const CreateNFTCollection = () => {
             }
             ).catch(err => toast.catch('Error in uploading image to IPFS', errorToastStyle));
           }
-          // 0x4313Ab900db3AddC8063ce105524e5DC1f95b52e -> Previous address
+          
         const metadata = {
           name: form.itemName.value,
           image: profileLink?.data,
@@ -116,7 +116,7 @@ const CreateNFTCollection = () => {
           primary_sale_recipient: form.primary_sale_recipient.value,
           seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
           platform_fee_basis_points: 500,
-          platform_fee_recipient: '0x9D2036BAfd465bAFaCFeEb6A4a97659D9f2a8A30',
+          platform_fee_recipient: process.env.NODE_ENV == 'production' ? '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e' : '0x9D2036BAfd465bAFaCFeEb6A4a97659D9f2a8A30',
           trusted_forwarders: [],
         }
         
@@ -144,6 +144,12 @@ const CreateNFTCollection = () => {
           volumeTraded: 0,
           floorPrice: 0,
           category: selectedCategory,
+          referralrate_one: 0,
+          referralrate_two: 0,
+          referralrate_three: 0,
+          referralrate_four: 0,
+          referralrate_five: 0,
+          payablelevel: 0,
         }
           
         await config.createIfNotExists(collectionDoc);
@@ -167,10 +173,14 @@ const CreateNFTCollection = () => {
             type: 'TYPE_ONE',
           })
         //update redis database for all collections
-        await axios.get(`${HOST}/api/updateallcollections`).catch(err => toast.error('Error refreshing cache', errorToastStyle));
-        toast.success('Collection created successfully.', successToastStyle);
-        
-        router.push(`/collections/${itemID}`);
+        await axios
+              .get(`${HOST}/api/updateallcollections`)
+              .catch(err => toast.error('Error refreshing cache', errorToastStyle))
+              .finally(() => {
+                toast.success('Collection created successfully.', successToastStyle);
+                
+                router.push(`/collections/${itemID}`);
+              });
 
       } catch(err){
           toast.error("Error in deploying NFT Collection.", errorToastStyle);
@@ -317,17 +327,7 @@ const CreateNFTCollection = () => {
             Settings to organize and distinguish between your different NFT
             collections.
           </p>
-          {/* <button
-            onClick={() =>
-              sendNotification({
-                address: address,
-                contractAddress: '0x107E3947C2ff89af2DD3d07bDb0515e4af97593a',
-                type: 'TYPE_ONE',
-              })
-            }
-          >
-            Send Notification
-          </button> */}
+          
           <form
             name="CreateNFTCollectionForm"
             onSubmit={handleDeployNFTCollection}
@@ -522,13 +522,12 @@ const CreateNFTCollection = () => {
               </p>
               
               <div className="flex justify-between">
-                {/* <p className={style.label}>Network/Chain : {network[0].data.chain.name}</p> */}
                 <input
                   type="text"
                   className={style.input + ' grow'}
                   name="itemBlockchain"
                   disabled
-                  value={ network[0]?.data?.chain?.name}
+                  value={ activechain.name }
                 ></input>
               </div>
 

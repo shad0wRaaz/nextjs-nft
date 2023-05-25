@@ -20,6 +20,7 @@ import { FiMoreVertical, FiFacebook, FiTwitter } from 'react-icons/fi'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
+import { createAwatar } from '../../utils/utilities'
 
 
 const style = {
@@ -39,21 +40,21 @@ const style = {
   divider: `border border-white border-slate-700 border-r-1`,
 }
 
-const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) => {
+const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFromSanity, contractAddress }) => {
   const { marketAddress } = useMarketplaceContext();
   const { dark, successToastStyle, errorToastStyle } = useThemeContext();
   const address = useAddress();
   const router = useRouter();
   const [auctionedItem, setAuctionedItem] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const shareURL = `https://nuvanft.io/nfts/${metaDataFromSanity?._id}`;
+  const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData.contract}/${nftContractData.tokenId}`;
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
-    ['user', nftContractData?.owner],
+    ['owner', owner?.owners[0]?.ownerOf.toUpperCase()],
     getUserContinuously(),
-    {
-      enabled: Boolean(nftContractData) && Boolean(nftContractData.owner != "0x0000000000000000000000000000000000000000"),
+  {
+      enabled: Boolean(owner?.owners[0]?.ownerOf) && Boolean(owner?.owners[0]?.ownerOf != "0x0000000000000000000000000000000000000000"),
       onError: () => {
         toast.error('Error in getting Owner info.', errorToastStyle);
       },
@@ -61,18 +62,17 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
         //check if the item is in auction, if in auction, owner will be marketplace
         // if the item is auctioned, then res will be undefined
         const marketArray = [
-          process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE, 
-          process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE
+          process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE.toLowerCase(), 
+          process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE.toLowerCase()
           ];
-        if (!res && (marketArray.includes(nftContractData?.owner))) {
-          setAuctionedItem(true)
-          return
+        if (!res && (marketArray.includes(owner?.owners[0]?.ownerOf))) {
+          setAuctionedItem(true);
         }
       },
     }
@@ -86,7 +86,7 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
           description={nftContractData?.metadata?.description}
           image={nftContractData?.metadata?.image}
           tokenId={nftContractData?.metadata?.properties?.tokenid}
-          contractAddress={metaDataFromSanity?.collection?.contractAddress}>
+          contractAddress={nftContractData?.contract}>
             
         </HelmetMetaData>
       ) : ''}
@@ -105,52 +105,58 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
         <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
           {nftContractData?.metadata?.name}
         </h1>
-        <div 
-          className="relative block w-fit rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
-          style={{ marginTop: '10px'}}
-          onClick={() => {
-            router.push({
-              pathname: '/search',
-              query: {
-                c: metaDataFromSanity?.collection.category,
-                n: '',
-                i: 'true',
-                v: 'true',
-                a: 'true',
-                d: 'true',
-                ac: 'true',
-                h: 'true',
-                _r: 0,
-                r_: 100,
-              },
-            })
-          }}>
-            { metaDataFromSanity?.collection?.category }
-          </div>
+        {Boolean(metaDataFromSanity?.category) &&(
+          <div 
+            className="relative block w-fit rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+            style={{ marginTop: '10px'}}
+            onClick={() => {
+              router.push({
+                pathname: '/search',
+                query: {
+                  c: metaDataFromSanity?.collection.category,
+                  n: '',
+                  i: 'true',
+                  v: 'true',
+                  a: 'true',
+                  d: 'true',
+                  ac: 'true',
+                  h: 'true',
+                  _r: 0,
+                  r_: 100,
+                },
+              })
+            }}>
+              { metaDataFromSanity?.category }
+            </div>
+        )}
 
         <div className="flex flex-col-reverse justify-between gap-5 space-y-4 text-sm sm:flex-row sm:items-center sm:space-y-0 sm:space-x-8">
           <div className="flex items-center">
             <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white dark:ring-neutral-900">
-              {metaDataFromSanity && (
-                <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}>
-                  <img
-                    className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
-                    src={getImagefromWeb3(metaDataFromSanity?.collection?.web3imageprofile)}
-                    alt={metaDataFromSanity?.collection?.name}
-                  />
+              {Boolean(metaDataFromSanity) && (
+                <Link href={`/collection/${chain}/${contractAddress}`} passHref>
+                  <a>
+                    <img
+                      className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
+                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? getImagefromWeb3(metaDataFromSanity?.web3imageprofile) : createAwatar(nftContractData.contract)}
+                      alt={metaDataFromSanity?.name}
+                    />
+                  </a>
                 </Link>
               )}
-              <span className="wil-avatar__name">J</span>
             </div>
 
-            <span className="ml-2.5 flex flex-col">
-              <span className="text-sm">Collection</span>
-              <span className="flex items-center font-medium">
-                <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}>
-                  <span className="cursor-pointer">{metaDataFromSanity?.collection?.name}</span>
-                </Link>
-              </span>
-            </span>
+            <Link href={`/collection/${chain}/${contractAddress}`} passHref>
+              <a>
+                <span className="ml-2.5 flex flex-col">
+                  <span className="text-sm">Collection:</span>
+                  <span className="flex items-center font-medium">
+                      {/* <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}> */}
+                    <span className="cursor-pointer">{metaDataFromSanity?.name ? metaDataFromSanity?.name : `${nftContractData.contract.slice(0,7)}...${nftContractData.contract.slice(-7)}`}</span>
+                  </span>
+                </span>
+              </a>
+            </Link>
           </div>
 
           <div
@@ -176,17 +182,25 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
                 <Link href={`/user/${ownerData?.walletAddress}`}>
                   <div className="flex">
                     <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
-                      <img
-                        className="absolute inset-0 h-full w-full rounded-full object-cover"
-                        src={getImagefromWeb3(ownerData?.web3imageprofile)}
-                        alt={ownerData?.userName}
-                      />
+                      {ownerData?.web3imageprofile ? (
+                        <img
+                          className="absolute inset-0 h-full w-full rounded-full object-cover"
+                          src={getImagefromWeb3(ownerData?.web3imageprofile)}
+                          alt={ownerData?.userName}
+                        />
+                      ) :(
+                        <img src="https://api.dicebear.com/6.x/bottts/svg?seed=Charlie" alt="Avatar"/>
+                      )}
                     </div>
 
                     <span className="ml-2.5 flex cursor-pointer flex-col">
-                      <span className="text-sm">Owner</span>
+                      <span className="text-sm">Owned by: </span>
                       <span className="flex items-center font-medium">
-                        <span>{ownerData?.userName}</span>
+                        {ownerData?.userName == "Unnamed" ? (
+                          <span>{ownerData?.walletAddress.slice(0,5)}...{ownerData?.walletAddress.slice(-5)}</span>
+                        ) : (
+                          <span>{ownerData?.userName}</span>
+                        )}
                         {ownerData?.verified ? (
                           <IconVerified />
                         ) : ''}
@@ -326,90 +340,6 @@ const GeneralDetails = ({ nftContractData, listingData, metaDataFromSanity }) =>
                       } shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
                     >
                       <div className="p-1">
-                        {/* {nftContractData?.owner == address && Boolean(listingData) && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${
-                                  active
-                                    ? dark
-                                      ? ' bg-slate-600 text-neutral-100'
-                                      : 'bg-blue-500 text-white'
-                                    : dark
-                                    ? ' text-neutral-100'
-                                    : 'text-gray-900'
-                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                              >
-                                {active ? (
-                                  dark ? (
-                                    <RiCloseCircleLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#ffffff"
-                                    />
-                                  ) : (
-                                    <RiCloseCircleLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#000000"
-                                    />
-                                  )
-                                ) : dark ? (
-                                  <RiCloseCircleLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <RiCloseCircleLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )}
-                                Cancel Direct Listing
-                              </button>
-                            )}
-                          </Menu.Item>
-                        )}
-                        {nftContractData?.owner == address && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${
-                                  active
-                                    ? dark
-                                      ? ' bg-slate-600 text-neutral-100'
-                                      : 'bg-neutral-100'
-                                    : dark
-                                    ? ' text-neutral-100'
-                                    : 'text-gray-900'
-                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                              >
-                                {active ? (
-                                  dark ? (
-                                    <RiFireLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#ffffff"
-                                    />
-                                  ) : (
-                                    <RiFireLine
-                                      className="mr-2 h-5 w-5"
-                                      color="#000000"
-                                    />
-                                  )
-                                ) : dark ? (
-                                  <RiFireLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#ffffff"
-                                  />
-                                ) : (
-                                  <RiFireLine
-                                    className="mr-2 h-5 w-5"
-                                    color="#000000"
-                                  />
-                                )}
-                                Burn this NFT
-                              </button>
-                            )}
-                          </Menu.Item>
-                        )} */}
                         <Menu.Item>
                           {({ active }) => (
                             <button

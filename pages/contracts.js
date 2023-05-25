@@ -16,7 +16,7 @@ import CreateAVNFT from '../components/createNew/CreateAVNFT'
 import CreateNFTDrop from '../components/createNew/CreateNFTDrop'
 import CreateEdition from '../components/createNew/CreateEdition'
 import CreateNFTBatch from '../components/createNew/CreateNFTBatch'
-import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
+// import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
 
@@ -99,26 +99,20 @@ const contracts = () => {
               <Tab.Panels className="mt-2">
                 <Tab.Panel className="rounded-xl p-3">
                   <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 gap-[2rem]">
-                    <div 
-                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                      onClick={() => {
-                        setShowModal(curVal => !curVal)
-                        dispatch({ type: 'OPEN_NFT'})
-                      }}
-                      >
-                      <FiImage size={40} className="mb-3"/>
-                      <span>Image NFT</span>
-                    </div>
-                    <div 
-                      className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
-                      onClick={() => {
-                        setShowModal(curVal => !curVal)
-                        dispatch({ type: 'OPEN_NFT_AUDIOVIDEO'})
-                      }}
-                      >
-                      <FiVideo size={40} className="mb-3" />
-                      <span>Audio/Video NFT</span>
-                    </div>
+                    <a href="/nfts/mint">
+                      <div 
+                        className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}
+                        >
+                        <FiImage size={40} className="mb-3"/>
+                        <span>Image NFT</span>
+                      </div>
+                    </a>
+                    <a href="/nfts/mintav">
+                      <div className={`flex flex-col cursor-pointer justify-center items-center p-[3rem] rounded-xl border ${dark ? 'border-sky-700/30 hover:bg-slate-700': 'hover:bg-neutral-50'}`}>
+                        <FiVideo size={40} className="mb-3" />
+                        <span>Audio/Video NFT</span>
+                      </div>
+                    </a>
                   </div>
                 </Tab.Panel>
                 <Tab.Panel className="rounded-xl p-3">
@@ -141,84 +135,28 @@ const contracts = () => {
         </div>
       )}
       
-      {/* End of Modal window*/}
-      <OffCanvas
-          width={850}
-          transitionDuration={300}
-          effect={"parallax"}
-          isMenuOpened={state.isMenuOpened}
-          position={"right"}
-          >
-            <OffCanvasBody className={ state.isMenuOpened ? 'blur pointer-events-none ' : 'pointer-events-auto'}>
-              <div className={ dark ? style.pageBanner + ' darkGray' : style.pageBanner + ' bg-sky-100'}>
-                  <h2 className={style.pageTitle}>Create Contracts</h2>
-                  <p className={style.smallText}>List of contracts that you can deploy.</p>
-              </div>
-              <div className={style.wrapper}>
-                <div className={style.contractsWrapper}>
-                  <div className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem} onClick={() => setShowModal(curVal => !curVal)}>
-                    <GoPackage className={style.contractItemIcon} />
-                    <span className={style.contractTitle}>NFT</span>
-                    <span className={style.contractDescription}>Your unique Non-fungible token</span>
-                  </div>
-                  <div className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_COLLECTION'})}>
-                    <BiCollection className={style.contractItemIcon} />
-                    <span className={style.contractTitle}>NFT Collection</span>
-                    <span className={style.contractDescription}>A collection of one-of-one NFTs</span>
-                  </div>
-                  {/* <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_NFT_DROP'})}>
-                    <BsDroplet className={style.contractItemIcon} />
-                    <span className={style.contractTitle}>NFT Drop</span>
-                    <span className={style.contractDescription}>Claimable drop of one-of-one NFTs</span>
-                  </div>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_EDITION'})}>
-                    <HiCubeTransparent className={style.contractItemIcon} />
-                    <span className={style.contractTitle}>Edition</span>
-                    <span className={style.contractDescription}>A collection of N-of-one NFTs</span>
-                  </div>
-                  <div className={dark ? style.contractItem + ' border-sky-400/20' : style.contractItem} onClick={() => dispatch({type: 'OPEN_EDITION_DROP'})}>
-                    <BsDropletHalf className={style.contractItemIcon} />
-                    <span className={style.contractTitle}>Edition Drop</span>
-                    <span className={style.contractDescription}>Claimable drop of N-of-one NFTs</span>
-                  </div> */}
-                </div>
-              </div>
-              <Footer/>
-            </OffCanvasBody>
-            <OffCanvasMenu className={style.canvasMenu}>
-              
-              <button
-                className={style.closeButton} 
-                onClick={() => dispatch({type: 'CLOSE_MENU'})}
-              >
-                <MdClose fontSize="30px"/>
-              </button>
-
-              {state.canvasMenu == "NFT" &&
-                <CreateNFT uuid={nftId}/>
-              }
-              {state.canvasMenu == "NFT_BATCH" &&
-                <CreateNFTBatch />
-              }
-              {state.canvasMenu == "NFT_AUDIOVIDEO" && 
-                <CreateAVNFT uuid={nftAVId}/>
-              }
-              {state.canvasMenu == "NFT_COLLECTION" && 
-                <CreateNFTCollection/>
-              }
-              {/* {state.canvasMenu == "NFT_DROP" && 
-                <CreateNFTDrop/>
-              }
-              {state.canvasMenu == "EDITION" && 
-                <CreateEdition/>
-              }
-              {state.canvasMenu == "EDITION_DROP" && 
-                <CreateEditionDrop/>
-              } */}
-            </OffCanvasMenu>
-        </OffCanvas>
       
-      
+      <div className={ dark ? style.pageBanner + ' darkGray' : style.pageBanner + ' bg-sky-100'}>
+          <h2 className={style.pageTitle}>Create Contracts</h2>
+          <p className={style.smallText}>List of contracts that you can deploy.</p>
+      </div>
+      <div className={style.wrapper}>
+        <div className={style.contractsWrapper}>
+          <div className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem} onClick={() => setShowModal(curVal => !curVal)}>
+            <GoPackage className={style.contractItemIcon} />
+            <span className={style.contractTitle}>NFT</span>
+            <span className={style.contractDescription}>Your unique Non-fungible token</span>
+          </div>
+          <a href='/collections/create' className={dark ? style.contractItem + ' border-slate-400/20 bg-slate-800' : style.contractItem}>
+            <div>
+              <BiCollection className={style.contractItemIcon} />
+              <span className={style.contractTitle + ' block'}>NFT Collection</span>
+              <span className={style.contractDescription}>A collection of one-of-one NFTs</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <Footer/>
     </div>
   )
 }

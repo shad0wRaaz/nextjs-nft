@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { MdAdd } from 'react-icons/md'
 import { FiCheck } from 'react-icons/fi'
 import { useQueryClient } from 'react-query'
+import { BiTransferAlt } from 'react-icons/bi'
 import { AiOutlineFire } from 'react-icons/ai'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
@@ -12,12 +13,11 @@ import { RiCloseCircleLine } from 'react-icons/ri'
 import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
-import { useAddress, useChainId, useNetwork, useSigner } from '@thirdweb-dev/react'
-import { BiTransferAlt } from 'react-icons/bi'
 
 
-const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMarketAddress, thisNFTblockchain}) => {
+const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const address = useAddress();
     const chainid = useChainId();
@@ -30,7 +30,6 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
     const [isCanceling, setIsCanceling] = useState(false);
     const [isBurning, setIsBurning] = useState(false);
     const signer = useSigner();
-    const [,switchNetwork] = useNetwork();
     const [isTransfer, setIsTransfer] = useState(false);
     const [transferModal, setTransferModal] = useState(false);
     const [transferAddress, setTransferAddress] = useState('');
@@ -58,48 +57,50 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
             const tx = await contract.direct.cancelListing(listingData.id)
             // console.log(tx.receipt)
             if (tx) {
-              toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle)
     
               //saving transaction in sanity
-              const transactionData = {
-                _type: 'activities',
-                _id: tx.receipt.transactionHash,
-                transactionHash: tx.receipt.transactionHash,
-                from: tx.receipt.from,
-                tokenid: nftContractData.metadata.id.toString(),
-                to: tx.receipt.to,
-                event: 'Delist',
-                nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
-                price: '-',
-                chainId: chainid,
-                dateStamp: new Date(),
-              }
+              // const transactionData = {
+              //   _type: 'activities',
+              //   _id: tx.receipt.transactionHash,
+              //   transactionHash: tx.receipt.transactionHash,
+              //   from: tx.receipt.from,
+              //   tokenid: nftContractData.metadata.id.toString(),
+              //   to: tx.receipt.to,
+              //   event: 'Delist',
+              //   nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
+              //   price: '-',
+              //   chainId: chainid,
+              //   dateStamp: new Date(),
+              // }
 
               // console.log(transactionData)
-              await sanityClient
-                .createIfNotExists(transactionData)
-                .then(() => {
-                  queryClient.invalidateQueries(['marketplace']);
-                  queryClient.invalidateQueries(['activities']);
+              // await sanityClient
+              //   .createIfNotExists(transactionData)
+              //   .then(() => {
+              //     queryClient.invalidateQueries(['marketplace']);
+              //     queryClient.invalidateQueries(['activities']);
                   
-                })
-                .catch((err) => {
-                  console.log(err);
-                  toastHandler.error('Error saving Transaction Activity. Contact administrator.', errorToastStyle);
+              //   })
+              //   .catch((err) => {
+              //     console.log(err);
+              //     toastHandler.error('Error saving Transaction Activity. Contact administrator.', errorToastStyle);
+              //       setIsCanceling(false);
+              //       return
+              //     })
+                queryClient.invalidateQueries(['marketplace']);
+                queryClient.invalidateQueries(['activities']);
+                  
+                //update listing data
+                ;(async() => {
+                  setLoadingNewPrice(true);
+                  await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
                     setIsCanceling(false);
-                    return
+                    setLoadingNewPrice(false);
+                    router.reload(window.location.pathname);
+                    router.replace(router.asPath);
                   })
-                  
-                  //update listing data
-                  ;(async() => {
-                    setLoadingNewPrice(true);
-                    await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
-                      setIsCanceling(false);
-                      setLoadingNewPrice(false);
-                      router.reload(window.location.pathname);
-                      router.replace(router.asPath);
-                    })
-                  })()
+                })()
+                toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
             }
           } catch (err) {
             console.error(err);
@@ -118,7 +119,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
         return
       }
       
-      if(!collectionAddress) {
+      if(!nftCollection) {
         toast.error("Collection not found.", errorToastStyle);
         return;
       }
@@ -130,10 +131,8 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
       
       try {
           ;(async () => {
-            const query = `*[_type == "nftCollection" && contractAddress == "${collectionAddress}"] {chainId}`;
-            const sanitydata = await sanityClient.fetch(query);
             
-            if(Number(sanitydata[0]?.chainId) != chainid){
+            if(chainid != nftCollection?.chainId){
               toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
               return;
             }
@@ -142,46 +141,51 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
             setBurnModal(false);
 
             const sdk = new ThirdwebSDK(signer);
-            const contract = await sdk.getContract(collectionAddress, "nft-collection");
+            const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
               
-              const tx = await contract.burn(nftContractData.metadata.id)
+              const tx = await contract.burn(nftContractData?.tokenId)
 
               //saving transaction in sanity
-              const transactionData = {
-                _type: 'activities',
-                _id: tx.receipt.transactionHash,
-                transactionHash: tx.receipt.transactionHash,
-                from: tx.receipt.from,
-                tokenid: nftContractData.metadata.id.toString(),
-                contractAddress: collectionAddress,
-                to: tx.receipt.to,
-                event: 'Burn',
-                nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
-                price: '-',
-                chainId: chainid,
-                dateStamp: new Date(),
-              }
+              // const transactionData = {
+              //   _type: 'activities',
+              //   _id: tx.receipt.transactionHash,
+              //   transactionHash: tx.receipt.transactionHash,
+              //   from: tx.receipt.from,
+              //   tokenid: nftContractData.metadata.id.toString(),
+              //   contractAddress: nftContractData.contract,
+              //   to: tx.receipt.to,
+              //   event: 'Burn',
+              //   nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
+              //   price: '-',
+              //   chainId: chainid,
+              //   dateStamp: new Date(),
+              // }
 
-            await sanityClient
-              .createIfNotExists(transactionData)
-              .then(() => {
-                queryClient.invalidateQueries(['marketplace']);
-                queryClient.invalidateQueries(['activities']);
-                queryClient.invalidateQueries(['user']);
+            // await sanityClient
+            //   .createIfNotExists(transactionData)
+            //   .then(() => {
+            //     queryClient.invalidateQueries(['marketplace']);
+            //     queryClient.invalidateQueries(['activities']);
+            //     queryClient.invalidateQueries(['user']);
                 
-                //update listing data
-                ;(async() => {
-                  await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
-                    router.reload(window.location.pathname);
-                    router.replace(router.asPath);
-                  })
-                })()
+                
+            //   })
+            //   .catch((err) => {
+            //   console.log(err);
+            //   toastHandler.error('Error saving Transaction Activity. Contact administrator.', errorToastStyle);
+            //   return
+            // })
+            //update listing data
+            ;(async() => {
+              await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
+                router.reload(window.location.pathname);
+                router.replace(router.asPath);
               })
-              .catch((err) => {
-              console.log(err);
-              toastHandler.error('Error saving Transaction Activity. Contact administrator.', errorToastStyle);
-              return
-            })
+            })()
+
+            queryClient.invalidateQueries(['marketplace']);
+            queryClient.invalidateQueries(['activities']);
+            queryClient.invalidateQueries(['user']);
             setIsBurning(false);
           })();
       } catch (error) {
@@ -197,7 +201,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
       //   return
       // }
       
-      if(!collectionAddress) {
+      if(!nftCollection) {
         toast.error("Collection not found.", errorToastStyle);
         return;
       }
@@ -216,39 +220,39 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
         setIsTransfer(true);
         ;(async() => {
           const sdk = new ThirdwebSDK(signer);
-          const contract = await sdk.getContract(collectionAddress, "nft-collection");
-          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.metadata?.id);
+          const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
+          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.tokenId);
           
           // console.log(tx);
             //saving transaction in sanity
-          const transactionData = {
-            _type: 'activities',
-            _id: tx.receipt.transactionHash,
-            transactionHash: tx.receipt.transactionHash,
-            from: tx.receipt.from,
-            tokenid: nftContractData.metadata.id.toString(),
-            contractAddress: collectionAddress,
-            to: tx.receipt.to,
-            event: 'Transfer',
-            nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
-            price: '-',
-            chainId: chainid,
-            dateStamp: new Date(),
-          }
+          // const transactionData = {
+          //   _type: 'activities',
+          //   _id: tx.receipt.transactionHash,
+          //   transactionHash: tx.receipt.transactionHash,
+          //   from: tx.receipt.from,
+          //   tokenid: nftContractData.metadata.id.toString(),
+          //   contractAddress: nftContractData.contract,
+          //   to: tx.receipt.to,
+          //   event: 'Transfer',
+          //   nftItems: [{ _ref: nftContractData.metadata.properties.tokenid, _type: 'reference', _key: nftContractData.metadata.properties.tokenid }],
+          //   price: '-',
+          //   chainId: chainid,
+          //   dateStamp: new Date(),
+          // }
 
-          await sanityClient
-            .createIfNotExists(transactionData)
-            .catch((err) => {
-            toastHandler.error('Error saving Transaction Activity.', errorToastStyle);
-            return
-          })
+          // await sanityClient
+          //   .createIfNotExists(transactionData)
+          //   .catch((err) => {
+          //   toastHandler.error('Error saving Transaction Activity.', errorToastStyle);
+          //   return
+          // })
           toast.success("The NFT has been transferred to the designated wallet", successToastStyle);
           setIsTransfer(false);
-          window.location.reload(true);
         })()
       }catch (error){
         setIsTransfer(false);
       }
+      window.location.reload(true);
       setIsTransfer(false);
     }
 
@@ -323,7 +327,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
             </div>
         </div>
     )}
-    {nftContractData.owner == address && (
+    {address.toLowerCase() == ownerData?.ownerOf.toLowerCase() && (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-lg mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
             {!Boolean(listingData?.message) && (
               <>
@@ -359,7 +363,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
                 <button 
                       className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
                       onClick={() => setTransferModal(true)}>
-                        <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer NFT</span>
+                        <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
                   </button>
               </div>
             )}
@@ -376,7 +380,7 @@ const BurnCancel = ({nftContractData, listingData, collectionAddress, thisNFTMar
                 <button 
                     className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
                     onClick={() => setBurnModal(true)}>
-                    <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn NFT</span>
+                    <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
                 </button>
               </div>
             )}

@@ -6,7 +6,7 @@ import { MdAudiotrack } from 'react-icons/md'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
-const NFTItem = ({ nftItem }) => {
+const NFTItem = ({ nftItem, chain, compact }) => {
   const { dark } = useThemeContext();
   // const [isLiked, setIsLiked] = useState(false);
   // const address = useAddress();
@@ -57,10 +57,14 @@ const NFTItem = ({ nftItem }) => {
       } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
     >
       <Link
+      href={`/nft/${chain}/${nftItem.assetContractAddress}/${nftItem.asset.id}`}
+      passHref>
+      {/* <Link
       href={`/nfts/${nftItem.asset.properties?.tokenid}`}
-      >
+      > */}
+      <a>
         <div className="relative flex-shrink-0 cursor-pointer">
-          <div className="aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
+          <div className={`aspect-w-11 aspect-h-12 relative z-0 flex ${compact ? 'h-[250px]' : 'h-[415px]'} w-full overflow-hidden rounded-2xl`}>
             <img
               src={nftItem.asset.image}
               className="rounded-2xl object-cover transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
@@ -133,7 +137,7 @@ const NFTItem = ({ nftItem }) => {
             </div>
           )} */}
 
-          <div className="absolute left-[-1px] bottom-[-0.4px] ">
+          <div className="absolute left-[-1px] bottom-[-10px] ">
             <svg
               className={`w-64 ${
                 dark ? 'text-slate-800' : 'text-white'
@@ -149,7 +153,7 @@ const NFTItem = ({ nftItem }) => {
               ></path>
             </svg>
 
-            <div className="absolute left-4 bottom-0 w-48 ">
+            <div className="absolute left-4 bottom-[12px] w-48 ">
               <h2 className="text-left text-sm font-semibold">
                 {nftItem.asset.name}
               </h2>
@@ -169,6 +173,7 @@ const NFTItem = ({ nftItem }) => {
             </div>
           </div>
         </div>
+      </a>
       </Link>
     </div>
   )

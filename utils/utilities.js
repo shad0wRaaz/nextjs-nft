@@ -1,4 +1,5 @@
-
+import { createAvatar } from '@dicebear/core';
+import { botttsNeutral } from '@dicebear/collection';
 
 export const checkValidEmail = (email) => {
     //check email pattern first
@@ -46,4 +47,13 @@ export const sortCategory = (arr) => {
     }
     return 0;
   })
+}
+
+export const createAwatar = (seed) => {
+  const awatar = createAvatar( botttsNeutral, {
+      size: 60,
+      seed,
+    }).toDataUriSync();
+
+  return awatar
 }

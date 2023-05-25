@@ -3,18 +3,21 @@ import Sell from './Sell'
 import { BigNumber } from 'ethers'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { RiAuctionFill, RiAuctionLine } from 'react-icons/ri'
 import { config } from '../../lib/sanityClient'
+import { TiWarningOutline } from 'react-icons/ti'
 import { BsLightningCharge } from 'react-icons/bs'
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
+import { RiAuctionFill, RiAuctionLine } from 'react-icons/ri'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { getMyPayingNetwork } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
 import { ChainId, NATIVE_TOKENS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
-import { saveTransaction, addVolumeTraded } from '../../mutators/SanityMutators'
-import { useChainId, useAddress, useNetwork, useSigner } from '@thirdweb-dev/react'
+import { useChainId, useAddress, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { saveTransaction, addVolumeTraded, sendReferralCommission, updatePayableLevel } from '../../mutators/SanityMutators'
+import { useUserContext } from '../../contexts/UserContext'
 
 const style = {
   button: `mr-8 flex items-center py-2 px-12 rounded-lg cursor-pointer`,
@@ -51,17 +54,19 @@ const MakeOffer = ({
   listingData,
   auctionItem,
   thisNFTMarketAddress,
-  thisNFTblockchain
+  thisNFTblockchain,
+  ownerData
 }) => {
 
 var listed = true
   if(listingData?.message || !listingData) {
     listed = false
   }
-  const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST } = useSettingsContext();
+
+  const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const {myUser} = useUserContext();
   const chainId = useChainId();
-  const [,switchNetwork] = useNetwork();
   const address = useAddress();
   const signer = useSigner();
   const settingRef = useRef();
@@ -78,6 +83,9 @@ var listed = true
   const isburnt = nftContractData.owner == burntOwnerAddress ? true : false;
   const router = useRouter();
   const [minNextBig, setMinNextBig] = useState(0);
+  const [testnet, setTestnet] = useState(false);
+  const switchChain = useSwitchChain();
+  const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
 
   const { mutate: mutateSaveTransaction } = useMutation(
     ({ transaction, id, eventName, price, chainid, itemid }) =>
@@ -114,6 +122,14 @@ var listed = true
       },
     }
   )
+
+  const { mutate: updateLevel } = useMutation(
+    () => updatePayableLevel(address, nftCollection?.payablelevel),
+    {
+      onError: (err) =>{ toast.error('Commission level could not be updated', errorToastStyle);},
+      onSuccess: (res) => {}
+    }
+  )
   
   const currencyChainMatcher = {
       "80001": "MATIC",
@@ -125,6 +141,24 @@ var listed = true
       "97": "TBNB",
       "56": "BNB"
   }
+
+  //check for testnet NFTs
+  useEffect(() => {
+    if(!nftCollection) return
+    const testnets = ["binance-testnet", "mumbai", "goerli", "avalanche-fuji"]
+    if(testnets.includes(thisNFTblockchain)){
+      setTestnet(true);
+    }
+    //check if this collection has seperate commission list
+    if(!referralAllowedCollections) return
+    const allAllowedCollections = referralAllowedCollections.map(collection => collection._ref);
+
+    if(allAllowedCollections.includes(nftCollection?._id)){
+      setAllowedSeperateCommission(true);
+    }
+    return()=>{}
+
+  }, []);
 
   useEffect(() => {
     if (!listingData) return
@@ -138,7 +172,7 @@ var listed = true
       setCoinMultiplier(coinPrices?.ethprice);
     } else if (currencySymbol == 'AVAX') {
       setCoinMultiplier(coinPrices?.avaxprice);
-    } else if (currencySymbol == 'BNB' || currencySymbol == "TBNB") {
+    } else if (currencySymbol == 'BNB' || currencySymbol == "TBNB" || currencySymbol == "tBNB") {
       setCoinMultiplier(coinPrices?.bnbprice);
     }
 
@@ -158,6 +192,101 @@ var listed = true
       //do nothing
     }
   }, [listingData, coinPrices])
+
+  const convertBuyPricetoBNB = (price) => {
+    if(!nftCollection) return null
+    switch(nftCollection?.chainId){
+      case "97":
+        return price;
+      case "56":
+        return price;
+      case "80001":
+        return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
+      case "137":
+        return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
+      case "1":
+        return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
+      case "5":
+        return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
+      case "43113":
+        return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
+      case "43114":
+        return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
+      default:
+        return null;
+    }
+  }
+
+  const updateRoyaltyReceiver = async () => {
+    const allowedContracts = ['0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed7', '0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed5', '0xb63cf439Dfa97d540AD0A8D29fE60Ae23bC123ca'];
+    if(listingData.sellerAddress != '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6' || !allowedContracts.includes(listingData.assetContractAddress)) 
+    {
+      console.log('not eligible');
+      return
+    }
+    const action = await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
+    {
+      contractAddress: listingData.assetContractAddress, 
+      walletAddress: address, 
+      tokenId: listingData.asset.id,
+    });
+    // console.log(action);
+  }
+
+  const payToMySponsors = async() => {
+
+     // checking amount of tokens to send
+     const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
+     const divider = BigNumber.from(10).pow(18);
+     let buyOutPrice = bigNumberPrice / divider;
+
+    if(!referralCommission) {
+      toast.error("Referral commission could not be found", errorToastStyle);
+      return;
+    }
+    let sponsors = [];
+    const payNetwork = await getMyPayingNetwork(address);
+    // console.log(payNetwork)
+    const tokenPriceinBNB = convertBuyPricetoBNB(buyOutPrice);
+    if(Boolean(payNetwork[0]?.sponsor) && payNetwork[0]?.sponsor?.payablelevel >= 1){
+
+      let sponsor_L1 = payNetwork[0].sponsor.walletAddress;
+      let sponsor_L1_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_one : referralCommission.referralrate_one;
+      sponsors.push({ receiver: sponsor_L1, token: tokenPriceinBNB * sponsor_L1_rate / 100 });  
+    }
+      if(Boolean(payNetwork[0]?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 2){
+        let sponsor_L2 =  payNetwork[0].sponsor.sponsor.walletAddress;
+        let sponsor_L2_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_two : referralCommission.referralrate_two;
+        sponsors.push({ receiver: sponsor_L2, token: tokenPriceinBNB * sponsor_L2_rate / 100 });
+      }
+
+
+      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.sponsor?.payablelevel >= 3){
+        let sponsor_L3 =  payNetwork[0].sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L3_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_three : referralCommission.referralrate_three;
+        sponsors.push({ receiver: sponsor_L3, token: tokenPriceinBNB * sponsor_L3_rate / 100 });
+      }
+
+      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 4){
+        let sponsor_L4 =  payNetwork[0].sponsor.sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L4_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_four : referralCommission.referralrate_four;
+        sponsors.push({ receiver: sponsor_L4, token: tokenPriceinBNB * sponsor_L4_rate / 100 });
+      }
+
+      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 5){
+        let sponsor_L5 =  payNetwork[0].sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L5_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_five : referralCommission.referralrate_five;
+        sponsors.push({ receiver: sponsor_L5, token: tokenPriceinBNB * sponsor_L5_rate / 100 });
+      }
+
+    // console.log(sponsors);
+    // return;
+
+    //send the tokens and get list of transaction hash to save in database
+    const tx = sendReferralCommission(sponsors, address);
+
+
+  }
 
   //function to make offer for nfts
   const makeAnOffer = async (
@@ -181,10 +310,16 @@ var listed = true
     if(!listingData) return
 
     //check if the conencted wallet is in same chain
-    if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
-      toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
-      switchNetwork(Number(nftCollection?.chainId));
-      return
+    // if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol && listingData?.message != 'NFT data not found'){
+    //   toast.error("Wallet is connected to wrong chain. Switch to correct chain.", errorToastStyle);
+    //   // switchNetwork(Number(nftCollection?.chainId));
+    //   return
+    // }
+
+    if(blockchainIdFromName[thisNFTblockchain] != chainId.toString()){
+      toast.error('Wallet is connected to wrong chain. Switch to correct chain', errorToastStyle);
+      switchChain(Number(nftCollection.chainId)).catch(err => { console.log(err)});
+      return;
     }
 
     try {
@@ -193,30 +328,37 @@ var listed = true
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
       const tx = await contract.direct.makeOffer(
-        listingId,
-        quantityDesired,
-        NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
-        offerAmount
-      );
+              listingId,
+              quantityDesired,
+              NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
+              offerAmount
+            ).catch(err => {
+              setOfferLoading(false);
+              setOfferAmount(0); 
+              openOfferSetting('none');
+              toast.error("Error in buying. Possible reason: Insufficient funds or Wrapped tokens", errorToastStyle);
+            });
+      if(tx){
+        //save transaction
+        // mutateSaveTransaction({
+        //   transaction: tx,
+        //   id: nftContractData.metadata.id.toString(),
+        //   eventName: 'Offer',
+        //   itemid: nftContractData.metadata.properties.tokenid,
+        //   price: offerAmount.toString(),
+        //   chainid: chainId,
+        // });
+  
+        qc.invalidateQueries(['activities']);
+        qc.invalidateQueries(['eventData']);
+        qc.invalidateQueries(['marketplace']);
+  
+        toastHandler.success('Offer has been placed.', successToastStyle);
+        setOfferLoading(false);
+        setOfferAmount(0);
+        openOfferSetting('none');
+      }
 
-      //save transaction
-      mutateSaveTransaction({
-        transaction: tx,
-        id: nftContractData.metadata.id.toString(),
-        eventName: 'Offer',
-        itemid: nftContractData.metadata.properties.tokenid,
-        price: offerAmount.toString(),
-        chainid: chainId,
-      });
-
-      qc.invalidateQueries(['activities']);
-      qc.invalidateQueries(['eventData']);
-      qc.invalidateQueries(['marketplace']);
-
-      toastHandler.success('Offer has been placed.', successToastStyle);
-      setOfferLoading(false);
-      setOfferAmount(0);
-      openOfferSetting('none');
 
     } catch (error) {
       console.log(error)
@@ -235,6 +377,7 @@ var listed = true
   ) => {
     // console.log(listingId)
 
+
     if (!address) {
       toastHandler.error(
         'Wallet not connected. Connect wallet first.',
@@ -249,10 +392,15 @@ var listed = true
     try {
 
       //check if the conencted wallet is in same chain
-      if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
-        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
-        switchNetwork(Number(nftCollection?.chainId));
-        return
+      // if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol && listingData?.message != 'NFT data not found'){
+      //   toast.error("Wallet is connected to wrong chain. Switch to correct chain.", errorToastStyle);
+      //   // switchNetwork(Number(nftCollection?.chainId));
+      //   return
+      // }
+      if(blockchainIdFromName[thisNFTblockchain] != chainId.toString()){
+        toast.error('Wallet is connected to wrong chain. Switch to correct chain', errorToastStyle);
+        switchChain(Number(nftCollection.chainId)).catch(err => { console.log(err)});
+        return;
       }
 
       setBidLoading(true)
@@ -260,21 +408,28 @@ var listed = true
       const sdk = new ThirdwebSDK(signer);
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
-      const tx = await contract.auction.makeBid(listingId, bidAmount)
-      toastHandler.success('Bid successful.', successToastStyle)
-      
-      //save transaction
-      mutateSaveTransaction({
-        transaction: tx,
-        id: nftContractData.metadata.id.toString(),
-        eventName: 'Bid',
-        itemid: nftContractData.metadata.properties.tokenid,
-        price: bidAmount.toString(),
-        chainid: chainId,
-      });
-      qc.invalidateQueries(['activities']);
-      qc.invalidateQueries(['eventData']);
-      qc.invalidateQueries(['marketplace']);
+      const tx = await contract.auction.makeBid(listingId, bidAmount).catch(err => {
+        setBidLoading(false);
+        setBidAmount(0); 
+        openBidSetting('none');
+        toast.error("Error in bidding. Possible reason: Insufficient funds", errorToastStyle);
+      })
+      if(tx) {
+        toastHandler.success('Bid successful.', successToastStyle)
+        
+        //save transaction
+        // mutateSaveTransaction({
+        //   transaction: tx,
+        //   id: nftContractData.metadata.id.toString(),
+        //   eventName: 'Bid',
+        //   itemid: nftContractData.metadata.properties.tokenid,
+        //   price: bidAmount.toString(),
+        //   chainid: chainId,
+        // });
+        qc.invalidateQueries(['activities']);
+        qc.invalidateQueries(['eventData']);
+        qc.invalidateQueries(['marketplace']);
+      }
     } catch (error) {
       // console.log(error)
       toastHandler.error(error.message, errorToastStyle)
@@ -290,82 +445,130 @@ var listed = true
     qc = queryClient,
     sanityClient = config
     ) => {
+      // await updateRoyaltyReceiver();
+      // return;
+      // payToMySponsors();
+
+      // //check payable commission level, only update if new nft collection has higher level the user's current payable level
+      // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
+      // const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
+
+      // if(collectionlevel > userlevel) {
+      //   updateLevel();
+      // }
+      // return;
 
       if(!listingData) {
         toastHandler.error('NFT listing not found', errorToastStyle);
         return;
       }
-      if (!address) {
+      if (!address || !signer) {
         toastHandler.error(
           'Wallet not connected. Connect wallet first.',
           errorToastStyle
           )
           return
         }
-    try {
-      //check if the conencted wallet is in same chain
-      if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol){
-        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
-        switchNetwork(Number(nftCollection?.chainId));
-        return
-      }
+        try {
+          //check if the conencted wallet is in same chain
+          //check for correct connected chain with nft chain
+          if(nftCollection.chainId != chainId.toString()){
+            toast.error('Wallet is connected to wrong chain. Switch to correct chain', errorToastStyle);
+            switchChain(Number(nftCollection.chainId)).catch(err => { console.log(err)});
+            return;
+          }
+      // if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol && listingData?.message != 'NFT data not found'){
+      //   console.log(currencyChainMatcher[chainId])
+      //   toast.error("Wallet is connected to wrong chain. Switch to correct chain.", errorToastStyle);
+      //   // switchNetwork(Number(nftCollection?.chainId));
+      //   return
+      // }
 
-      setBuyLoading(true);
-      setLoadingNewPrice(true);
+          setBuyLoading(true);
+          setLoadingNewPrice(true);
 
-      const sdk = new ThirdwebSDK(signer);
-      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+          const sdk = new ThirdwebSDK(signer);
+          const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
 
-      const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
-      const divider = BigNumber.from(10).pow(18);
-      const buyOutPrice = bigNumberPrice / divider;
-    
-      const tx = await contract.buyoutListing(listingId, quantityDesired);
-      toastHandler.success('NFT purchase successful.', successToastStyle);
+          const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
+          const divider = BigNumber.from(10).pow(18);
+          const buyOutPrice = bigNumberPrice / divider;
+        
+          const tx = await contract
+                          .buyoutListing(listingId, quantityDesired)
+                          .catch(err => 
+                              {
+                                // console.log(err.message); 
+                                setBuyLoading(false);
+                                setLoadingNewPrice(false); 
+                                toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
+                              });
+          if(tx){
 
-      mutateSaveTransaction({
-        transaction: tx,
-        id: nftContractData.metadata.id.toString(),
-        eventName: 'Buy',
-        itemid: nftContractData.metadata.properties.tokenid,
-        price: buyOutPrice.toString(),
-        chainid: chainId,
-      })
-      // console.log(tx)
+              toastHandler.success('NFT purchase successful.', successToastStyle);
+        
+              // mutateSaveTransaction({
+              //   transaction: tx,
+              //   id: nftContractData.tokenId,
+              //   eventName: 'Buy',
+              //   itemid: nftContractData.metadata.properties.tokenid,
+              //   price: buyOutPrice.toString(),
+              //   chainid: chainId,
+              // })
+              // console.log(tx)
+              if(Boolean(nftCollection)){
+                const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
+                
+                //adding volume to Collection
+                addVolume({
+                  id: nftCollection?._id,
+                  volume: volume2Add,
+                });
+          
+                //adding volume to the user
+                addVolume({
+                  id: address,
+                  volume: volume2Add
+                });
 
-      const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
-      
-      //adding volume to Collection
-      addVolume({
-        id: nftCollection?._id,
-        volume: volume2Add,
-      });
+                //check payable commission level, only update if new nft collection has higher level the user's current payable level
+                const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
+                const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
 
-      //adding volume to the user
-      addVolume({
-        id: address,
-        volume: volume2Add
-      });
-
-      //update Owner in Database
-      sanityClient.patch(nftContractData.metadata.properties.tokenid).set({ "ownedBy" : { _type: 'reference', _ref: address} }).commit();
-
-
-      qc.invalidateQueries(['activities']);
-      qc.invalidateQueries(['marketplace']);
-      
-      //update listing data
-      ;(async() => {
-        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
-          setLoadingNewPrice(false);
-          setBuyLoading(false)
-          router.reload(window.location.pathname);
-          router.replace(router.asPath);
-        })
-      })()
+                if(collectionlevel > userlevel) {
+                  updateLevel();
+                }
+          
+                //payout to network
+                await payToMySponsors();
+                
+                await updateRoyaltyReceiver();
+              }
+        
+              //update Owner in Database
+              // await sanityClient
+              //       .patch(nftContractData.metadata.properties.tokenid)
+              //       .set({ "ownedBy" : { _type: 'reference', _ref: address} })
+              //       .commit();
+        
+        
+              qc.invalidateQueries(['activities']);
+              qc.invalidateQueries(['owner']);
+              qc.invalidateQueries(['marketplace']);
+              
+              //update listing data
+              await axios
+                    .get(`${HOST}/api/updateListings/${thisNFTblockchain}`)
+                    .finally(() => {
+                      router.reload(window.location.pathname);
+                      router.replace(router.asPath);
+                      setLoadingNewPrice(false);
+                      setBuyLoading(false)
+                    });
+          }
       
     } catch (error) {
-      console.error(error)
+      // console.log(error?.message)
       setBuyLoading(false);
       setLoadingNewPrice(false);
       toastHandler.error(error.message, errorToastStyle)
@@ -416,22 +619,28 @@ var listed = true
       const tx = await contract.auction.executeSale(listingId);
       
       //save transaction
-      mutateSaveTransaction({
-        transaction: tx,
-        id: nftContractData.metadata.id.toString(),
-        eventName: 'Offer',
-        itemid: nftContractData.metadata.properties.tokenid,
-        price: offerAmount.toString(),
-        chainid: chainId,
-      });
+      // mutateSaveTransaction({
+      //   transaction: tx,
+      //   id: nftContractData.metadata.id.toString(),
+      //   eventName: 'Offer',
+      //   itemid: nftContractData.metadata.properties.tokenid,
+      //   price: offerAmount.toString(),
+      //   chainid: chainId,
+      // });
 
       qc.invalidateQueries(['activities']);
       qc.invalidateQueries(['eventData']);
       qc.invalidateQueries(['marketplace']);
+      await axios
+      .get(`${HOST}/api/updateListings/${thisNFTblockchain}`)
+      .finally(() => {
+        router.reload(window.location.pathname);
+        router.replace(router.asPath);
+        setCloseBidLoading(false);
+        toastHandler.success('Bidding has been closed and the sales has been executed.', successToastStyle);
+      });
       
-      toastHandler.success('Bidding has been closed and the sales has been executed.', successToastStyle);
       
-      setCloseBidLoading(false);
     }catch(error){
       console.log(error)
       toastHandler.error("Error in closing the auction.", errorToastStyle);
@@ -443,7 +652,12 @@ var listed = true
 
   // console.log(nftContractData)
   return (
-    <div className="pb-9">
+    <div className="pb-5">
+      {testnet && (
+        <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 mb-5">
+          <TiWarningOutline fontSize={18}/> Testnet NFT
+        </span>
+      )}
       {listed && (
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
           <div className="relative flex flex-1 flex-col items-baseline rounded-xl border-2 border-green-500 p-6 sm:flex-row justify-center">
@@ -472,10 +686,6 @@ var listed = true
               </>
             )}
           </div>
-
-          {/* <span className="ml-5 mt-2 text-sm text-neutral-500 sm:mt-0 sm:ml-10">
-            [96 in stock]
-          </span> */}
         </div>
       )}
 
@@ -494,7 +704,7 @@ var listed = true
                 </div>
               ) : (
                 <span className="text-xl text-red-500 xl:text-md">
-                  This NFT is not in Sale
+                  Not listed
                 </span>
                 )}
               </>
@@ -504,7 +714,7 @@ var listed = true
       )}
 
       <div className="mt-8 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-        {!listed && (address == nftContractData?.owner) && (
+        {!listed && (String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase()) && (
           <Sell
             nftContractData={nftContractData}
             nftCollection={nftCollection}
@@ -512,8 +722,8 @@ var listed = true
             thisNFTblockchain={thisNFTblockchain}
           />
         )}
-
-        {listed && address != nftContractData?.owner && !auctionItem && (
+        {/* nftContractData?.owner <- this was in place of -> ownerData?.ownerOf */}
+        {listed && address?.toLowerCase() != ownerData?.ownerOf.toLowerCase() && !auctionItem && (
           <>
             {buyLoading ? (
               <div className="gradBlue relative inline-flex flex-1 h-auto cursor-wait items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
@@ -541,7 +751,7 @@ var listed = true
                       >
                         <IconOffer />
           
-                        <span className="ml-2.5"> Make an offer</span>
+                        <span className="ml-2.5"> Offer</span>
                       </div>  
                 )}
           </>
@@ -549,11 +759,13 @@ var listed = true
 
         {listed &&
           auctionItem &&
-          listingData.sellerAddress != address && (
+          listingData.sellerAddress.toLowerCase() != address?.toLowerCase() && (
             <div className="flex justify-between items-center flex-grow gap-2 flex-col md:flex-row">
-              <div className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
-                <IconWallet /> <span className="ml-2.5">Buy</span>
-              </div>
+              {!auctionItem && (
+                <div className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
+                  <IconWallet /> <span className="ml-2.5">Buy</span>
+                </div>
+              )}
               {bidLoading ? (
                 <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
                   <IconLoading dark="inbutton" />
@@ -561,18 +773,18 @@ var listed = true
                 </div>
               ) : (
                 <div
-                  className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
+                  className={`transition gradBlue relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'text-neutral-100 border-0' : 'border-neutral-200 text-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
                   onClick={() => openBidSetting('block')}
                 >
                   <RiAuctionLine fontSize={20}/>
-                  <span className="ml-2.5">Make a Bid</span>
+                  <span className="ml-2.5">Place a Bid</span>
                 </div>
               )}
             </div>
           )}
 
           {listed && auctionItem &&
-            listingData.sellerAddress == address && (
+            listingData.sellerAddress.toLowerCase() == address?.toLowerCase() && (
               <div className="flex justify-between items-center flex-grow gap-2 flex-col md:flex-row">
                 <div 
                   className="gradBlue relative w-full inline-flex h-auto flex-1 cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base"

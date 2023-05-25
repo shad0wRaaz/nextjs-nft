@@ -4,13 +4,14 @@ import toast from 'react-hot-toast';
 import React, { useState } from 'react'
 import { useRouter } from 'next/router';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import { FaCrown, FaRegCheckCircle } from 'react-icons/fa';
 import { IconLoading } from '../icons/CustomIcons';
 import { getImagefromWeb3 } from '../../fetchers/s3';
+import { createAwatar } from '../../utils/utilities';
 import { useMutation, useQueryClient } from 'react-query';
-import { TbTrendingDown, TbTrendingUp } from 'react-icons/tb';
+import { FaCrown, FaRegCheckCircle } from 'react-icons/fa';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import { useSettingsContext } from '../../contexts/SettingsContext';
+import { TbFlag3, TbTrendingDown, TbTrendingUp } from 'react-icons/tb';
 import { useAddress, useChainId, useSigner } from '@thirdweb-dev/react';
 import { addVolumeTraded, saveTransaction } from '../../mutators/SanityMutators';
 
@@ -33,10 +34,8 @@ const OfferSingle = ({
     const { setLoadingNewPrice, HOST } = useSettingsContext();
     const [isAccepting, setIsAccepting] = useState(false);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-    // const [isThisWinner, setIsThisWinner] = useState();
-    // console.log(winningBid)
 
-    const isThisWinningBid = isAuctionItem ? offer?.offeredBy.walletAddress == winningBid.buyerAddress ? true : false : false;
+    const isThisWinningBid = (isAuctionItem && winningBid && offer) ? offer?.buyerAddress == winningBid?.buyerAddress ? true : false : false;
 
     const acceptOffer = async (listingId, offeror, totalOfferAmount) => {
         try {
@@ -46,26 +45,30 @@ const OfferSingle = ({
           }
       
           setIsAccepting(true);
-          const previousOwner = selectedNft?.owner;
+          const previousOwner = selectedNft?.owners[0]?.ownerOf;
+          
+
           const sdk = new ThirdwebSDK(signer);
           const marketContract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+
           const tx = await marketContract.direct.acceptOffer(listingId.toString(), offeror);
-          // console.log(tx)
           //convert hex BigNumber in Decimal
           const offeredAmountInDollar = parseFloat(BigNumber.from(totalOfferAmount)/(BigNumber.from(10).pow(18)) * coinMultiplier);
+
+
       
-          mutateSaveTransaction({
-            transaction: tx,
-            id: selectedNft.metadata.id.toString(),
-            eventName: 'Buy',
-            itemid: selectedNft?.metadata?.properties?.tokenid,
-            price: offeredAmountInDollar.toString(),
-            chainid: chainId,
-          });
+          // mutateSaveTransaction({
+          //   transaction: tx,
+          //   id: selectedNft.metadata.id.toString(),
+          //   eventName: 'Buy',
+          //   itemid: selectedNft?.metadata?.properties?.tokenid,
+          //   price: offeredAmountInDollar.toString(),
+          //   chainid: chainId,
+          // });
             
           //adding volume to Collection
           addVolume({
-            id: metaDataFromSanity?.collection?._id,
+            id: metaDataFromSanity?._id,
             volume: offeredAmountInDollar,
           });
       
@@ -81,9 +84,8 @@ const OfferSingle = ({
             volume: offeredAmountInDollar
           });
       
-          toast.success("Offer acceptance request is in the queue. Page will automatically refresh once the request goes through.", successToastStyle);
-      
-          //update listing data
+          
+          // update listing data
           ;(async() => {
             setLoadingNewPrice(true);
             await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
@@ -91,6 +93,7 @@ const OfferSingle = ({
               router.replace(router.asPath);
               setIsAccepting(false);
               setLoadingNewPrice(false);
+              toast.success("Offer acceptance request is in the queue. Page will automatically refresh once the request goes through.", successToastStyle);
             })
           })()
           
@@ -102,31 +105,31 @@ const OfferSingle = ({
         setIsAccepting(false);
     }
 
-    const { mutate: mutateSaveTransaction } = useMutation(
-        ({ transaction, id, eventName, price, chainid, itemid }) =>
-          saveTransaction({
-            transaction,
-            id,
-            eventName,
-            price,
-            chainid,
-            itemid,
-          }),
-        {
-          onError: () => {
-            toast.error(
-              'Error saving transaction. Contact administrator.',
-              errorToastStyle
-            )
-          },
-          onSuccess: () => {
-            queryClient.invalidateQueries(['user']);
-            queryClient.invalidateQueries(['eventData']);
-            queryClient.invalidateQueries(['activities']);
-            queryClient.invalidateQueries(['marketplace']);
-          },
-        }
-      )
+    // const { mutate: mutateSaveTransaction } = useMutation(
+    //     ({ transaction, id, eventName, price, chainid, itemid }) =>
+    //       saveTransaction({
+    //         transaction,
+    //         id,
+    //         eventName,
+    //         price,
+    //         chainid,
+    //         itemid,
+    //       }),
+    //     {
+    //       onError: () => {
+    //         toast.error(
+    //           'Error saving transaction. Contact administrator.',
+    //           errorToastStyle
+    //         )
+    //       },
+    //       onSuccess: () => {
+    //         queryClient.invalidateQueries(['user']);
+    //         queryClient.invalidateQueries(['eventData']);
+    //         queryClient.invalidateQueries(['activities']);
+    //         queryClient.invalidateQueries(['marketplace']);
+    //       },
+    //     }
+    //   )
     
       const { mutate: addVolume } = useMutation(
         ({ id, volume }) =>
@@ -140,13 +143,13 @@ const OfferSingle = ({
 
   return (
     <tr>
-        <td className={`relative p-4 pl-8 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
-            <div className="rounded-full w-[48px] h-[48px] mr-0 border border-1 border-white overflow-hidden">
-              <img src={getImagefromWeb3(offer?.offeredBy?.web3imageprofile)} alt={offer?.offeredBy?.userName} className="object-cover h-full w-full"/>
+        <td className={`relative p-4 pl-10 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
+            <div className="rounded-full w-[30px] h-[30px] mr-0 border border-1 border-white overflow-hidden">
+              <img src={createAwatar(offer?.buyerAddress)} alt={offer?.buyerAddress} className="object-cover h-full w-full"/>
             </div>
             {isThisWinningBid ? (
-              <div className="absolute top-8 left-2">
-                <FaCrown color='#ffff00' />
+              <div className="absolute top-5 left-2">
+                <TbFlag3 className="text-green-500" fontSize={20} />
               </div>
             ) : null}
         </td>
@@ -155,7 +158,7 @@ const OfferSingle = ({
               <div className="flex items-center w-full flex-grow justify-center">
                 <div className="flex-grow">
                   <p className="text-sm">
-                      <a className="" href={`/user/${offer?.offeredBy.walletAddress}`}>{offer?.offeredBy.userName}</a>
+                      <a className="" href={`/user/${offer?.buyerAddress}`}>{offer?.buyerAddress?.slice(0,7)}...{offer?.buyerAddress?.slice(-7)}</a>
                   </p>
                   <p className="text-sm">
                       <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
@@ -164,7 +167,7 @@ const OfferSingle = ({
                 <div className="flex-grow text-right flex justify-end items-center text-sm gap-1">
                     {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
                     ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
-                    {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(4)}%
+                    {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(2)}%
                 </div>
               </div>
               {!isAuctionItem && (

@@ -1,44 +1,43 @@
-import Link from 'next/link'
 import moment from 'moment'
+import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
 import { CgUserList } from 'react-icons/cg'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { BsGrid, BsGrid3X3Gap, BsListTask } from 'react-icons/bs'
 import { useState, useEffect, useRef } from 'react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
-import { MdOutlineCollections, MdVerified } from 'react-icons/md'
+import { createAwatar } from '../../utils/utilities'
+import { useQuery, useQueryClient } from 'react-query'
 import NFTCardLocal from '../../components/NFTCardLocal'
 import noBannerImage from '../../assets/noBannerImage.png'
 import { useUserContext } from '../../contexts/UserContext'
-import { useAddress, useSigner } from '@thirdweb-dev/react'
 import noProfileImage from '../../assets/noProfileImage.png'
 import CollectionCard from '../../components/CollectionCard'
-import { getFullListings } from '../../fetchers/Web3Fetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import NFTCardExternal from '../../components/NFTCardExternal'
+import NFTCardLocalList from '../../components/NFTCardLocalList'
+import { MdOutlineCollections, MdVerified } from 'react-icons/md'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useActiveChain, useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
+import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
-
-const style = {
-  nftwrapper:
-    'container mx-auto gap-7 mt-[5rem] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
-  collectionWrapper:
-    'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center',
-  miniButton:
-    'py-1 px-4 rounded-full gradBlue text-white text-sm mt-1 cursor-pointer',
-}
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const Collection = () => {
-  const router = useRouter()
-  const signer = useSigner()
-  const address = useAddress()
-  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-  const bannerRef = useRef()
+  const router = useRouter();
+  const signer = useSigner();
+  const address = useAddress();
+  const chainid = useChainId();
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const { blockchainName } = useSettingsContext();
+  const bannerRef = useRef();
+  const activechain = useActiveChain();
+  const [listStyle, setListStyle] = useState('grid');
   const {
     myUser,
     queryCacheTime,
@@ -46,43 +45,76 @@ const Collection = () => {
     myCollections,
   } = useUserContext();
   const [showType, setShowType] = useState('collection');
+  const qc = useQueryClient();
+  const [compact, setcompact] = useState(true);
+
+  const style = {
+    nftwrapper:
+    `grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${compact ? 'grid-cols-6' : 'xl:grid-cols-4'} place-items-center`,
+    collectionWrapper:
+      'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center',
+    miniButton:
+      'py-1 px-4 rounded-full gradBlue text-white text-sm mt-1 cursor-pointer',
+  }
+console.log(blockchainName[chainid]);
 
   //get all active listings from all blockchain
-  const { data: fullListingData } = useQuery(['fulllistings'], getFullListings());
-
-  const { data: nftData, status: nftStatus } = useQuery(
-    ['createdItems', address],
-    getMintedNFTs(),
+  const { data: fullListingData } = useQuery(
+    ['fulllistings', blockchainName[chainid]], 
+    getFullListings(),
     {
-      enabled: Boolean(address),
-      onError: () => {
-        toast.error(
-          'Error fetching minted NFTs. Refresh and try again.',
-          errorToastStyle
-        )
-      },
+      enabled: Boolean(chainid),
       onSuccess: (res) => {
-        // console.log(res)
-      },
+        // console.log(res);
+      }
+    });
+
+  // const { data: nftData, status: nftStatus } = useQuery(
+  //   ['createdItems', address],
+  //   getMintedNFTs(),
+  //   {
+  //     enabled: Boolean(address) && false,
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching minted NFTs. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess: (res) => {
+  //       // console.log(res)
+  //     },
+  //   }
+  // )
+
+  const { data: mynfts, status: mynftstatus } = useQuery(
+    ['mynfts', address],
+    INFURA_getMyAllNFTs(activechain?.chainId),
+    {
+      enabled: Boolean(address) && Boolean(activechain),
+      onError:() => {},
+      onSuccess:(res) => 
+      {
+        // console.log(res);
+      }
     }
   )
 
-  const { data: ownedNftData, status: ownedNftStatus } = useQuery(
-    ['collectedItems', address],
-    getCollectedNFTs(),
-    {
-      enabled: Boolean(address),
-      onError: () => {
-        toast.error(
-          'Error fetching minted NFTs. Refresh and try again.',
-          errorToastStyle
-        )
-      },
-      onSuccess: (res) => {
-        // console.log(res)
-      },
-    }
-  )
+  // const { data: ownedNftData, status: ownedNftStatus } = useQuery(
+  //   ['collectedItems', address],
+  //   getCollectedNFTs(),
+  //   {
+  //     enabled: Boolean(address) && false,
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching minted NFTs. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess: (res) => {
+  //       // console.log(res)
+  //     },
+  //   }
+  // )
 
   const { data: favouriteNftData, status: favouriteNftStatus } = useQuery(
     ['favouriteItems', address],
@@ -106,6 +138,7 @@ const Collection = () => {
       router.push('/')
       return
     }
+
     return() => {
       //do nothing
     }
@@ -132,7 +165,7 @@ const Collection = () => {
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="nc-NcImage absolute inset-0">
             <img
-              src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : noBannerImage.src}
+              src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : `https://picsum.photos/1500/500/?blur=10`}
               className="h-full w-full object-cover"
               alt={myUser?.userName}
             />
@@ -140,19 +173,19 @@ const Collection = () => {
         </div>
 
         <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
-        <div
+          <div
               className={`flex flex-col rounded-3xl ${
                 dark ? 'darkGray/30' : 'bg-white/30'
               } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
             >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
-              <div className="w-40 sm:w-48 md:w-56 xl:w-60">
+              <div className="sm:w-full md:w-56 xl:w-60">
                 <div
                   className="nc-NcImage aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl"
                   data-nc-id="NcImage"
                 >
                   <img
-                    src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : noProfileImage.src }
+                    src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : createAwatar(address) }
                     className="h-full w-full object-cover"
                     alt="userprofile"
                   />
@@ -264,11 +297,9 @@ const Collection = () => {
                   <FiImage fontSize="30px" className="mb-2" />
                   <span className="text-sm">NFTs</span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {nftData?.length == 0 ? '0' : nftData?.length}
+                    {mynfts?.length == 0 ? '0' : mynfts?.length}
                   </span>
                 </div>
-
-                
 
                 <div
                   className={`${
@@ -306,11 +337,11 @@ const Collection = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-[5rem] flex justify-center">
+      <div className="container mx-auto mt-[5rem] flex justify-center px-5">
         <div
           className={`border ${
             dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-          } flex justify-between gap-2 overflow-hidden rounded-full p-1 shadow`}
+          } flex justify-between gap-2 overflow-scroll rounded-full p-1 shadow`}
         >
           <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
@@ -323,9 +354,22 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('collection')}
           >
-            <span className="inline-block pl-2">My Collections</span>
+            <span className="inline-block pl-2 w-max">My Collections</span>
           </div>
           <div
+            className={`cursor-pointer rounded-full p-4 px-8 ${
+              dark
+                ? ' hover:bg-slate-600 hover:text-neutral-100'
+                : ' hover:bg-sky-100 hover:text-black'
+            } ${
+              showType == 'myallnfts' &&
+              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+            }`}
+            onClick={() => setShowType('myallnfts')}
+          >
+            <span className="inline-block pl-2 w-max">My NFTs</span>
+          </div>
+          {/* <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
               dark
                 ? ' hover:bg-slate-600 hover:text-neutral-100'
@@ -336,7 +380,7 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('createdItems')}
           >
-            <span className="inline-block pl-2">Minted NFTs</span>
+            <span className="inline-block pl-2 w-max">Minted NFTs</span>
           </div>
           <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
@@ -349,8 +393,8 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('collectedItems')}
           >
-            <span className="inline-block pl-2">Collected NFTs</span>
-          </div>
+            <span className="inline-block pl-2 w-max">Collected NFTs</span>
+          </div> */}
           <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
               dark
@@ -362,12 +406,30 @@ const Collection = () => {
             }`}
             onClick={() => setShowType('favourites')}
           >
-            <span className="inline-block pl-1">Favourite NFTs</span>
+            <span className="inline-block pl-1 w-max">Liked NFTs</span>
           </div>
         </div>
       </div>
+      
 
-      <div className="container mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+        <div className="flex  justify-center mt-5 rounded-md overflow-hidden">
+            <div className="rounded-md flex overflow-hidden">
+              <div 
+                className={`p-2  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'} ${!compact && '!bg-slate-600'} cursor-pointer`}
+                onClick={() => setcompact(false)}>
+                  <BsGrid/>
+              </div>
+              <div 
+                className={`p-2  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'} ${compact && '!bg-slate-600'} cursor-pointer`}
+                onClick={() => setcompact(true)}>
+                  <BsGrid3X3Gap/>
+              </div>
+            </div>
+        </div>
+
+
+
+      <div className="container mx-auto lg:p-[8rem] lg:pt-8 lg:pb-0 p-[2rem]">
         {showType == 'collection' && (
           <>
             {myCollections && myCollections?.length > 0 && (
@@ -407,47 +469,28 @@ const Collection = () => {
           </div>
         )}
 
-        {showType == 'createdItems' &&
-          (nftData?.length > 0 ? (
-            <div className={style.nftwrapper}>
-              {Boolean(nftData) &&
-                nftData.map((nftItem, id) => (
-                  <NFTCardLocal
-                    key={id}
-                    nftItem={nftItem}
-                    listings={fullListingData}
-                  />
-                ))}
-            </div>
-          ) : (
-            <div className="w-full text-center">
-              <h2 className={style.errorTitle + ' mb-4'}>
-                No NFTs created yet.
-              </h2>
-              <Link href="/contracts">
-                <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center text-white">
-                  Mint NFT
-                </button>
-              </Link>
-            </div>
-          ))}
 
-        {showType == 'collectedItems' &&
-          (ownedNftData?.length > 0 ? (
+        {showType == 'myallnfts' &&
+          (mynftstatus == "success" && mynfts?.length > 0 ? (
             <div className={style.nftwrapper}>
-              {Boolean(ownedNftData) &&
-                ownedNftData.map((nftItem, id) => (
-                  <NFTCardLocal
+              {mynfts.map((nftItem, id) => (
+
+                  <NFTCardExternal
                     key={id}
+                    chain={blockchainName[chainid]}
                     nftItem={nftItem}
+                    metadata={nftItem.metadata}
                     listings={fullListingData}
+                    creator={{ _ref: address }}
+                    compact={compact}
                   />
+
                 ))}
             </div>
           ) : (
             <div className="flex w-full justify-center">
               {' '}
-              No NFT collected yet.
+              No NFTs yet.
             </div>
           ))}
 
@@ -464,11 +507,10 @@ const Collection = () => {
                 ))}
             </div>
           ) : (
-            <div className="flex w-full justify-center">No favourites yet.</div>
+            <div className="flex w-full justify-center">No Liked NFTs yet.</div>
           ))}
 
-        {ownedNftStatus == 'loading' ||
-          nftStatus == 'loading' ||
+        {mynftstatus == 'loading' ||
           (favouriteNftStatus == 'loading' && (
             <div className="flex items-center justify-center">
               <IconLoading />

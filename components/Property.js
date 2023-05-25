@@ -3,65 +3,72 @@ import { Disclosure } from '@headlessui/react'
 import React, { useEffect, useState } from 'react'
 import { useCollectionFilterContext } from '../contexts/CollectionFilterContext'
 
-const Property = ({propertyName, nftData}) => {
+const Property = ({traits, nftData}) => {
+    const [propertyKey, setPropertyKey] = useState();
     const [propertyValue, setPropertyValue] = useState(); //this is to show the list of available property
-    const { selectedPropertyValue, setSelectedPropertyValue } = useCollectionFilterContext(); //this is to store the user selected property
+    const { selectedProperties, setSelectedProperties } = useCollectionFilterContext(); //this is to store the user selected property
     
     useEffect(() => {
-        if(!nftData) return
-        const value = new Set();
-
-        nftData?.map(nftItem => {
-            nftItem?.metadata.properties.traits?.map(traits => {
-                if(traits.propertyKey == propertyName){
-                    value.add(traits.propertyValue);
-                }
-            })
+        if(!traits) return
+        
+        const propKey = new Set();
+        traits.map(tr => {
+            propKey.add(tr.propertyKey);
         })
-        setPropertyValue(Array.from(value));
+        setPropertyKey(Array.from(propKey))
+
         return() => {
             //clean up function, do nothing
         }
-    },[nftData])
+    },[traits])
 
-    const addRemoveFromSelection = (value) => {
-        if(!selectedPropertyValue.includes(value)){
+    const addRemoveFromSelection = (key, value) => {
+        if(!selectedProperties.find(tr => (tr.propertyKey == key && tr.propertyValue == value))){
             //if not present then add
-            setSelectedPropertyValue([...selectedPropertyValue, value]);
+            setSelectedProperties([...selectedProperties, { propertyKey: key, propertyValue: value}]);
         }else {
             //take out that property
-            const newArr = selectedPropertyValue.filter(item => item != value);
-            setSelectedPropertyValue(newArr);
+            const newArr = selectedProperties.filter(tr => !(tr.propertyKey == key && tr.propertyValue == value));
+            setSelectedProperties([...newArr]);
         }
     }
 
 
-
   return (
-    <Disclosure>
-        {({ open }) => (
-            <div className="mb-4">
-                <Disclosure.Button className="flex w-full justify-between rounded-lg bg-slate-600 px-4 py-4 text-left text-sm font-medium text-slate-100 hover:bg-slate-700 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
-                    <span>{propertyName}</span>
-                    <BsChevronUp
-                    className={`${
-                        open ? 'rotate-180 transform' : ''
-                    } transition h-5 w-5 text-slate-100`}
-                    />
-                </Disclosure.Button>
-                <Disclosure.Panel className="p-4 text-sm text-slate-200">
-                    <div className="flex flex-wrap text-xs gap-2">
-                        {propertyValue && propertyValue?.map(value => (
-                            <div className={`rounded-lg p-2 px-3 border text-center break-words cursor-pointer ${selectedPropertyValue.includes(value) ? 'bg-sky-500 border-sky-500' : 'border-slate-600 '}`}
-                                onClick={() => addRemoveFromSelection(value)}>
-                                {value}
+    <>
+        {propertyKey && propertyKey.map((key, index) => (
+            <Disclosure key={index}>
+                {({ open }) => (
+                    <div className="mb-4">
+                        <Disclosure.Button className="flex w-full justify-between rounded-lg bg-slate-600 px-4 py-4 text-left text-sm font-medium text-slate-100 hover:bg-slate-700 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                            <span>{key}</span>
+                            <BsChevronUp
+                            className={`${
+                                open ? 'rotate-180 transform' : ''
+                            } transition h-5 w-5 text-slate-100`}
+                            />
+                        </Disclosure.Button>
+                        <Disclosure.Panel className="p-4 text-sm text-slate-200">
+                            <div className="flex flex-wrap text-xs gap-2">
+                                {traits.filter(tr => tr.propertyKey == key).map((filteredtr, index) => (
+
+                                    <div key={index}
+                                        className={`rounded-lg p-2 px-3 border text-center break-words cursor-pointer 
+                                                    ${selectedProperties.findIndex(
+                                                        tr => tr.propertyKey == key && tr.propertyValue == filteredtr.propertyValue
+                                                        ) >= 0? 'bg-sky-500 border-sky-500' : 'border-slate-600 '}`}
+                                        onClick={() => addRemoveFromSelection(key, filteredtr.propertyValue)}>
+                                        {filteredtr.propertyValue}
+                                    </div>
+                                    
+                                ))}
                             </div>
-                        ))}
+                        </Disclosure.Panel>
                     </div>
-                </Disclosure.Panel>
-            </div>
-        )}
-    </Disclosure>
+                )}
+            </Disclosure>
+        ))}
+    </>
   )
 }
 

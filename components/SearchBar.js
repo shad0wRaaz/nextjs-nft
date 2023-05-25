@@ -1,56 +1,80 @@
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import { config } from '../lib/sanityClient'
 import { RiSearchLine } from 'react-icons/ri'
 import { Combobox, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { Fragment, useCallback, useMemo, useState } from 'react'
 import { useSettingsContext } from '../contexts/SettingsContext'
-import axios from 'axios'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 const style = {
-  comboMenu: `absolute mt-1 max-h-xl w-full overflow-auto rounded-xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm sm:w-[300px] searchOutputBox`,
+  comboMenu: `absolute max-h-[300px] md:max-h-[500px] lg:left-[-22px] lg:top-[40px] overflow-hidden mt-1 rounded-xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm w-[360px] md:w-[500px] lg:w-[550px] searchOutputBox`,
 }
 
 const SearchBar = () => {
-  const [selected, setSelected] = useState('Search Collections')
+  const [selected, setSelected] = useState('Search NFTs/Collections')
   const [query, setQuery] = useState('')
   const [collectionArray, setCollectionArray] = useState([])
   const router = useRouter()
   const { dark } = useThemeContext()
-  const { HOST } = useSettingsContext();
+  const { HOST, chainIcon, blockchainName } = useSettingsContext();
 
   //get all collection names from sanity
-  useMemo(() => {
+  useEffect(() => {
+    let searchData = [];
     ;(async () => {
 
-      let collections = await axios.get(`${HOST}/api/getallcollections`);
-      collections = JSON.parse(collections.data)
-      // console.log(collections)
-      setCollectionArray(collections)
+      //get collection details
+      await axios.get(`${HOST}/api/getallcollections`).then(collections => {
+        collections = JSON.parse(collections.data)
+        // console.log(collections)
+        // setCollectionArray(collections);
+        searchData.push(...collections);
+      }).catch(err => {
+        console.error(err);
+      });
     })()
+
+    ;(async () => {
+      //get nft details
+      await axios.get(`${HOST}/api/getAllNfts`).then(nfts => {
+        nfts = JSON.parse(nfts.data)
+
+        searchData.push(...nfts)
+      }).catch(err => {
+        console.error(err);
+      });
+    })()
+
+    setCollectionArray(searchData);
+
     return() => {
       //do nothing
     }
-  }, [])
+  }, []);
+  
+  let filteredCollection = '';
+  if(collectionArray){
+    filteredCollection =
+      query === ''
+        ? ''
+        : collectionArray.filter(
+            (collection) =>
+              collection.name
+                ?.toLowerCase()
+                .replace(/\s+/g, '')
+                .includes(query.toLowerCase().replace(/\s+/g, '')) ||
+              collection.contractAddress
+              ?.toLowerCase()
+              ?.replace(/\s+/g, '')
+              ?.includes(query.toLowerCase().replace(/\s+/g, '')) ||
+              collection._id
+                ?.toLowerCase()
+                ?.replace(/\s+/g, '')
+                ?.includes(query.toLowerCase().replace(/\s+/g, ''))
+          )
+  }
 
-  const filteredCollection =
-    query === ''
-      ? ''
-      : collectionArray.filter(
-          (collection) =>
-            collection.name
-              .toLowerCase()
-              .replace(/\s+/g, '')
-              .includes(query.toLowerCase().replace(/\s+/g, '')) ||
-            collection.contractAddress
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .includes(query.toLowerCase().replace(/\s+/g, '')) ||
-            collection._id
-              .toLowerCase()
-              .replace(/\s+/g, '')
-              .includes(query.toLowerCase().replace(/\s+/g, ''))
-        )
 
   return (
     <div
@@ -64,7 +88,7 @@ const SearchBar = () => {
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left  sm:text-sm">
             <Combobox.Input data-headlessui-state=""
-              className={`w-full rounded-full border-transparent bg-transparent bg-none py-2 pl-[1.4rem] pr-10 text-sm leading-5 outline-none ${
+              className={`w-full rounded-full border-transparent bg-transparent bg-none py-2 px-[1.4rem] text-sm leading-5 outline-none ${
                 dark
                   ? ' placeholder:text-neutral-500'
                   : 'placeholder:text-neutral-100'
@@ -74,7 +98,7 @@ const SearchBar = () => {
               onFocus={(event) => (event.target.value = '')}
               onBlur={(event) =>
                 event.target.value == ''
-                  ? (event.target.value = 'Search Collections')
+                  ? (event.target.value = 'Search NFTs/Collections')
                   : ''
               }
             />
@@ -96,75 +120,92 @@ const SearchBar = () => {
                   : style.comboMenu + ' bg-white text-black'
               }
             >
-              {filteredCollection.length === 0 && query !== '' ? (
-                <div
-                  className={`relative cursor-default text-center select-none bg-transparent bg-none p-4 ${
-                    dark ? ' text-neutral-100' : ' text-gray-700'
-                  } `}
-                >
-                  <span>Nothing found.</span>
-                  <button
-                    onClick={() => router.push('/search')}
-                    className={`mt-3 block rounded-lg w-full border ${
-                      dark
-                        ? ' border-slate-500 bg-slate-600 hover:bg-slate-500'
-                        : ' border-sky-200 bg-sky-100 hover:bg-sky-200'
-                    } p-2 text-[12px] `}
+              <div className="max-h-[300px] md:max-h-[500px] overflow-scroll">
+                {filteredCollection.length === 0 && query !== '' ? (
+                  <div
+                    className={`relative cursor-default text-center select-none bg-transparent bg-none p-4 ${
+                      dark ? ' text-neutral-100' : ' text-gray-700'
+                    } `}
                   >
-                    Use Advanced Search
-                  </button>
-                </div>
-              ) : (
-                filteredCollection.length > 0 &&
-                filteredCollection?.map((collectionArray) => (
-                  <Combobox.Option
-                    id={collectionArray.contractAddress}
-                    aria-haspopup="true"
-                    data-headlessui-state=""
-                    key={collectionArray.contractAddress}
-                    className={({ active }) =>
-                      `relative select-none rounded-lg py-2 pl-4 pr-4 ${
-                        active
-                          ? dark
-                            ? ' bg-slate-600 text-neutral-100'
-                            : 'bg-blue-100 text-gray-900'
-                          : dark
-                          ? ' text-neutral-100'
-                          : 'text-gray-900'
-                      }`
-                    }
-                    value={collectionArray ? collectionArray : ''}
-                  >
-                    {({ selected, active }) => (
+                    <span>Nothing found.</span>
+                    <button
+                      onClick={() => router.push('/search')}
+                      className={`mt-3 block rounded-lg w-full border ${
+                        dark
+                          ? ' border-slate-500 bg-slate-600 hover:bg-slate-500'
+                          : ' border-sky-200 bg-sky-100 hover:bg-sky-200'
+                      } p-2 text-[12px] `}
+                    >
+                      Use Advanced Search
+                    </button>
+                  </div>
+                ) : (
+                  filteredCollection.length > 0 &&
+                  filteredCollection?.map((collectionArray) => (
+
                       <a
-                        href={`/collections/${collectionArray._id}`}
+                        key={collectionArray._id}
+                        href={collectionArray.item == "collection" ? `/collection/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}` : `/nft/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}/${collectionArray.id}`}
                         className="cursor-pointer"
                       >
-                        {/* <img
-                          src={collectionArray.profileImage}
-                          className="inline-block h-[30px] w-[30px] rounded-full ring-2"
-                        /> */}
-                        <span
-                          className={`truncate pl-2 ${
-                            selected ? 'font-medium' : 'font-normal'
-                          }`}
-                        >
-                          {collectionArray.name}
-                        </span>
-                        {selected ? (
-                          <span
-                            className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                              active ? 'text-gray-900' : 'text-blue-100'
-                            }`}
-                          >
-                            {/* <CheckIcon className="h-5 w-5" aria-hidden="true" /> */}
-                          </span>
-                        ) : null}
-                      </a>
-                    )}
-                  </Combobox.Option>
-                ))
-              )}
+
+                    {/* <a
+                      key={collectionArray._id}
+                      href={`/${collectionArray.contractAddress ? 'collections' : 'nfts'}/${collectionArray._id}`}
+                      className="cursor-pointer"
+                    > */}
+                      <Combobox.Option
+                        id={collectionArray._id}
+                        aria-haspopup="true"
+                        data-headlessui-state=""
+                        key={collectionArray._id}
+                        className={({ active }) =>
+                          `relative select-none rounded-lg py-2 pl-4 pr-4 ${
+                            active
+                              ? dark
+                                ? ' bg-slate-600 text-neutral-100'
+                                : 'bg-blue-100 text-gray-900'
+                              : dark
+                              ? ' text-neutral-100'
+                              : 'text-gray-900'
+                          }`
+                        }
+                        value={collectionArray ? collectionArray : ''}
+                      >
+                        {({ selected, active }) => (
+                          <>
+                            <div className="rounded-md pr-0 inline-block -mr-1">
+                              {chainIcon[collectionArray.chainId]}
+                            </div>
+                            <span
+                              className={`truncate pl-2 ${
+                                selected ? 'font-medium' : 'font-normal'
+                              }`}
+                            >
+                              {collectionArray.name}
+                            </span>
+
+                            <span className={`absolute top-2 right-3 items-center rounded-md ${dark ? 'bg-slate-500' : 'bg-indigo-50 text-sky-700'} px-2 py-0 text-[10px] font-bold  ring-1 ring-inset ring-indigo-700/10`}>
+                              {collectionArray.item == "collection" ? 'COLLECTION' : 'NFT'}
+                            </span>
+                            {/* {selected ? (
+                              <span
+                                className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                                  active ? 'text-gray-900' : 'text-blue-100'
+                                }`}
+                              >
+                                N
+                              </span>
+                            ) : null} */}
+                          </>
+                            
+
+                        )}
+                      </Combobox.Option>
+                    </a>
+                  ))
+                )}
+              </div>
             </Combobox.Options>
           </Transition>
         </div>

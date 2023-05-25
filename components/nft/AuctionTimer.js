@@ -8,62 +8,70 @@ const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
   const [localListingData, setLocalListingData] = useState()
 
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
-    if (completed) {
-      //do something
-    } else {
-      return (
-        <div className="flex space-x-5 sm:space-x-10">
-          <div className="flex flex-col ">
-            <span className="text-2xl font-semibold sm:text-2xl">{days}</span>
-            <span className="sm:text-lg">Days</span>
-          </div>
-
-          <div className="flex flex-col ">
-            <span className="text-2xl font-semibold sm:text-2xl">{hours}</span>
-            <span className="sm:text-lg">hours</span>
-          </div>
-
-          <div className="flex flex-col ">
-            <span className="text-2xl font-semibold sm:text-2xl">
-              {minutes}
-            </span>
-            <span className="sm:text-lg">minutes</span>
-          </div>
-
-          <div className="flex flex-col ">
-            <span className="text-2xl font-semibold sm:text-2xl">
-              {seconds}
-            </span>
-            <span className="sm:text-lg">seconds</span>
+    if(completed){
+      window.location.reload(false);
+    }
+    return (
+      <div className="py-4">
+          <div className="space-y-5">
+            <div className="flex space-x-5 sm:space-x-10">
+              <div className="flex flex-col ">
+                <span className="text-2xl sm:text-4xl font-semibold">{days}</span>
+                <span className="sm:text-lg">Days</span>
+              </div>
+              
+              <div className="flex flex-col ">
+                <span className="text-2xl sm:text-4xl font-semibold">{hours}</span>
+                <span className="sm:text-lg">hours</span>
+              </div>
+              
+              <div className="flex flex-col ">
+                <span className="text-2xl sm:text-4xl font-semibold">{minutes}</span>
+                <span className="sm:text-lg ">minutes</span>
+              </div>
+              
+              <div className="flex flex-col ">
+                <span className="text-2xl sm:text-4xl font-semibold">{seconds}</span>
+                <span className="sm:text-lg">seconds</span>
+              </div>
+            </div>
           </div>
         </div>
-      )
-    }
+    )
   }
+  // console.log(new Date(parseInt(listingData.endTimeInEpochSeconds.hex, 16) * 1000))
+  // console.log(listingData)
+  // const sd = parseInt(listingData.startTimeInEpochSeconds.hex, 16) * 1000;
+  // const ed = parseInt(listingData.endTimeInEpochSeconds.hex, 16) * 1000;
+  // console.log(new Date((ed-sd) / 1000) )
+  // console.log('start time', new Date(parseInt(listingData.startTimeInEpochSeconds.hex, 16) * 1000))
+  // console.log(parseInt(listingData.endTimeInEpochSeconds.hex,16)*1000)
+  // console.log(Date.now())
+  // console.log('end time', new Date(parseInt(listingData.endTimeInEpochSeconds.hex,16)*1000 ))
   return (
     <div
-      className={`border-b py-9 ${
+      className={`py-9 text-center ${
         dark ? ' text-neutral-100' : ' text-neutral-800'
       }`}
     >
       {(Boolean(listingData) || Boolean(localListingData)) &&
         Boolean(selectedNft) && (
           <div className="space-y-5">
-            <div className="flex items-center space-x-2 ">
+            <div className="flex items-center justify-center relative">
+              <div class="relative">
+
               <CgSandClock
-                className="animate-pulse duration-1000"
+                className="animate-bounce duration-1000 absolute top-1 left-[-20px]"
                 fontSize="20px"
               />
               <span className="mt-1 leading-none">
-                {auctionItem ? 'Aution' : 'Listing'} ends in:
+                {auctionItem ? 'Auction' : 'Listing'} ends in:
               </span>
+              </div>
             </div>
-            <div className="flex space-x-5 sm:space-x-10">
-              {!auctionItem && Boolean(listingData.secondsUntilEnd) && (parseInt(listingData.secondsUntilEnd.hex,16) * 1000 > Date.now()) && (
-                <Countdown
-                  date={parseInt(listingData.secondsUntilEnd.hex, 16) * 1000}
-                  renderer={renderer}
-                />
+            <div className="flex space-x-5 sm:space-x-10 justify-center">
+              {auctionItem && (
+                <Countdown date={new Date(parseInt(listingData.endTimeInEpochSeconds.hex, 16) * 1000)} renderer={renderer} />
                 // <Countdown
                 //   date={
                 //     Date.now() +

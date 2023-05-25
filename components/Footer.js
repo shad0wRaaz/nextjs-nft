@@ -1,22 +1,17 @@
-import Link from 'next/link'
-import toast, { Toaster } from 'react-hot-toast'
-import React, { useState } from 'react'
-import { config } from '../lib/sanityClient'
-import {
-  FaFacebookF,
-  FaTelegramPlane,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedinIn,
-  FaYoutube,
-} from 'react-icons/fa'
-import { CgReadme } from 'react-icons/cg'
 import axios from 'axios'
-import { useThemeContext } from '../contexts/ThemeContext'
+import Link from 'next/link'
+import React, { useState } from 'react'
+import { CgReadme } from 'react-icons/cg'
+import { config } from '../lib/sanityClient'
+import nuvanftLogo from '../assets/nuvanft.png'
+import toast, { Toaster } from 'react-hot-toast'
 import { BsArrowRightShort } from 'react-icons/bs'
-import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { HiOutlineNewspaper } from 'react-icons/hi'
+import { BiGroup, BiHelpCircle } from 'react-icons/bi'
+import { useThemeContext } from '../contexts/ThemeContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
+import { FaFacebookF, FaTelegramPlane, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa'
+import Image from 'next/image'
 
 
 
@@ -88,7 +83,7 @@ const Footer = () => {
     bottomContainer:
       'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
     footerContainer:
-      'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t',
+      'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t flex-col md:flex-row',
     header: `text-lg mb-3 inline-flex items-center gap-1 mt-[40px] text-[${dark ? '#fff': '#1d1d1f'}]`,
     text: '',
     leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
@@ -96,7 +91,7 @@ const Footer = () => {
     socialItem:
       'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
     copyright: 'text-sm',
-    footerLinksWrapper: 'flex gap-3',
+    footerLinksWrapper: 'flex gap-3 mt-3 md:mt-0 flex-col md:flex-row',
     footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
     subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
     subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
@@ -115,55 +110,11 @@ const Footer = () => {
         style={{ marginTop: '120px', paddingTop: '40px' }}
       >
         <div className={style.bottomContainer}>
-          <div className={style.leftBox}>
-            <h2
-              className={style.header}>
-              <HiOutlineNewspaper/> Get Latest Updates
+        <div className={style.leftBox}>
+            <h2 className={style.header}>
+              <Image src={nuvanftLogo} width="90px" height="55px" />
             </h2>
-            <p className={style.text}>
-              Join our mailing list to stay in the loop with our newest feature
-              releases, NFT drops, and tips and tricks for navigating NuvaNFT.
-            </p>
-            <div className={style.subscribeWrapper}>
-              <input
-                type="text"
-                className={
-                  dark
-                    ? style.subscribe +
-                      ' border border-sky-400/20 bg-transparent'
-                    : style.subscribe
-                }
-                value={subscriberEmail}
-                onChange={(e) => setSubscriberEmail(e.target.value)}
-              />
-              <button className={style.subscribeButton} onClick={addSubscriber}>
-                Subscribe
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <h2 className={style.header}><BiHelpCircle/> Get Test Coins</h2>
-            <div className="flex flex-col gap-3 text-sm">
-              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
-              <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
-              <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
-              <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-blue-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
-            </div>
-          </div>
-
-          <div className={style.RightBox}>
-            <h2 className={style.header}><CgReadme/> Tutorials</h2>
-            <div className="flex flex-col gap-3 text-sm">
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">How to get started?</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create a Crypto Wallet</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
-            </div>
-            
-          </div>
-          <div className={style.RightBox}>
-            <h2 className={style.header}><BiGroup/> Join the Community</h2>
+            <p className="text-sm pb-4">Join our community to keep up to date with our latest work and announcements.</p>
             <div className={style.socialWrapper}>
               <Link href="https://t.me/metanuva">
                 <a target="_blank" rel="noopener noreferrer">
@@ -209,6 +160,61 @@ const Footer = () => {
               </Link>
             </div>
           </div>
+          
+
+          <div>
+            <h2 className={style.header}><BiHelpCircle/> Information</h2>
+            {/* <div className="flex flex-col gap-3 text-sm">
+              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
+              <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
+              <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
+              <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-blue-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
+            </div> */}
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/whatarenfts">What are NFTs?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nfttypes">NFT Types</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nftterms">NFT Terms</a></div>
+            </div>
+          </div>
+
+          <div className={style.RightBox}>
+            <h2 className={style.header}><CgReadme/> Tutorials</h2>
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">How to get started?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create a Crypto Wallet</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
+            </div>
+            
+          </div>
+
+          <div className={style.leftBox}>
+            <h2
+              className={style.header}>
+              <HiOutlineNewspaper/> Get Latest Updates
+            </h2>
+            <p className="text-sm pb-2">
+              Join our mailing list to stay in the loop with our newest feature
+              releases, NFT drops, and tips and tricks for navigating NuvaNFT.
+            </p>
+            <div className={style.subscribeWrapper}>
+              <input
+                type="text"
+                className={
+                  dark
+                    ? style.subscribe +
+                      ' border border-sky-400/20 bg-transparent'
+                    : style.subscribe
+                }
+                value={subscriberEmail}
+                onChange={(e) => setSubscriberEmail(e.target.value)}
+              />
+              <button className={style.subscribeButton} onClick={addSubscriber}>
+                Subscribe
+              </button>
+            </div>
+          </div>
+          
         </div>
       </div>
       <div

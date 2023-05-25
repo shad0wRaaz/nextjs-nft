@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { getImagefromWeb3 } from '../fetchers/s3'
 import { getFullListings } from '../fetchers/Web3Fetchers'
+import { useSettingsContext } from '../contexts/SettingsContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon, IconWallet } from './icons/CustomIcons'
 
 const chainIcon = {
@@ -17,6 +18,7 @@ const chainIcon = {
 
 const FeaturedItems = ({ item }) => {
     const [price, setPrice] = useState();
+    const { blockchainName } = useSettingsContext()
     const design = 1;
     //get all active listings from all blockchain
   const { data: fullListingData } = useQuery(
@@ -33,12 +35,13 @@ const FeaturedItems = ({ item }) => {
     <div className="rounded-xl">
       {design == 1 ? (
         <div className="featuredCard">
-          <a href={`/nfts/${item?._id}`}>
-            <div className="p-2 flex flex-wrap h-full">
+          <a href={`/nft/${blockchainName[item.collection.chainId]}/${item.collection.contractAddress}/${item?.id}`}>
+          {/* <a href={`/nfts/${item?._id}`}> */}
+            <div className="p-2 flex flex-wrap h-full rounded-md" style={{ backgroundImage: 'linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2)'}}>
               <img src={item?.nft?.metadata?.image} className="object-cover rounded-t-md shadow-md"/>
               <div className="flex-grow bg-[#000000dd] rounded-b-md min-h-[150px] shadow-md text-white p-5 space-y-3">
                 <p className="text-xl font-semibold text-left">{item?.nft?.metadata?.name}</p>
-                <div className="flex items-center gap-2 pt-1 !mt-0">
+                {/* <div className="flex items-center gap-2 pt-1 !mt-0">
                   <div className="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
                         <img
                           className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
@@ -47,18 +50,18 @@ const FeaturedItems = ({ item }) => {
                         />
                   </div>
                   <span className="text-sm">{item?.owner?.userName}</span>
-                </div>
-                  <div className="flex justify-between">
-                    <div className="text-sm rounded-xl inline-flex cursor-pointer gradBlue py-3 px-4 text-neutral-100 max-w-fit m-sm-auto items-center">
-                        <IconWallet /> <span className="pl-2">Buy Now</span>
-                    </div>
-                    {Boolean(price) && (
-                          <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 md:py-2 px-2.5 md:px-3.5 text-sm sm:text-base font-semibold ">
-                              <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
-                              <span className=" text-green-500 !leading-none">{price?.displayValue} {price?.symbol}</span>
-                          </div>
-                    )}
+                </div> */}
+                <div className="flex justify-between">
+                  <div className="text-sm rounded-xl inline-flex cursor-pointer gradBlue py-3 px-4 text-neutral-100 max-w-fit m-sm-auto items-center">
+                      <IconWallet /> <span className="pl-2">Buy Now</span>
                   </div>
+                  {Boolean(price) && (
+                        <div className="flex items-baseline border-2 border-green-500 rounded-lg relative py-1.5 md:py-2 px-2.5 md:px-3.5 text-sm sm:text-base font-semibold ">
+                            <span className="block absolute font-normal bottom-full translate-y-1 p-0.5 px-2 -mx-1 text-xs bg-green-500 text-white rounded-md">Price</span>
+                            <span className=" text-green-500 !leading-none">{price?.displayValue} {price?.symbol}</span>
+                        </div>
+                  )}
+                </div>
               </div>
             </div>
           </a>
@@ -74,7 +77,7 @@ const FeaturedItems = ({ item }) => {
                       <span className="text-sm text-black">{item?.likedBy?.length }</span>
                   </button>
                   <p className="text-xl font-bold  text-black">{item?.nft?.metadata?.name}</p>
-                  <div className="flex items-center gap-1 pt-1">
+                  {/* <div className="flex items-center gap-1 pt-1">
                     <div className="wil-avatar relative inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white dark:ring-neutral-900">
                           <img
                             className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
@@ -83,7 +86,7 @@ const FeaturedItems = ({ item }) => {
                           />
                     </div>
                     <span className="text-black text-sm">{item?.owner?.userName}</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center mt-3.5">
                     {Boolean(price) && (
                       <div className="pt-3">

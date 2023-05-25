@@ -1,8 +1,172 @@
 import axios from 'axios';
+import jwt from "jsonwebtoken";
 import { config } from '../lib/sanityClient'
 const settingDocId = "3cae3666-6292-4f72-b8b7-fba643c068bf";
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' : 'http://localhost:8080';
+const FAUCETHOST = process.env.NODE_ENV == "production" ? 'https://faucet.metanuva.com' : 'http://localhost:8889';
+
+export const updatePayableLevel = async (userid, level) => {
+  await config
+        .patch(userid)
+        .set({ payablelevel: level })
+        .commit();
+}
+
+export const updateCollectionReferral = async (collectionid, level1, level2, level3, level4, level5, payablelevel) => {
+await config
+      .patch(collectionid)
+      .set({
+        referralrate_one: Number(level1),
+        referralrate_two: Number(level2),
+        referralrate_three: Number(level3),
+        referralrate_four: Number(level4),
+        referralrate_five: Number(level5),
+        payablelevel: Number(payablelevel),
+      })
+      .commit();
+}
+export const activateReferral = async(address) => {
+  return await config
+                .patch(address)
+                .set({ refactivation: true})
+                .commit();
+}
+
+export const isReferralActivated = async(address) => {
+  const query = `*[_type == "users" && walletAddress == "${address}"]{refactivation, walletAddress}`;
+  const result = await config.fetch(query);
+  if(result){
+    return result[0];
+  }
+  return null;
+}
+
+export const saveReferrer = async(username, sponsor, address) => {
+  
+  await config
+        .patch(address)
+        .set({ 
+          userName: username, 
+          referrer: { 
+            _type: 'reference', _ref: sponsor 
+          },
+        })
+        .commit();
+
+  //add this user in sponsor's direct referrals
+  await config
+          .patch(sponsor)
+          .setIfMissing({ directs: [] })
+          .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
+          .commit({ autoGenerateArrayKeys: true });
+}
+
+export const sendReferralCommission = async (receivers, address) => {
+  //first remove all referrers whose referral activation is not done yet; no need to send any tokens
+  try{
+    const unresolved = receivers.map(async r => await isReferralActivated(r.receiver));
+    const resolved = await Promise.all(unresolved);
+
+    let eligibleReceivers = resolved.filter(receivers => receivers.refactivation == true);
+    eligibleReceivers = eligibleReceivers.map(r => r.walletAddress);
+      
+    const finalReferrals = receivers.filter(v => eligibleReceivers.indexOf(v.receiver) !== -1 );
+
+    const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
+
+    const tx = await axios.post(
+      `${FAUCETHOST}/api/nft/sendreferralcommissionsinbnb`,
+      {
+        receivers: finalReferrals,
+        secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    ).catch(err => {console.log(err)})
+    // console.log(tx)
+    if(!tx || !Boolean(tx.data.length)) return;
+    
+    //saving all transaction in database;
+    Promise.all(
+      tx.data.map(
+        async (transaction, index) => 
+          {
+            const doc = {
+              _type: 'referrals',
+              _id: transaction.transactionHash,
+              txid: transaction.transactionHash,
+              referee: { _type: 'reference', _ref: address},
+              to: { _type: 'reference', _ref: finalReferrals[index].receiver},
+              amount: finalReferrals[index].token,
+          }
+          await config.createIfNotExists(doc);
+    }));
+    //send notification to all receivers as well
+      const notificationReceivers = finalReferrals.map(f => 
+        {
+          const r = { _type: 'reference', _ref: f.receiver };
+          return r;
+        });
+      const notificationObj = {
+        address, 
+        type: "TYPE_NINE", 
+        followers: notificationReceivers,
+        description: 'You have received referral bonus.',
+        eventTitle: 'Referral Bonus',
+      }
+      sendNotificationFrom({...notificationObj});
+
+  }catch(err){
+    console.error(err);
+  }
+}
+
+export const sendToken = async(referee, recipient) => {
+  //check if the recipient is qualified or not;
+  try{
+    const isActivated = await isReferralActivated(recipient);
+    if(isActivated.length > 0 && isActivated.refactivation == true){
+
+      const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
+
+      const tx = await axios
+            .post(`${FAUCETHOST}/api/nft/sendTokens`, 
+            {
+              address: recipient,
+              secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
+            }, 
+            {
+              headers: 
+              {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              }
+            }).catch(err => console.log(err));
+
+        //save transaction in db
+        const doc = {
+          txid: tx.data.transactionHash,
+          to: {_ref: recipient, _type: 'reference'},
+          referee: {_ref: referee, _type: 'reference'},
+          amount: 20,
+          _type: 'referrals'
+        }
+
+        await config.create(doc);
+        // token sent boolean set to true, so that it wont send again and again.
+        await config.patch(referee)
+                    .set({ tokensent: true })
+                    .commit();
+    }
+  }catch(error){
+    
+  }
+}
 
 export const saveFollower = async ({ creator, admirer }) => {
   // return await config
@@ -76,7 +240,10 @@ export const sendNotificationFrom = async ({
   }else if(type == 'TYPE_EIGHT'){
     //this is burn NFT
   }
-  
+  else if(type == 'TYPE_NINE'){
+    //this is referral
+    event = 'Referral bonus received.'
+  }
 
   if(followers != null){
     const to = [...followers]
@@ -109,6 +276,7 @@ export const sendNotificationFrom = async ({
 }
 
 export const changeNFTOwner = async ({ address }) => {}
+
 export const saveTransaction = async ({
   transaction,
   id,
@@ -131,7 +299,7 @@ export const saveTransaction = async ({
     chainId: chainid,
     dateStamp: new Date(),
   }
-  return await config.createIfNotExists(doc)
+  return await config.createIfNotExists(doc);
 }
 export const changeShowUnlisted = async ({ collectionid, showUnlisted }) => {
   return await config
@@ -143,19 +311,33 @@ export const addVolumeTraded = async ({
   id,
   volume,
 }) => {
-  return await config
-    .patch(id)
-    .inc({ volumeTraded: volume })
-    .commit();
+  //need to use case insensitive id for patching as infura data gives lowercase addresses
+
+  const caseinsensitive_query = `*[lower(_id) == "${id}"]`;
+  const params = { _id: id}
+  const documents = await config.fetch(caseinsensitive_query, params);
+
+  if(documents.length > 0){
+    const caseSensitiveId = documents[0]?._id;
+    return await config
+      .patch(caseSensitiveId)
+      .inc({ volumeTraded: volume })
+      .commit();
+  }
 }
 export const addBlockedNft = async ({id}) => {
-  await config
-        .patch(settingDocId)
-        .setIfMissing({ blockednfts: [] })
-        .insert('before', 'blockednfts[0]', [{ _ref: id }])
-        .commit({ autoGenerateArrayKeys: true })
-        .then(() => { return true; })
-        .catch(() => { return false; })
+  //check if already present or not, add nft only if not present
+  const doc = await config.getDocument(settingDocId);
+  const existingRefs = doc.blockednfts || [];
+  if(!existingRefs.some(ref => ref._ref === id)){
+    await config
+          .patch(settingDocId)
+          .setIfMissing({ blockednfts: [] })
+          .insert('before', 'blockednfts[0]', [{ _ref: id }])
+          .commit({ autoGenerateArrayKeys: true })
+          .then(() => { return true; })
+          .catch(() => { return false; })
+  }
 }
 export const removeBlockedNft = async({id}) => {
   const nfttoremove = [`blockednfts[_ref == "${id}"]`];
@@ -164,7 +346,11 @@ export const removeBlockedNft = async({id}) => {
         .unset(nfttoremove)
         .commit()
         .then(() => { return true; })
-        .catch(() => { return false; })
+        .catch(() => { return false; });
+  
+  //update blocked lists in server
+  await axios.get(`${HOST}/api/updateblockeditems`);
+
 }
 export const addCategory = async({categoryname, image}) => {
   if(image){

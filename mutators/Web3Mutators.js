@@ -14,12 +14,9 @@ export const updateCollectionMetaData = async (newCollectionData, signer, profil
     });
 }
 
-export const updatePayment = async (collection, signer, basisPoints, recipient) => {
-    
-    const sdk = new ThirdwebSDK(signer);
-    const contract = await sdk.getContract(collection[0].contractAddress, "nft-collection");
+export const updatePayment = async (collectionContract, basisPoints, recipient) => {
 
-    await contract.royalties.setDefaultRoyaltyInfo({
+    await collectionContract.royalties.setDefaultRoyaltyInfo({
         seller_fee_basis_points: basisPoints * 100,
         fee_recipient: recipient
     })

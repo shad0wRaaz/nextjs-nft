@@ -4,9 +4,7 @@ const UserContext = createContext()
 
 export function UserProvider({ children }) {
   const [myUser, setMyUser] = useState();
-
   const [myCollections, setMyCollections] = useState([]);
-
   const [queryCacheTime, setQueryCacheTime] = useState(1000 * 60 * 60);
   const [queryStaleTime, setQueryStaleTime] = useState(1000 * 60 * 60);
   

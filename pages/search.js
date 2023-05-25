@@ -842,14 +842,13 @@ const search = ({category}) => {
               nextClassName={`px-3 text-sm rounded-full flex items-center justify-center border w-[100px] cursor-pointer ${dark ? 'hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'}`}
               activeClassName="bg-sky-600 p-3 text-sky-100 hover:bg-sky-600 border"
               pageLinkClassName=""
-              pageClassName={`flex items-center justify-center rounded-full border w-[50px] h-[50px]  ${dark ? 'text-slate-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'} cursor-pointer`}
+              pageClassName={`flex items-center justify-center rounded-full border w-[50px] h-[50px]  ${dark ? 'text-white-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'} cursor-pointer`}
             />
 
             {/* Selection of items per page */}
             <Menu
               as="div"
-              className="relative mt-4 flex justify-center text-left"
-            >
+              className="relative mt-4 flex justify-center text-left">
               {({ open }) => (
                 <>
                   <div>

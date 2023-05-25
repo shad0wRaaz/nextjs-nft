@@ -6,7 +6,8 @@ import { BiChevronUp } from 'react-icons/bi'
 import EventItem from './itemActivity/EventItem'
 import { HiOutlineLightningBolt } from 'react-icons/hi'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { getActivities } from '../../fetchers/SanityFetchers'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import { INFURA_getNFTTransfers } from '../../fetchers/Web3Fetchers'
 
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
@@ -24,16 +25,17 @@ const style = {
 }
 
 
-const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) => {
+const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) => {
   
   const [toggle, setToggle] = useState(false)
-  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const {blockchainIdFromName} = useSettingsContext();
 
   const { data: activityData, status } = useQuery(
-    ['activities', metaDataFromSanity?._id],
-    getActivities(metaDataFromSanity?._id),
+    ['activities', blockchainIdFromName[thisNFTblockchain], selectedNft.contract, selectedNft.tokenId],
+    INFURA_getNFTTransfers(),
     {
-      enabled: Boolean(metaDataFromSanity?._id),
+      enabled: Boolean(thisNFTblockchain) && Boolean(selectedNft),
       onError: () => {
         toast.error('Cannot fetch Item activities.', errorToastStyle)
       },
@@ -129,7 +131,7 @@ const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) =>
               {status == 'success' && activityData.length == 0 && (
                 <tr>
                   <td colSpan="5" className="p-4 text-center">
-                    <span className="text-sm">No activities recorded.</span>
+                    <span className="text-sm">No activities yet.</span>
                   </td>
                 </tr>
               )}
@@ -137,7 +139,7 @@ const ItemActivity = ({ collectionAddress, selectedNft, metaDataFromSanity }) =>
               {status == 'success' && activityData.length > 0 && (
                 <>
                   {activityData?.map((event, id) => (
-                    <EventItem key={id} event={event} />
+                    <EventItem key={id} event={event} thisNFTblockchain={thisNFTblockchain}/>
                   ))}
                 </>
               )}

@@ -49,10 +49,10 @@ const CollectionCard = ({
   chainId,
 }) => {
   const { dark } = useThemeContext();
-  const { currencyByChainId } = useSettingsContext();
+  const { currencyByChainId, blockchainName } = useSettingsContext();
 
   return (
-    <Link href={`/collections/${id}`}>
+    <Link href={`/collection/${blockchainName[chainId]}/${contractAddress}`}>
       <div
         className={
           dark
@@ -123,7 +123,7 @@ const CollectionCard = ({
             <Link href={`/user/${creatorAddress}`}>
               <span className=" cursor-pointer hover:text-sky-500">
                 {' '}
-                {creator}
+                {creator == 'Unnamed' ? <span className="font-bold">{creatorAddress.slice(0,5) + '...' + creatorAddress.slice(-5)}</span> : creator}
               </span>
             </Link>
             {verified ? <GoVerified className='text-sky-500'/> : ''}

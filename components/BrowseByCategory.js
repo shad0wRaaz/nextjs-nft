@@ -9,7 +9,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext';
 
 const style = {
-  wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pt-0 lg:pb-0 overflow-hidden',
+  wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pb-0 overflow-hidden',
   container: 'text-white browseWrapper p-[2rem] md:p-[4rem] rounded-3xl ',
   title: `font-bold text-[2rem] flex justify-between items-center text-center mb-[2rem]`,
   contentWrapper:

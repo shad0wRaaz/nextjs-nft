@@ -13,6 +13,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { getNotifications } from '../fetchers/SanityFetchers'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { changeNotificationReadStatus, deleteNotifications } from '../mutators/SanityMutators'
+import { createAwatar } from '../utils/utilities'
 
 const style = {
   background: `icon hover:bg-neutral-100 p-2 pb-0 rounded-xl cursor-pointer z-20`,
@@ -72,19 +73,17 @@ const Notifications = () => {
 
   return (
     <>
-      <div
-        className={
+      <div>
+        <Menu as="div" className="relative">
+          <div className={
           dark
             ? style.background + ' hover:bg-slate-800'
             : style.background + ' hover:bg-neutral-100 text-white hover:text-black'
-        }
-      >
-        <Menu as="div" className="relative">
-          <div>
+        }>
             <Menu.Button>
               <IconBell />
               {isNotification && (
-                <div className="absolute -top-2 -right-2">
+                <div className="absolute -top-0 -right-0">
                   <span className="flex h-3 w-3">
                     <span
                       className={`absolute inline-flex h-full w-full animate-ping rounded-full ${
@@ -122,8 +121,8 @@ const Notifications = () => {
                 <h3 className="mb-2 pb-2 text-xl font-bold">Notifications</h3>
                 <div>
                   <div
-                    className={`rounded-lg p-2 ${
-                      dark ? ' hover:bg-slate-600' : ' hover:bg-neutral-100'
+                    className={`rounded-lg p-2 cursor-pointer ${
+                      dark ? ' hover:bg-red-500' : ' hover:bg-red-500 hover:text-white'
                     } `}
                     onClick={() => deleteAllNotifications(myUser.walletAddress)}
                   >
@@ -144,7 +143,10 @@ const Notifications = () => {
                         <Menu.Item>
                           <a
                             id={id}
-                            href={notification.type == "TYPE_SIX" ? `/nfts/${notification.item?._ref}` : notification.type == "TYPE_ONE" ? `/collections/${notification.item?._ref}` : '#'}
+                            href={
+                              notification.type == "TYPE_SIX" ? `/nfts/${notification.item?._ref}` : 
+                              notification.type == "TYPE_ONE" ? `/collections/${notification.item?._ref}` : 
+                              notification.type == "TYPE_NINE" ? `/user/referrals` : '#'}
                             onClick={() => markedRead(notification._id)}
                             className={`relative flex rounded-lg p-2 pr-4 transition duration-150 ease-in-out ${
                               dark
@@ -153,18 +155,19 @@ const Notifications = () => {
                             } focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50`}
                           >
                             <div className="wil-avatar relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-gray-900 shadow-inner ring-1 ring-white sm:h-12 sm:w-12">
-                              {notification?.from.web3imageprofile ? (
                               <img
                                 className="absolute inset-0 h-full w-full rounded-full object-cover"
-                                src={getImagefromWeb3(notification?.from.web3imageprofile)}
+                                src={Boolean(notification?.from.web3imageprofile) ? getImagefromWeb3(notification?.from.web3imageprofile) : createAwatar(notification?.from.walletAddress)}
                                 alt="User"
-                              />) : (
-                                <GoReport fontSize={23}/>
-                              )}
+                              />
                             </div>
                             <div className="ml-3 space-y-1 sm:ml-4">
-                              <p className="text-sm font-medium ">
-                                {notification?.from?.userName}
+                              <p className="font-medium ">
+                                {notification?.from?.userName != "Unnamed" ? 
+                                notification?.from?.userName : 
+                                <>
+                                  {notification?.from?.walletAddress.slice(0,8)}...{notification?.from?.walletAddress.slice(-8)}
+                                </>}
                               </p>
                               <p className="text-xs sm:text-sm">
                                 {notification.event}

@@ -84,23 +84,23 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     ['eventData', listingData?.id],
     getMarketOffers(thisNFTMarketAddress, thisNFTblockchain),
     {
+      enabled: Boolean(listingData?.id),
       onError: (err) => {
         // console.log(err)
       },
       onSuccess: async(res) => {
-        const unresolved = res?.map(async(offer) => {
-          const user = await getUser(offer.buyerAddress);
-          return {...offer, offeredBy: {...user}}
-        });
-        if(unresolved){
-          const events = await Promise.all(unresolved);
-          setMarketOffer(events);
-        }
+        // const unresolved = res?.map(async(offer) => {
+        //   const user = await getUser(offer.buyerAddress);
+        //   return {...offer, offeredBy: {...user}}
+        // });
+        // if(unresolved){
+        //   const events = await Promise.all(unresolved);
+        //   setMarketOffer(events);
+        // }
       }
     }
   )
 
- 
 
 useEffect(() => {
   if (!listingData) return
@@ -123,7 +123,6 @@ useEffect(() => {
   }
 }, [listingData, coinPrices])
 
-  // console.log(listingData)
 
   return (
     <div
@@ -136,7 +135,7 @@ useEffect(() => {
       <div 
         className={
         dark
-          ? style.title + ' bg-slate-800 hover:bg-slate-700'
+          ? style.title + ' bg-slate-800 hover:bg-slate-700 border-b border-slate-700'
           : style.title + ' bg-neutral-100 hover:bg-neutral-200 '
         }
         onClick={() => setToggle(!toggle)}>
@@ -144,7 +143,7 @@ useEffect(() => {
             <span className={style.titleIcon}>
               <FiTag fontSize={20}/>
             </span>
-            {isAuctionItem ? 'Active Bids' : 'Item Offers'}
+            {isAuctionItem ? 'Items Bids' : 'Item Offers'}
         </div>
         <div className={style.titleRight}>
             <BiChevronUp
@@ -159,14 +158,14 @@ useEffect(() => {
       {!toggle && (
         <table className="w-full max-h-[28rem] overflow-scroll pb-8">
           <tbody>
-            {!listingData || eventData?.length == 0 && (
+            {!listingData || eventData?.length == 0 || !eventData && (
               <tr>
                 <td colSpan="5" className="p-4 text-center">
-                  <span className="text-md">
-                    {(eventDataLoading == "success" && eventData?.length == 0 ) ? 'No offers found' : '' } 
+                  <span className="text-sm">
+                    {((eventDataLoading == "success" || eventDataLoading == "error") && !eventData) ? 'No offers found' : '' } 
                     {(eventDataLoading == "loading") && (
                       <div className="flex gap-1 justify-center items-center">
-                        <IconLoading /> Loading
+                        {dark? <IconLoading dark="inbutton"/> : <IconLoading/>} Loading
                       </div>
                     )}
                     </span>
@@ -174,7 +173,7 @@ useEffect(() => {
               </tr>
             )}
 
-            {listingData && marketOffer?.length > 0 && marketOffer?.map((offer, id) => (
+            {listingData && eventData?.length > 0 && eventData?.map((offer, id) => (
               <OfferSingle 
                 key={id} 
                 offer={offer} 

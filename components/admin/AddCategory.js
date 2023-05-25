@@ -73,7 +73,7 @@ const AddCategory = () => {
     const handleRemove = async(catname) => {
         removeNewCategory({categoryname: catname});
     }
-console.log(addStatus)
+
   return (
     <div className="space-y-3">
         <div className={`rounded-lg border ${dark ? 'border-slate-600 bg-slate-600 text-neutral-100' : 'border-neutral-200 bg-neutral-100'} p-4`}>

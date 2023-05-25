@@ -11,13 +11,20 @@ async (address) => {
   const res = await config.fetch(query)
   return res[0]
 }
-
+export const checkReferralUser = 
+async(address) => {
+  const query = `*[_type == "users" && walletAddress == "${address}"] {
+    walletAddress, _createdAt
+  }`;
+const res = await config.fetch(query)
+return res;
+}
 export const checkUsername = 
 async (username, walletaddress) => {
-console.log(username, walletaddress)
+// console.log(username, walletaddress)
   const query = `*[_type == "users" && userName == "${username}"]`
   const res = await config.fetch(query);
-  console.log(res[0])
+
   if(res.length > 0) {
     if (res[0].walletAddress != walletaddress){
       return true;
@@ -44,7 +51,7 @@ export const checkEmailVerification =
 async (id, randomCode) => {
   const query = `*[_type == "users" && _id == "${id}"]`
   const res = await config.fetch(query);
-  console.log(res[0])
+
   if(res.length > 0){
     if(res[0].verified == true){
       // console.log('already verified')
@@ -77,7 +84,7 @@ export const getUserContinuously =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "users" && walletAddress == "${address}"] {
+    const query = `*[_type == "users" && walletAddress match "${address}"] {
       web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt, verified
     }`
     const res = await config.fetch(query)
@@ -86,9 +93,10 @@ export const getUserContinuously =
 
 export const getReportActivities = 
 (itemid) => async({queryKey}) => {
-  const[_, collectionAddress] = queryKey
-  const query = `*[_type == "notifications" && item._ref == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`
-  const res = await config.fetch(query)
+
+  const[_, collectionAddress] = queryKey;
+  const query = `*[_type == "notifications" && item._ref == "${itemid}"] {_createdAt, eventTitle, description, from->} | order(_createdAt desc)`;
+  const res = await config.fetch(query);
   return res
 }
 
@@ -124,7 +132,18 @@ export const getNFTCollectionsByCategory =
     const result = await axios.get(`${HOST}/api/getNFTCollectionsByCategory/${categoryName}`)
     return result?.data
   }
+export const getCollectionReferralSettings = 
+() => async({ queryKey }) =>{
+  try{
+    const [_, id] = queryKey
+    const query = `*[_type == "nftCollection" && _id == "${id}"]{referralrate_one, referralrate_two, referralrate_three, referralrate_four, referralrate_five, payablelevel}`
+    const res = await config.fetch(query);
+    return res[0];
 
+  }catch(err){
+    return null;
+  }
+}
 export const getMyCollections =
   () =>
   async ({ queryKey }) => {
@@ -153,7 +172,38 @@ export const getTopTradedNFTCollections =
   const collections = await axios.get(`${HOST}/api/topTradedCollections/${blockchain}`);
     return JSON.parse(collections.data);
 }
+export const getNewNFTCollection =
+  (chainId) =>
+  async ({ queryKey }) => {
+    const [_, collectionid] = queryKey;
+    const query = `*[_type == "nftCollection" && contractAddress == "${collectionid}" && chainId == "${chainId}"] {
+        _id,
+        web3imageprofile,
+        web3imagebanner,
+        volumeTraded,
+        createdBy,
+        chainId,
+        revealtime,
+        contractAddress,
+        "creator": createdBy->,
+        name, floorPrice,
+        "allOwners": owners[]->,
+        description,
+        showUnlisted,
+        external_link,
+        category,
+        referralrate_one,
+        referralrate_two,
+        referralrate_three,
+        referralrate_four,
+        referralrate_five,
+        payablelevel,
+      }`;
+    const res = await config.fetch(query)
+    return res[0];
+  }
 
+//this is old way
 export const getNFTCollection =
   () =>
   async ({ queryKey }) => {
@@ -165,6 +215,7 @@ export const getNFTCollection =
         volumeTraded,
         createdBy,
         chainId,
+        revealtime,
         contractAddress,
         "creator": createdBy->,
         name, floorPrice,
@@ -173,6 +224,12 @@ export const getNFTCollection =
         showUnlisted,
         external_link,
         category,
+        referralrate_one,
+        referralrate_two,
+        referralrate_three,
+        referralrate_four,
+        referralrate_five,
+        payablelevel,
       }`
     const res = await config.fetch(query)
     return res
@@ -232,9 +289,10 @@ export const getBlockedItems =
 
 export const getCoinPrices = 
 () => async () => {
-  const query = `*[_type == "settings"]{ethprice, maticprice, bnbprice, avaxprice, _updatedAt}`
-  const res = await config.fetch(query)
-  return res
+  // const query = `*[_type == "settings"]{ethprice, maticprice, bnbprice, avaxprice, _updatedAt}`
+  // const res = await config.fetch(query)
+  const result = await axios.get(`${HOST}/api/getcoinsprice`);
+  return result.data;
 }
 
 export const getAllNFTsforDashboard = 
@@ -296,4 +354,63 @@ export const getTotals =
   const res = { totalNfts, totalCollections, totalUsers, topActiveUsers, topCollections, popularNfts, platformfee: platformfee[0]};
 
   return res
+}
+
+export const getMyNetwork = (address) => async() => {
+  const query = `*[_type == "users" && referrer->walletAddress == "${address}"]{
+    userName, walletAddress, web3imageprofile,
+    "level1Friends": directs[]->{
+      userName, walletAddress, web3imageprofile,
+      "level2Friends": directs[]->{
+        userName, walletAddress, web3imageprofile,
+        "level3Friends": directs[]->{
+          userName, walletAddress, web3imageprofile,
+          "level4Friends": directs[]->{
+            userName, walletAddress, web3imageprofile,
+            "level5Friends": directs[]->{
+              userName, walletAddress, web3imageprofile,
+            }
+          }
+        }
+      }
+    }
+  }`;
+  const result = await config.fetch(query);
+  return result;
+}
+
+export const getMyPayingNetwork = async (address) => {
+
+  const query = `*[_type == "users" && walletAddress == "${address}"]{
+    userName, walletAddress, "level" : 0, payablelevel,
+    "sponsor": referrer->{
+      userName, walletAddress, "level" : 1, payablelevel,
+      "sponsor": referrer->{
+        userName, walletAddress, "level" : 2, payablelevel,
+        "sponsor": referrer->{
+          userName, walletAddress, "level" : 3, payablelevel,
+          "sponsor": referrer->{
+            userName, walletAddress, "level" : 4, payablelevel,
+            "sponsor": referrer->{
+              userName, walletAddress, "level" : 5, payablelevel,
+            }
+          }
+        }
+      }
+    }
+  }`;
+  const result = await config.fetch(query);
+  return result;
+}
+
+export const getReferralRate = () => async() => {
+  const query = `*[_type == "settings"] {referralrate_one, referralrate_two, referralrate_three, referralrate_four, referralrate_five}`;
+  const rates = await config.fetch(query);
+  return rates[0];
+}
+
+export const getReferralPayment = (address) => async() => {
+  const query = `*[_type == "referrals" && to._ref == "${address}"] | order(_createdAt desc)`;
+  const result = await config.fetch(query);
+  return result;
 }

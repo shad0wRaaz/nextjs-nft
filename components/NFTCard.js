@@ -5,6 +5,7 @@ import Countdown from 'react-countdown'
 import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
 import { MdAudiotrack } from 'react-icons/md'
+import { getImagefromWeb3 } from '../fetchers/s3'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
@@ -36,7 +37,7 @@ const NFTCard = ({
   showUnlisted,
   creator,
 }) => {
-  const [likers, setLikers] = useState([])
+  // const [likers, setLikers] = useState([])
   const { dark } = useThemeContext()
   const { myUser } = useUserContext()
   const [listedItem, setListedItem] = useState()
@@ -44,11 +45,7 @@ const NFTCard = ({
 
   useEffect(() => {
     if (!listings) return
-    const listing = listings.find(
-      (listing) =>
-        JSON.stringify(listing.asset.properties.tokenid) ==
-          JSON.stringify(nftItem.metadata.properties.tokenid)
-    )
+    const listing = listings.find((listing) => listing.asset.properties.tokenid == nftItem.metadata?.properties.tokenid)
     // console.log(listing);
     if (Boolean(listing)) {
       setListedItem(listing)
@@ -58,23 +55,23 @@ const NFTCard = ({
     }
   }, [listings, nftItem])
 
-  useEffect(() => {
-    //getting NFT likes from Sanity
-    ;(async (sanityClient = config) => {
-      if (nftItem?.metadata?.properties?.tokenid != null){
-        const query = `*[_type == "nftItem" && _id == "${nftItem.metadata.properties.tokenid}"] {
-          likedBy, "totalLikers": count(likedBy)
-        }`
+  // useEffect(() => {
+  //   //getting NFT likes from Sanity
+  //   ;(async (sanityClient = config) => {
+  //     if (nftItem?.metadata?.properties?.tokenid != null){
+  //       const query = `*[_type == "nftItem" && _id == "${nftItem.metadata.properties.tokenid}"] {
+  //         likedBy, "totalLikers": count(likedBy)
+  //       }`
 
-        const res = await sanityClient.fetch(query)
+  //       const res = await sanityClient.fetch(query)
 
-        setLikers(res[0])
-      }
-    })()
-    return() => {
-      //do nothing
-    }
-  }, [nftItem])
+  //       setLikers(res[0])
+  //     }
+  //   })()
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, [nftItem])
 
   return (
     <>
@@ -86,18 +83,25 @@ const NFTCard = ({
         <div
           className={`relative z-0 ${
             dark ? ' bg-slate-800' : ' bg-white'
-          } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
-        >
+          } group flex flex-col rounded-2xl p-2 shadow-md transition hover:shadow-xl overflow-hidden`}
+         >
           <Link
             href={ nftItem?.metadata?.properties?.tokenid ? `/nfts/${nftItem?.metadata?.properties?.tokenid}` : "#"}
           >
             <div className="relative flex-shrink-0 cursor-pointer">
               <div>
-                <div className="nc-NcImage aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
+                <div className="aspect-w-11 aspect-h-12 relative z-0 flex h-[415px] w-full overflow-hidden rounded-2xl">
+                  {/* <MediaRenderer
+                    src={nftItem.metadata?.image}
+                    className="rounded-2xl object-fill transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                    alt={nftItem.metadata?.name}
+                    objectFit="cover"
+                    layout="fill"
+                  /> */}
                   <Image
-                    src={nftItem.metadata.image}
+                    src={nftItem.metadata?.image.startsWith("ipfs") ? getImagefromWeb3(nftItem.metadata?.image) : nftItem.metadata?.image}
                     className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-                    alt="nc-imgs"
+                    alt={nftItem.metadata?.name}
                     objectFit="cover"
                     layout="fill"
                   />
@@ -109,14 +113,14 @@ const NFTCard = ({
                 nftItem?.metadata?.properties?.itemtype == "video" ? <IconVideo /> : <IconImage />}
               </div>
 
-              <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
+              {/* <div className="absolute top-2.5 left-2.5 z-10 flex items-center space-x-2">
                 <button className="flex !h-9 items-center justify-center rounded-full bg-black/50 px-3.5  text-white">
                   <IconHeart />
                   <span className="ml-2 text-sm">
                     {likers?.likedBy?.length ? likers.likedBy.length : '0'}
                   </span>
                 </button>
-              </div>
+              </div> */}
 
               {/* Remaining timer is currently disabled in every NFT card, performance issues */}
               {Boolean(listedItem) && false && (
@@ -188,7 +192,7 @@ const NFTCard = ({
 
                 <div className="absolute left-4 bottom-0 w-48 ">
                   <h2 className="text-left text-sm font-semibold">
-                    {nftItem.metadata.name}
+                    {nftItem.metadata?.name}
                   </h2>
 
                   <div className="mt-1.5 flex w-full items-end justify-between ">

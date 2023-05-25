@@ -1,37 +1,40 @@
+import React, { useState } from 'react'
 import Link from 'next/link'
 import NFTItem from './NFTItem'
 import toast from 'react-hot-toast'
 import bsclogo from '../assets/bsc.png'
 import maticlogo from '../assets/matic.png'
+import { useAddress } from '@thirdweb-dev/react'
 import ethereumlogo from '../assets/ethereum.png'
 import avalancelogo from '../assets/avalance.png'
-import React, { useEffect, useState } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useAddress } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 
-const style = {
-  wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem] relative z-0',
-  title: 'font-bold text-[2rem] mb-[2rem]',
-  collectionWrapper: 'flex justify-center flex-row flex-wrap gap-[40px]',
-  collection:
-    'cursor-pointer py-4 px-[1rem] md:w-1/6 sm:w-[40%] flex items-center justify-start rounded-xl border bg-white hover:bg-[#ffffffcc] transition duration-300',
-  imageContainer:
-    'bg-[#eeeeee] mr-[1rem] rounded-full max-w-[80px] h-[60px] w-[60px] overflow-hidden',
-  collectionDescriptionContainer: 'flex flex-col',
-  collectionTitle: 'font-bold text-medium text-left',
-  itemTitle: 'text-black text-sm text-left',
-  coinLogo: 'inline mr-[3px] ml-[5px]',
-  nftwrapper: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8`,
-  button:
-    'text-md rounded-full cursor-pointer gradBlue py-4 px-8 text-neutral-100',
-}
+
 
 const ExploreNFTs = () => {
   const address = useAddress();
   const { dark, successToastStyle } = useThemeContext();
   const { latestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
+  const [compact, setCompact] = useState(true);
+
+  const style = {
+    wrapper: 'container text-center mx-auto lg:p-[8rem] p-[2rem] relative z-0',
+    title: 'font-bold text-[2rem] mb-[2rem]',
+    collectionWrapper: 'flex justify-center flex-row flex-wrap gap-[40px]',
+    collection:
+      'cursor-pointer py-4 px-[1rem] md:w-1/6 sm:w-[40%] flex items-center justify-start rounded-xl border bg-white hover:bg-[#ffffffcc] transition duration-300',
+    imageContainer:
+      'bg-[#eeeeee] mr-[1rem] rounded-full max-w-[80px] h-[60px] w-[60px] overflow-hidden',
+    collectionDescriptionContainer: 'flex flex-col',
+    collectionTitle: 'font-bold text-medium text-left',
+    itemTitle: 'text-black text-sm text-left',
+    coinLogo: 'inline mr-[3px] ml-[5px]',
+    nftwrapper: `grid grid-cols-1 ${compact ? 'md:grid-cols-4 lg:grid-cols-6' : 'md:grid-cols-2 lg:grid-cols-4'}  gap-8`,
+    button:
+      'text-md rounded-full cursor-pointer gradBlue py-4 px-8 text-neutral-100',
+  }
 
   const changeBlockchain = (selectedChainName) => {
     setSelectedBlockchain(selectedChainName);
@@ -40,7 +43,7 @@ const ExploreNFTs = () => {
 
   return (
     <div className={style.wrapper}>
-      <h2 className={style.title}><span className="textGradCyan">Explore Latest NFTs</span></h2>
+      <h2 className={style.title}><span className="textGradCyan">Freshly Listed NFTs</span></h2>
       {!address && (
         <div className="container mx-auto mb-[4rem] flex justify-center">
           <div
@@ -110,7 +113,7 @@ const ExploreNFTs = () => {
 
       {latestNfts?.length == 0 && (
         <div>
-          <span>No NFTs are available.</span>
+          <span>No NFTs are available in the connected chain.</span>
         </div>
       )}
 
@@ -119,7 +122,7 @@ const ExploreNFTs = () => {
           {latestNfts?.map((nftItem, id) => (
             <React.Fragment key={id}>
               {nftItem.asset.properties?.tokenid && (
-                <NFTItem key={id} nftItem={nftItem} />
+                <NFTItem key={id} nftItem={nftItem} chain={selectedBlockchain} compact={compact}/>
               )}
             </React.Fragment>
           ))}

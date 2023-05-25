@@ -5,7 +5,7 @@ import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
 import { BsImages } from 'react-icons/bs'
 import { RadioGroup } from '@headlessui/react'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { getImagefromWeb3 } from '../../fetchers/s3'
@@ -16,10 +16,11 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import React, { useState, useEffect, useReducer } from 'react'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai'
-import { useAddress, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
+import { useAddress, useSigner, ConnectWallet, useActiveChain } from '@thirdweb-dev/react'
 import { IconLoading } from '../../components/icons/CustomIcons'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { ethers } from 'ethers'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -83,35 +84,25 @@ const batchupload = () => {
   const [files, setFiles] = useState();
   const [fileArray, setFileArray] = useState([]);
   const signer = useSigner();
-  const chainid = useChainId();
   const router = useRouter();
-  const [fileType, setFileType] = useState();
   const { myCollections } = useUserContext();
   const [itemname, setItemname] = useState('');
   const { errorToastStyle, successToastStyle, dark } = useThemeContext();
   const [thisChainCollection, setThisChainCollection] = useState([]);
   const [propertyKey, setPropertyKey] = useState(['']);
+  const connectedChain = useActiveChain();
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
     if(!myCollections) return
-    if(!chainid) return
-    let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
+    if(!connectedChain) return
+    let tempCollection = myCollections.filter((collection) => collection.chainId == connectedChain.chainId)
     setThisChainCollection(tempCollection)
 
     return() => {
       //clean up function
     }
-  }, [myCollections, chainid])
-
-  const [
-    {
-      data: { chain, chains },
-      loading,
-      error,
-    },
-    switchNetwork,
-  ] = useNetwork();
+  }, [myCollections, connectedChain])
 
   const address = useAddress();
   const [sanityCollection, setSanityCollection] = useState([]); //this is for getting all collections from sanity
@@ -125,7 +116,7 @@ const batchupload = () => {
   const style = {
     wrapper: '',
     pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
-    container: 'my-[3rem] container mx-auto p-1 pt-0 lg:px-[10rem]',
+    container: 'my-[3rem] container mx-auto p-1 pt-0 max-w-5xl',
     formWrapper: 'flex flex-wrap flex-col ',
     pageTitle: 'text-4xl font-bold text-center text-white',
     smallText: 'text-xs m-2 mt-0 mb-0',
@@ -150,8 +141,8 @@ const batchupload = () => {
 
   //get the NFT Collections created by current user
   const fetchSanityCollectionData = async (sanityClient = config) => {
-    if (!chainid || !address) return
-    const query = `*[_type == "nftCollection" && chainId == "${chainid}" && createdBy._ref == "${address}"] {
+    if (!connectedChain || !address) return
+    const query = `*[_type == "nftCollection" && chainId == "${connectedChain.chainId}" && createdBy._ref == "${address}"] {
       name, contractAddress, profileImage, createdBy, volumeTraded, web3imageprofile, category,
     }`;
 
@@ -175,7 +166,6 @@ const batchupload = () => {
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault();
 
-    console.log(e);
     if(!files || files?.length == 0){
       toastHandler.error("Images are not uploaded", errorToastStyle);
       return;
@@ -214,26 +204,7 @@ const batchupload = () => {
       })
     }
 
-    //   let t = []
-    //   for(let i = 0; i < f.length; i++){
-    //     t.push({ 
-    //       name: '', 
-    //       description: '', 
-    //       image: files[i], 
-    //       properties: { 
-    //         external_link: '',
-    //         traits: propertyTraits,
-    //         category: category,
-    //         itemtype: 'image',
-    //         tokenid: uuidv4(),
-    //       },
-    //     });
-    //   }
-    //   setBatchMetaData(t);
-    // return
-
     //get final properties and then add it to batchmetadata
-    // const tempMetadata = batchMetaData?.map(item => {return ({...item, properties: {...item.properties, traits: propertyTraits}})})
     if (!files) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
@@ -256,7 +227,158 @@ const batchupload = () => {
     try {
       setIsMinting(true);
       const sdk = new ThirdwebSDK(signer);
-      const nftCollection = await sdk.getContract(selectedCollection.contractAddress);
+      const nftCollection = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
+
+      // console.log(itemArray)
+      const batchData = itemArray.map(item => {
+        const doc = {
+          to: address,
+          metadata : { ...item },
+          currencyAddress: NATIVE_TOKEN_ADDRESS,
+          mintStartTime: new Date(),
+          primarySaleRecipient: address,
+          quantity: 1,
+        }
+        return doc;
+      })
+
+      console.log(batchData)
+      const signedpayload = await nftCollection.erc721.signature.generateBatch(batchData);
+      console.log(signedpayload)
+      const tx = await nftCollection.erc721.signature.mintBatch(signedpayload);
+      console.log(tx)
+
+      const docs = tx?.map((tr, index) => {
+        const nftItem = {
+          _type: 'nftItem',
+          _id: batchData[index].metadata.properties.tokenid,
+          id: tr.id.toString(),
+          collection: { 
+            _ref: selectedCollection._id, 
+            _type: 'reference'
+          },
+          listed: false,
+          chainId: connectedChain.chainId,
+          createdBy: { 
+            _ref: address, 
+            _type: 'reference' 
+          },
+          ownedBy: { 
+            _ref: address, 
+            _type: 'reference' 
+          },
+          featured: false,
+          name: batchData[index].metadata.name,
+        }
+        return nftItem
+      });
+      Promise.all(
+        docs.map(
+          document => 
+            sanityClient.createIfNotExists(document)))
+                        .then(async (res) => {
+
+                          const newItems = res?.map(item => {
+                            const itemref = { _ref: item._id, _type: 'reference', _key: uuidv4() };
+                            return itemref;
+                          });
+
+                          const transaction = {
+                            _type: 'activities',
+                            _id: tx[0].receipt.transactionHash, 
+                            transactionHash: tx[0].receipt.transactionHash,
+                            nftItems: newItems,
+                            from: tx[0].receipt.from,
+                            to: tx[0].receipt.to,
+                            event: 'Mint',
+                            price: '-',
+                            chainId: connectedChain.chainId,
+                            dateStamp: new Date(),
+                          }
+                        
+                        await sanityClient.createIfNotExists(transaction);
+                        })
+                        .catch(err => console.log(err));
+      toastHandler.success('NFTs minted successfully', successToastStyle);
+      dispatch({ type: 'CLEAR_OUT_ALL' });
+      removeItem(null, null, true);
+      setIsMinting(false);
+      router.push(`/collections/${selectedCollection._id}`);
+      
+      
+    } catch (error) {
+      console.log(error);
+      toastHandler.error("Error in minting NFT.", errorToastStyle);
+      setIsMinting(false);
+    }
+  }
+
+  const handleSubmit_OLD_STYLE_NON_SIGNATURE = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
+    e.preventDefault();
+
+    if(!files || files?.length == 0){
+      toastHandler.error("Images are not uploaded", errorToastStyle);
+      return;
+    }
+    const f = Array.from(files);
+
+    //build up traits array of all uploaded files
+    let itemArray = [];
+    let count = 0;
+    let name = '', description = '';
+    
+    for(let k = 0; k < f.length; k++){
+      let propsArray = [];
+      let traitsArray = [];
+      count = k * (propertyKey.length + 2);
+      name = e.target[count].value;
+      description = e.target[count + 1].value;
+
+      for (let j = 0; j < propertyKey.length; j++){
+        propsArray.push({
+           "propertyKey": propertyKey[j],
+           "propertyValue": e.target[count + j + 2].value,
+        })
+      }
+      traitsArray.push(propsArray);
+      itemArray.push({
+        name: name,
+        description: description,
+        image: files[k],
+        properties: {
+          traits: traitsArray[0],
+          category: category,
+          itemtype: 'image',
+          tokenid: uuidv4(),
+        },
+      })
+    }
+
+    //get final properties and then add it to batchmetadata
+    if (!files) {
+      toastHandler.error('Fields marked * are required', errorToastStyle)
+      return
+    }
+    if (selectedCollection.contractAddress == '') {
+      toastHandler.error('Collection is not selected. Select a collection to mint this NFT to.', errorToastStyle)
+      return
+    }
+    
+    if (!(nftCollection)) {
+      //Some issue is there
+      toastHandler.error('Error in minting. Cannot find NFT Collection', errorToastStyle)
+      return
+    }
+    if(!address){
+      toastHandler.error('Wallet is not connected.', errorToastStyle);
+      return;
+    }
+    
+    try {
+      setIsMinting(true);
+      const sdk = new ThirdwebSDK(signer);
+      const nftCollection = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
+
       const tx = await nftCollection.erc721.mintBatchTo(address, itemArray);
 
       const docs = tx?.map((tr, index) => {
@@ -269,7 +391,7 @@ const batchupload = () => {
             _type: 'reference'
           },
           listed: false,
-          chainId: chainid,
+          chainId: connectedChain.chainId,
           createdBy: { 
             _ref: address, 
             _type: 'reference' 
@@ -303,14 +425,14 @@ const batchupload = () => {
                             to: tx[0].receipt.to,
                             event: 'Mint',
                             price: '-',
-                            chainId: chainid,
+                            chainId: connectedChain.chainId,
                             dateStamp: new Date(),
                           }
                         
                         await sanityClient.createIfNotExists(transaction);
                         })
                         .catch(err => console.log(err));
-      toastHandler.success('NFT minted successfully', successToastStyle);
+      toastHandler.success('NFTs minted successfully', successToastStyle);
       dispatch({ type: 'CLEAR_OUT_ALL' });
       removeItem(null, null, true);
       setIsMinting(false);
@@ -426,21 +548,6 @@ const batchupload = () => {
       setFileArray([]);
     }
   }
-  // const updateName = (e, index) => {
-  //   let curval = {...batchMetaData[index], name: e.target.value};
-  //   // console.log(curval)
-  //   let temp = batchMetaData?.map((item, i) => i != index ? item : curval );
-  //   // console.log(temp)
-  //   setBatchMetaData(temp);
-  // }
-  // const updateDescription = (e, index) => {
-  //   let curval = {...batchMetaData[index], description: e.target.value};
-  //   console.log(curval)
-  //   let temp = batchMetaData?.map((item, i) => i != index ? item : curval );
-  //   // console.log(temp)
-  //   setBatchMetaData(temp);
-    
-  // }
 
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>
@@ -575,38 +682,6 @@ const batchupload = () => {
                                 </div>
                                 )
                             )}
-                            {/* {state.properties.traits.map((x, i) => (
-                                <div className="ml-[2rem] flex gap-[10px]" key={i}>
-                                    <input
-                                    name="propertyKey"
-                                    placeholder="Property Name"
-                                    className={style.input}
-                                    value={x.propertyKey}
-                                    onChange={(e) => handlePropertyChange(e, i)}
-                                    />
-                                    <div className="flex">
-                                        {state.properties.traits.length !== 1 && (
-                                            <button
-                                            className={style.traitsButtons}
-                                            type="button"
-                                            onClick={(i) => handleRemoveProperty(i)}
-                                            >
-                                                <AiOutlineMinus fontSize="20px" color={dark ? 'white' : '#1d1d1f'}/>
-                                            </button>
-                                        )}
-                                        {state.properties.traits.length - 1 === i && (
-                                            <button
-                                            className={style.traitsButtons}
-                                            type="button"
-                                            onClick={handleAddProperty}
-                                            >
-                                                <AiOutlinePlus fontSize="20px" color={dark ? 'white' : '#1d1d1f'}/>
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                                )
-                            )} */}
 
                             <p className={style.label}>Item Name Generator</p>
                             <p className={style.smallText}>
@@ -642,7 +717,7 @@ const batchupload = () => {
                                                               type="text" 
                                                               className={style.input}
                                                               placeholder="Name of Item*" name={`itemName${index}`} 
-                                                              value={itemname != '' ?  itemname + ' #' + index : ''}
+                                                              defaultValue={itemname != '' ?  itemname + ' #' + String(Number(index) + 1) : ''}
                                                               />
                                                           <textarea 
                                                               className={style.input}
@@ -660,14 +735,18 @@ const batchupload = () => {
                                                     </div>
 
                                                     <div>
-                                                    {propertyKey.length > 0 && <p className="p-3 pb-0">Properties:</p>}
+                                                    {propertyKey.length >= 1 && propertyKey[0] != '' && <p className="p-3 pb-0">Properties:</p>}
                                                       <div className="properties p-3">
-                                                        {propertyKey.length >= 1 && propertyKey.map(property => (
-                                                            <div className="grid grid-cols-2 gap-2 items-center">
-                                                              <p class="text-sm">{property === '' ? 'Not defined' : property}: </p>
-                                                              <input type="text" className={style.input}/>
-                                                            </div>
-                                                        ))}
+                                                        {propertyKey.length >= 1 && propertyKey.map((property, index) =>
+                                                          <div key={index}>
+                                                            {property != '' ? (
+                                                                <div className="grid grid-cols-2 gap-2 items-center">
+                                                                  <p className="text-sm">{property === '' ? 'Not defined' : property}: </p>
+                                                                  <input type="text" className={style.input}/>
+                                                                </div>
+                                                            ) : ''}
+                                                          </div>
+                                                          )}
                                                       </div>
                                                   </div>
                                                   </div>
@@ -719,7 +798,11 @@ const batchupload = () => {
 
                         
 
-                                <p className={style.label}>Blockchain: <span className="rounded-md p-1 border border-slate-700 px-3 ml-3">{chain?.name}</span></p>
+                                <div className={`text-small mx-auto !mt-6 text-center border ${dark ? 'border-slate-700': 'border-neutral-100'} rounded-lg p-3 w-fit`}>
+                                  These NFTs will be minted on 
+                                  <img src={getImagefromWeb3(connectedChain.icon.url)} height="20px" width="20px" className="inline-block ml-4 mr-2" />
+                                  {connectedChain?.name}
+                                </div>
 
                                 <div className="flex justify-center">
                                     {isMinting ? (

@@ -46,7 +46,7 @@ const BlockedNFTs = () => {
                 console.log(err);
             },
             onSuccess:() => {
-                queryClient.invalidateQueries(['blockedItems']);
+                queryClient.invalidateQueries('blockedItems');
                 toast.success('The NFT has been unblocked', successToastStyle);
             }
 
