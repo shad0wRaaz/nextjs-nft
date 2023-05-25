@@ -8,6 +8,7 @@ import HeroCarousel from '../components/HeroCarousel'
 import TopCollections from '../components/TopCollections'
 import { useThemeContext } from '../contexts/ThemeContext'
 import herobackground from '../assets/herobackground.jpeg'
+import bgimage from '../public/assets/bg-image.jpg'
 import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
@@ -22,7 +23,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
 
   return (
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
-        <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${herobackground.src})`}}>
+        <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`}}>
           <Header/>
           {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>

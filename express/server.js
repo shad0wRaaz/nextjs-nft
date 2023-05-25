@@ -1239,7 +1239,7 @@ app.get("api/checkserver", async(req,res) => {
 app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req, res) => {
   const { chain, contractAddress, tokenId } = req.params;
 
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY, chain);
+  const sdk = ThirdwebSDK.fromPrivateKey(chain);
   const contract = await sdk.getContract(contractAddress);
   const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
   

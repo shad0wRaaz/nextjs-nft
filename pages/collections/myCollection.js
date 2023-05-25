@@ -395,7 +395,7 @@ console.log(blockchainName[chainid]);
           >
             <span className="inline-block pl-2 w-max">Collected NFTs</span>
           </div> */}
-          <div
+          {/* <div
             className={`cursor-pointer rounded-full p-4 px-8 ${
               dark
                 ? ' hover:bg-slate-600 hover:text-neutral-100'
@@ -407,12 +407,12 @@ console.log(blockchainName[chainid]);
             onClick={() => setShowType('favourites')}
           >
             <span className="inline-block pl-1 w-max">Liked NFTs</span>
-          </div>
+          </div> */}
         </div>
       </div>
       
 
-        <div className="flex  justify-center mt-5 rounded-md overflow-hidden">
+        <div className="flex justify-center mt-5 rounded-md overflow-hidden">
             <div className="rounded-md flex overflow-hidden">
               <div 
                 className={`p-2  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'} ${!compact && '!bg-slate-600'} cursor-pointer`}
@@ -494,7 +494,7 @@ console.log(blockchainName[chainid]);
             </div>
           ))}
 
-        {showType == 'favourites' &&
+        {/* {showType == 'favourites' &&
           (favouriteNftData.length > 0 ? (
             <div className={style.nftwrapper}>
               {Boolean(favouriteNftData) &&
@@ -508,7 +508,7 @@ console.log(blockchainName[chainid]);
             </div>
           ) : (
             <div className="flex w-full justify-center">No Liked NFTs yet.</div>
-          ))}
+          ))} */}
 
         {mynftstatus == 'loading' ||
           (favouriteNftStatus == 'loading' && (

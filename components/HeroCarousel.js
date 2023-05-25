@@ -11,6 +11,7 @@ import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
 import { config } from '../lib/sanityClient';
 
+
 const style = {
   wrapper: `relative overflow-hidden`,
   container: `pt-[8rem]`,

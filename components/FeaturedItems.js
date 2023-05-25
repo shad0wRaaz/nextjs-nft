@@ -26,22 +26,49 @@ const FeaturedItems = ({ item }) => {
     getFullListings(),
     {
         onSuccess: (res) => {
+          // console.log(res)
             const thisItem = res.filter((nft) => nft?.asset.properties.tokenid == item?.nft?.metadata?.properties?.tokenid);
             setPrice(thisItem[0]?.buyoutCurrencyValuePerToken);
         }
     });
 
   return (
-    <div className="rounded-xl">
-      {design == 1 ? (
-        <div className="featuredCard">
+    <a href={`/nft/${blockchainName[item.collection.chainId]}/${item.collection.contractAddress}/${item?.id}`}>
+      <div>
+        <div className="p-2 rounded-xl"style={{ backgroundImage: 'linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2)'}}>
+          <img src={item?.nft?.metadata?.image} alt=" NFT Image" className="w-full object-cover h-[480px] object-center rounded-lg shadow-md"/>
+        </div>
+        <div className="relative px-4 -mt-16  ">
+          <div className="backdrop-blur-xl bg-[#000000aa] p-6 rounded-lg shadow-lg">
+            <div claclassNamess="flex items-baseline">
+              {/* <div className="ml-2 uppercase text-xs font-semibold tracking-wider">
+                2 baths  &bull; 3 rooms
+              </div>   */}
+            </div>
+            
+            <h4 className="mt-1 text-xl font-semibold uppercase leading-tight truncate">{item?.nft?.metadata?.name}</h4>
+            {Boolean(price) && (
+              <div className="mt-1 relative">
+                <span className="font-semibold text-sm !leading-none">{price?.displayValue} {price?.symbol}</span>
+              </div>
+            )}
+            <div className="mt-4 flex space-x-2 text-neutral-100">
+            <IconWallet /> <span className=" text-md font-semibold">Buy </span>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </a>
+      
+     /* <div className="rounded-xl">
+    {design == 1 ? (
+        <div className="featuredCard rounded-md !p-2" style={{ backgroundImage: 'linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2)'}}>
           <a href={`/nft/${blockchainName[item.collection.chainId]}/${item.collection.contractAddress}/${item?.id}`}>
-          {/* <a href={`/nfts/${item?._id}`}> */}
-            <div className="p-2 flex flex-wrap h-full rounded-md" style={{ backgroundImage: 'linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2)'}}>
+            <div className="relative overflow-hidden h-full rounded-md">
               <img src={item?.nft?.metadata?.image} className="object-cover rounded-t-md shadow-md"/>
-              <div className="flex-grow bg-[#000000dd] rounded-b-md min-h-[150px] shadow-md text-white p-5 space-y-3">
+              <div className="absolute left-0 bottom-0 w-full flex-grow rounded-b-md min-h-[150px] shadow-md text-white p-5 space-y-3">
                 <p className="text-xl font-semibold text-left">{item?.nft?.metadata?.name}</p>
-                {/* <div className="flex items-center gap-2 pt-1 !mt-0">
+                <div className="flex items-center gap-2 pt-1 !mt-0">
                   <div className="relative inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
                         <img
                           className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
@@ -50,7 +77,7 @@ const FeaturedItems = ({ item }) => {
                         />
                   </div>
                   <span className="text-sm">{item?.owner?.userName}</span>
-                </div> */}
+                </div>
                 <div className="flex justify-between">
                   <div className="text-sm rounded-xl inline-flex cursor-pointer gradBlue py-3 px-4 text-neutral-100 max-w-fit m-sm-auto items-center">
                       <IconWallet /> <span className="pl-2">Buy Now</span>
@@ -67,7 +94,7 @@ const FeaturedItems = ({ item }) => {
           </a>
         </div>
       ) : (
-        <a href={`/nfts/${item?._id}`}>
+        <a href={`/nft/${blockchainName[item.collection.chainId]}/${item.collection.contractAddress}/${item?.id}`}>
             <div className="coverImage h-[485px] w-full rounded-xl relative" style={{backgroundImage : `url(${item?.nft?.metadata?.image})`, backgroundSize: 'cover'}}>
                 <div className="rounded-xl absolute -bottom-[80px] hover:translate-x-20 transition p-6 px-8 w-[95%] md:w-[400px]  m-3 z-10 shadow-2xl bg-white border border-neutral-50/30 backdrop-blur-md">
                   <button className="px-3.5 flex items-center justify-center rounded-full absolute top-3 right-4 z-10 !h-9">
@@ -77,7 +104,7 @@ const FeaturedItems = ({ item }) => {
                       <span className="text-sm text-black">{item?.likedBy?.length }</span>
                   </button>
                   <p className="text-xl font-bold  text-black">{item?.nft?.metadata?.name}</p>
-                  {/* <div className="flex items-center gap-1 pt-1">
+                  <div className="flex items-center gap-1 pt-1">
                     <div className="wil-avatar relative inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white dark:ring-neutral-900">
                           <img
                             className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
@@ -86,7 +113,7 @@ const FeaturedItems = ({ item }) => {
                           />
                     </div>
                     <span className="text-black text-sm">{item?.owner?.userName}</span>
-                  </div> */}
+                  </div>
                   <div className="flex justify-between items-center mt-3.5">
                     {Boolean(price) && (
                       <div className="pt-3">
@@ -106,7 +133,7 @@ const FeaturedItems = ({ item }) => {
             </div>
         </a>
       )}
-    </div>
+    </div> */
   )
 }
 

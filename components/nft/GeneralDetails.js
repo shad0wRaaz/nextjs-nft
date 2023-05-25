@@ -8,7 +8,7 @@ import { useState, Fragment } from 'react'
 import HelmetMetaData from '../HelmetMetaData'
 import { HiOutlineMail } from 'react-icons/hi'
 import { useAddress } from '@thirdweb-dev/react'
-import { TbBrandTelegram } from 'react-icons/tb'
+import { TbBrandTelegram, TbStack2 } from 'react-icons/tb'
 import { IconVerified } from '../icons/CustomIcons'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
@@ -107,7 +107,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
         </h1>
         {Boolean(metaDataFromSanity?.category) &&(
           <div 
-            className="relative block w-fit rounded-lg bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+            className="relative flex w-fit items-center gap-1 rounded-lg transition bg-green-200 hover:bg-green-300 cursor-pointer px-4 py-1 text-xs font-medium text-green-800"
             style={{ marginTop: '10px'}}
             onClick={() => {
               router.push({
@@ -126,7 +126,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                 },
               })
             }}>
-              { metaDataFromSanity?.category }
+              <TbStack2/> { metaDataFromSanity?.category }
             </div>
         )}
 

@@ -34,6 +34,7 @@ import {
   HiOutlineStar,
   HiOutlineDotsVertical,
   HiOutlineQuestionMarkCircle,
+  HiOutlineInformationCircle,
 } from 'react-icons/hi'
 
 const style = {
@@ -399,7 +400,7 @@ const Nft = (props) => { //props are from getServerSideProps
                         />
                       </Disclosure.Button>
                       <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                        {nftContractData?.metadata?.description == '' ? <p className={`text-sm text-center ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
+                        {nftContractData?.metadata?.description == '' ? <p className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
                       </Disclosure.Panel>
                     </>
                   )}
@@ -428,38 +429,26 @@ const Nft = (props) => { //props are from getServerSideProps
                       <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
                       {nftContractData?.metadata?.attributes?.map(
                           (props, id) => (
-                            <div key={id} className="cursor-pointer" onClick={() => {
-                              setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
-                              router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
-                            }}>
+                            <div key={id}>
                               {props.propertyKey != "" ? (
-
-                              <div
-                                className={`w-[130px] rounded-xl border border-solid ${
-                                  dark
-                                    ? 'border-slate-600 bg-slate-700'
-                                    : 'border-sky-200/70 bg-sky-100'
-                                } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
-                                key={id}
-                              >
-                                <p
-                                  className={
+                                <div
+                                  className={`w-[130px] cursor-pointer rounded-xl border border-solid ${
                                     dark
-                                      ? 'text-sm font-bold text-neutral-200'
-                                      : 'text-sm font-bold text-sky-400'
-                                  }
-                                >
-                                  {props.trait_type}
-                                </p>
-                                <p
-                                  className={
-                                    dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
-                                  }
-                                >
-                                  {props.value}
-                                </p>
-                              </div>
-                              ) : (<span className="text-sm">No properties defined.</span>)}
+                                      ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
+                                      : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
+                                  } p-2 text-center transition`}
+                                  onClick={() => {
+                                    setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                                    router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
+                                  }}>
+                                  <p className={dark ? 'text-sm font-bold text-neutral-200' : 'text-sm font-bold text-sky-400'}>
+                                    {props.trait_type}
+                                  </p>
+                                  <p className={ dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500' }>
+                                    {props.value}
+                                  </p>
+                                </div>
+                                ) : (<p className="text-sm text-center">No properties defined.</p>)}
                             </div>
                           )
                         )}
@@ -474,9 +463,9 @@ const Nft = (props) => { //props are from getServerSideProps
                               <div
                                 className={`w-[130px] rounded-xl border border-solid ${
                                   dark
-                                    ? 'border-slate-600 bg-slate-700'
-                                    : 'border-sky-200/70 bg-sky-100'
-                                } py-2 px-2 text-center transition  duration-500 hover:border-solid`}
+                                    ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
+                                    : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
+                                } py-2 px-2 text-center transition`}
                                 key={id}
                               >
                                 <p
@@ -507,7 +496,7 @@ const Nft = (props) => { //props are from getServerSideProps
                                   </span>
                                 </p> */}
                               </div>
-                              ) : (<span className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No properties defined.</span>)}
+                              ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
                             </div>
                           )
                         )}
@@ -525,9 +514,9 @@ const Nft = (props) => { //props are from getServerSideProps
                             ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
                             : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
                         } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                      >
+                        >
                         <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineDotsVertical fontSize={18} />
+                          <HiOutlineInformationCircle fontSize={18} />
                           <span className="text-lg">Details</span>
                         </div>
                         <BiChevronUp

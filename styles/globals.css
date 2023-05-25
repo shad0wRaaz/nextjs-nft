@@ -373,8 +373,8 @@ top:0;
 left: 0;
 width: 100%;
 height: 100%;
-backdrop-filter: blur(60px);
-background: #00000099;
+backdrop-filter: blur(20px);
+background: #000000aa;
 z-index: 0;
 }
 

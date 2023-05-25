@@ -17,7 +17,7 @@ const getstarted = () => {
         pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
         pageTitle: 'text-4xl font-bold text-center text-white',
         section: 'p-2 lg:p-8 mb-8 rounded-xl border-sky-700/30 border transition',
-        header: 'font-bold text-lg lg:text-xl mb-2',
+        header: 'font-bold text-lg lg:text-xl mb-2 ',
         table: `rounded-3xl border ${dark ? 'border-slate-700' : 'border-neutral-100'} w-[56] p-4 mt-4`,
         tableRow: `flex gap-4 flex-col md:flex-row items-center border-b ${dark ? 'border-slate-700' : 'border-neutral-100'} p-8`,
         tableColFirst: 'w-full md:w-[100px] md:min-w-[100px] text-center font-bold',
@@ -44,7 +44,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><BiWallet className="inline-block -mt-2" fontSize={25}/><span> Create a crypto Wallet</span></div>
+                        <div><BiWallet className="inline-block -mt-2" color='#2CC9D7' fontSize={25}/><span className="textGradCyan"> Create a crypto Wallet</span></div>
                         <BiChevronUp className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -72,7 +72,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><BsCollection className="inline-block -mt-2" fontSize={25}/><span> Create NFT Collection(s)</span></div>
+                        <div><BsCollection className="inline-block -mt-2" color='#2CC9D7' fontSize={25}/><span className="textGradCyan"> Create NFT Collection(s)</span></div>
                         <BiChevronUp className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -94,7 +94,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><BsImage className="inline-block -mt-2" fontSize={25}/><span> Mint NFT(s)</span></div>
+                        <div><BsImage className="inline-block -mt-2" color='#2CC9D7' fontSize={25}/><span className="textGradCyan"> Mint NFT(s)</span></div>
                         <BiChevronUp className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -115,7 +115,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><AiOutlineTags className="inline-block -mt-2" fontSize={25}/><span> List/Sell NFT(s) in Direct/Auction Marketplace</span></div>
+                        <div><AiOutlineTags className="inline-block -mt-2" color='#2CC9D7' fontSize={25}/><span className="textGradCyan"> List/Sell NFT(s) in Direct/Auction Marketplace</span></div>
                         <BiChevronUp className={`${ open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -135,7 +135,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><BsBasket className="inline-block -mt-2" fontSize={25} /><span> Buying/Bidding NFTs</span></div>
+                        <div><BsBasket className="inline-block -mt-2" color='#2CC9D7' fontSize={25} /><span className="textGradCyan"> Buying/Bidding NFTs</span></div>
                         <BiChevronUp className={`${ open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -154,7 +154,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><RiCloseCircleLine className="inline-block -mt-2" fontSize={25} /><span> Cancel Listing</span></div>
+                        <div><RiCloseCircleLine className="inline-block -mt-2" color='#2CC9D7' fontSize={25} /><span className="textGradCyan"> Cancel Listing</span></div>
                         <BiChevronUp className={`${ open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
@@ -174,7 +174,7 @@ const getstarted = () => {
                 {({ open }) => (
                     <>
                     <Disclosure.Button className="font-bold text-xl lg:text-3xl flex w-full justify-between rounded-lg px-4 py-2 text-left focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
-                        <div><AiOutlineFire className="inline-block -mt-2" fontSize={25} /><span> Burning NFT</span></div>
+                        <div><AiOutlineFire className="inline-block -mt-2" color='#2CC9D7' fontSize={25} /><span className="textGradCyan"> Burning NFT</span></div>
                         <BiChevronUp className={`${ open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
