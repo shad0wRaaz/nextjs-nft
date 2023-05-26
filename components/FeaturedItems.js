@@ -40,7 +40,7 @@ const FeaturedItems = ({ item }) => {
         </div>
         <div className="relative px-4 -mt-16  ">
           <div className="backdrop-blur-xl bg-[#000000aa] p-6 rounded-lg shadow-lg">
-            <div claclassNamess="flex items-baseline">
+            <div classNamess="flex items-baseline">
               {/* <div className="ml-2 uppercase text-xs font-semibold tracking-wider">
                 2 baths  &bull; 3 rooms
               </div>   */}

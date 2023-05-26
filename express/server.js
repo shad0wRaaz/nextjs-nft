@@ -338,6 +338,26 @@ app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req,
   }
 });
 
+//get Collection Metadata
+app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, res) =>{
+  const {chainId, tokenAddress} = req.params;
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
+  // console.log(data)
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+});
+
 //get all owners of a collection
 //this gives nft metadata in string format and gives current owner and minter as well
 app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) =>{
@@ -493,6 +513,7 @@ app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
 app.get('/api/updateListings/:blockchain', async (req, res) => {
   //only refresh required chain.
   const blockchain = req.params.blockchain;
+  console.log(blockchain)
 
   if(!(blockchain in marketplace)){
     return res.status(200).json({'message': 'Unknown blockhain'});

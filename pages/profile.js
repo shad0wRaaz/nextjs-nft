@@ -101,7 +101,8 @@ const profile = () => {
     }
 
     //check existence of referral user
-    if(userDoc.referrer){
+
+    if(userDoc.referrer && userDoc.referrer._ref != ""){
       const userExist = await checkReferralUser(userDoc.referrer._ref);
   
       if(!userExist || userExist.length == 0){
@@ -160,19 +161,34 @@ const profile = () => {
     }
 
     try {
+      let obj = '';
+      if(Boolean(userDoc.referrer) && userDoc.referrer._ref != '' ){
+        obj = {
+        userName: userDoc.userName,
+        biography: userDoc.biography,
+        email: userDoc.email,
+        igHandle: userDoc.igHandle,
+        fbhHandle: userDoc.fbhHandle,
+        twitterHandle: userDoc.twitterHandle,
+        web3imagebanner: bannerLink.data,
+        web3imageprofile: profileLink.data,
+        referrer: userDoc.referrer
+      }
+     }else{
+      obj = {
+        userName: userDoc.userName,
+        biography: userDoc.biography,
+        email: userDoc.email,
+        igHandle: userDoc.igHandle,
+        fbhHandle: userDoc.fbhHandle,
+        twitterHandle: userDoc.twitterHandle,
+        web3imagebanner: bannerLink.data,
+        web3imageprofile: profileLink.data,
+      }
+    }
       await sanityClient
         .patch(address)
-        .set({
-          userName: userDoc.userName,
-          biography: userDoc.biography,
-          email: userDoc.email,
-          igHandle: userDoc.igHandle,
-          fbhHandle: userDoc.fbhHandle,
-          twitterHandle: userDoc.twitterHandle,
-          web3imagebanner: bannerLink.data,
-          web3imageprofile: profileLink.data,
-          referrer: userDoc.referrer
-        })
+        .set(obj)
         .commit()
         .then(() => {
           
@@ -185,15 +201,24 @@ const profile = () => {
           setIsSaving(false)
         });
 
-        //save this user as direct referrals of the referred by user
-        await sanityClient
-          .patch(userDoc.referrer._ref)
-          .setIfMissing({ directs: [] })
-          .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: userDoc.walletAddress }])
-          .commit({ autoGenerateArrayKeys: true });
-
-          queryClient.invalidateQueries(['user']);
-          toastHandler.success('Profile has been updated.', successToastStyle);
+        if(Boolean(userDoc.referrer) && userDoc?.referrer?._ref != ""){
+          //save this user as direct referrals of the referred by user
+          //need to check wallet address before adding in
+          
+          try{
+            await sanityClient
+              .patch(userDoc.referrer._ref)
+              .setIfMissing({ directs: [] })
+              .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: userDoc.walletAddress }])
+              .commit({ autoGenerateArrayKeys: true });
+          }catch(err){
+            console.log(err)
+            toastHandler.error('Error updating referred by.', errorToastStyle);
+          }
+  
+        }
+        queryClient.invalidateQueries(['user']);
+        toastHandler.success('Profile has been updated.', successToastStyle);
 
     } catch (error) {
       console.log(error)
@@ -237,16 +262,16 @@ const profile = () => {
     } 
   }
 
-  const { mutate: activate } = useMutation(
-    () => activateReferral(address), {
-      onError: (err) => {
-        console.log(err)
-      },
-      onSuccess: (res) => {
-        console.log(res)
-      }
-    }
-  )
+  // const { mutate: activate } = useMutation(
+  //   () => activateReferral(address), {
+  //     onError: (err) => {
+  //       console.log(err)
+  //     },
+  //     onSuccess: (res) => {
+  //       console.log(res)
+  //     }
+  //   }
+  // )
 
   return (
     <div

@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import Countdown from 'react-countdown'
 import { useRouter } from 'next/router'
-import { TbEdit } from 'react-icons/tb'
+import { TbEdit, TbStack2 } from 'react-icons/tb'
 import React, { useState } from 'react'
 import { BiChevronUp, BiGlobe } from 'react-icons/bi'
 import { createAwatar } from '../../../utils/utilities';
@@ -681,7 +681,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               {collectionData && collectionData?.name}
                             </h2>
                             <span 
-                              className="relative block w-fit my-1 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+                              className="relative flex items-center gap-1 w-fit my-1 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
                               onClick={() => {
                               router.push({
                                 pathname: '/search',
@@ -699,7 +699,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                                 },
                               })
                               }}>
-                                {collectionData?.category}
+                                <TbStack2/> {collectionData?.category}
                             </span>
                           </div>
                           {/* this option is only available if the user is creator of this collection */}

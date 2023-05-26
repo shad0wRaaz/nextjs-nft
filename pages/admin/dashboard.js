@@ -14,17 +14,21 @@ import { createAwatar } from '../../utils/utilities'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import React, { useEffect, useState } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
-import { getTotals } from '../../fetchers/SanityFetchers'
+import { getAllUsers, getTotals } from '../../fetchers/SanityFetchers'
 import BlockedNFTs from '../../components/admin/BlockedNFTs'
 import AddCategory from '../../components/admin/AddCategory'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
-import { BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
+import { BiCategory, BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
 import BlockedCollections from '../../components/admin/BlockedCollections'
 import { getTotalsforAdmin, updateListings } from '../../fetchers/Web3Fetchers'
-import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../../components/icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconLoading, IconPolygon } from '../../components/icons/CustomIcons'
 import { RiCloseFill } from 'react-icons/ri'
 import ReferralSettings from '../../components/admin/ReferralSettings'
+import Sidebar from '../../components/admin/Sidebar'
+import { HiChevronDown } from 'react-icons/hi'
+import { Disclosure } from '@headlessui/react'
+import moment from 'moment'
 
 const chainnum = {
     "80001": "mumbai",
@@ -53,15 +57,18 @@ const dashboard = () => {
     const address = useAddress();
     const [loggedIn, setLoggedIn] = useState(false);
     const [popularNfts, setPopularNfts] = useState();
-    const [ethloading, setethloading] = useState(false);
     const [totalNftSale, setTotalNftSale] = useState(0);
-    const [bnbloading, setbnbloading] = useState(false);
     const [selectedChain, setSelectedChain] = useState();
-    const [avaxloading, setavaxloading] = useState(false);
-    const [maticloading, setmaticloading] = useState(false);
     const [totalPlatformFees, setTotalPlatformFees] = useState(0);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const [referralModal, setReferralModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState([]);
+    const [searchquery, setSearchquery] = useState();
+    const [categoryCount, setCategoryCount] = useState();
+
+    const style={
+        userdetailrow : 'border-b border-slate-500 py-2'
+    }
 
     const getAllAdminUsers = async () => {
         const query = '*[_type == "settings"]{adminusers}';
@@ -85,20 +92,31 @@ const dashboard = () => {
         }
     },[address]);
 
+    const { data: users, status: userStatus  } = useQuery(
+        ['allusers'],
+        getAllUsers(),
+        {
+            enabled: true,
+            onSuccess: (res) => {
+                setSelectedUser(res);
+            }
+        }
+    )
+
     const {data: totalData, status: totalDataStatus} = useQuery(
         ['totalnft', selectedChain], getTotals(blockchain[selectedChain]), {
             onSuccess: async (res) => {
-                const popularnfts = res.popularNfts;
+                // const popularnfts = res.popularNfts;
 
-                const unresolved = popularnfts?.map(async nft => {
-                    const sdk = new ThirdwebSDK(chainnum[nft.chainId]);
-                    const contract = await sdk.getContract(nft.collection.contractAddress, "nft-collection");
-                    const itemContractdata = await contract.get(nft.id);
-                    return {...nft, itemContractdata};
-                })
+                // const unresolved = popularnfts?.map(async nft => {
+                //     const sdk = new ThirdwebSDK(chainnum[nft.chainId]);
+                //     const contract = await sdk.getContract(nft.collection.contractAddress, "nft-collection");
+                //     const itemContractdata = await contract.get(nft.id);
+                //     return {...nft, itemContractdata};
+                // })
 
-                const resolveddata = await Promise.all(unresolved);
-                setPopularNfts(resolveddata);
+                // const resolveddata = await Promise.all(unresolved);
+                // setPopularNfts(resolveddata);
             }
         }
     )
@@ -108,29 +126,15 @@ const dashboard = () => {
         getTotalsforAdmin("testnet"), 
     )
 
-    const refreshListings = async (blockchain) => {
-        // selection for loading icon
-        if(blockchain == "mumbai" || blockchain == "polygon") {setmaticloading(true);}
-        else if(blockchain == "goerli" || blockchain == "mainnet") {setethloading(true);}
-        else if(blockchain == "binance-testnet" || blockchain == "binance") {setbnbloading(true);}
-        else if(blockchain == "avalanche-fuji" || blockchain == "avalanche") {setavaxloading(true);}
-        
-        await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${blockchain}` : `http://localhost:8080/api/updateListings/${blockchain}`)
-            .then(() => {
-                toast.success(`Listings in ${blockchain} chain has been refreshed.`, successToastStyle);
-            }).catch((err) => {
-                toast.error("Error in refreshing active listings.", errorToastStyle);
-            });
-        
-        if(blockchain == "mumbai" || blockchain == "polygon") {setmaticloading(false);}
-        else if(blockchain == "goerli" || blockchain == "mainnet") {setethloading(false);}
-        else if(blockchain == "binance-testnet" || blockchain == "binance") {setbnbloading(false);}
-        else if(blockchain == "avalanche-fuji" || blockchain == "avalanche") {setavaxloading(false);}
-        
+    const findUser = (walletaddress) => {
+        if(!users) return;
+        if(!walletaddress || walletaddress == '') { 
+            setSelectedUser([...users]); 
+            return;
+        }
+        const allusers = users.filter(user => user.walletAddress == walletaddress);
+        setSelectedUser([...allusers]);
     }
-
-    
-    
 
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-gray'}`}>
@@ -163,71 +167,7 @@ const dashboard = () => {
 
                 )}
                 <div className="flex pt-[5rem]">
-                    <div className={`sidebar w-64 border ${dark ? 'border-slate-700' : ''} border-l-0 hidden md:block p-4 text-sm`}>
-                         <div className="mx-2 p-2 px-4 flex justify-between items-center hidden">
-                            <span className="">Select Chain</span> 
-                            {selectedChain && (
-                                <div className="transition hover:scale-125 cursor-pointer"
-                                    onClick={() => setSelectedChain(undefined)}>
-                                    <CgClose fontSize={14}/>
-                                </div>
-                            )}
-                        </div>
-                        <div className="chainHolder flex flex-col hidden">
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "goerli" ? ' bg-white shadow-md' : ''}`}
-                                onClick={() => setSelectedChain("goerli")}>
-                                <IconEthereum/> Ethereum
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "mumbai" ? ' bg-white shadow-md' : ''}`}
-                                onClick={() => setSelectedChain("mumbai")}>
-                                <IconPolygon/> Polygon 
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 p-4 mb-1 cursor-pointer ${selectedChain == "binance-test" ? ' bg-white shadow-md' : ''}`}
-                                onClick={() => setSelectedChain("binance-test")}>
-                                <IconBNB/> Binance
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md rounded-lg mx-2 flex gap-1 items-center p-4 mb-1 cursor-pointer ${selectedChain == "avalanche-fuji" ? ' bg-white shadow-md' : ''}`}
-                                onClick={() => setSelectedChain("avalanche-fuji")}>
-                                <IconAvalanche/>  Avalanche
-                            </div>
-                        </div>
-                        <h2 className="mt-5 mb-3 font-semibold">Refresh Active Listings</h2>
-                        <div className="flex flex-col flex-wrap">
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
-                                onClick={() => refreshListings("goerli")}>
-                                <div>
-                                    <IconEthereum/>Goerli 
-                                </div>
-                                {ethloading && <IconLoading />}
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
-                                onClick={() => refreshListings("mumbai")}>
-                                <div>
-                                    <IconPolygon/> Mumbai
-                                </div> 
-                                {maticloading && <IconLoading />}
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
-                                onClick={() => refreshListings("binance-testnet")}>
-                                <div>
-                                    <IconBNB/> Binance Test Chain
-                                </div> 
-                                {bnbloading && <IconLoading />}
-                            </div>
-                            <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 gap-1 p-2 items-center mb-1 cursor-pointer`}
-                                onClick={() => refreshListings("avalanche-fuji")}>
-                                <div>
-                                    <IconAvalanche/> Avalanche Fuji
-                                </div>
-                                    {avaxloading && <IconLoading />}
-                            </div>
-                        </div>
-                        <h2 
-                            className={`mt-5 mb-3 font-semibold  rounded-lg p-2 cursor-pointer ${dark ? 'hover:bg-slate-800': 'hover:bg-neutral-200'}`}
-                            onClick={() => setReferralModal(true)}>
-                                Referral Settings
-                        </h2>
-                    </div>
+                    <Sidebar selectedChain={selectedChain} setSelectedChain={setSelectedChain} setReferralModal={setReferralModal} />
                     <main className="flex-grow p-4">
                         <div className="pt-10">
                             <div className="container mx-auto">
@@ -287,14 +227,14 @@ const dashboard = () => {
                                     <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
                                             <div className={`card-header ${dark ? '!text-white' : ''}`}>
-                                                Total Platform Fees
+                                                Total Categories
                                             </div>
                                             <div className="card-body">
-                                                <h5 className={` ${dark ? '!text-white' : ''}`}>${totalData?.platformfee?.platformfee}</h5>
+                                                <h5 className={` ${dark ? '!text-white' : ''}`}>{Boolean(categoryCount) ? categoryCount : 0}</h5>
                                             </div>
                                         </div>
                                         <div className="card-icon">
-                                            <BiDollarCircle fontSize={20}/>
+                                            <BiCategory fontSize={20}/>
                                         </div>
                                     </div>
                                 </div>
@@ -308,7 +248,7 @@ const dashboard = () => {
                                                 Add New Category
                                             </div>
                                             <div className="card-body text-sm pt-4">
-                                                <AddCategory/>
+                                                <AddCategory setCategoryCount={setCategoryCount}/>
                                             </div>
                                         </div>
                                     </div>
@@ -340,7 +280,161 @@ const dashboard = () => {
 
                                 <div className="cards-container">
                                     <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
-                                        <div className="card-content">
+                                    <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                All Users
+                                            </div>
+                                            <div className="card-body pt-4">
+                                                <div className="bg-slate-600 p-3 rounded-lg mb-2">
+                                                    <p className="text-neutral-100 mb-2 text-sm">Search Wallet Address</p>
+                                                    <input 
+                                                        className="flex-grow text-sm rounded-md outline-0 p-2 bg-slate-700 w-full text-neutral-100"
+                                                        type="text" 
+                                                        value={searchquery}
+                                                        onChange={(e) => findUser(e.target.value)}/>
+
+                                                </div>
+                                                <div className="flex flex-col max-h-[450px] overflow-scroll">
+                                                    {userStatus == 'loading' && <div className="flex justify-center items-center gap-1"> <IconLoading /> Loading</div>}
+                                                    {userStatus == 'success' && selectedUser?.map((user, index) => (
+                                                        <div key={index}>
+                                                            <Disclosure as="div" className="mt-2">
+                                                            {({ open }) => (
+                                                            <>
+                                                                <Disclosure.Button 
+                                                                    className="flex w-full justify-between rounded-lg items-center p-4 py-2 text-left">
+                                                                        <div className="flex-grow flex flex-row gap-2 items-center">
+                                                                            <div className="w-[30px] h-[30px] rounded-full overflow-hidden border border-neutral-200">
+                                                                                 <img src={Boolean(user.web3imageprofile) ? getImagefromWeb3(user.web3imageprofile) : createAwatar(user?.walletAddress)} className="h-full w-full object-cover" />    
+                                                                            </div>
+                                                                            <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
+                                                                                <span>{user.userName}</span>
+                                                                                <span>{user.walletAddress.slice(0,10)}...{user.walletAddress.slice(-10)}</span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <HiChevronDown
+                                                                            className={`${
+                                                                            open ? 'rotate-180 transform' : ''
+                                                                            } h-5 w-5 text-slate-300 transition`}
+                                                                        />
+                                                                </Disclosure.Button>
+                                                                <Disclosure.Panel className="px-4 pt-0 pb-2 text-sm relative">
+                                                                    <div className={`absolute right-6 top-2 ${dark ? 'text-neutral-100': ''}`}>
+                                                                        <a href={`/user/${user?._id}`} target="_blank">
+                                                                            <div className={`viewer rounded-md border ${dark ? ' border-slate-500 hover:bg-slate-400' : 'border-neutral-200 hover:bg-neutral-300'} cursor-pointer p-1`}>
+                                                                                {dark ? 
+                                                                                <div className="flex gap-1"><BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>View</div>
+                                                                                :
+                                                                                <div className="flex gap-1"><BsArrowRightShort fontSize={20} className="-rotate-45" />View</div>
+                                                                                }
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div className={`flex p-6 rounded-lg bg-slate-600 flex-col gap-1 ${dark ? 'text-neutral-100': ''}`}>
+                                                                        <div className={style.userdetailrow}>
+                                                                            <span className="font-bold">Referred By</span>
+                                                                            {Boolean(user?.referrer) && (
+                                                                                <div className="flex-grow flex flex-row gap-2 items-center pl-4">
+                                                                                    <div className="w-[20px] h-[20px] rounded-full overflow-hidden border border-neutral-200">
+                                                                                        <img src={Boolean(user?.referrer?.web3imageprofile) ? getImagefromWeb3(user?.referrer?.web3imageprofile) : createAwatar(user?.referrer?.walletAddress)} className="h-full w-full object-cover" />    
+                                                                                    </div>
+                                                                                    <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
+                                                                                        <span>{user?.referrer?.userName}</span>
+                                                                                        <div className="flex gap-1">
+                                                                                            <span>{user?.referrer?.walletAddress.slice(0,10)}...{user?.referrer?.walletAddress.slice(-10)}</span>
+                                                                                            <span
+                                                                                                className="relative inline cursor-pointer top-0"
+                                                                                                onClick={() => {
+                                                                                                navigator.clipboard.writeText(user?.referrer?.walletAddress)
+                                                                                                toast.success('User address copied !', successToastStyle)
+                                                                                                }}
+                                                                                            >
+                                                                                                <IconCopy />
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        
+                                                                        <div className={style.userdetailrow}>
+                                                                            <span className="font-bold">Direct Referrals: </span><span className="inline">{user?.directs?.length ? user?.directs?.length : 0}</span>
+                                                                            <div className="flex flex-col gap-1 pl-4">
+                                                                                {user?.directs?.length > 0 && 
+                                                                                    user?.directs?.map((directuser,index) => (
+                                                                                        <div className="py-2 flex-grow flex flex-row gap-2 items-center" key={index}>
+                                                                                            <div className="w-[20px] h-[20px] rounded-full overflow-hidden border border-neutral-200">
+                                                                                                <img src={Boolean(directuser?.web3imageprofile) ? getImagefromWeb3(directuser?.web3imageprofile) : createAwatar(directuser?.walletAddress)} className="h-full w-full object-cover" />    
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <p>{directuser?.userName}</p>
+                                                                                                <div className="flex gap-1">
+                                                                                                    <p>{directuser?.walletAddress.slice(0,10)}...{directuser?.walletAddress.slice(-10)}</p>
+                                                                                                    <span
+                                                                                                        className="relative inline cursor-pointer top-0"
+                                                                                                        onClick={() => {
+                                                                                                        navigator.clipboard.writeText(directuser?.walletAddress)
+                                                                                                        toast.success('User address copied !', successToastStyle)
+                                                                                                        }}
+                                                                                                    >
+                                                                                                        <IconCopy />
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ))}
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className={style.userdetailrow}>
+                                                                            <span className="font-bold">Joined Date: </span>
+                                                                            <span> {moment(user?._createdAt).format('YYYY MMM DD')}</span>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </Disclosure.Panel>
+                                                            </>
+                                                            )}
+                                                        </Disclosure>
+                                                      </div>
+                                                    //    <div className="flex flex-col justify-between items-center gap-2" key={index}>
+                                                    //         <div className="userinfo w-full flex flex-row items-center gap-2">
+                                                    //             <div className="user-info flex-grow flex flex-row gap-2 p-4 py-2 items-center">
+                                                    //                     <div className="w-[30px] h-[30px] rounded-full overflow-hidden border border-neutral-200">
+                                                    //                         <img src={Boolean(user.web3imageprofile) ? getImagefromWeb3(user.web3imageprofile) : createAwatar(user?.walletAddress)} className="h-full w-full object-cover" />    
+                                                    //                     </div>
+                                                    //                     <div className={`user-text flex flex-col text-sm ${dark ? 'text-neutral-100' : ''}`}>
+                                                    //                         <span>{user.userName}</span>
+                                                    //                         <span>{user.walletAddress.slice(0,10)}...{user.walletAddress.slice(-10)}</span>
+                                                    //                     </div>
+                                                    //                 </div>
+                                                    //                 <div 
+                                                    //                     className={`viewer rounded-xl border ${dark ? ' border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'} cursor-pointer p-2`}
+                                                    //                     onClick={() => showMore(index)}>
+                                                    //                     <HiChevronDown fontSize={20} color={dark ? "#ffffff" : "#000000"}/>
+                                                    //                 </div>
+                                                    //                 <a href={`/user/${user?._id}`} target="_blank">
+                                                    //                     <div className={`viewer rounded-xl border ${dark ? ' border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'} cursor-pointer p-2`}>
+                                                    //                         {dark ? 
+                                                    //                         <BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>
+                                                    //                         :
+                                                    //                         <BsArrowRightShort fontSize={20} className="-rotate-45" />
+                                                    //                         }
+                                                    //                     </div>
+                                                    //                 </a>
+                                                    //         </div>
+                                                    //         <div className={`hidden userdetails-${index}`}>
+                                                    //             info
+                                                    //         </div>
+                                                            
+                                                    //     </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* <div className="card-content">
                                             <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
                                                 Most Popular NFTs
                                             </div>
@@ -373,7 +467,7 @@ const dashboard = () => {
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">

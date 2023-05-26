@@ -540,7 +540,7 @@ var listed = true
                 }
           
                 //payout to network
-                await payToMySponsors();
+                // await payToMySponsors();
                 
                 await updateRoyaltyReceiver();
               }

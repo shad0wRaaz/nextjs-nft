@@ -6,7 +6,6 @@ import { FiImage } from 'react-icons/fi'
 import { CgUserList } from 'react-icons/cg'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-import { BsGrid, BsGrid3X3Gap, BsListTask } from 'react-icons/bs'
 import { useState, useEffect, useRef } from 'react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import { createAwatar } from '../../utils/utilities'
@@ -19,14 +18,15 @@ import CollectionCard from '../../components/CollectionCard'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import NFTCardExternal from '../../components/NFTCardExternal'
 import NFTCardLocalList from '../../components/NFTCardLocalList'
+import { BsGrid, BsGrid3X3Gap, BsListTask } from 'react-icons/bs'
 import { MdOutlineCollections, MdVerified } from 'react-icons/md'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { useActiveChain, useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
 import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
+import { useActiveChain, useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
-import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const Collection = () => {
   const router = useRouter();
@@ -56,7 +56,6 @@ const Collection = () => {
     miniButton:
       'py-1 px-4 rounded-full gradBlue text-white text-sm mt-1 cursor-pointer',
   }
-console.log(blockchainName[chainid]);
 
   //get all active listings from all blockchain
   const { data: fullListingData } = useQuery(
@@ -120,7 +119,7 @@ console.log(blockchainName[chainid]);
     ['favouriteItems', address],
     getFavouriteNFTs(),
     {
-      enabled: Boolean(address),
+      enabled: Boolean(address) && false,
       onError: () => {
         toast.error(
           'Error fetching minted NFTs. Refresh and try again.',

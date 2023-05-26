@@ -272,6 +272,13 @@ export const getFavouriteNFTs =
     const res = await config.fetch(query);
     return res;
   }
+
+export const getAllUsers =
+() => async ({ querykey }) => {
+  const query = `*[_type == "users"]{..., referrer->, directs[]->}`;
+  const res = await config.fetch(query);
+  return res;
+}
 export const getAllOwners =
   () =>
   async ({ queryKey }) => {

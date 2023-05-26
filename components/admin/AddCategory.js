@@ -10,7 +10,7 @@ import { IconLoading } from '../icons/CustomIcons';
 const style = {
     'button' : 'flex rounded-md gradBlue text-white p-2 px-4 cursor-pointer items-center justify-center',
 }
-const AddCategory = () => {
+const AddCategory = ({ setCategoryCount }) => {
     const [categoryName, setCategoryName] = useState('');
     const [categoryImage, setCategoryImage] = useState();
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
@@ -47,7 +47,15 @@ const AddCategory = () => {
         }
     );
 
-    const { data: allcategories, status: allcategoriesstatus } = useQuery("allcategories", getAllCategories());
+    const { data: allcategories, status: allcategoriesstatus } = useQuery(
+        "allcategories",
+        getAllCategories(),
+        {
+            onSuccess:(res) => {
+                setCategoryCount(Boolean(res?.length) ? res.length : 0)
+            }
+        }
+        );
 
     
     const handleAdd = async () => {
