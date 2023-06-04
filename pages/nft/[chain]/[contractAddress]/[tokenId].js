@@ -541,7 +541,7 @@ const Nft = (props) => { //props are from getServerSideProps
                               {chainName[blockchainIdFromName[thisNFTblockchain]]}
                             </span>
                           </div>
-                          <div className="flex flex-row justify-between py-2">
+                          {/* <div className="flex flex-row justify-between py-2">
                             <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
                             <span className="line-clamp-1 text-sm cursor-pointer">
                               <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
@@ -550,7 +550,7 @@ const Nft = (props) => { //props are from getServerSideProps
                                 </a>
                               </Link>
                             </span>
-                          </div>
+                          </div> */}
                       </Tab.Panel>
 
                   </Tab.Panels>
@@ -889,11 +889,11 @@ export async function getServerSideProps(context){
       // ownerdata = await response3.json();
 
       //get royalty info
-      const sdk = new ThirdwebSDK(chain);
-      const contract = await sdk.getContract(contractAddress, "nft-collection");
-      const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+      // const sdk = new ThirdwebSDK(chain);
+      // const contract = await sdk.getContract(contractAddress, "nft-collection");
+      // const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
 
-      royaltyData = {...royalty};
+      // royaltyData = {...royalty};
 
       // const response4 = await fetch(`${HOST}/api/nft/marketListing/${chain}/${contractAddress}/${tokenId}`);
       // nftdata = await response4.json();
@@ -964,7 +964,7 @@ export async function getServerSideProps(context){
       thisNFTblockchain: chain,  //currently connected chain
       listedItemsFromThisMarket: allListedFromThisChain,
       ownerData: resolvedJSON[2],
-      royaltyData,
+      royaltyData: {},
     }
   }
 }
