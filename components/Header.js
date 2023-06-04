@@ -308,6 +308,16 @@ const Header = () => {
                           </div>
                         )}
                       </Menu.Item>
+                      
+                      {isAdmin ? (
+                        <Menu.Item>
+                          <a href="/admin/dashboard">
+                            <div className={`${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100 text-white hover:text-black'} flex gap-2 text-sm p-2 -mr-2 rounded-xl cursor-pointer`}>
+                              <GoDashboard fontSize={23}/> Dashboard
+                            </div>
+                          </a>
+                        </Menu.Item>
+                       ) : ''}
                     </>
                   )}
                   <div className="w-64 mx-auto mb-4 mt-4 pt-4 border-t border-slate-600">

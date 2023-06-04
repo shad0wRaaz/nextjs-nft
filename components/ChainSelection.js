@@ -58,7 +58,7 @@ const ChainSelection = () => {
         >
           <Menu.Items className="absolute right-0 mt-2 w-60 origin-top-right border border-slate-600 divide-y p-4 divide-slate-600 rounded-lg bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="px-1 py-1 pb-3">
-                <p className="w-full px-2 text-xs mb-2">MAINNETS</p>
+                <p className="w-full px-2 text-xs mb-2 text-neutral-100">MAINNETS</p>
               <Menu.Item>
                 {({ active }) => (
                     <button
@@ -105,7 +105,7 @@ const ChainSelection = () => {
               </Menu.Item>
             </div>
             <div className="px-1 py-5 pb-0">
-                <p className="w-full px-2 text-xs mb-2">TESTNETS</p>
+                <p className="w-full px-2 text-xs mb-2 text-neutral-100">TESTNETS</p>
               <Menu.Item>
                 {({ active }) => (
                     <button

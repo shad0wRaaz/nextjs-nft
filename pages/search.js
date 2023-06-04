@@ -2,7 +2,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import NFTItem from '../components/NFTItem'
 import { config } from '../lib/sanityClient'
-import { HiOutlineViewGrid } from 'react-icons/hi'
+import { HiChevronDown, HiOutlineViewGrid } from 'react-icons/hi'
 import { BsChevronUp, BiChevronDown, BsChevronDown } from 'react-icons/bs'
 import { FiArrowRight } from 'react-icons/fi'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -271,7 +271,7 @@ const search = ({category}) => {
       </div>
 
       <div className="space-t-16 lg:space-t-28 container p-4 mx-auto pt-16 lg:pt-20 lg:px-[8rem] sm:px-[2rem]">
-        <div className="relative mb-12 flex flex-col">
+        <div className="relative mb-0 flex flex-col">
           <div className="flex flex-col justify-between space-y-6 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-2 ">
             <nav className="hiddenScrollbar relative flex w-full overflow-x-auto text-sm md:text-base">
               <ul className="flex sm:space-x-2">
@@ -314,13 +314,13 @@ const search = ({category}) => {
             </nav>
             <span className="block flex-shrink-0 text-right">
               <button
-                className="relative inline-flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 py-2.5 pl-4 !pr-16 text-sm  font-medium text-neutral-50 transition-colors hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:pl-6 sm:text-base"
+                className="relative inline-flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 py-2.5 pl-4 !pr-16 text-sm  font-medium text-neutral-50 transition-colors hover:bg-sky-700  disabled:bg-opacity-70 ring-0 outline-0 sm:pl-6 sm:text-base"
                 onClick={() => setShowFilter(!showFilter)}
               >
                 <IconFilter />
                 <span className="ml-2.5 block truncate">Filter</span>
                 <span className="absolute top-1/2 right-5 -translate-y-1/2">
-                  <BsChevronDown
+                  <HiChevronDown fontSize={20}
                     className={`${showFilter && 'rotate-180'} transition`}
                   />
                 </span>
@@ -330,7 +330,7 @@ const search = ({category}) => {
 
           <div className="opacity-100">
             <div
-              className={`my-8 w-full border-b ${
+              className={`my-4 w-full border-b ${
                 dark ? 'border-sky-700/30' : 'border-neutral-200/70'
               }`}
             ></div>

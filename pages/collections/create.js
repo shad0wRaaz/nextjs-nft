@@ -21,27 +21,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useAddress, useSigner, useChainId } from '@thirdweb-dev/react'
 
-const style = {
-  pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
-  container: 'my-[3rem] container mx-auto p-1 pt-0 max-w-5xl',
-  formWrapper: 'flex flex-wrap flex-col mt-4',
-  pageTitle: 'm-4 ml-1 text-center font-bold text-3xl text-gray-200 gap-[15px]',
-  smallText: 'text-sm m-2 text-slate-400 mt-0',
-  subHeading:
-    'text-xl font-bold m-2 mt-[2.5rem] mb-2 pt-[2rem] border-t-slate-700 border-t border-dashed',
-  input:
-    'm-2 outline-none p-3 bg-[#1e293b] rounded-[0.4rem] hover:bg-[#334155] transition linear',
-  label: 'm-2 text-small mt-4',
-  button:
-    'gradBlue rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
-  previewImage:
-    'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
-  notConnectedWrapper: 'flex justify-center items-center h-screen',
-  traitsButtons:
-    'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
-  secondaryButton:
-    'rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white border border-slate-400 hover:border-slate-600',
-}
+
 
 const create = () => {
   const activeChain = useActiveChain();
@@ -60,6 +40,27 @@ const create = () => {
   const profileInputRef = useRef();
   const bannerInputRef = useRef();
   
+  const style = {
+    pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
+    container: 'my-[3rem] container mx-auto p-1 pt-0 max-w-5xl',
+    formWrapper: 'flex flex-wrap flex-col mt-4',
+    pageTitle: 'm-4 ml-1 text-center font-bold text-3xl text-gray-200 gap-[15px]',
+    smallText: 'text-sm m-2 text-slate-400 mt-0',
+    subHeading:
+      'text-xl font-bold m-2 mt-[2.5rem] mb-2 pt-[2rem] border-t-slate-700 border-t border-dashed',
+    input:
+      `m-2 outline-none p-3 ${dark ? 'bg-[#1e293b] hover:bg-[#334155]' : 'bg-neutral-200 hover:bg-neutral-300'} rounded-[0.4rem]  transition linear`,
+    label: 'm-2 text-small mt-4',
+    button:
+      'gradBlue rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white',
+    previewImage:
+      'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
+    notConnectedWrapper: 'flex justify-center items-center h-screen',
+    traitsButtons:
+      'p-[0.65rem] rounded-[0.4rem] cursor-pointer m-3 font-bold round border-dashed border border-slate-400 ease-linear transition duration-300 text-white',
+    secondaryButton:
+      'rounded-[0.4rem] cursor-pointer p-4 m-3 font-bold max-w-[12rem] w-[10rem] ease-linear transition duration-300 text-white border border-slate-400 hover:border-slate-600',
+  }
 
   const { mutate: sendNotification } = useMutation(
     async ({ address, contractAddress, type }) =>
@@ -251,7 +252,7 @@ const create = () => {
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      background: '#1e293b',
+      background: dark ? '#1e293b' : '#e5e5e5',
       color: '#ffffff',
       borderRadius: '7px',
       border: '0',
@@ -260,27 +261,27 @@ const create = () => {
     }),
     menu: (provided) => ({
       ...provided,
-      background: '#1e293b',
+      background:  dark ? '#1e293b' : '#e5e5e5',
       color: '#ffffff',
       borderRadius: '20px',
       padding: '20px',
     }),
     singleValue: (provided) => ({
       ...provided,
-      background: '#1e293b',
+      background:  dark ? '#1e293b' : '#e5e5e5',
       color: '#ffffff',
       borderRadius: '7px',
       margin: 0,
     }),
     valueContainer: (provided) => ({
       ...provided,
-      background: '#1e293b',
+      background:  dark ? '#1e293b' : '#e5e5e5',
       borderRadiius: '10px',
     }),
     option: (provided, state) => ({
       ...provided,
       borderRadius: '7px',
-      color: state.isFocused ? '#1e293b' : '#ffffff',
+      color: state.isFocused ? '#1e293b' : dark ? '#ffffff' : '#1e293b',
       cursor: 'pointer',
     }),
   }

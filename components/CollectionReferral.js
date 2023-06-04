@@ -55,6 +55,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                     <div className="relative flex-grow">
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={payableLevel}
                             onChange={(e) =>
@@ -72,6 +75,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                         <span className="absolute top-4 right-2 text-xl">%</span>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={level1}
                             onChange={(e) =>
@@ -86,6 +92,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                         <span className="absolute top-4 right-2 text-xl">%</span>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={level2}
                             onChange={(e) =>
@@ -100,6 +109,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                         <span className="absolute top-4 right-2 text-xl">%</span>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={level3}
                             onChange={(e) =>
@@ -114,6 +126,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                         <span className="absolute top-4 right-2 text-xl">%</span>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={level4}
                             onChange={(e) =>
@@ -128,6 +143,9 @@ const CollectionReferral = ({collectionData, setShowReferralModal}) => {
                         <span className="absolute top-4 right-2 text-xl">%</span>
                         <input
                             type="number"
+                            min={0}
+                            max={100}
+                            step={0.01}
                             className={style.input}
                             value={level5}
                             onChange={(e) =>

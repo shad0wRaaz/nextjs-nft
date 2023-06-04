@@ -5,12 +5,11 @@ import "slick-carousel/slick/slick.css";
 import SaveReferral from './SaveReferral'
 import FeaturedItems from './FeaturedItems'
 import { RiCloseFill } from 'react-icons/ri';
+import { config } from '../lib/sanityClient';
 import { useEffect, useState } from 'react';
 import "slick-carousel/slick/slick-theme.css";
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
-import { config } from '../lib/sanityClient';
-
 
 const style = {
   wrapper: `relative overflow-hidden`,

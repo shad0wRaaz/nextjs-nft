@@ -6,6 +6,7 @@ import icon32 from '../assets/favicon/favicon-32x32.png'
 import icon16 from '../assets/favicon/favicon-16x16.png'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { SearchProvider } from '../contexts/SearchContext'
+import { AdminUserProvider } from '../contexts/AdminContext'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
 import { ThirdwebProvider, ChainId } from '@thirdweb-dev/react'
@@ -20,23 +21,25 @@ function MyApp({ Component, pageProps }) {
     <ThirdwebProvider activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}>
       <ThemeProvider>
         <UserProvider>
-          <SearchProvider>
-            <QueryClientProvider client={client}>
-              <MarketplaceProvider>
-                <Head>
-                  <title>Nuva NFT: A Multichain NFT Marketplace</title>
-                  <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
-                  <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
-                </Head>
-                <SettingsProvider>
-                  <CollectionFilterProvider>
-                    <Component {...pageProps} />
-                  </CollectionFilterProvider>
-                </SettingsProvider>
-                <ReactQueryDevtools />
-              </MarketplaceProvider>
-            </QueryClientProvider>
-          </SearchProvider>
+          <AdminUserProvider>
+            <SearchProvider>
+              <QueryClientProvider client={client}>
+                <MarketplaceProvider>
+                  <Head>
+                    <title>Nuva NFT: A Multichain NFT Marketplace</title>
+                    <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
+                    <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
+                  </Head>
+                  <SettingsProvider>
+                    <CollectionFilterProvider>
+                      <Component {...pageProps} />
+                    </CollectionFilterProvider>
+                  </SettingsProvider>
+                  <ReactQueryDevtools />
+                </MarketplaceProvider>
+              </QueryClientProvider>
+            </SearchProvider>
+          </AdminUserProvider>
         </UserProvider>
       </ThemeProvider>
     </ThirdwebProvider>

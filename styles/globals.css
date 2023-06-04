@@ -9,6 +9,7 @@
   --accent-color: #0ea5e9;
   --accent-hover-color: #38bdf8;
 }
+html{scroll-behavior:smooth}
 html,
 body {
   padding: 0;
@@ -600,3 +601,200 @@ right connector from last child*/
 }
 /*tailwind fix, there is below class in tailwind , so custom code*/
 
+/*Rewarding Renditions Landing Page*/
+.alfaslab {
+  font-family: 'Alfa Slab One', sans-serif;
+  color: #ecffe1;
+}
+.navbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  position: relative;
+}
+.navbar-collapse {
+  align-items: center;
+  flex-basis: 100%;
+  flex-grow: 1;
+}
+.navbar-nav {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+.nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+.header .navbar {
+  padding-block: 1.35rem;
+}
+.collapse:not(.show) {
+  display: none;
+}
+.justify-content-end {
+  justify-content: flex-end!important;
+}
+.default-btn {
+  background: linear-gradient(90deg,#0031A6,#001D5E);
+  /* background: linear-gradient(90deg,#f6fff2,#c3ffa9); */
+  border-radius: 10px;
+  box-shadow: 0 5px 0 0 #0d142f;
+  color: #f6fff2;
+  font-family: Alfa Slab One,cursive;
+  font-size: 1.125rem;
+  line-height: 50px;
+  padding: 0 1.7rem;
+  text-decoration: none;
+  -webkit-transform-origin: right;
+  transform-origin: right;
+  transition: all .3s ease;
+}
+.default-btn {
+  line-height: 56px;
+  padding: 1rem 2.25rem;
+}
+.default-btn:hover {
+  box-shadow: 0 5px 0 0 #000000;
+}
+.rrbanner {
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-block: 100px;
+}
+.rrbanner__content h1, .rrbanner__content p {
+  color: #ecffe1;
+  margin-bottom: 20px;
+}
+.text--3d {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #0d142f;
+  -webkit-filter: drop-shadow(2px 5px 0 #0d142f);
+  filter: drop-shadow(2px 5px 0 #0d142f);
+}
+.color--gradient-y {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(0deg,#f6fff2,#c3ffa9);
+  -webkit-background-clip: text;
+}
+.text-uppercase {
+  text-transform: uppercase!important;
+}
+.rrbanner h1 {
+  font-size: calc(1.75rem + 5.14286vw);
+}
+.rrbanner__apes-item:first-child {
+  left: 25%;
+}
+.rrbanner__apes-item {
+  bottom: 0;
+}
+.collection h1, .collection h2, .collection h3, .collection h4, .collection h5, .collection h6,
+.mint h1, .mint h2, .mint h3, .mint h4, .mint h5, .mint h6 {
+  color: #ecffe1;
+  font-family: Alfa Slab One,cursive;
+  font-weight: 400;
+  line-height: 1.2;
+}
+.mint h6 {font-size:1.125rem}
+.mint h4, .roadmap  h4 {font-size:1.575rem;}
+.mint h2 {font-size: 2.5rem;}
+.faq h2, .community h2, .footer h2 {font-size:6rem; line-height: normal;}
+.collection__thumb img {
+  border-radius: 10px;
+}
+.roadmap__item {
+
+  /* background: linear-gradient(120deg,#5A0353,#F100CB,#5A0353); */
+  background: linear-gradient(0deg,#f6fff2,#c3ffa9);
+  border-radius: 10px;
+  padding: 30px 20px;
+  transition: all .3s ease;
+  text-align: center;
+}
+.roadmap__inner {text-align: center; display: flex; justify-content: center; flex-direction: column; align-items: center;}
+.roadmap__content h4, .roadmap__content p {
+  /* color: #ffffff; */
+  color: #0d142f;
+}
+.roadmap__content h4{
+margin-bottom: 15px;
+}
+.team__wrapper .grid .col { display: flex; flex-direction: row; justify-content: center;}
+.team__item {
+  background: linear-gradient(0deg,#f6fff2,#c3ffa9);
+  border-radius: 10px;
+  text-align: center;
+  transition: all .3s ease;
+  padding: 40px;
+}
+.team__content {margin-top: 20px;}
+.team__content h5 a {
+  color: #0d142f;
+}
+.team__content p {
+  color: #555;
+  font-size: 1rem;
+}
+@media (min-width: 1400px){
+  .rrbanner {
+      padding-block: 220px;
+  }
+  h1 {
+    font-size: 6.25rem;
+}
+.rrbanner__content p {
+  font-size: 1.875rem;
+}
+.rrbanner__apes-item:first-child {
+  left: 20%;
+}
+.rrbanner__apes-item {
+  position: relative;
+}
+
+}
+@media (min-width: 1200px){
+  .rewardingrenditions .container{
+    max-width: 1200px;
+  }
+  .navbar-expand-xl .navbar-nav {
+      flex-direction: row;
+  }
+  .navbar-expand-xl {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .header .navbar-collapse {
+    margin-top: 0;
+}
+.navbar-expand-xl .navbar-collapse {
+  display: flex!important;
+  flex-basis: auto;
+}
+
+}
+@media (min-width: 992px){
+  .rrbanner {
+      padding-block: 160px;
+  }
+
+
+}
+@media (max-width: 768px){
+  .mint h6 {font-size:1.0rem}
+  .mint h4, .roadmap  h4 {font-size:1.175rem;}
+  .mint h2, .faq h2 , .community h2, .footer h2 {font-size:1.8rem;}
+
+}
+@media (min-width: 576px){
+
+}

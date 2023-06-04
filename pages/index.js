@@ -1,19 +1,19 @@
+import { useRouter } from 'next/router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import { useEffect, useState } from 'react'
 import HowToInfo from '../components/HowToInfo'
 import HeroSearch from '../components/HeroSearch'
 import ExploreNFTs from '../components/ExploreNFTs'
+import bgimage from '../public/assets/bg-image.jpg'
 import HeroCarousel from '../components/HeroCarousel'
 import TopCollections from '../components/TopCollections'
 import { useThemeContext } from '../contexts/ThemeContext'
 import herobackground from '../assets/herobackground.jpeg'
-import bgimage from '../public/assets/bg-image.jpg'
 import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
 import PopularVideoNFTs from '../components/PopularVideoNFTs'
-import { useRouter } from 'next/router'
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
@@ -52,7 +52,7 @@ export default Home
 export async function getServerSideProps(){
   try {
     let featuredNfts = []
-    const checkserver = await fetch(`${HOST}/api/checkserver`).catch(err => console.log(err));
+    // const checkserver = await fetch(`${HOST}/api/checkserver`).catch(err => console.log(err));
 
     const response = await fetch(`${HOST}/api/getfeaturednfts`).catch(err => console.error(err));
     if(response){

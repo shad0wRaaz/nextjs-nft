@@ -8,16 +8,17 @@ import { TiWarningOutline } from 'react-icons/ti'
 import { BsLightningCharge } from 'react-icons/bs'
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
+import { useUserContext } from '../../contexts/UserContext'
 import { RiAuctionFill, RiAuctionLine } from 'react-icons/ri'
 import { useThemeContext } from '../../contexts/ThemeContext'
-import { getMyPayingNetwork } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
 import { ChainId, NATIVE_TOKENS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
+import { getMyPayingNetwork, getUser } from '../../fetchers/SanityFetchers'
+import  { updateSingleUserDataToFindMaxPayLevel } from '../../utils/utilities'
 import { useChainId, useAddress, useSigner, useSwitchChain } from '@thirdweb-dev/react'
-import { saveTransaction, addVolumeTraded, sendReferralCommission, updatePayableLevel } from '../../mutators/SanityMutators'
-import { useUserContext } from '../../contexts/UserContext'
+import { saveTransaction, addVolumeTraded, sendReferralCommission, updatePayableLevel, updateBoughtNFTs } from '../../mutators/SanityMutators'
 
 const style = {
   button: `mr-8 flex items-center py-2 px-12 rounded-lg cursor-pointer`,
@@ -58,7 +59,7 @@ const MakeOffer = ({
   ownerData
 }) => {
 
-var listed = true
+  var listed = true
   if(listingData?.message || !listingData) {
     listed = false
   }
@@ -124,10 +125,18 @@ var listed = true
   )
 
   const { mutate: updateLevel } = useMutation(
-    () => updatePayableLevel(address, nftCollection?.payablelevel),
+    ({walletAddress, level}) => updatePayableLevel({walletAddress, level}),
     {
       onError: (err) =>{ toast.error('Commission level could not be updated', errorToastStyle);},
-      onSuccess: (res) => {}
+      onSuccess: (res) => {  }
+    }
+  );
+
+  const { mutate: changeBoughtNFTs } = useMutation(
+    ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
+    {
+      onError: (err) => { console.log(err); },
+      onSuccess: (res) => { console.log(res)}
     }
   )
   
@@ -150,15 +159,18 @@ var listed = true
       setTestnet(true);
     }
     //check if this collection has seperate commission list
+
     if(!referralAllowedCollections) return
     const allAllowedCollections = referralAllowedCollections.map(collection => collection._ref);
 
     if(allAllowedCollections.includes(nftCollection?._id)){
       setAllowedSeperateCommission(true);
     }
-    return()=>{}
+    return() => {
+//clean up function
+    }
 
-  }, []);
+  }, [referralAllowedCollections]);
 
   useEffect(() => {
     if (!listingData) return
@@ -218,19 +230,18 @@ var listed = true
   }
 
   const updateRoyaltyReceiver = async () => {
-    const allowedContracts = ['0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed7', '0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed5', '0xb63cf439Dfa97d540AD0A8D29fE60Ae23bC123ca'];
-    if(listingData.sellerAddress != '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6' || !allowedContracts.includes(listingData.assetContractAddress)) 
+    if(!referralAllowedCollections) return;
+    const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
+    if(listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' && allowedContracts.includes(nftCollection._id)) 
     {
-      console.log('not eligible');
-      return
+      console.log('processing change of royalty receiver')
+      await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
+      {
+        contractAddress: listingData.assetContractAddress, 
+        walletAddress: address, 
+        tokenId: listingData.asset.id,
+      });
     }
-    const action = await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
-    {
-      contractAddress: listingData.assetContractAddress, 
-      walletAddress: address, 
-      tokenId: listingData.asset.id,
-    });
-    // console.log(action);
   }
 
   const payToMySponsors = async() => {
@@ -246,40 +257,108 @@ var listed = true
     }
     let sponsors = [];
     const payNetwork = await getMyPayingNetwork(address);
-    // console.log(payNetwork)
-    const tokenPriceinBNB = convertBuyPricetoBNB(buyOutPrice);
-    if(Boolean(payNetwork[0]?.sponsor) && payNetwork[0]?.sponsor?.payablelevel >= 1){
+    
+    let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0]);
+    if(Boolean(network?.sponsor)){
+      network = {
+        ...network,
+        sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor)
+      }
 
-      let sponsor_L1 = payNetwork[0].sponsor.walletAddress;
+      if(Boolean(network?.sponsor?.sponsor)){
+        network = {
+          ...network,
+          sponsor: {
+            ...network.sponsor,
+            sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor),
+          }
+        }
+
+        if(Boolean(network?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
+            sponsor: {
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor)
+              }
+            }
+          }
+        }
+
+        if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
+            sponsor: {
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor:{
+                  ...network.sponsor.sponsor.sponsor,
+                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor)
+                }
+              }
+            }
+          }
+        }
+
+        if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
+            sponsor: {
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor:{
+                  ...network.sponsor.sponsor.sponsor,
+                  sponsor: {
+                    ...network.sponsor.sponsor.sponsor.sponsor,
+                    sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log(network);
+    }
+
+
+    
+    const tokenPriceinBNB = convertBuyPricetoBNB(buyOutPrice);
+    if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
+
+      let sponsor_L1 = network.sponsor.walletAddress;
       let sponsor_L1_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_one : referralCommission.referralrate_one;
       sponsors.push({ receiver: sponsor_L1, token: tokenPriceinBNB * sponsor_L1_rate / 100 });  
     }
-      if(Boolean(payNetwork[0]?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 2){
-        let sponsor_L2 =  payNetwork[0].sponsor.sponsor.walletAddress;
+      if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
+        let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
         let sponsor_L2_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_two : referralCommission.referralrate_two;
         sponsors.push({ receiver: sponsor_L2, token: tokenPriceinBNB * sponsor_L2_rate / 100 });
       }
 
-
-      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.sponsor?.payablelevel >= 3){
-        let sponsor_L3 =  payNetwork[0].sponsor.sponsor.sponsor.walletAddress;
+      if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
+        let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L3_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_three : referralCommission.referralrate_three;
         sponsors.push({ receiver: sponsor_L3, token: tokenPriceinBNB * sponsor_L3_rate / 100 });
       }
 
-      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 4){
-        let sponsor_L4 =  payNetwork[0].sponsor.sponsor.sponsor.sponsor.walletAddress;
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
+        let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L4_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_four : referralCommission.referralrate_four;
         sponsors.push({ receiver: sponsor_L4, token: tokenPriceinBNB * sponsor_L4_rate / 100 });
       }
 
-      if(Boolean(payNetwork[0]?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && payNetwork[0]?.sponsor?.sponsor?.payablelevel >= 5){
-        let sponsor_L5 =  payNetwork[0].sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
+        let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L5_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_five : referralCommission.referralrate_five;
         sponsors.push({ receiver: sponsor_L5, token: tokenPriceinBNB * sponsor_L5_rate / 100 });
       }
 
-    // console.log(sponsors);
+    console.log(sponsors);
     // return;
 
     //send the tokens and get list of transaction hash to save in database
@@ -287,6 +366,67 @@ var listed = true
 
 
   }
+
+  //change payable level to highest value of company's collection available
+  // const changeSellerPayableLevel = async () => {
+  //   if(!referralAllowedCollections) return;
+  //   const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
+
+  //   //only change the payable level, when selling is done by non-company address 
+  //   if(listingData.sellerAddress != '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' && allowedContracts.includes(nftCollection._id)) {
+      
+  //     //check if the seller has any other company's collection, if yes then update to that level, otherwise update level to 1
+  //     const chainId = process.env.NODE_ENV == "production" ? 56 : 97;
+  //     const {data} =  await axios.get(`${HOST}/api/infura/sdk/getCollectionByWalletAddress/${chainId}/${listingData.sellerAddress}`);
+
+  //     const allCollectionsBySeller = data.collections;
+      
+  //     if(Boolean(allCollectionsBySeller) && allCollectionsBySeller.length > 0){
+  //       const allCollectionContracts = allCollectionsBySeller.map(contracts => contracts.contract);
+      
+  //       //check payable level of all those allowed contracts if possible
+  //       const payableLevels = allCollectionContracts.map(async contract => 
+  //         {
+  //           const query = `*[_type == "nftCollection" && chainId == "${process.env.NODE_ENV == 'production' ? 56 : 97}" && lower(contractAddress) == lower("${contract}")]`;
+  //           const result = await config.fetch(query);
+  //           return result[0];
+  //         });
+        
+  //       const allCollection = await Promise.all(payableLevels);
+  //       let filteredCollection = allCollection.filter(collection => collection != null);
+  //       filteredCollection = filteredCollection.filter(collection => allowedContracts.includes(collection._id));
+        
+  //       //get max payable level
+  //       let newPayLevel = 1;
+  //       const levels = filteredCollection.map(collection => Number(collection.payablelevel));
+  //       newPayLevel = Math.max(...levels);
+
+  //       const {payablelevel} = await getUser(listingData.sellerAddress);
+        
+  //       if(Boolean(payablelevel) && Number(newPayLevel) > Number(payablelevel)){
+  //         updateLevel(
+  //           {
+  //             walletAddress: listingData.sellerAddress,
+  //             level: newPayLevel,
+  //           }
+  //         )
+  //       }
+
+
+  //     }
+      
+  //     // console.log(allCollectionsBySeller)
+  //     // if(allCollectionsBySeller.count == 0 || !Boolean(allCollectionsBySeller.count)){
+  //     //   updateLevel({ walletAddress: listingData.sellerAddress, level: 1});
+  //     // }else{
+  //     //   updateLevel(listingData.sellerAddress, 3);
+  //     // }
+  //     return
+  //   }
+  //   console.log('not eligible')
+  // }
+
+
 
   //function to make offer for nfts
   const makeAnOffer = async (
@@ -438,6 +578,7 @@ var listed = true
     setBidLoading(false)
     openBidSetting('none');
   }
+
   const buyItem = async (
     listingId = listingData?.id?.toString(),
     quantityDesired = 1,
@@ -445,9 +586,33 @@ var listed = true
     qc = queryClient,
     sanityClient = config
     ) => {
+
+        //update pay info-> list of all bought NFTs from the selected Collections
+        // const payObj =  {
+        //   walletAddress: address,
+        //   chainId: nftCollection.chainId,
+        //   contractAddress: listingData.assetContractAddress,
+        //   tokenId: listingData.asset.id,
+        //   payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
+        //   type: 'buy'
+        // }
+        // changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+        
+        // //also update the bought NFTs from seller address
+        // //no need to do this if the seller is company
+        // if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
+        //   const sellObj = {
+        //     ...payObj,
+        //     walletAddress: listingData?.sellerAddress,
+        //     type: 'sell',
+        //   }
+        //   changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
+        // }
+
+        // return
+     
       // await updateRoyaltyReceiver();
-      // return;
-      // payToMySponsors();
+      
 
       // //check payable commission level, only update if new nft collection has higher level the user's current payable level
       // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
@@ -477,12 +642,6 @@ var listed = true
             switchChain(Number(nftCollection.chainId)).catch(err => { console.log(err)});
             return;
           }
-      // if(currencyChainMatcher[chainId] != listingData?.buyoutCurrencyValuePerToken.symbol && listingData?.message != 'NFT data not found'){
-      //   console.log(currencyChainMatcher[chainId])
-      //   toast.error("Wallet is connected to wrong chain. Switch to correct chain.", errorToastStyle);
-      //   // switchNetwork(Number(nftCollection?.chainId));
-      //   return
-      // }
 
           setBuyLoading(true);
           setLoadingNewPrice(true);
@@ -498,7 +657,6 @@ var listed = true
                           .buyoutListing(listingId, quantityDesired)
                           .catch(err => 
                               {
-                                // console.log(err.message); 
                                 setBuyLoading(false);
                                 setLoadingNewPrice(false); 
                                 toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
@@ -516,6 +674,7 @@ var listed = true
               //   chainid: chainId,
               // })
               // console.log(tx)
+
               if(Boolean(nftCollection)){
                 const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
                 
@@ -531,18 +690,50 @@ var listed = true
                   volume: volume2Add
                 });
 
+                //update pay info-> list of all bought NFTs from the selected Collections
+                // const payObj =  {
+                //   walletAddress: address,
+                //   chainId: nftCollection.chainId,
+                //   contractAddress: listingData.assetContractAddress,
+                //   tokenId: listingData.asset.id,
+                //   payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
+                //   type: 'buy'
+                // }
+                // changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+                
+                // //also update the bought NFTs from seller address
+                // //no need to do this if the seller is company
+                // if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
+                //   const sellObj = {
+                //     ...payObj,
+                //     walletAddress: listingData?.sellerAddress,
+                //     type: 'sell',
+                //   }
+                //   changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
+                // }
+                
+                //no need to do updateLevel, as this will now be handled using boughtnfts field
                 //check payable commission level, only update if new nft collection has higher level the user's current payable level
-                const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
-                const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
+                // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
+                // const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
 
-                if(collectionlevel > userlevel) {
-                  updateLevel();
-                }
+                // if(collectionlevel > userlevel) {
+                //   updateLevel(
+                //     { 
+                //       walletAddress: address, 
+                //       level: nftCollection?.payablelevel
+                //     }
+                //   );
+                // }
           
                 //payout to network
                 // await payToMySponsors();
-                
-                await updateRoyaltyReceiver();
+
+                //change the unilevel of seller, if it applies
+
+
+                //update the royalty receiver of the nft, only if this is first purchase and it is from the company
+                // await updateRoyaltyReceiver();
               }
         
               //update Owner in Database

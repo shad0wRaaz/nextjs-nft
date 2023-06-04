@@ -515,11 +515,11 @@ const profile = () => {
                             e.preventDefault();
                             setProfile(e.dataTransfer.files[0]);
                           }}>
-                            <div className="overlay absolute h-full transition w-full top-0 left-0 hover:bg-slate-800/90 text-center flex justify-center flex-wrap flex-col items-center gap-2">
+                            <div className={`overlay absolute h-full transition w-full top-0 left-0 hover:bg-slate-800/90 text-center flex justify-center flex-wrap flex-col items-center gap-2`}>
                               <BsUpload fontSize={50} color="white"/>
-                              <span className="text-white">Drag & Drop Image</span>
+                              <span className={dark ? '' : 'text-slate-700' }>Drag & Drop Image</span>
                               <p className={style.smallText}>
-                                <span className="text-white">Supported file types: JPG, PNG, GIF, WEBP, JFIF.</span>
+                                <span className={dark ? '' : 'text-slate-700' }>Supported file types: JPG, PNG, GIF, WEBP, JFIF.</span>
                               </p>
                             </div>
                         </div>
@@ -587,7 +587,7 @@ const profile = () => {
                             : style.inputgroup +
                               ' border-neutral-200 bg-neutral-100 '
                         } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
-                        <span>https://twitter.com/</span>
+                        <span className="text-sm">https://twitter.com/</span>
                       </div>
                       <input
                         type="text"
@@ -613,7 +613,7 @@ const profile = () => {
                             : style.inputgroup +
                               ' border-neutral-200 bg-neutral-100 '
                         } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
-                        <span>https://instagram.com/</span>
+                        <span className="text-sm">https://instagram.com/</span>
                       </div>
                       <input
                         type="text"
@@ -639,7 +639,7 @@ const profile = () => {
                         : style.inputgroup +
                         ' border-neutral-200 bg-neutral-100'
                       } style={{ borderTopRightRadius : '0', borderBottomRightRadius : '0'}}>
-                        <span>https://facebook.com/</span>
+                        <span className="text-sm">https://facebook.com/</span>
                       </div>
                       <input
                         type="text"

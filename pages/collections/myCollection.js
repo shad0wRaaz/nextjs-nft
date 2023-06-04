@@ -6,6 +6,7 @@ import { FiImage } from 'react-icons/fi'
 import { CgUserList } from 'react-icons/cg'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { HiChevronRight } from 'react-icons/hi'
 import { useState, useEffect, useRef } from 'react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import { createAwatar } from '../../utils/utilities'
@@ -24,7 +25,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
-import { useActiveChain, useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
+import { useAddress, useChain, useChainId, useSigner } from '@thirdweb-dev/react'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
 
@@ -36,17 +37,14 @@ const Collection = () => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const { blockchainName } = useSettingsContext();
   const bannerRef = useRef();
-  const activechain = useActiveChain();
+  const activechain = useChain();
   const [listStyle, setListStyle] = useState('grid');
-  const {
-    myUser,
-    queryCacheTime,
-    queryStaleTime,
-    myCollections,
-  } = useUserContext();
+  const { myUser, myCollections} = useUserContext();
   const [showType, setShowType] = useState('collection');
   const qc = useQueryClient();
   const [compact, setcompact] = useState(true);
+  const [cursor, setCursor] = useState();
+  const [cursorHistory, setCursorHistory] = useState([])
 
   const style = {
     nftwrapper:
@@ -86,17 +84,18 @@ const Collection = () => {
   // )
 
   const { data: mynfts, status: mynftstatus } = useQuery(
-    ['mynfts', address],
+    ['mynfts', address, cursor],
     INFURA_getMyAllNFTs(activechain?.chainId),
     {
       enabled: Boolean(address) && Boolean(activechain),
       onError:() => {},
       onSuccess:(res) => 
       {
-        // console.log(res);
+
       }
     }
   )
+  // console.log(cursorHistory)
 
   // const { data: ownedNftData, status: ownedNftStatus } = useQuery(
   //   ['collectedItems', address],
@@ -296,7 +295,7 @@ const Collection = () => {
                   <FiImage fontSize="30px" className="mb-2" />
                   <span className="text-sm">NFTs</span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {mynfts?.length == 0 ? '0' : mynfts?.length}
+                  {Boolean(mynfts?.total) ? mynfts?.total : 0}
                   </span>
                 </div>
 
@@ -343,7 +342,7 @@ const Collection = () => {
           } flex justify-between gap-2 overflow-scroll rounded-full p-1 shadow`}
         >
           <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
+            className={`transition cursor-pointer rounded-full p-4 px-8 ${
               dark
                 ? ' hover:bg-slate-600 hover:text-neutral-100'
                 : ' hover:bg-sky-100 hover:text-black'
@@ -356,7 +355,7 @@ const Collection = () => {
             <span className="inline-block pl-2 w-max">My Collections</span>
           </div>
           <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
+            className={` transition cursor-pointer rounded-full p-4 px-8 ${
               dark
                 ? ' hover:bg-slate-600 hover:text-neutral-100'
                 : ' hover:bg-sky-100 hover:text-black'
@@ -410,21 +409,28 @@ const Collection = () => {
         </div>
       </div>
       
-
-        <div className="flex justify-center mt-5 rounded-md overflow-hidden">
-            <div className="rounded-md flex overflow-hidden">
-              <div 
-                className={`p-2  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'} ${!compact && '!bg-slate-600'} cursor-pointer`}
-                onClick={() => setcompact(false)}>
-                  <BsGrid/>
-              </div>
-              <div 
-                className={`p-2  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'} ${compact && '!bg-slate-600'} cursor-pointer`}
-                onClick={() => setcompact(true)}>
-                  <BsGrid3X3Gap/>
-              </div>
-            </div>
+      <div className="container mx-auto lg:p-[8rem] lg:pt-8 lg:pb-0 p-[2rem] flex justify-between items-center">
+        <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
+          <div 
+            className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+            onClick={() => setcompact(false)}>
+            <BsGrid/>
+          </div>
+          <div 
+            className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+            onClick={() => setcompact(true)}>
+            <BsGrid3X3Gap/>
+          </div>
         </div>
+        
+        {/* {Boolean(mynfts?.cursor) && ( */}
+          <div>
+            <button 
+              className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+              onClick={() => setCursor(mynfts?.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+          </div>
+        {/* )} */}
+      </div>
 
 
 
@@ -460,7 +466,7 @@ const Collection = () => {
             <h2 className={style.errorTitle + ' mb-4'}>
               No Collection created yet.
             </h2>
-            <Link href="/contracts">
+            <Link href="/collections/create">
               <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center text-white">
                 Create Collection
               </button>
@@ -470,22 +476,29 @@ const Collection = () => {
 
 
         {showType == 'myallnfts' &&
-          (mynftstatus == "success" && mynfts?.length > 0 ? (
-            <div className={style.nftwrapper}>
-              {mynfts.map((nftItem, id) => (
+          (mynftstatus == "success" && mynfts?.assets?.length > 0 ? (
+            <>
+              <div className={style.nftwrapper}>
+                {mynfts?.assets?.map((nftItem, id) => (
 
-                  <NFTCardExternal
-                    key={id}
-                    chain={blockchainName[chainid]}
-                    nftItem={nftItem}
-                    metadata={nftItem.metadata}
-                    listings={fullListingData}
-                    creator={{ _ref: address }}
-                    compact={compact}
-                  />
+                    <NFTCardExternal
+                      key={id}
+                      chain={blockchainName[chainid]}
+                      nftItem={nftItem}
+                      metadata={nftItem.metadata}
+                      listings={fullListingData}
+                      creator={{ _ref: address }}
+                      compact={compact}
+                    />
+                  ))}
 
-                ))}
-            </div>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button 
+                  className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                  onClick={() => setCursor(mynfts?.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+              </div>
+            </>
           ) : (
             <div className="flex w-full justify-center">
               {' '}

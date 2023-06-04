@@ -9,8 +9,8 @@ export function SettingsProvider({children}) {
     const [blockedNfts, setBlockedNfts] = useState([]);
     const [blockedCollections, setBlockedCollections] = useState([]);
     const [testnet, setTestnet] = useState(false);
-    const [referralCommission, setReferralCommission] = useState([]); //this is coming out of royalty commission; this is ongoing everytime
-    const [referralAllowedCollections, setReferralAllowedCollections] = useState([]); // this commission will be for initial purchase
+    const [referralCommission, setReferralCommission] = useState([]); //this is coming out of royalty commission; this is ongoing everytime for all collections and nfts
+    const [referralAllowedCollections, setReferralAllowedCollections] = useState([]); // this commission will be for initial purchase, this is only for company collections and nfts
     const blockchainName = { 
         '1': 'mainnet',
         '5': 'goerli',

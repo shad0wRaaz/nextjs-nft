@@ -57,3 +57,44 @@ export const createAwatar = (seed) => {
 
   return awatar
 }
+
+export const updateSingleUserDataToFindMaxPayLevel = (user) => {
+  
+    if(!user.boughtnfts){
+        const newObj = { ...user, paylevel: 1}
+        return newObj
+    }else{
+        const data = JSON.parse(user.boughtnfts);
+        const allPayLevels = data?.map(nft => Number(nft.payablelevel));
+        
+        const maxLevel = Math.max(...allPayLevels);
+        const newObj = {
+            ...user,
+            paylevel: Boolean(maxLevel) ? maxLevel : 1
+        }
+        return newObj;
+    }
+
+}
+
+export const updateUserDataToFindMaxPayLevel = (allusers) => {
+  const updatedUsers = allusers.map(user => {
+    if(!user.boughtnfts){
+        const newObj = { ...user, paylevel: 1}
+        return newObj
+    }else{
+        const data = JSON.parse(user.boughtnfts);
+        const allPayLevels = data?.map(nft => Number(nft.payablelevel));
+        
+        const maxLevel = Math.max(...allPayLevels);
+        const newObj = {
+            ...user,
+            paylevel: Boolean(maxLevel) ? maxLevel : 1
+        }
+        return newObj;
+
+    }
+  });
+
+  return updatedUsers;
+}

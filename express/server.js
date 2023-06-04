@@ -10,11 +10,11 @@ import { v4 as uuidv4 } from 'uuid'
 import bodyParser from 'body-parser'
 import { SMTPClient } from 'emailjs'
 import sanityClient from '@sanity/client'
+import { S3Client } from '@aws-sdk/client-s3'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { INFURA_AUTH } from './infura/config.js'
 import { emailBody } from './emails/templates.js'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
-
-import { S3Client, PutObjectCommand, GetObjectCommand, ConditionFilterSensitiveLog } from '@aws-sdk/client-s3'
 
 const app = express()
 app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
@@ -31,7 +31,6 @@ app.use(bodyParser.json());
 dotenv.config();
 //chain ENUMS
 
-const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + process.env.NEXT_PUBLIC_INFURA_SECRET_KEY,).toString('base64');
 
 const chainnum = {
   "80001": "mumbai",
@@ -260,6 +259,56 @@ const nftStorage = multer.diskStorage({
 
 const nftUpload = multer({ storage: nftStorage});
 
+//nft search from INFURA
+app.get('/api/infura/:chainId/search/:searchQuery', async(req, res) => {
+
+  const { chainId, searchQuery } = req.params;
+  // const data = await getCollectionsByWallet(chainId, walletAddress)
+  // return res.send(data)
+  try{
+    const data = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/search`,
+    {
+      params: {
+        query: searchQuery,
+      }
+    },
+     {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+
+  });
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+
+})
+//get all collections in which the walletaddress own an nft
+app.get('/api/infura/sdk/getCollectionByWalletAddress/:chainId/:walletAddress', async(req, res) => {
+  const { chainId, walletAddress } = req.params;
+  // const data = await getCollectionsByWallet(chainId, walletAddress)
+  // return res.send(data)
+  try{
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${walletAddress}/assets/collections`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+
+  });
+  
+  return res.send(data);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+  }
+
+})
+
 //nft transfer data
 app.get('/api/infura/getTransferData/:chainId/:contractAddress/:tokenId', async(req, res) =>{
   const {chainId, contractAddress, tokenId} = req.params;
@@ -360,10 +409,12 @@ app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, r
 
 //get all owners of a collection
 //this gives nft metadata in string format and gives current owner and minter as well
-app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) =>{
+app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) => {
   const {chainId, address} = req.params;
+  const { cursor } = req.query;
   try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/owners`, {
+    const query = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/owners?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/owners`;
+    const {data} = await axios.get(query, {
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
@@ -419,15 +470,19 @@ app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) =>{
 //get all NFTs based on wallet address
 app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
   const {chainId, address} = req.params;
+  const { cursor } = req.query;
+  // console.log(cursor)
   try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts`, {
-    headers: {
-        'Content-Type': 'application/json',
+    const query = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts`;
+    const {data} = await axios.get(query, 
+    {
+      headers: {
+        'accept': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
       }
-  })
-  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
-  return res.send(data?.assets);
+    })
+
+    return res.send(data);
   
   }catch(error){
     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
@@ -438,7 +493,7 @@ app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
 app.get('/api/infura/getCollectionSanityData/:chain/:contractAddress/', async(req, res) => {  
   const {chain, contractAddress} = req.params;
 
-  const query = `*[_type == "nftCollection" && contractAddress == "${contractAddress}"] {...}`;
+  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}"] {...}`;
   const sanityData = await config.fetch(query);
   if(sanityData.length > 0){
     return res.status(200).json(sanityData[0]);
@@ -454,16 +509,18 @@ app.get('/api/getcoinsprice', async(req, res) => {
 });
 
 app.get('/api/getfeaturednfts', async(req, res) => {
-  try{
-      let featuredNfts = await redis.get("featurednfts");
 
+  try{
+    let featuredNfts = await redis.get("featurednfts");
+    
     if(featuredNfts) {
-      return res.status(200).send(featuredNfts);
+      return res.status(200).send(featuredNfts);  
     }else {
-      const query = `*[_type == "nftItem" && featured == true] {_id, id, name, featuredon, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
+      const query = `*[_type == "nftItem" && featured == true && collection->contractAddress == "0x5e8Fb5271e590C7b74E3489953e10EB1922F4C9b"] {_id, id, name, featuredon, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
       const featurednfts = await config.fetch(query);
 
       const unresolved = featurednfts?.map(async (item) => {
+
         if(item?.collection){
           const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
           const contract = await sdk.getContract(item?.collection?.contractAddress);
@@ -478,12 +535,12 @@ app.get('/api/getfeaturednfts', async(req, res) => {
         }
       })
       const resolvedPath = await Promise.all(unresolved);
-    
+
       //filtering out null and undefined objects
       const filterResolved = resolvedPath.filter(Boolean);
 
       //save in redis if not present already
-      redis.set("featurednfts", JSON.stringify(filterResolved), 'ex', 30000);
+      redis.set("featurednfts", JSON.stringify(filterResolved));
 
     
       return (res.status(200).json(filterResolved))
@@ -778,7 +835,7 @@ app.get('/api/getAllNfts', async(req, res) => {
   return res.status(200).json(allNftData);
 });
 
-app.get('/api/updateallcollections', async(req, res) => {
+app.get('/api/updateallnftdata', async(req, res) => {
   updateAllNFTData();
   return res.status(200).send({message: "success"});
 })
@@ -1257,6 +1314,7 @@ app.get("api/checkserver", async(req,res) => {
   res.send(true)
 });
 
+//get Royalty for token, used in [nftid] or [token].js page
 app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req, res) => {
   const { chain, contractAddress, tokenId } = req.params;
 
@@ -1270,44 +1328,135 @@ app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req
 
 app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   const { contractAddress, walletAddress, tokenId } = req.body;
-  const allowedContracts = ['0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed7', '0x52f3a6EEC5491294eAe17B8a5f096e9568FdBed5', '0xb63cf439Dfa97d540AD0A8D29fE60Ae23bC123ca'];
 
-  if(allowedContracts.includes(contractAddress)){
-    const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY, "mumbai"); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
-    const contract = await sdk.getContract(contractAddress);
-    const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB, "binance-testnet"); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+  const contract = await sdk.getContract(contractAddress);
 
-    if(royalty.fee_recipient == '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6'){
-      try{
-        const tx = await contract.royalties.setTokenRoyaltyInfo(
-          tokenId, 
-          {
-            seller_fee_basis_points: 250,
-            fee_recipient: walletAddress,
-          });
-    
-        return res.send(tx);
-      }catch(err){
-        //send notification to admin, royalty cannot be set
-        const emailBody = `Royalty could not be set for token with following details<br/>
-        Collection: ${contractAddress}<br/>
-        Token Id: ${tokenId}<br/>
-        Wallet Address: ${walletAddress}.<br/>
-        This needs to be added manually.`;
+  // only change royalty info if the seller is company. once it is set, should not be changed
+  const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+  if(royalty.fee_recipient == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf'){
+    try{
+      const tx = await contract.royalties.setTokenRoyaltyInfo(
+        tokenId, 
+        {
+          seller_fee_basis_points: 500,
+          fee_recipient: walletAddress,
+        });
 
-        const message = await client.sendAsync({
-          text: emailBody,
-          attachment: [{ data: emailBody, alternative: true }],
-          from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
-          to: 'to-arun@live.com',
-          subject: 'Royalty Setting could not be saved',
-        })
-        return res.send(null)
-      }
+      return res.send(tx);
+    }catch(err){
+      //send notification to admin, royalty cannot be set
+      const emailBody = `Royalty could not be set for token with following details<br/>
+      Collection: ${contractAddress}<br/>
+      Token Id: ${tokenId}<br/>
+      Wallet Address: ${walletAddress}.<br/>
+      This needs to be added manually.`;
+
+      const message = await client.sendAsync({
+        text: emailBody,
+        attachment: [{ data: emailBody, alternative: true }],
+        from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
+        to: 'to-arun@live.com',
+        subject: 'Royalty Setting could not be saved',
+      })
+      return res.send(null)
     }
   }
+  
   return res.send(null);
+});
+
+const updateAirdrops = async() => {
+  const query = `*[_type == "users" && airdrops != undefined]{airdrops}`;
+  const airdrops = await config.fetch(query);
+  const airdrop_str = JSON.stringify(airdrops)
+  redis.set('airdrops', airdrop_str);
+  return airdrop_str;
+}
+
+app.get('/api/getAirdrops', async(req, res) => {
+  const airdrops = await redis.get('airdrops');
+  if(!airdrops){
+    const data = await updateAirdrops();
+    return res.status(200).send(data);
+  }
+  return res.status(200).send(airdrops);
 })
+
+app.get('/api/traitgenerator', async(req,res) => {
+  let id = 0;
+let items = [];
+let obj;
+const Eyes = ["Round", "Googly", "Oval", "Black", "Normal", "1"]
+const Hair = ["Spiky", "Bald", "Trimmed", "Short", "Oiled", "2", "4", "5"]
+const Ear = ["Wedged", "Round", "Sliced", "Bulky", "Cut", "3"]
+const Horn = ["Backward", "Side", "Front", "Serrated", "Blunt" ,"4"]
+const Background = ["Blue", "Grey", "Green", "34", "4", "5"]
+const Clothes = ["Trouser", "Boxer", "Socks", "Mitten", "None", "Sunglasses", "Necklace", "Earring", "6"]
+
+const alltraits = [Eyes, Hair, Ear, Horn, Background];
+const result = await createCombinations(alltraits);
+return res.send(result.length)
+// console.log(result[0][0])
+// if(!result) return
+// for (let i = 1; i<=25000; i++){
+//     obj = {
+//         name: `Cryptic Dragon #${i}`,
+//         description : `Description of Cryptic Dragon #${i}`,
+//         external_url: 'https://nuvanft.io',
+//         attributes: [
+//             {
+//                 trait_type: "Eyes",
+//                 value: result[i][0]
+//             },
+//             {
+//                 trait_type: "Hair",
+//                 value: result[i][1]
+//             },
+//             {
+//                 trait_type: "Ear",
+//                 value: result[i][2]
+//             },
+//             {
+//                 trait_type: "Horn",
+//                 value: result[i][3]
+//             },
+//             {
+//                 trait_type: "Background",
+//                 value: result[i][4]
+//             },
+//             {
+//                 trait_type: "Clothes",
+//                 value: result[i][5]
+//             }
+//             ]
+//     }
+//     items.push(obj)
+// }
+
+
+})
+async function createCombinations(arrays) {
+  const combinations = [];
+  
+  function generateCombinations(index, currentCombination) {
+    if (index === arrays.length) {
+      combinations.push(currentCombination);
+      return;
+    }
+    
+    const currentArray = arrays[index];
+    
+    for (let i = 0; i < currentArray.length; i++) {
+      generateCombinations(index + 1, [...currentCombination, currentArray[i]]);
+    }
+  }
+  
+  generateCombinations(0, []);
+  
+  return combinations;
+}
+
 
 
 app.listen(8080, () => console.log('listening on 8080'));

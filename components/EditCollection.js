@@ -61,7 +61,7 @@ const EditCollection = ({collection, setShowModal}) => {
                 }
                 ).catch(err => toastHandler.error('Error in uploading image to IPFS', errorToastStyle));
               }
-              
+              // console.log(profileLink)
             if(banner){
               const bfd = new FormData();
               bfd.append("imagefile", banner);
@@ -75,6 +75,7 @@ const EditCollection = ({collection, setShowModal}) => {
                 }
                 ).catch(err => toastHandler.error('Error in uploading image to IPFS', errorToastStyle));
               }
+              // console.log(bannerLink)
             await config
             .patch(newCollectionData._id)
             .set({
@@ -83,36 +84,39 @@ const EditCollection = ({collection, setShowModal}) => {
               web3imageprofile: profileLink?.data,
               category: newCollectionData.category,
               description: newCollectionData.description,
-              external_link: newCollectionData.external_link,
+              external_link: Boolean(newCollectionData.external_link) ? newCollectionData.external_link : '',
             })
             .commit()
-            .then(() => {
-            }).catch(err => console.log(err))
+            .finally(() => {
+              toast.success('Collection metadata has been updated', successToastStyle);
+              setShowModal(false); 
+            }).catch(err => console.log(err));
 
             qc.invalidateQueries('collection'); 
             
           })()
-
+          
         },
         onError: (err) => {
           setShowModal(false);
+          qc.invalidateQueries('collection'); 
           console.log(err)
           toastHandler.error('Error in updating Collection metadata', errorToastStyle);
         }
       }
   );
   
-  useEffect(() => {
-    if(updateStatus == "success"){
-      toast.success('Collection metadata has been updated', successToastStyle);
-      setShowModal(false); 
-    }
-  }, [updateStatus])
+  // useEffect(() => {
+  //   if(updateStatus == "success"){
+      
+  //   }
+  // }, [updateStatus])
   
   const handleEdit = async (e, toastHandler = toast) =>{
       e.preventDefault();
+      
       if (
-        newCollectionData.external_link !== '' &&
+        Boolean(newCollectionData.external_link) && newCollectionData.external_link !== '' &&
         !urlPatternValidation(newCollectionData.external_link)
       ) {
         toastHandler.error('External link is not valid.', errorToastStyle);
@@ -239,7 +243,7 @@ const EditCollection = ({collection, setShowModal}) => {
                     : style.input +
                       ' border-neutral-200 hover:bg-neutral-100 flex-grow'
                 }
-                value={newCollectionData.external_link}
+                value={newCollectionData.external_link ? newCollectionData.external_link : ''}
                 onChange={(e) =>
                   setNewCollectionData({ ...newCollectionData, external_link: e.target.value })
                 }

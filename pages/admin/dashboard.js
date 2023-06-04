@@ -1,34 +1,35 @@
 import axios from 'axios'
+import moment from 'moment'
 import Head from 'next/head'
 import millify from 'millify'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { TiHeart } from 'react-icons/ti'
 import { CgClose } from 'react-icons/cg'
-import Header from '../../components/Header'
 import { GoPackage } from 'react-icons/go'
+import Header from '../../components/Header'
+import { RiCloseFill } from 'react-icons/ri'
+import { HiChevronDown } from 'react-icons/hi'
+import { Disclosure } from '@headlessui/react'
 import { config } from '../../lib/sanityClient'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import toast, { Toaster } from 'react-hot-toast'
-import { createAwatar } from '../../utils/utilities'
-import { getImagefromWeb3 } from '../../fetchers/s3'
-import React, { useEffect, useState } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
-import { getAllUsers, getTotals } from '../../fetchers/SanityFetchers'
+import React, { useEffect, useState } from 'react'
+import { createAwatar, updateUserDataToFindMaxPayLevel } from '../../utils/utilities'
+import { getImagefromWeb3 } from '../../fetchers/s3'
+import Sidebar from '../../components/admin/Sidebar'
 import BlockedNFTs from '../../components/admin/BlockedNFTs'
 import AddCategory from '../../components/admin/AddCategory'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { useAdminContext } from '../../contexts/AdminContext'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
-import { BiCategory, BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
+import { getAllUsers, getTotals } from '../../fetchers/SanityFetchers'
+import ReferralSettings from '../../components/admin/ReferralSettings'
 import BlockedCollections from '../../components/admin/BlockedCollections'
 import { getTotalsforAdmin, updateListings } from '../../fetchers/Web3Fetchers'
+import { BiCategory, BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconLoading, IconPolygon } from '../../components/icons/CustomIcons'
-import { RiCloseFill } from 'react-icons/ri'
-import ReferralSettings from '../../components/admin/ReferralSettings'
-import Sidebar from '../../components/admin/Sidebar'
-import { HiChevronDown } from 'react-icons/hi'
-import { Disclosure } from '@headlessui/react'
-import moment from 'moment'
 
 const chainnum = {
     "80001": "mumbai",
@@ -55,14 +56,12 @@ const blockchain = {
 const dashboard = () => {
     const router = useRouter();
     const address = useAddress();
-    const [loggedIn, setLoggedIn] = useState(false);
     const [popularNfts, setPopularNfts] = useState();
     const [totalNftSale, setTotalNftSale] = useState(0);
-    const [selectedChain, setSelectedChain] = useState();
     const [totalPlatformFees, setTotalPlatformFees] = useState(0);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-    const [referralModal, setReferralModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState([]);
+    const { referralModal, setReferralModal, loggedIn, setLoggedIn, selectedUser, setSelectedUser, selectedChain, setSelectedChain} = useAdminContext();
+    const [updatedUsers, setUpdatedUsers] = useState([]);
     const [searchquery, setSearchquery] = useState();
     const [categoryCount, setCategoryCount] = useState();
 
@@ -98,7 +97,9 @@ const dashboard = () => {
         {
             enabled: true,
             onSuccess: (res) => {
-                setSelectedUser(res);
+                const allUsers = updateUserDataToFindMaxPayLevel(res);
+                setSelectedUser(allUsers);
+                setUpdatedUsers(allUsers);
             }
         }
     )
@@ -129,10 +130,10 @@ const dashboard = () => {
     const findUser = (walletaddress) => {
         if(!users) return;
         if(!walletaddress || walletaddress == '') { 
-            setSelectedUser([...users]); 
+            setSelectedUser([...updatedUsers]); 
             return;
         }
-        const allusers = users.filter(user => user.walletAddress == walletaddress);
+        const allusers = updatedUsers.filter(user => user.walletAddress == walletaddress || user.userName.toLowerCase().includes(walletaddress.toLowerCase()));
         setSelectedUser([...allusers]);
     }
 
@@ -147,7 +148,7 @@ const dashboard = () => {
             </div>
 
         ): (
-            <div className="relative"> 
+            <div className="relative">
                 <div className="bg-slate-700">
                     <Header />
                     <Toaster position="bottom-right" reverseOrder={false} />
@@ -166,9 +167,11 @@ const dashboard = () => {
                     </div>
 
                 )}
-                <div className="flex pt-[5rem]">
-                    <Sidebar selectedChain={selectedChain} setSelectedChain={setSelectedChain} setReferralModal={setReferralModal} />
-                    <main className="flex-grow p-4">
+                <div className="grid grid-cols-6 pt-[5rem]">
+                    <div>
+                        <Sidebar selectedChain={selectedChain} setSelectedChain={setSelectedChain} setReferralModal={setReferralModal} />
+                    </div>
+                    <main className="col-span-5 p-4">
                         <div className="pt-10">
                             <div className="container mx-auto">
                                 <div className="cards-container">
@@ -324,9 +327,9 @@ const dashboard = () => {
                                                                         <a href={`/user/${user?._id}`} target="_blank">
                                                                             <div className={`viewer rounded-md border ${dark ? ' border-slate-500 hover:bg-slate-400' : 'border-neutral-200 hover:bg-neutral-300'} cursor-pointer p-1`}>
                                                                                 {dark ? 
-                                                                                <div className="flex gap-1"><BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>View</div>
+                                                                                <div className="flex pr-1.5"><BsArrowRightShort fontSize={20} className="-rotate-45" color='#ffffff'/>View</div>
                                                                                 :
-                                                                                <div className="flex gap-1"><BsArrowRightShort fontSize={20} className="-rotate-45" />View</div>
+                                                                                <div className="flex pr-1.5"><BsArrowRightShort fontSize={20} className="-rotate-45" />View</div>
                                                                                 }
                                                                             </div>
                                                                         </a>
@@ -386,6 +389,11 @@ const dashboard = () => {
                                                                                     ))}
 
                                                                             </div>
+                                                                        </div>
+
+                                                                        <div className={style.userdetailrow}>
+                                                                            <span className="font-bold">Uni Level: </span>
+                                                                            <span> {user.paylevel}</span>
                                                                         </div>
 
                                                                         <div className={style.userdetailrow}>

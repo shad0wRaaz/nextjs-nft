@@ -25,6 +25,7 @@ const SaveReferral = ({setReferralModal, userData}) => {
     }
     
     const doitlater = () => {
+        localStorage.setItem('referral', true);
         setReferralModal(false);
     }
 

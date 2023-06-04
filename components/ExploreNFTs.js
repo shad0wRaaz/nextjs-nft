@@ -52,57 +52,57 @@ const ExploreNFTs = () => {
             } flex justify-between gap-2 overflow-scroll rounded-full p-1 shadow text-sm`}
           >
             <div
-              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 ${
+              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 transition ${
                 dark
                   ? ' hover:bg-slate-600 hover:text-neutral-100'
                   : ' hover:bg-sky-100 hover:text-black'
               } ${
-                selectedBlockchain == 'goerli' &&
+                (selectedBlockchain == 'goerli' || selectedBlockchain == 'mainnet') &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => changeBlockchain('goerli')}
+              onClick={() => changeBlockchain('mainnet')}
               >
               <img src={ethereumlogo.src} width="20px" />
               <span className="pl-2">Ethereum</span>
             </div>
             <div
-              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 ${
+              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 transition ${
                 dark
                   ? ' hover:bg-slate-600 hover:text-neutral-100'
                   : ' hover:bg-sky-100 hover:text-black'
               } ${
-                selectedBlockchain == 'binance-testnet' &&
+                (selectedBlockchain == 'binance' || selectedBlockchain == 'binance-testnet') &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => changeBlockchain('binance-testnet')}
+              onClick={() => changeBlockchain('binance')}
             >
               <img src={bsclogo.src} width="20px" />
               <span className="pl-2">Binance</span>
             </div>
             <div
-              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 ${
+              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 transition ${
                 dark
                   ? ' hover:bg-slate-600 hover:text-neutral-100'
                   : ' hover:bg-sky-100 hover:text-black'
               } ${
-                selectedBlockchain == 'mumbai' &&
+                (selectedBlockchain == 'mumbai' || selectedBlockchain == 'polygon') &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => changeBlockchain('mumbai')}
+              onClick={() => changeBlockchain('polygon')}
             >
               <img src={maticlogo.src} width="18px" />
               <span className="pl-2">Polygon</span>
             </div>
             <div
-              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 ${
+              className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 transition ${
                 dark
                   ? ' hover:bg-slate-600 hover:text-neutral-100'
                   : ' hover:bg-sky-100 hover:text-black'
               } ${
-                selectedBlockchain == 'avalanche-fuji' &&
+                (selectedBlockchain == 'avalanche-fuji' || selectedBlockchain == 'avalanche') &&
                 (dark ? ' bg-slate-600 text-white' : ' bg-sky-100')
               }`}
-              onClick={() => changeBlockchain('avalanche-fuji')}
+              onClick={() => changeBlockchain('avalanche')}
             >
               <img src={avalancelogo.src} width="18px" />
               <span className="pl-1">Avalance</span>

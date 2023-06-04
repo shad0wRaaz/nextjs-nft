@@ -113,7 +113,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
               router.push({
                 pathname: '/search',
                 query: {
-                  c: metaDataFromSanity?.collection.category,
+                  c: metaDataFromSanity?.category,
                   n: '',
                   i: 'true',
                   v: 'true',

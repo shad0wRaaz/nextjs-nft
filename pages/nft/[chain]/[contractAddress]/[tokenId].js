@@ -6,7 +6,7 @@ import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { BiChevronUp } from 'react-icons/bi'
-import { Disclosure } from '@headlessui/react'
+import { Disclosure, Tab } from '@headlessui/react'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import Header from '../../../../components/Header'
 import Footer from '../../../../components/Footer'
@@ -28,6 +28,7 @@ import BrowseByCategory from '../../../../components/BrowseByCategory'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
+import { MdOutlineOpenInNew } from 'react-icons/md'
 import { IconAvalanche, IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
@@ -43,6 +44,9 @@ const style = {
   topContent: `flex`,
   nftImgContainer: `flex-1 mr-4`,
   detailsContainer: `flex-[2] ml-4`,
+}
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
 }
 const chainIcon = {
   '97': <IconBNB width="1.3rem" height="1.3rem" />,
@@ -379,7 +383,209 @@ const Nft = (props) => { //props are from getServerSideProps
                 />
 
               <div className="mt-4 w-full rounded-2xl">
+                <Tab.Group>
+                  <Tab.List className={`flex space-x-1 rounded-xl ${dark ? 'bg-slate-800' : 'bg-neutral-100'} p-2`}>
+
+                      <Tab
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                            selected
+                              ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                              : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                          )
+                        }
+                      >
+                        Description
+                      </Tab>
+                      
+                      <Tab
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                            selected
+                              ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                              : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                          )
+                        }
+                      >
+                        Properties
+                      </Tab>
+
+                      <Tab
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                            selected
+                              ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                              : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                          )
+                        }
+                      >
+                        Details
+                      </Tab>
+
+                  </Tab.List>
+                  <Tab.Panels className="mt-2">
+
+                      <Tab.Panel className={'rounded-xl text-sm ring-white p-3 ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                        {nftContractData?.metadata?.description == '' ? <p className={`text-sm my-5 text-center ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
+                      </Tab.Panel>
+                      <Tab.Panel className={'rounded-xl p-3 my-5  ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                        <div className="flex flex-wrap gap-2">
+                          {nftContractData?.metadata?.attributes?.map(
+                            (props, id) => (
+                              <div key={id}>
+                                {props.propertyKey != "" ? (
+                                  <div
+                                    className={`w-[130px] cursor-pointer rounded-xl border border-solid ${
+                                      dark
+                                        ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
+                                        : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
+                                    } p-2 text-center transition`}
+                                    onClick={() => {
+                                      setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                                      router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
+                                    }}>
+                                    <p className={dark ? 'text-sm font-bold text-neutral-200' : 'text-sm font-bold text-sky-400'}>
+                                      {props.trait_type}
+                                    </p>
+                                    <p className={ dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500' }>
+                                      {props.value}
+                                    </p>
+                                  </div>
+                                  ) : (<p className="text-sm text-center">No properties defined.</p>)}
+                              </div>
+                            )
+                          )}
+                          {nftContractData?.metadata?.properties?.traits?.map(
+                            (props, id) => (
+                              <div key={id} className="cursor-pointer" onClick={() => {
+                                setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                                router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
+                              }}>
+                                {props.propertyKey != "" ? (
+
+                                <div
+                                  className={`w-[130px] rounded-xl border border-solid ${
+                                    dark
+                                      ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
+                                      : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
+                                  } py-2 px-2 text-center transition`}
+                                  key={id}
+                                >
+                                  <p
+                                    className={
+                                      dark
+                                        ? 'text-sm font-bold text-neutral-200'
+                                        : 'text-sm font-bold text-sky-400'
+                                    }
+                                  >
+                                    {props.propertyKey}
+                                  </p>
+                                  <p
+                                    className={
+                                      dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
+                                    }
+                                  >
+                                    {props.propertyValue}
+                                  </p>
+                                  {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
+                                    <span
+                                      className={`w-fit rounded-md ${
+                                        dark
+                                          ? ' border border-slate-500 px-2 text-neutral-50'
+                                          : 'border border-sky-300 px-2 text-sky-500'
+                                      }`}
+                                    >
+                                      100% Match
+                                    </span>
+                                  </p> */}
+                                </div>
+                                ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </Tab.Panel>
+                      <Tab.Panel className={'rounded-xl p-3 ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Contract Address</span>
+                            <div className="flex gap-1 items-center">
+                                <Link href={`/collection/${thisNFTblockchain}/${contractAddress}`} passHref>
+                                  <a>
+                                    <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{nftContractData?.contract}</span>
+                                  </a>
+                                </Link>
+                                <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${nftContractData?.contract}`} passHref>
+                                  <a target="_blank">
+                                    <MdOutlineOpenInNew />
+                                  </a>
+                                </Link>
+                            </div>
+                          </div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Item ID</span>
+                            <span className="line-clamp-1 text-sm">{nftContractData?.tokenId}</span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Token Standard</span>
+                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
+                              {ownerData?.owners[0]?.contractType}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Blockchain</span>
+                            <span className="line-clamp-1 text-base">
+                              {chainIcon[blockchainIdFromName[thisNFTblockchain]]}
+                              {chainName[blockchainIdFromName[thisNFTblockchain]]}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
+                            <span className="line-clamp-1 text-sm cursor-pointer">
+                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
+                                <a>
+                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                </a>
+                              </Link>
+                            </span>
+                          </div>
+                      </Tab.Panel>
+
+                  </Tab.Panels>
+                </Tab.Group>
+
                 <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineQuestionMarkCircle fontSize={18} />
+                          <span className="text-md">
+                            About { Boolean(metaDataFromSanity?.name) ? metaDataFromSanity?.name : 'Collection' }
+                          </span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180 '
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-sm px-4 pt-4 pb-2">
+                        { metaDataFromSanity?.description }
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+
+                {/* <Disclosure>
                   {({ open }) => (
                     <>
                       <Disclosure.Button
@@ -404,9 +610,9 @@ const Nft = (props) => { //props are from getServerSideProps
                       </Disclosure.Panel>
                     </>
                   )}
-                </Disclosure>
+                </Disclosure> */}
 
-                <Disclosure>
+                {/* <Disclosure>
                   {({ open }) => (
                     <>
                       <Disclosure.Button
@@ -484,17 +690,6 @@ const Nft = (props) => { //props are from getServerSideProps
                                 >
                                   {props.propertyValue}
                                 </p>
-                                {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
-                                  <span
-                                    className={`w-fit rounded-md ${
-                                      dark
-                                        ? ' border border-slate-500 px-2 text-neutral-50'
-                                        : 'border border-sky-300 px-2 text-sky-500'
-                                    }`}
-                                  >
-                                    100% Match
-                                  </span>
-                                </p> */}
                               </div>
                               ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
                             </div>
@@ -503,9 +698,9 @@ const Nft = (props) => { //props are from getServerSideProps
                       </Disclosure.Panel>
                     </>
                   )}
-                </Disclosure>
+                </Disclosure> */}
 
-                <Disclosure>
+                {/* <Disclosure>
                   {({ open }) => (
                     <>
                       <Disclosure.Button
@@ -564,36 +759,7 @@ const Nft = (props) => { //props are from getServerSideProps
                       </Disclosure.Panel>
                     </>
                   )}
-                </Disclosure>
-
-                <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                          dark
-                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                      >
-                        <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineQuestionMarkCircle fontSize={18} />
-                          <span className="text-lg">
-                            About { Boolean(metaDataFromSanity?.name) ? metaDataFromSanity?.name : 'Collection' }
-                          </span>
-                        </div>
-                        <BiChevronUp
-                          className={`${
-                            open ? 'transform transition' : 'rotate-180 '
-                          } h-5 w-5 text-neutral-500 transition`}
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                        { metaDataFromSanity?.description }
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure>
+                </Disclosure> */}
               </div>
             </div>
             <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
@@ -616,14 +782,14 @@ const Nft = (props) => { //props are from getServerSideProps
                 />
               )}
 
-              <ItemOffers
+              {/* <ItemOffers
               selectedNft={ownerData}
               listingData={listingData}
               metaDataFromSanity={metaDataFromSanity}
               thisNFTMarketAddress={thisNFTMarketAddress}
               thisNFTblockchain={thisNFTblockchain}
               isAuctionItem={isAuctionItem}
-              />
+              /> */}
 
               <ItemActivity
                 thisNFTblockchain={thisNFTblockchain}

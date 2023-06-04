@@ -341,6 +341,88 @@ const Nft = (props) => { //props are from getServerSideProps
                 />
 
               <div className="mt-4 w-full rounded-2xl">
+                <Tab.Group>
+                  <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+
+                      <Tab
+                        key={category}
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                            selected
+                              ? 'bg-white shadow'
+                              : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                          )
+                        }
+                      >
+                        Description
+                      </Tab>
+                      
+                      <Tab
+                        key={category}
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                            selected
+                              ? 'bg-white shadow'
+                              : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                          )
+                        }
+                      >
+                        Properties
+                      </Tab>
+
+                      <Tab
+                        key={category}
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                            selected
+                              ? 'bg-white shadow'
+                              : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                          )
+                        }
+                      >
+                        Details
+                      </Tab>
+
+                  </Tab.List>
+                  <Tab.Panels className="mt-2">
+
+                      <Tab.Panel
+                        key={idx}
+                        className={classNames(
+                          'rounded-xl bg-white p-3',
+                          'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+                        )}
+                      >
+                        {nftContractData?.metadata?.description}
+                      </Tab.Panel>
+                      <Tab.Panel
+                        key={idx}
+                        className={classNames(
+                          'rounded-xl bg-white p-3',
+                          'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+                        )}
+                      >
+                        {nftContractData?.metadata?.description}
+                      </Tab.Panel>
+                      <Tab.Panel
+                        key={idx}
+                        className={classNames(
+                          'rounded-xl bg-white p-3',
+                          'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+                        )}
+                      >
+                        {nftContractData?.metadata?.description}
+                      </Tab.Panel>
+
+                  </Tab.Panels>
+                </Tab.Group>
+
                 <Disclosure>
                   {({ open }) => (
                     <>

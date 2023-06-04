@@ -13,7 +13,7 @@ import { RiCloseCircleLine } from 'react-icons/ri'
 import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { useAddress, useChainId, useSigner } from '@thirdweb-dev/react'
+import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 
 
@@ -33,6 +33,7 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
     const [isTransfer, setIsTransfer] = useState(false);
     const [transferModal, setTransferModal] = useState(false);
     const [transferAddress, setTransferAddress] = useState('');
+    const switchChain = useSwitchChain()
 
     const cancelListing = (
         e,
@@ -45,6 +46,15 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
           toast.error("Wallet not connected.", errorToastStyle);
           return
         }
+
+        if(chainid != nftCollection?.chainId){
+          toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+          switchChain(Number(nftCollection?.chainId)).catch((err) => {
+            toast.error('Error in changing chain. Please change chain manually', errorToastStyle);
+          })
+          return;
+        }
+
 
         ;(async () => {
           try {
@@ -113,7 +123,7 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
     // console.log(listingData)
     const burn = (e, sanityClient = config, toastHandler = toast) => {
       
-      if (!Boolean(listingData?.message == 'NFT data not found')) {
+      if (Boolean(listingData?.id)) {
         toastHandler.error('Cannot burn a listed NFT. Delist this NFT first.', errorToastStyle);
         setBurnModal(false);
         return
@@ -129,14 +139,17 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
         return;
       }
       
+      if(chainid != nftCollection?.chainId){
+        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+        switchChain(Number(nftCollection?.chainId)).catch((err) => {
+          toast.error('Error in changing chain. Please change chain manually', errorToastStyle);
+        })
+        return;
+      }
+      
       try {
           ;(async () => {
             
-            if(chainid != nftCollection?.chainId){
-              toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
-              return;
-            }
-
             setIsBurning(true);
             setBurnModal(false);
 
@@ -189,7 +202,8 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
             setIsBurning(false);
           })();
       } catch (error) {
-      toastHandler.error(error, errorToastStyle)
+      toastHandler.error('NFT not burnt.', errorToastStyle)
+      console.error(error)
       setIsBurning(false);
       }
     }
@@ -200,6 +214,11 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
       //   setBurnModal(false);
       //   return
       // }
+      if (!Boolean(listingData?.message == 'NFT data not found')) {
+        toastHandler.error('Cannot transfer a listed NFT. Delist this NFT first.', errorToastStyle);
+        setTransferModal(false);
+        return
+      }
       
       if(!nftCollection) {
         toast.error("Collection not found.", errorToastStyle);
@@ -212,6 +231,14 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
       }
       if(transferAddress == ''){
         toast.error("Enter wallet address to transfer to", errorToastStyle);
+        return;
+      }
+
+      if(chainid != nftCollection?.chainId){
+        toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
+        switchChain(Number(nftCollection?.chainId)).catch((err) => {
+          toast.error('Error in changing chain. Please change chain manually', errorToastStyle);
+        })
         return;
       }
 
@@ -250,6 +277,7 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
           setIsTransfer(false);
         })()
       }catch (error){
+        console.log(error)
         setIsTransfer(false);
       }
       window.location.reload(true);

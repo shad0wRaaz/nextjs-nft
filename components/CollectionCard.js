@@ -130,26 +130,30 @@ const CollectionCard = ({
           </p>
           {/* <p className={style.description}>{description.slice(0, 32)}...</p> */}
         </div>
-
+        
         <div className="mt-4 flex justify-between p-2 text-sm">
-          <div className="">
-            <p className="mb-1">Floor Price</p>
-            <p className="flex items-center justify-start">
-              {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
-              {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
-              {floorPrice}{' '}
-              {currencyByChainId[chainId]}
-            </p>
-          </div>
 
-          <div className="">
-            <p className="mb-1">Volume Traded</p>
-            <p className="flex items-center justify-end gap-1">
-              {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
-              {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
-              ${millify(volumeTraded)}
-            </p>
-          </div>
+            <div className="">
+              <p className="mb-1">Floor Price</p>
+              <p className="flex items-center justify-start">
+                {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
+                {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
+                {floorPrice}{' '}
+                {currencyByChainId[chainId]}
+              </p>
+            </div>
+
+          
+
+            <div className="">
+              <p className="mb-1">Volume Traded</p>
+              <p className="flex items-center justify-end gap-1">
+                {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
+                {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
+                ${millify(volumeTraded)}
+              </p>
+            </div>
+
         </div>
       </div>
     </Link>

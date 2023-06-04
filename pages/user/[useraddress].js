@@ -8,10 +8,13 @@ import { VscHeart } from 'react-icons/vsc'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import Loader from '../../components/Loader'
+import { useChain } from '@thirdweb-dev/react'
+import { HiChevronRight } from 'react-icons/hi'
 import { useMutation, useQuery } from 'react-query'
 import { useEffect, useRef, useState } from 'react'
-import { useActiveChain } from '@thirdweb-dev/react'
 import { getImagefromWeb3 } from '../../fetchers/s3'
+import { createAwatar } from '../../utils/utilities'
+import { BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
 import { MdOutlineCollections } from 'react-icons/md'
 import { BiUserPlus, BiUserCheck } from 'react-icons/bi'
 import noBannerImage from '../../assets/noBannerImage.png'
@@ -26,10 +29,9 @@ import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { removeFollower, saveFollower } from '../../mutators/SanityMutators'
-import { INFURA_getMyAllNFTs, getFullListings } from '../../fetchers/Web3Fetchers'
+import CollectionCardExternal from '../../components/CollectionCardExternal'
 import { getMyCollections, getMintedNFTs, getUser} from '../../fetchers/SanityFetchers'
-import { createAwatar } from '../../utils/utilities'
-import { BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
+import { INFURA_getMyAllNFTs, INFURA_getMyCollections, getFullListings } from '../../fetchers/Web3Fetchers'
 
 
 
@@ -42,12 +44,16 @@ const User = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [userData, setUserData] = useState();
   const bannerRef = useRef();
-  const activeChain = useActiveChain();
+  const activeChain = useChain();
   const [showCollection, setShowCollection] = useState(true);
   const { selectedBlockchain } = useMarketplaceContext();
   const { blockchainIdFromName, chainIcon } = useSettingsContext();
   const { data: fullListingData } = useQuery(['fulllistings'], getFullListings());
   const [compact, setCompact] = useState(true);
+  const [cursor, setCursor] = useState();
+  const [collectionsFromInfura, setCollectionsFromInfura] = useState([]);
+  const [collectionCount, setCollectionCount] = useState(0);
+  const [nftCount, setNftCount] = useState(0);
 
   const style = {
     collectionWrapper:
@@ -100,11 +106,42 @@ const User = () => {
           errorToastStyle
         )
       },
+      onSuccess: (res) => {
+        // console.log(res)
+      }
     }
   )
 
+  //this gives all the collections from INFURA but does not gives images, so have to be imported by the user manually and then update images manually
+  const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
+    ['allcollections', address, selectedBlockchain, activeChain?.chainId],
+    INFURA_getMyCollections(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain], address),
+    {
+      enabled: Boolean(address) ,
+      onSuccess: (res) => {
+        // console.log(res);
+      }
+    }
+  )
+//filter out only those collections deployed in third party websites
+  useEffect(() => {
+    if(collectionStatus == 'success' && outsideCollectionStatus == 'success' ){
+      const allCollections = [...outsideCollection.collections];
+      
+      const inhouseCollections = collectionData.map(coll => coll.contractAddress.toLowerCase());
+      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.contract));
+      // console.log('all',outsideCollections)
+      if(outsideCollections.length > 0){
+        setCollectionsFromInfura([...outsideCollections]);
+      }
+    }
+    return () => {
+      //do nothing, just clean up function
+    }
+  }, [collectionStatus, outsideCollectionStatus])
+
   const { data: mynfts, status: mynftstatus } = useQuery(
-    ['mynfts', address, selectedBlockchain, activeChain?.chainId],
+    ['mynfts', address, cursor, selectedBlockchain, activeChain?.chainId],
     INFURA_getMyAllNFTs(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain]),
     {
       enabled: Boolean(address) && (Boolean(activeChain) || Boolean(selectedBlockchain)),
@@ -112,6 +149,7 @@ const User = () => {
       onSuccess:(res) => 
       {
         // console.log(res);
+        // console.log(res.cursor)
       }
     }
   )
@@ -170,19 +208,19 @@ const User = () => {
     mutateFollower({ creator: address, admirer: myUser.walletAddress })
   }
 
-    //parallax scrolling effect in banner
-    useEffect(() => {
-      const handleScroll = event => {
-        if(!bannerRef.current) return
-        bannerRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
-      };
-  
-      window.addEventListener('scroll', handleScroll);
-  
-      return () => {
-        window.removeEventListener('scroll', handleScroll);
-      };
-    }, [])
+  //parallax scrolling effect in banner
+  useEffect(() => {
+    const handleScroll = event => {
+      if(!bannerRef.current) return
+      bannerRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -357,7 +395,7 @@ const User = () => {
                     Collections
                   </span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {collectionData?.length}
+                    {Boolean(outsideCollection?.total) ? outsideCollection?.total : 0}
                   </span>
                 </div>
 
@@ -382,7 +420,7 @@ const User = () => {
                     Nfts
                   </span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {mynftstatus == 'success' && mynfts?.length}
+                    {Boolean(mynfts?.total) ? mynfts?.total : 0}
                   </span>
                 </div>
 
@@ -480,46 +518,77 @@ const User = () => {
 
       <div className="container mx-auto mt-[2rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
         {showCollection ? (
-          <div className={style.collectionWrapper}>
-            {collectionStatus == 'loading' && <Loader />}
-            {collectionData?.length > 0 &&
-              collectionData?.map((coll, id) => (
-                <CollectionCard
-                  key={id}
-                  name={coll.name}
-                  id={coll._id}
-                  contractAddress={coll.contractAddress}
-                  profileImage={coll.web3imageprofile}
-                  bannerImage={coll.web3imagebanner}
-                  description={coll.description}
-                  floorPrice={coll.floorPrice}
-                  volumeTraded={coll.volumeTraded}
-                  allOwners={coll.allOwners}
-                  chainId={coll.chainId}
-                  creator={coll.creator}
-                  creatorAddress={coll.creatorAddress}
-                />
-              ))}
-            {collectionData?.length == 0 && (
-              <div className={style.errorBox}>
-                <h2 className={style.errorTitle}>No Collection created yet.</h2>
+          <>
+          {/* Displaying in house collections */}
+            <div className={style.collectionWrapper}>
+              {collectionStatus == 'loading' && <Loader />}
+              {collectionData?.length > 0 &&
+                collectionData?.map((coll, id) => (
+                  <CollectionCard
+                    key={id}
+                    name={coll.name}
+                    id={coll._id}
+                    contractAddress={coll.contractAddress}
+                    profileImage={coll.web3imageprofile}
+                    bannerImage={coll.web3imagebanner}
+                    description={coll.description}
+                    floorPrice={coll.floorPrice}
+                    volumeTraded={coll.volumeTraded}
+                    allOwners={coll.allOwners}
+                    chainId={coll.chainId}
+                    creator={coll.creator}
+                    creatorAddress={coll.creatorAddress}
+                  />
+                ))}
+              {collectionData?.length == 0 && (
+                <div className={style.errorBox}>
+                  <h2 className={style.errorTitle}>No Collection created yet.</h2>
+                </div>
+              )}
+            </div>
+            {/* Displaying outside Collections */}
+            {Boolean(collectionsFromInfura) && collectionsFromInfura.length > 0 && (
+              <div className={style.collectionWrapper + ' mt-8'}>
+                {collectionsFromInfura?.map((coll, id) => (
+                  <CollectionCardExternal
+                    key={id}
+                    name={coll.name}
+                    id={coll.contract}
+                    contractAddress={coll.contract}
+                    chainId={blockchainIdFromName[selectedBlockchain]}
+                    creator="Unnamed"
+                    creatorAddress={address}
+                  />
+                ))}
               </div>
             )}
-          </div>
+          </>
         ) : (
           <div className="flex flex-col gap-6">
             <div className="text-center text-sm relative">
               Showing NFTs from <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
-              <div className="absolute top-0 right-1">
-                <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-neutral-200'}`}>
-                  <div className={`hover:bg-slate-600 ${!compact && 'bg-slate-600'} p-2 cursor-pointer`} onClick={() => setCompact(false)}>
-                    <BsGrid/>
-                  </div>
-                  <div className={`hover:bg-slate-600 ${compact && 'bg-slate-600'} p-2 cursor-pointer`} onClick={() => setCompact(true)}>
-                    <BsGrid3X3Gap/>
-                  </div>
+            </div>
+              
+            <div className="flex justify-between items-center">
+              <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
+                <div 
+                  className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+                  onClick={() => setCompact(false)}>
+                  <BsGrid/>
+                </div>
+                <div 
+                  className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+                  onClick={() => setCompact(true)}>
+                  <BsGrid3X3Gap/>
                 </div>
               </div>
+              
+              <div>
+                  <button 
+                    className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                    onClick={() => setCursor(mynfts.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+              </div>
+
             </div>
 
             {mynftstatus == 'loading' && <Loader/>}
@@ -528,9 +597,9 @@ const User = () => {
               <p className="text-center mt-[3rem]">No NFTs yet</p>
             )}
 
-            {mynftstatus == 'success' && mynfts.length > 0 && Boolean(fullListingData) && (
+            {mynftstatus == 'success' && mynfts?.assets?.length > 0 && Boolean(fullListingData) && (
               <div className={style.nftWrapper}>
-                {mynfts.filter(nft => Boolean(nft.metadata)).map((nftItem, index) => (
+                {mynfts?.assets?.filter(nft => Boolean(nft.metadata)).map((nftItem, index) => (
                     <NFTCardExternal
                       key={index}
                       chain={selectedBlockchain}
@@ -542,6 +611,13 @@ const User = () => {
                 ))}
               </div>
             )}
+
+            <div className="flex justify-end">
+                <button 
+                  className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                  onClick={() => setCursor(mynfts.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+            </div>
+
           </div>
         )}
       </div>

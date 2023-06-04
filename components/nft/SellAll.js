@@ -152,7 +152,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                 listings.push(listing);
             });
         }
-        
+
         if(listings.length == 0){
             toastHandler.error('No NFT is selected to list', errorToastStyle);
             return;
@@ -163,7 +163,8 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             const contract = await sdk.getContract(marketContractAddress, "marketplace");
             
             const tx = await contract?.direct.createListingsBatch(listings);
-            // console.log(tx);
+            console.log(tx);
+
             if(collectionData.floorPrice > Number(listingPrice)){
                 //update Floor Price
                 await sanityClient
@@ -173,25 +174,25 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             }
 
             //saving transactions in database
-            const newItems = includedNfts?.map(item => {
-                const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
-                return itemref;
-              });
+            // const newItems = includedNfts?.map(item => {
+            //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
+            //     return itemref;
+            //   });
 
-            const doc = {
-                _type: 'activities',
-                _id: tx[0].receipt.transactionHash, 
-                transactionHash: tx[0].receipt.transactionHash,
-                nftItems: newItems,
-                from: tx[0].receipt.from,
-                to: tx[0].receipt.to,
-                event: 'List',
-                price: listingPrice.toString(),
-                chainId: activeChain.chainId,
-                dateStamp: new Date(),
-                }
-                console.log(doc)
-                await sanityClient.createIfNotExists(doc)
+            // const doc = {
+            //     _type: 'activities',
+            //     _id: tx[0].receipt.transactionHash, 
+            //     transactionHash: tx[0].receipt.transactionHash,
+            //     nftItems: newItems,
+            //     from: tx[0].receipt.from,
+            //     to: tx[0].receipt.to,
+            //     event: 'List',
+            //     price: listingPrice.toString(),
+            //     chainId: activeChain.chainId,
+            //     dateStamp: new Date(),
+            //     }
+            //     console.log(doc)
+            //     await sanityClient.createIfNotExists(doc)
 
             //update listing data
             ;(async() => {

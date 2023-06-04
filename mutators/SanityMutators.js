@@ -6,9 +6,9 @@ const settingDocId = "3cae3666-6292-4f72-b8b7-fba643c068bf";
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' : 'http://localhost:8080';
 const FAUCETHOST = process.env.NODE_ENV == "production" ? 'https://faucet.metanuva.com' : 'http://localhost:8889';
 
-export const updatePayableLevel = async (userid, level) => {
+export const updatePayableLevel = async ({walletAddress, level}) => {
   await config
-        .patch(userid)
+        .patch(walletAddress)
         .set({ payablelevel: level })
         .commit();
 }
@@ -43,23 +43,52 @@ export const isReferralActivated = async(address) => {
 }
 
 export const saveReferrer = async(username, sponsor, address) => {
-  
-  await config
-        .patch(address)
-        .set({ 
-          userName: username, 
-          referrer: { 
-            _type: 'reference', _ref: sponsor 
-          },
-        })
-        .commit();
 
-  //add this user in sponsor's direct referrals
-  await config
-          .patch(sponsor)
-          .setIfMissing({ directs: [] })
-          .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
-          .commit({ autoGenerateArrayKeys: true });
+// const documentId = '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6'; // Replace with the ID of your document
+// const document = await config.getDocument(documentId);
+// console.log(document)
+
+// const arrayIndexToRemove = 11; // Replace with the index of the object you want to delete
+// const newArray = document.directs.filter((item, index) => index !== arrayIndexToRemove);
+
+// const updatedDocument = {
+//   ...document,
+//   directs: newArray,
+// };
+
+// const response = await config.createOrReplace(updatedDocument);
+
+//see if the sponsor has already got this username as direct referrals, only save if not present already
+try{
+  const document = await config.getDocument(sponsor);
+  const isPresent = document.directs.findIndex(referrals => referrals._ref.toLowerCase() == address.toLowerCase());
+
+  if(isPresent >= 0){
+    //already present in sponsor's direct referrals, so no need to do anything
+    return
+  }
+
+  //save if it is not present
+    await config
+          .patch(address)
+          .set({ 
+            userName: username, 
+            referrer: { 
+              _type: 'reference', _ref: sponsor 
+            },
+          })
+          .commit();
+
+    //add this user in sponsor's direct referrals
+    await config
+            .patch(sponsor)
+            .setIfMissing({ directs: [] })
+            .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
+            .commit({ autoGenerateArrayKeys: true });
+}catch(error){
+ console.error(error)
+}
+
 }
 
 export const sendReferralCommission = async (receivers, address) => {
@@ -306,6 +335,59 @@ export const changeShowUnlisted = async ({ collectionid, showUnlisted }) => {
     .patch(collectionid)
     .set({ showUnlisted: !showUnlisted })
     .commit()
+}
+
+export const updateBoughtNFTs = async({
+  walletAddress,
+  chainId,
+  contractAddress,
+  tokenId,
+  payablelevel,
+  type,
+}) => {
+  const currentUserData = await config.getDocument(walletAddress);
+  const currentPayInfo = Boolean(currentUserData?.boughtnfts) ? currentUserData?.boughtnfts : null;
+  
+  if(type === 'buy'){
+    if(!currentPayInfo){
+      const newData = JSON.stringify([
+        {
+          chainId, contractAddress, tokenId, payablelevel
+        }
+      ]);
+      await config.patch(walletAddress)
+                  .setIfMissing({ boughtnfts: ''})
+                  .set({ boughtnfts : newData })
+                  .commit();
+      return
+    }else{
+      const existingData = JSON.parse(currentPayInfo);
+      //check if there is duplicate data
+      const isAlreadyPresent = existingData.findIndex(nft => nft.tokenId == tokenId && nft.contractAddress == contractAddress && nft.payablelevel == payablelevel && nft.chainId == chainId);
+
+      if(isAlreadyPresent < 0) {
+        const updatedData = [
+          ...existingData, 
+          {
+            chainId, contractAddress, tokenId, payablelevel
+          }];
+        await config.patch(walletAddress)
+                    .set({ boughtnfts: JSON.stringify(updatedData)})
+                    .commit();
+      }
+    }
+
+  }else if(type == 'sell'){
+    if(!currentPayInfo){ return } 
+    const boughtNFTs = JSON.parse(currentPayInfo);
+    const updatedList = boughtNFTs.filter(nft => !(nft.chainId == chainId && nft.contractAddress == contractAddress && nft.tokenId == tokenId));
+
+    const dataToSave = updatedList.length == 0 ? '' : JSON.stringify(updatedList);
+
+    await config.patch(walletAddress)
+                .set({ boughtnfts: dataToSave })
+                .commit();
+  }
 }
 export const addVolumeTraded = async ({
   id,

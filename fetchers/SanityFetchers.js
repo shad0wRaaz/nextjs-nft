@@ -1,12 +1,13 @@
 import { config } from '../lib/sanityClient'
 import axios from 'axios'
+import { getCollectionData } from './Web3Fetchers'
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' :'http://localhost:8080'
 
 export const getUser = 
 async (address) => {
-  const query = `*[_type == "users" && walletAddress == "${address}"] {
-      web3imagebanner, volumeTraded, biography, fbhHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt
+  const query = `*[_type == "users" && walletAddress match "${address}"] {
+      web3imagebanner, volumeTraded, biography, fbhHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt, payablelevel,
     }`
   const res = await config.fetch(query)
   return res[0]
@@ -85,7 +86,7 @@ export const getUserContinuously =
   async ({ queryKey }) => {
     const [_, address] = queryKey
     const query = `*[_type == "users" && walletAddress match "${address}"] {
-      web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt, verified
+      web3imagebanner, biography, fbHandle, followers, following, igHandle, web3imageprofile, twitterHandle, userName, walletAddress, _createdAt, verified, payablelevel,
     }`
     const res = await config.fetch(query)
     return res[0]
@@ -148,7 +149,7 @@ export const getMyCollections =
   () =>
   async ({ queryKey }) => {
     const [_, address] = queryKey
-    const query = `*[_type == "nftCollection" && createdBy->walletAddress == "${address}" ] {
+    const query = `*[_type == "nftCollection" && createdBy->walletAddress match "${address}" ] {
         _id,
         web3imageprofile,
         web3imagebanner,
@@ -176,7 +177,7 @@ export const getNewNFTCollection =
   (chainId) =>
   async ({ queryKey }) => {
     const [_, collectionid] = queryKey;
-    const query = `*[_type == "nftCollection" && contractAddress == "${collectionid}" && chainId == "${chainId}"] {
+    const query = `*[_type == "nftCollection" && contractAddress match "${collectionid}" && chainId == "${chainId}"] {
         _id,
         web3imageprofile,
         web3imagebanner,
@@ -200,6 +201,39 @@ export const getNewNFTCollection =
         payablelevel,
       }`;
     const res = await config.fetch(query)
+
+    if(res.length == 0) {
+      //get data from INFURA, if the collection is not deployed in this platform
+      const data = await axios.get(`${HOST}/api/infura/getCollectionMetadata/${chainId}/${collectionid}`);
+      
+
+      // get minter/creator address details from any token
+      const minterData = await axios.get(`${HOST}/api/infura/getNFTOwnerData/${chainId}/${collectionid}/1`);
+
+      const owner = minterData?.data?.owners[0]?.ownerOf;
+
+      //get yesterdays date for reveal time, other wise all collection will show not revealed
+      let today = new Date();
+      today.setDate(today.getDate() - 1);
+
+      const contractObj = {
+        name: data.data.name,
+        contractAddress: data.data.contract,
+        creator: {
+          userName: 'Unnamed',
+          walletAddress: owner,
+        },
+        chainId,
+        description: '',
+        revealtime: today.toString(),
+        createdBy: {
+          _ref: ''
+        },
+        collectionData: 0,
+      }
+
+      return contractObj;
+    }
     return res[0];
   }
 
@@ -363,19 +397,25 @@ export const getTotals =
   return res
 }
 
+export const getReferralPayingCollections = async() => {
+  const query = `*[_type == "settings"] {referralcollections}`;
+  const result = await config.fetch(query);
+  console.log(result)
+}
+
 export const getMyNetwork = (address) => async() => {
   const query = `*[_type == "users" && referrer->walletAddress == "${address}"]{
-    userName, walletAddress, web3imageprofile,
+    userName, walletAddress, web3imageprofile, payablelevel,
     "level1Friends": directs[]->{
-      userName, walletAddress, web3imageprofile,
+      userName, walletAddress, web3imageprofile, payablelevel,
       "level2Friends": directs[]->{
-        userName, walletAddress, web3imageprofile,
+        userName, walletAddress, web3imageprofile, payablelevel,
         "level3Friends": directs[]->{
-          userName, walletAddress, web3imageprofile,
+          userName, walletAddress, web3imageprofile, payablelevel,
           "level4Friends": directs[]->{
-            userName, walletAddress, web3imageprofile,
+            userName, walletAddress, web3imageprofile, payablelevel,
             "level5Friends": directs[]->{
-              userName, walletAddress, web3imageprofile,
+              userName, walletAddress, web3imageprofile, payablelevel,
             }
           }
         }
@@ -389,17 +429,17 @@ export const getMyNetwork = (address) => async() => {
 export const getMyPayingNetwork = async (address) => {
 
   const query = `*[_type == "users" && walletAddress == "${address}"]{
-    userName, walletAddress, "level" : 0, payablelevel,
+    userName, walletAddress, "level" : 0, payablelevel, boughtnfts,
     "sponsor": referrer->{
-      userName, walletAddress, "level" : 1, payablelevel,
+      userName, walletAddress, "level" : 1, payablelevel, boughtnfts,
       "sponsor": referrer->{
-        userName, walletAddress, "level" : 2, payablelevel,
+        userName, walletAddress, "level" : 2, payablelevel, boughtnfts,
         "sponsor": referrer->{
-          userName, walletAddress, "level" : 3, payablelevel,
+          userName, walletAddress, "level" : 3, payablelevel, boughtnfts,
           "sponsor": referrer->{
-            userName, walletAddress, "level" : 4, payablelevel,
+            userName, walletAddress, "level" : 4, payablelevel, boughtnfts,
             "sponsor": referrer->{
-              userName, walletAddress, "level" : 5, payablelevel,
+              userName, walletAddress, "level" : 5, payablelevel, boughtnfts,
             }
           }
         }
@@ -420,4 +460,9 @@ export const getReferralPayment = (address) => async() => {
   const query = `*[_type == "referrals" && to._ref == "${address}"] | order(_createdAt desc)`;
   const result = await config.fetch(query);
   return result;
+}
+
+export const getAirDrops = () => async() => {
+  const { data } = await axios.get(`${HOST}/api/getAirdrops`);
+  return data;
 }

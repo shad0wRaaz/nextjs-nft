@@ -7,7 +7,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.100.0",
     "@aws-sdk/s3-request-presigner": "^3.100.0",
-    "@infura/sdk": "^2.3.10",
+    "@infura/sdk": "^2.4.1",
     "@sanity/client": "^3.3.3",
     "@thirdweb-dev/storage": "^1.0.6",
     "aws-sdk": "^2.853.0",
