@@ -32,10 +32,10 @@ const Home = ({ featuredNfts, backendAvailable }) => {
              ) : ('')}
         </div>
         {backendAvailable ? <TopCollections/> : ''}
-        <HowToInfo/>
         {backendAvailable ? 
         <>
           <ExploreNFTs/>
+          <HowToInfo/>
           <BrowseByCategory/>
           {/* <PopularVideoNFTs /> */}
           {/* <PopularAudioNFTs /> */}

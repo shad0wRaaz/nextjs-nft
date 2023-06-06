@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 import "slick-carousel/slick/slick-theme.css";
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
+import { getFullListings } from '../fetchers/Web3Fetchers';
+import { useQuery } from 'react-query';
 
 const style = {
   wrapper: `relative overflow-hidden`,
@@ -48,6 +50,7 @@ const HeroCarousel = (props) => {
   const [userData, setUserData] = useState();
   const address = useAddress();
   const router = useRouter();
+  const [featuredListedNFTs, setFeaturedListedNFTs] = useState();
 
   useEffect(() => {
     if(!address) return;
@@ -66,15 +69,34 @@ const HeroCarousel = (props) => {
       }
     })()
 
+    return() => {
+      //do nothing, only clean up section
+    }
+
   }, [address])
 
+  const { data } = useQuery(
+    ['fulllistings'], 
+    getFullListings(),
+    {
+      onSuccess: (res) => {
+        if(props.featuredNfts){
+          const thisItem = res.filter((nft) =>
+          { 
+            return props.featuredNfts.some(f => String(f.collection.contractAddress).toLowerCase() == String(nft.assetContractAddress).toLowerCase() && f?.id == nft?.asset?.id);
+          }
+        );
+          setFeaturedListedNFTs(thisItem);
+        }
+      }
+    });
   return (
     <div className={style.wrapper}>
       <div className={style.container}>
 
           {/* Referral Modal */}
           <div className={`fixed top-0 ${referralModal ? 'flex' : 'hidden'} mx-auto items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20`}>
-            <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+            <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-auto z-50 relative`}>
               <div
                 className="absolute top-5 right-6 md:right-10  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
                 onClick={() => setReferralModal(false) }>
@@ -108,70 +130,75 @@ const HeroCarousel = (props) => {
               </button>
             </div>
           </div>
+          {featuredListedNFTs && (
+            <>
+              <div className={style.cardContainer + ' hidden lg:flex'}>
+                <Tilt  
+                  perspective={3000}
+                  tiltMaxAngleX={20}
+                  tiltMaxAngleY={20}
+                  transitionSpeed={1500}
+                  className="parallax-effect justify-center items-center rounded-2xl p-2 md:left-0 sm:left-[2rem] cursor-pointer">
+                    <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
+                      <Slider {...settings}>
+                          {featuredListedNFTs?.map((nft, index) => (
+                              <FeaturedItems item={nft} id={index} key={index} allFeatured={props.featuredNfts}/>
+                              ))
+                          }
+                      </Slider>
+                    </div>
+                  </Tilt>
 
-          <div className={style.cardContainer + ' hidden lg:flex'}>
-            <Tilt  
-              perspective={3000}
-              tiltMaxAngleX={20}
-              tiltMaxAngleY={20}
-              transitionSpeed={1500}
-              className="parallax-effect justify-center items-center rounded-2xl p-2 md:left-0 sm:left-[2rem] cursor-pointer">
+                {/* <section id="slider">
+                  {featuredNfts &&
+                    featuredNfts.map((nfts, index) => (
+                      <input
+                        key={index}
+                        type="radio"
+                        name="slider"
+                        id={`s${index + 1}`}
+                        checked={count == index ? true : false}
+                        readOnly
+                      />
+                    ))}
+
+                  {featuredNfts &&
+                    featuredNfts.map((nfts, index) => (
+                      <label
+                        htmlFor={`s${index + 1}`}
+                        id={`slide${index + 1}`}
+                        key={index}
+                        className="flex items-start justify-center overflow-hidden"
+                      >
+                        <img src={nfts.nftImage} className="rounded-xl" />
+                        <div className="absolute bottom-5 left-0 h-[50px] w-full bg-black/70 p-2 pb-0 text-center text-lg text-white">
+                          <Link
+                            href={{
+                              pathname: `/nfts/${nfts.nftitem._id}`,
+                              query: {
+                                c: nfts.contractAddress,
+                              },
+                            }}
+                          >
+                            <span>{nfts.nftitem.name}</span>
+                          </Link>
+                        </div>
+                      </label>
+                    ))}
+                </section> */}
+              </div>
+              <div className={style.cardContainer + ' lg:hidden'}>
                 <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
                   <Slider {...settings}>
-                      {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
-                          <FeaturedItems item={nft} id={index} key={index} />
-                          )) : ''}
+                      {featuredListedNFTs?.map((nft, index) => (
+                          <FeaturedItems item={nft} id={index} key={index} allFeatured={props.featuredNfts}/>
+                          )) 
+                      }
                   </Slider>
                 </div>
-              </Tilt>
-
-            {/* <section id="slider">
-              {featuredNfts &&
-                featuredNfts.map((nfts, index) => (
-                  <input
-                    key={index}
-                    type="radio"
-                    name="slider"
-                    id={`s${index + 1}`}
-                    checked={count == index ? true : false}
-                    readOnly
-                  />
-                ))}
-
-              {featuredNfts &&
-                featuredNfts.map((nfts, index) => (
-                  <label
-                    htmlFor={`s${index + 1}`}
-                    id={`slide${index + 1}`}
-                    key={index}
-                    className="flex items-start justify-center overflow-hidden"
-                  >
-                    <img src={nfts.nftImage} className="rounded-xl" />
-                    <div className="absolute bottom-5 left-0 h-[50px] w-full bg-black/70 p-2 pb-0 text-center text-lg text-white">
-                      <Link
-                        href={{
-                          pathname: `/nfts/${nfts.nftitem._id}`,
-                          query: {
-                            c: nfts.contractAddress,
-                          },
-                        }}
-                      >
-                        <span>{nfts.nftitem.name}</span>
-                      </Link>
-                    </div>
-                  </label>
-                ))}
-            </section> */}
-          </div>
-          <div className={style.cardContainer + ' lg:hidden'}>
-            <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
-              <Slider {...settings}>
-                  {Boolean(props.featuredNfts) ? props.featuredNfts?.map((nft, index) => (
-                      <FeaturedItems item={nft} id={index} key={index} />
-                      )) : ''}
-              </Slider>
-            </div>
-          </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

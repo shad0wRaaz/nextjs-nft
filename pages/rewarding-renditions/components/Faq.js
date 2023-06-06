@@ -28,8 +28,8 @@ const Faq = ({ setShowMenu }) => {
   return (
     <section 
         onClick={() => setShowMenu(false)} 
-        id="faq" className="faq alfaslab py-[70px] md:py-[100px] !pb-0 bg-[#23162c]">
-        <div className="container mx-auto p-8 pb-0">
+        id="faq" className="faq alfaslab py-[70px] md:py-[100px] bg-[#23162c]">
+        <div className="container mx-auto p-8">
             <div className="faq__wrapper">
                 <div className="grid grid-cols-1">
                     <div className="text-center mx-auto">

@@ -6,6 +6,11 @@ import twitter from '../assets/images/twitter.png'
 import facebook from '../assets/images/facebook.png'
 import instagram from '../assets/images/instagram.png'
 import youtube from '../assets/images/youtube.png'
+import madmonkey1 from '../assets/images/madmonkey1.png'
+import madmonkey2 from '../assets/images/madmonkey2.png'
+import madmonkey3 from '../assets/images/madmonkey3.png'
+import madmonkey4 from '../assets/images/madmonkey4.png'
+
 import Link from 'next/link';
 
 const Hero = ({setShowMenu}) => {
@@ -69,19 +74,19 @@ const Hero = ({setShowMenu}) => {
         <div className="flex justify-between md:mt-[-4rem]">
             <div className="flex">
                 <div className="rrbanner__apes-item">
-                    <img src="http://bored.labartisan.net/assets/images/banner/apes/01.png" alt="Banner Apps" className="md:h-[400px]"/>
+                    <img src={madmonkey1.src} alt="Crypto Creatures Mad Monkey" className="md:h-[300px]"/>
                 </div>
                 <div className="rrbanner__apes-item">
-                    <img src="http://bored.labartisan.net/assets/images/banner/apes/02.png" alt="Banner Apps" className="md:left-[35%] relative"/>
+                    <img src={madmonkey2.src} alt="Crypto Creatures Mad Monkey" className="md:left-[20%] md:h-[300px] relative"/>
                 </div>
             </div>
 
             <div className="flex">
                 <div className="rrbanner__apes-item">
-                    <img src="http://bored.labartisan.net/assets/images/banner/apes/03.png" alt="Banner Apps" className="relative md:left-[-40%]"/>
+                    <img src={madmonkey3.src} alt="Crypto Creatures Mad Monkey" className="relative md:left-[-60%] md:h-[300px]"/>
                 </div>
                 <div className="rrbanner__apes-item">
-                    <img src="http://bored.labartisan.net/assets/images/banner/apes/04.png" alt="Banner Apps" className="relative md:left-[-20%]"/>
+                    <img src={madmonkey4.src} alt="Crypto Creatures Mad Monkey" className="relative md:left-[-20%] md:h-[300px]"/>
                 </div>
 
             </div>

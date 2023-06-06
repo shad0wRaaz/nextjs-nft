@@ -94,7 +94,7 @@ const CollectionDetails = () => {
   const [compact, setCompact] = useState(false);
   const [cursor, setCursor] = useState();
   const [showAirdrop, setShowAirdrop] = useState(false);
-console.log(referralAllowedCollections);
+
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
     bannerImage: `h-full object-cover`,
@@ -446,7 +446,7 @@ console.log(referralAllowedCollections);
     const properties = selectedProperties.filter((item, itemindex) => itemindex != index);
     setSelectedProperties(properties);
   }
-console.log(hasReferralSetting)
+
 
 //count down timer design renderer
 const renderer = ({ days, hours, minutes, seconds, completed }) => {
@@ -856,7 +856,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       </div>
                     </div>
                     <div className="flex lg:gap-3 flex-wrap md:flex-nowrap ">
-                      <div className="py-4 lg:max-h-[200px] overflow-scroll max-h-[200px]">
+                      <div className="py-4 lg:max-h-[200px] overflow-auto max-h-[200px]">
                         <span className="block text-sm">
                           {collectionData?.description}
                         </span>
@@ -1161,6 +1161,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                           listings={marketData}
                           showUnlisted={showUnlisted}
                           creator={collectionData?.createdBy}
+                          compact={compact}
                         />
                     ))
                   }

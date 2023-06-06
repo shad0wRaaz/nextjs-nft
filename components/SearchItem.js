@@ -6,7 +6,8 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
 
-const SearchItem = ({ nftItem }) => {
+const SearchItem = ({ nftItem, selectedBlockchain }) => {
+  console.log(selectedBlockchain)
   const address = useAddress()
   const { dark } = useThemeContext()
   // const [likers, setLikers] = useState([])
@@ -58,8 +59,11 @@ const SearchItem = ({ nftItem }) => {
             <div className="flex w-full h-full justify-center items-center">Not Available</div>)}
           {nftItem && (
             <a
-              href={`/nfts/${nftItem.asset.properties?.tokenid}`}
+              href={`/nft/${selectedBlockchain}/${nftItem.assetContractAddress}/${nftItem.asset.id}`}
             >
+            {/* <a
+              href={`/nfts/${nftItem.asset.properties?.tokenid}`}
+            > */}
               <div>
                 <div className="relative flex-shrink-0 ">
                   <div>

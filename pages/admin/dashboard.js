@@ -155,7 +155,7 @@ const dashboard = () => {
                 </div>
                 {referralModal && (
                     <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-50">
-                        <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+                        <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-auto z-50 relative`}>
                             <div
                                 className="absolute top-5 right-6 md:right-12  transition duration-[300] z-60 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
                                 onClick={() => setReferralModal(false)}
@@ -297,7 +297,7 @@ const dashboard = () => {
                                                         onChange={(e) => findUser(e.target.value)}/>
 
                                                 </div>
-                                                <div className="flex flex-col max-h-[450px] overflow-scroll">
+                                                <div className="flex flex-col max-h-[450px] overflow-auto">
                                                     {userStatus == 'loading' && <div className="flex justify-center items-center gap-1"> <IconLoading /> Loading</div>}
                                                     {userStatus == 'success' && selectedUser?.map((user, index) => (
                                                         <div key={index}>

@@ -112,7 +112,7 @@ const AddCategory = ({ setCategoryCount }) => {
         <div className="flex justify-between items-center mt-4">
             <p className={`font-semibold mt-3 ${dark ? 'text-neutral-100': ''}`}>List of available Categories</p>
         </div>
-        <div className="max-h-[10rem] overflow-scroll pr-4">
+        <div className="max-h-[10rem] overflow-auto pr-4">
             {allcategories?.map(item => (
                 <div key={item._id} className={`border p-3 px-5 ${dark ? 'border-slate-600 text-neutral-100' : 'border-neutral-100'} rounded-lg mt-1 relative`}>
                     <span>{item.name}</span>

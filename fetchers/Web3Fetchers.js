@@ -157,20 +157,23 @@ export const getActiveListings =
 
   //All Listing data from all Blockchain
 export const getFullListings = () =>  async() => {
-  const blockchains = ["mumbai", "binance-testnet", "avalanche-fuji", "goerli"]
-  const unresolved = blockchains.map(async (chain) => await axios.get(`${HOST}/api/getAllListings/${chain}`)) 
+  const {data} = await axios.get(`${HOST}/api/listing/getAll`);
+  return data;
+  // const blockchains = ["mumbai", "binance-testnet", "avalanche-fuji", "goerli", "binance", "mainnet", "polygon", "avalanche"]
+  // const unresolved = blockchains.map(async(chain) => await axios.get(`${HOST}/api/getAllListings/${chain}`)) 
 
-  const resolved = await Promise.all(unresolved);
-
+  // const resolved = await Promise.all(unresolved);
+  // console.log(resolved)
   //strip out unnecessary info and unify into single array
   //take out null data
-  const filterNull = resolved.filter(result => result.data != null);
-  let fullArray = [];
-
-  filterNull.map(chaindata => {
-    chaindata.data.map(nft => fullArray.push(nft));
-  });
-  return fullArray;
+  // const filterNull = resolved.filter(result => result.data == null);
+  // let fullArray = [];
+  
+  // console.log('filter', filterNull)
+  // filterNull.map(chaindata => {
+  //   chaindata.data.map(nft => fullArray.push(nft));
+  // });
+  // return fullArray;
 }
 
 export const updateListings = 

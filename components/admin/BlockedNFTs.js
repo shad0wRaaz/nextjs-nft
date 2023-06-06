@@ -175,7 +175,7 @@ const BlockedNFTs = () => {
         <div className="flex justify-between items-center mt-4">
             <p className={`font-semibold mt-3 ${dark ? 'text-neutral-100': ''}`}>List of Blocked NFTs</p>
         </div>
-        <div className="max-h-[10rem] overflow-scroll pr-4">
+        <div className="max-h-[10rem] overflow-auto pr-4">
             {blockedNfts && blockedNfts?.length > 0 && blockedNfts?.map(nft => (
                 <div key={nft._id} className={`border p-3 px-5 ${dark ? 'border-slate-600 text-neutral-100' : 'border-neutral-100'} rounded-lg blockedNft mt-1 relative`}>
                     <span>{nft.name}</span>

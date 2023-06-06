@@ -3,7 +3,7 @@ import Footer from '../components/Footer'
 import NFTItem from '../components/NFTItem'
 import { config } from '../lib/sanityClient'
 import { HiChevronDown, HiOutlineViewGrid } from 'react-icons/hi'
-import { BsChevronUp, BiChevronDown, BsChevronDown } from 'react-icons/bs'
+import { BsChevronDown } from 'react-icons/bs'
 import { FiArrowRight } from 'react-icons/fi'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useRouter } from 'next/router'
@@ -47,7 +47,7 @@ const style = {
 const search = ({category}) => {
   const { dark } = useThemeContext()
   const [showFilter, setShowFilter] = useState(true)
-  const { activeListings } = useMarketplaceContext()
+  const { activeListings, selectedBlockchain } = useMarketplaceContext()
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -67,7 +67,7 @@ const search = ({category}) => {
   const [currentItems, setCurrentItems] = useState(null)
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
-
+console.log(currentItems)
   useEffect(() => {
     if (!filteredListings) return
     const endOffset = itemOffset + itemsPerPage;
@@ -822,10 +822,10 @@ const search = ({category}) => {
                       .toLowerCase()
                       .includes(itemName.toLowerCase())
                   ) {
-                    return <SearchItem key={id} nftItem={nftItem} />
+                    return <SearchItem key={id} nftItem={nftItem} selectedBlockchain={selectedBlockchain}/>
                   }
                 } else {
-                  return <SearchItem key={id} nftItem={nftItem} />
+                  return <SearchItem key={id} nftItem={nftItem} selectedBlockchain={selectedBlockchain}/>
                 }
               })}
             </div>

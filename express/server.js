@@ -516,34 +516,31 @@ app.get('/api/getfeaturednfts', async(req, res) => {
     if(featuredNfts) {
       return res.status(200).send(featuredNfts);  
     }else {
-      const query = `*[_type == "nftItem" && featured == true && collection->contractAddress == "0x5e8Fb5271e590C7b74E3489953e10EB1922F4C9b"] {_id, id, name, featuredon, likedBy, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
+      const query = `*[_type == "nftItem" && featured == true] {_id, id, name, featuredon, collection->{chainId, contractAddress}} | order(featuredon desc) [0..4]`;
       const featurednfts = await config.fetch(query);
 
-      const unresolved = featurednfts?.map(async (item) => {
+      // const unresolved = featurednfts?.map(async (item) => {
 
-        if(item?.collection){
-          const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
-          const contract = await sdk.getContract(item?.collection?.contractAddress);
-          const nft = await contract.erc721.get(item?.id);
+      //   if(item?.collection){
+      //     const sdk = new ThirdwebSDK(chainnum[item?.collection?.chainId]);
+      //     const contract = await sdk.getContract(item?.collection?.contractAddress);
+      //     const nft = await contract.erc721.get(item?.id);
 
-          // const getownerquery = `*[_type == "users" && _id == "${nft.owner}"] {userName, web3imageprofile}`;
-          // const ownerdata = await config.fetch(getownerquery);
+      //     const obj = { ...item, nft };
+      //     return obj;
+      //   }
+      // })
+      // const resolvedPath = await Promise.all(unresolved);
 
-          // const obj = { ...item, nft, owner: ownerdata[0] };
-          const obj = { ...item, nft };
-          return obj;
-        }
-      })
-      const resolvedPath = await Promise.all(unresolved);
+      // //filtering out null and undefined objects
+      // const filterResolved = resolvedPath.filter(Boolean);
 
-      //filtering out null and undefined objects
-      const filterResolved = resolvedPath.filter(Boolean);
-
-      //save in redis if not present already
-      redis.set("featurednfts", JSON.stringify(filterResolved));
-
+      // //save in redis if not present already
+      const saveData = JSON.stringify(featurednfts);
+      redis.set("featurednfts", saveData);
+      
     
-      return (res.status(200).json(filterResolved))
+      return (res.status(200).json(saveData))
     }
   }catch(err){
 return res.status(200).send(null)
@@ -570,7 +567,6 @@ app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
 app.get('/api/updateListings/:blockchain', async (req, res) => {
   //only refresh required chain.
   const blockchain = req.params.blockchain;
-  console.log(blockchain)
 
   if(!(blockchain in marketplace)){
     return res.status(200).json({'message': 'Unknown blockhain'});
@@ -586,6 +582,80 @@ app.get('/api/updateListings/:blockchain', async (req, res) => {
   return res.status(200).json(listedItems);
 });
 
+app.get('/api/listing/getAll', async(req, res) => {
+  const binanceNFT = await redis.get('activelistings-binance');
+  const binance_testnetNFT = await redis.get('activelistings-binance-testnet');
+  const mumbaiNFT = await redis.get('activelistings-mumbaiNFT');
+  const polygonNFT = await redis.get('activelistings-polygon');
+  const mainnetNFT = await redis.get('activelistings-mainnet');
+  const goerliNFT = await redis.get('activelistings-goerli');
+  const avalancheNFT = await redis.get('activelistings-avalanche');
+  const avalanche_fujiNFT = await redis.get('activelistings-avalanche-fuji');
+  let fullListing = []
+
+  if(binanceNFT){
+    const j = await JSON.parse(binanceNFT);
+    fullListing = [...j]
+  }
+  if(binance_testnetNFT){
+    const j = await JSON.parse(binance_testnetNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(mumbaiNFT){
+    const j = await JSON.parse(mumbaiNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(polygonNFT){
+    const j = await JSON.parse(polygonNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(goerliNFT){
+    const j = await JSON.parse(goerliNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(mainnetNFT){
+    const j = await JSON.parse(mainnetNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(avalancheNFT){
+    const j = await JSON.parse(avalancheNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  if(avalanche_fujiNFT){
+    const j = await JSON.parse(avalanche_fujiNFT);
+      if (fullListing.length == 0){
+        fullListing = [...j]
+      }else{
+        fullListing = [...fullListing, ...j];
+      }
+  }
+  return res.send(fullListing)
+})
+
 app.get('/api/getAllListings/:blockchain', async (req, res) => {
   const blockchain = req.params.blockchain;
 
@@ -594,6 +664,7 @@ app.get('/api/getAllListings/:blockchain', async (req, res) => {
   //get blocked nfts and collections
   const rawdata = JSON.parse(await redis.get("blockeditems"));
   let filterednfts = globalActiveListings;
+  return res.status(200).json(filterednfts)
 
   if(rawdata){
     const blockednfts = rawdata[0]?.blockednfts;

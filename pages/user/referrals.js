@@ -33,7 +33,7 @@ const referrals = () => {
     const style = {
         wrapper: '',
         userprofile: 'w-[40px] mx-auto mb-1 h-[40px] rounded-full object-cover outline outline-2 outline-slate-300 mt-3',
-        tablewrapper: `max-h-[500px] overflow-scroll rounded-lg border ${dark ? 'border-slate-700' : 'border-neutral-200'}`,
+        tablewrapper: `max-h-[500px] overflow-auto rounded-lg border ${dark ? 'border-slate-700' : 'border-neutral-200'}`,
         userul: dark ? 'before:border-l before:border-slate-700' :'before:border-l before:border-neutral-200',
         userli: dark ? 'before:border-t before:border-slate-700 after:border-t after:border-slate-700 last:before:border-r last:before:border-border-slate-700 after:border-l after:border-slate-700' :'before:border-t before:border-neutral-200 after:border-t after:border-neutral-200 last:before:border-r last:before:border-border-slate-200 after:border-l after:border-neutral-200',
         userbox: `${dark ? 'border border-slate-700': 'border border-neutral-200'} bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-400/50 to-blue-500/50`,
@@ -143,7 +143,7 @@ const referrals = () => {
                     <p className="font-semibold text-center">Network Tree</p>
 
                     <div className="flex flex-col">
-                        <div className="mb-10 overflow-scroll">
+                        <div className="mb-10 overflow-auto">
                             <div className="tree w-max mx-auto"><span className="hidden">{leveltwoRef.current = 0 }{levelthreeRef.current = 0 }{levelfourRef.current = 0 }{levelfiveRef.current = 0 }</span>
                                 <ul className="flex w-[2000px] lg:w-auto justify-start lg:justify-center">
                                     <li>

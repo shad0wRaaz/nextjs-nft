@@ -40,7 +40,7 @@ const Roadmap = ({ setShowMenu }) => {
                             </div>
                             <div className="roadmap__content">
                                 <h4>Airdrops</h4>
-                                <p>All the Hodlers will be Airdroped BNBs in different phases. Early birds will have potential to get 4 times more Airdrops.</p>
+                                <p>All the Holders will be Airdroped BNBs in different phases. Early birds will have potential to get 4 times more Airdrops.</p>
                             </div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@ const Roadmap = ({ setShowMenu }) => {
                             </div>
                             <div className="roadmap__content">
                                 <h4>Upcoming Collections</h4>
-                                <p>All the NFT Hodlers will get access to info about other Upcoming Collections first.</p>
+                                <p>All NFT Holders will be able to use their same network to gain uni-level bonuses from upcoming specified collections as well.</p>
                             </div>
                         </div>
                     </div>

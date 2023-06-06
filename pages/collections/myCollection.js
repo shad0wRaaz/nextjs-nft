@@ -339,7 +339,7 @@ const Collection = () => {
         <div
           className={`border ${
             dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-          } flex justify-between gap-2 overflow-scroll rounded-full p-1 shadow`}
+          } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow`}
         >
           <div
             className={`transition cursor-pointer rounded-full p-4 px-8 ${

@@ -67,7 +67,7 @@ const Buy = ({ setShowMenu }) => {
                 const wholeArray = []
                 const updatedData = res.map(drops => {
                     const drop = JSON.parse(drops.airdrops);
-                    console.log(drop)
+                    // console.log(drop)
                     drop.map(d => wholeArray.push(d));
                 });
 

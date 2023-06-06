@@ -10,7 +10,7 @@ const HelmetMetaData = (props) => {
     let quote = props.quote != undefined ? props.quote : "";
     let title = props.title != undefined ? props.title : "Nuva NFT - A Multichain NFT Marketplace";
     let image = props.image != undefined ? getImagefromWeb3(props.image) : nuvanft.src;
-    let description = props.description != undefined ? props.description  : "Nuva Nft is one of the largest NFT marketplace out there in the defi market.";
+    let description = props.description != undefined ? props.description  : "Nuva NFT is one of the largest NFT marketplace integrated with Ethereum, Binance Smart Chain, Polygon and Avalanche.";
     let hashtag = props.hashtag != undefined ? props.hashtag : "#nuvanft";
 
   return (
