@@ -9,7 +9,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
     let seoCurrentUrl = Boolean(currentUrl) ? currentUrl : 'https://nuvanft.io';
     let seoSiteName = Boolean(sitename) ? sitename : 'Nuva NFT';
     let seoDescription = Boolean(description) ? description : 'Nuva NFT is one of the largest NFT marketplace integrated with Ethereum, Binance Smart Chain, Polygon and Avalanche.';
-    let seoImage = Boolean(image) ? image : nuvanft.src;
+    let seoImage = Boolean(image) ? image : 'https://nuvanft.io/assets/nuvanft.png';
 
   return (
     <Head>
