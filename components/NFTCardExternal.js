@@ -123,6 +123,7 @@ const NFTCardExternal = ({
                     alt={nftItem.metadata?.name}
                     objectFit="cover"
                     layout="fill"
+                    loading='lazy'
                   />
                 </div>
               </div>

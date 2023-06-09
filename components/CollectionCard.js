@@ -94,8 +94,8 @@ const CollectionCard = ({
             ></path>
           </svg>
 
-          <div className="absolute top-2 left-1/2 -translate-x-1/2">
-            <div className="wil-avatar relative inline-flex h-14 bg-white w-14 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
+          <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+            <div className="wil-avatar relative inline-flex h-20 bg-white w-20 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
               {profileImage ? (
                 <img
                   className="absolute inset-0 h-full w-full rounded-full object-cover"

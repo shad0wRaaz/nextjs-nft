@@ -7,8 +7,8 @@ const Roadmap = ({ setShowMenu }) => {
   return (
     <section 
         onClick={() => setShowMenu(false)}
-        className="roadmap padding-top padding-bottom alfaslab py-[70px] md:py-[100px] bg-[#23162c]" id="roadmap">
-        <div className="container mx-auto p-8">
+        className="roadmap padding-top padding-bottom alfaslab pb-[70px] md:pb-[100px] bg-[#23162c]" id="roadmap">
+        <div className="container mx-auto p-8 pt-0">
             <div className="section-header aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000">
                 <div className="section-header__content text-center w-full max-w-[1000px] mx-auto">
                     <h2 className=" text-4xl md:text-[4.5rem] leading-normal"> <span className="color--gradient-y"> Rewarding Renditions</span> Roadmap</h2>
@@ -25,7 +25,7 @@ const Roadmap = ({ setShowMenu }) => {
                                 {/* <img src="http://bored.labartisan.net/assets/images/roadmap/01.png" alt="Roadmap Icon" /> */}
                             </div>
                             <div className="roadmap__content">
-                                <h4>Launch Initiated</h4>
+                                <h4>Launch</h4>
                                 <p>5K in Crypto Creatures and Neon Dream, 10K in Celestial Beings and 20K in Artifacts of the Future will be ready to bought.</p>
                             </div>
                         </div>

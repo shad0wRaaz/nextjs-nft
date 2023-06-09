@@ -1,8 +1,12 @@
 import React from 'react'
-import bannerbg from '../assets/images/banner-bg.png'
+import bannerbg from '../assets/images/banner-bg.webp'
+import thumb1 from '../assets/images/thumb1.jpeg'
+import thumb2 from '../assets/images/thumb2.jpeg'
+import thumb3 from '../assets/images/thumb3.jpeg'
 import Link from 'next/link'
+import Image from 'next/image'
 
-const Videos = () => {
+const Videos = ({ setShowMenu }) => {
   return (
     <section id="videos" 
       onClick={() => setShowMenu(false)} className="community alfaslab py-[70px] md:py-[100px]" style={{backgroundImage: `url(${bannerbg.src})`}}>
@@ -13,21 +17,29 @@ const Videos = () => {
                     <p className="text-xl mb-8">Some informative/guiding videos that might be of great help.</p>
                     <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         <div>
-                            <div className="rounded-xl overflow-hidden">
-                                <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/Ak6GIV5cDFE" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
-                            </div>
+                            <Link href="https://www.youtube.com/watch?v=Ak6GIV5cDFE" passHref>
+                                <a target="_blank">
+                                    <Image src={thumb1.src} className="rounded-xl cursor-pointer overflow-hidden" height="315px" width="370px" objectFit="cover" alt="Video Thumbnail"/>
+                                </a>
+                            </Link>
+                                {/* <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/Ak6GIV5cDFE" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe> */}
                             <p className="my-4">How to register with NuvaNFT, simply by connecting your DeFi wallet address</p>
                         </div>
                         <div>
-                            <div className="rounded-xl overflow-hidden">
-                                <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/u7anL0MyEck" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
-                            </div>
+                            <Link href="https://www.youtube.com/watch?v=IF5-5G8x95QE" passHref>
+                                <a target="_blank">
+                                    <Image src={thumb2.src} className="rounded-xl cursor-pointer overflow-hidden" height="315px" width="370px" objectFit="cover" alt="Video Thumbnail"/>
+                                </a>
+                            </Link>
+                                {/* <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/u7anL0MyEck" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe> */}
                             <p className="my-4">How to create Metamask Wallet?</p>
                         </div>
                         <div>
-                            <div className="rounded-xl overflow-hidden">
-                                <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/gQsfhH3DCDc" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe>
-                            </div>
+                            <Link href="https://www.youtube.com/watch?v=gQsfhH3DCDc" passHref>
+                                <a target="_blank">
+                                    <Image src={thumb3.src} className="rounded-xl cursor-pointer overflow-hidden" height="315px" width="370px" objectFit="cover" alt="Video Thumbnail"/>
+                                </a>
+                            </Link>
                             <p className="my-4">Nuva NFT Rewarding Rendition Whitepaper</p>
                         </div>
                     </div>

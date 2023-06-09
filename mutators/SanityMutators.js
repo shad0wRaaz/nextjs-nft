@@ -43,51 +43,123 @@ export const isReferralActivated = async(address) => {
 }
 
 export const saveReferrer = async(username, sponsor, address) => {
-
-// const documentId = '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6'; // Replace with the ID of your document
-// const document = await config.getDocument(documentId);
-// console.log(document)
-
-// const arrayIndexToRemove = 11; // Replace with the index of the object you want to delete
-// const newArray = document.directs.filter((item, index) => index !== arrayIndexToRemove);
-
-// const updatedDocument = {
-//   ...document,
-//   directs: newArray,
-// };
-
-// const response = await config.createOrReplace(updatedDocument);
-
 //see if the sponsor has already got this username as direct referrals, only save if not present already
-try{
-  const document = await config.getDocument(sponsor);
-  const isPresent = document.directs.findIndex(referrals => referrals._ref.toLowerCase() == address.toLowerCase());
+  try{
+    const document = await config.getDocument(sponsor);
+    const isPresent = document.directs.findIndex(referrals => referrals._ref.toLowerCase() == address.toLowerCase());
 
-  if(isPresent >= 0){
-    //already present in sponsor's direct referrals, so no need to do anything
-    return
+    if(isPresent >= 0){
+      //already present in sponsor's direct referrals, so no need to do anything
+      return
+    }
+
+    //save if it is not present
+      await config
+            .patch(address)
+            .set({ 
+              userName: username, 
+              referrer: { 
+                _type: 'reference', _ref: sponsor 
+              },
+            })
+            .commit();
+
+      //add this user in sponsor's direct referrals
+      await config
+              .patch(sponsor)
+              .setIfMissing({ directs: [] })
+              .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
+              .commit({ autoGenerateArrayKeys: true });
+  }catch(error){
+  console.error(error)
   }
 
-  //save if it is not present
-    await config
-          .patch(address)
-          .set({ 
-            userName: username, 
-            referrer: { 
-              _type: 'reference', _ref: sponsor 
-            },
-          })
-          .commit();
-
-    //add this user in sponsor's direct referrals
-    await config
-            .patch(sponsor)
-            .setIfMissing({ directs: [] })
-            .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
-            .commit({ autoGenerateArrayKeys: true });
-}catch(error){
- console.error(error)
 }
+
+export const sendAirdrop = async(airdrops) => {
+  const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
+
+    const tx = await axios.post(
+      `${FAUCETHOST}/api/nft/sendairdrop`,
+      {
+        receivers: airdrops,
+        secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    ).catch(err => {console.log(err)});
+
+    return tx;
+}
+
+
+export const saveAirdropData = async(transactions, chainId, contractAddress, tokenShare, phase) => {
+ 
+  const airdrop_OBJ_Array = transactions?.map(tx => {
+    const obj = {
+      chainId: Number(chainId),
+      transactionHash: tx.transactionHash,
+      walletAddress: tx.to,
+      createdTime: new Date(),
+      contractAddress,
+      amount: tokenShare,
+      phase,
+    }
+    return obj;
+  })
+
+  
+  const unresolved = airdrop_OBJ_Array.map(async user => {
+    const query = `*[_type == "users" && lower(_id) == "${user.walletAddress}"]`;
+    const result = await config.fetch(query);
+    return result[0];
+  })
+
+  const resolved = await Promise.all(unresolved);
+
+
+  //create airdrop object to save in databas
+  const documentArray = resolved.map(user => {
+    //update Airdrop data
+    let obj = '';
+    let airdropData = '';
+
+    if(!user.airdrops){
+      airdropData = airdrop_OBJ_Array.filter(data => String(data.walletAddress).toLowerCase() == String(user.walletAddress).toLowerCase());
+      obj = { _id: user._id, airdrops: [airdropData[0]]}
+    }else{
+      const existingAirdrop = JSON.parse(user.airdrops);
+      const newData = airdrop_OBJ_Array.filter(data => String(data.walletAddress).toLowerCase() == String(user.walletAddress).toLowerCase());
+      obj = {
+        _id: user._id, 
+        airdrops: [
+          ...existingAirdrop, 
+          {
+            ...newData[0],
+          }
+        ]
+      }
+    }
+    return obj;
+  });
+
+
+  //patch all documentArray document
+  documentArray.map(async doc => {
+    await config
+          .patch(doc._id)
+          .set({ airdrops: JSON.stringify(doc.airdrops)})
+          .commit()
+          .catch(err => console.log(err))
+  });
+
+  //in the end update Airdrop in server redis
+  const updateAirdropServer = await axios.get(`${HOST}/api/updateAirdrops`);
+  console.log(updateAirdropServer)
 
 }
 
@@ -155,6 +227,7 @@ export const sendReferralCommission = async (receivers, address) => {
   }
 }
 
+//send nuva tokens as referral bonus; not used now
 export const sendToken = async(referee, recipient) => {
   //check if the recipient is qualified or not;
   try{

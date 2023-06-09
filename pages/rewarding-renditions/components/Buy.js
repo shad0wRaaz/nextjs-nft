@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import React, { Fragment, useEffect, useState } from 'react'
-import bannerbg from '../assets/images/banner-bg.png'
+import bannerbg from '../assets/images/banner-bg.webp'
 import creature1  from '../assets/cryptocreatures/creature01.jpeg'
 import creature2  from '../assets/cryptocreatures/creature02.jpeg'
 import creature3  from '../assets/cryptocreatures/creature03.jpeg'
@@ -44,20 +44,10 @@ const Buy = ({ setShowMenu }) => {
     const { chainExplorer, chainIcon } = useSettingsContext();
     const [searchAddress, setSearchAddress] = useState();
     
-    const cryptoContract = "0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923";
-    const neonContract = "0x5cb763F5954fDeeF7F5c97Cc330EfD60e8EcB5D1";
-    const celestialContract = "0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE924";
-    const futureContract = "0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE925";
-    // Airdrop
-    // const newAirdrop = [{
-    //     chainId: 97,
-    //     transactionHash: '0xbc64af636e0204094e40dce1c587115b1452080f8ba16dd5e83856590f59fd6c',
-    //     phase: 1,
-    //     amount: 0.3,
-    //     contractAddress: '0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923',
-    //     walletAddress: '0x9D2036BAfd465bAFaCFeEb6A4a97659D9f2a8A30',
-    //     createdTime: new Date()
-    // }]
+    const cryptoContract = "0x9809AbFc4319271259a340775eC03E9746B76068";
+    const neonContract = "0x2945db324Ec216a5D5cEcE8B4D76f042553a213f";
+    const celestialContract = "0x54265672B480fF8893389F2c68caeF29C95c7BE2";
+    const futureContract = "0x9BDa42900556fCce5927C1905084C4b3CffB23b0";
 
     const {data, status} = useQuery(
         ["airdrops"],
@@ -70,6 +60,7 @@ const Buy = ({ setShowMenu }) => {
                     // console.log(drop)
                     drop.map(d => wholeArray.push(d));
                 });
+                
 
                 //segregate the whole array into correct collections
                 const cc = wholeArray.filter(drop => drop.contractAddress == cryptoContract);
@@ -77,13 +68,13 @@ const Buy = ({ setShowMenu }) => {
                 setSelectedCryptoAir(cc);
                 const nd = wholeArray.filter(drop => drop.contractAddress == neonContract);
                 setNeonAir(nd);
-                setSelectedNeonAir(cc);
+                setSelectedNeonAir(nd);
                 const cb = wholeArray.filter(drop => drop.contractAddress == celestialContract);
                 setCelestialAir(cb);
-                setSelectedCelestialAir(cc);
+                setSelectedCelestialAir(cb);
                 const af = wholeArray.filter(drop => drop.contractAddress == futureContract);
                 setFutureAir(af);
-                setSelectedFutureAir(cc);
+                setSelectedFutureAir(af);
             }
         }
     );
@@ -143,31 +134,18 @@ const Buy = ({ setShowMenu }) => {
     <section 
         onClick={() => setShowMenu(false)}
         id="buy" 
-        className="mint bg-cover alfaslab py-[70px] md:py-[100px]" 
-        style={{backgroundImage: `url(${bannerbg.src})`}}>
-        <div className="container mx-auto px-8">
+        className="mint bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
+        <div className="container mx-auto px-8 border-b-2 border-dashed border-[#382447] pb-[4rem]">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal"> 
+                    <div className="w-full">
+                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">1. Crypto</span> Creatures</h2>
-                        <div className="flex gap-2 mt-[2rem]">
+                        <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-[3rem]">
-                            <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                                <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
-                                    <a className="">Buy Now</a>
-                                </Link>
-                            </div>
-                            <div
-                                className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
-                                onClick={() => setCryptoDrop(true)}>
-                                View Airdrops
-                            </div>
                         </div>
                         <Transition appear show={cryptoDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCryptoDrop(false)}>
@@ -197,7 +175,7 @@ const Buy = ({ setShowMenu }) => {
                                     <Dialog.Panel className="w-full h-[564px] max-w-4xl transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900 text-center"
+                                            className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
                                             All Airdrops from <span className="font-bold">CRYPTO CREATURES</span>
                                         </Dialog.Title>
@@ -215,12 +193,12 @@ const Buy = ({ setShowMenu }) => {
                                                 className={`rounded-md text-center p-3 px-4 bg-sky-200 transition hover:bg-sky-300 cursor-pointer text-sm ${phase == 4 ? 'ring-2 ring-offset-1 ring-sky-500' : ''}`}
                                                 onClick={() => setPhase(4)}>Phase 4</div>
                                         </div>
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center flex-wrap gap-3">
                                             <input
                                                 value={searchAddress}
                                                 onChange={(e) => setSearchAddress(e.target.value)}
                                                 placeholder='Search by Transaction Hash or Wallet Address'
-                                                className="border-neutral-200 w-96 text-sm rounded-md bg-neutral-200 p-2"
+                                                className="border-neutral-200 text-sm rounded-md bg-neutral-200 p-2 w-full md:w-fit flex-grow"
                                                 type="text"/>
                                             <div className="flex gap-2 ml-2">
                                                 <div 
@@ -235,76 +213,81 @@ const Buy = ({ setShowMenu }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mt-2 max-h-[282px] md:max-h-[400px] overflow-y-scroll">
+                                        <div className="mt-2 max-h-[282px] md:max-h-[350px] overflow-y-scroll">
                                             <table className="table md:hidden w-max md:w-full text-xs">
-                                                <tr className="">
-                                                    <td className="text-sm font-bold p-2">Tx Hash</td>
-                                                    <td className="text-sm font-bold p-2">User</td>
-                                                    <td className="text-sm font-bold p-2">Time</td>
-                                                    <td className="text-sm font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedCryptoAir?.length) || !Boolean(cryptoAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ): (
-                                                    <>
-                                                        {selectedCryptoAir.filter(drops => drops.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
-                                                                        {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
-                                                                        <MdOutlineOpenInNew />
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        {chainIcon[drop.chainId.toString()]}
-                                                                        {drop.amount}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
-                                            </table>
-                                            <table className="hidden md:table text-sm w-max md:w-full">
-                                                <tr className="">
-                                                    <td className="text-base font-bold p-2">Tx Hash</td>
-                                                    <td className="text-base font-bold p-2">Receiver</td>
-                                                    <td className="text-base font-bold p-2">Time</td>
-                                                    <td className="text-base font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedCryptoAir?.length) || !Boolean(cryptoAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
-                                                    </tr>
-                                                ) : (
-                                                    <>
-                                                        {selectedCryptoAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
-                                                                        <MdOutlineOpenInNew />
-                                                                        {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                    {!Boolean(selectedCryptoAir?.length) || !Boolean(cryptoAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ): (
+                                                        <>
+                                                            {selectedCryptoAir.filter(drops => drops.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
+                                                                            {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
+                                                                            <MdOutlineOpenInNew />
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
                                                                             {chainIcon[drop.chainId.toString()]}
                                                                             {drop.amount}
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+
+                                                </tbody>
+                                            </table>
+                                            <table className="hidden md:table text-sm w-max md:w-full">
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
+                                                    </tr>
+                                                    {!Boolean(selectedCryptoAir?.length) || !Boolean(cryptoAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ) : (
+                                                        <>
+                                                            {selectedCryptoAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
+                                                                            <MdOutlineOpenInNew />
+                                                                            {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                                                {chainIcon[drop.chainId.toString()]}
+                                                                                {drop.amount}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                         </div>
 
@@ -324,48 +307,61 @@ const Buy = ({ setShowMenu }) => {
                             </Dialog>
                         </Transition>
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2">
+                            <div className="grid grid-cols-2 md:grid-cols-4">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Project Size</h6>
-                                        <h2 className="mint__numbers">5,000</h2>
-                                        <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
-                                    </div>
+                                        <div className="mint__inner">
+                                            <h6 className="mint__sub-title">Project Size</h6>
+                                            <h2 className="mint__numbers">5,000</h2>
+                                            <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Price</h6>
-                                        <h2 className="mint__numbers">$75<span className="text-xs"> (worth of)</span></h2>
-                                        <h4 className="mint__name text-uppercase">BNB</h4>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="mt-[3rem]">
-                                    <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Date</h6>
-                                        <h2 className="mint__numbers">30th*</h2>
-                                        <h4 className="mint__name text-uppercase">June</h4>
-                                    </div>
+                                        <div className="mint__inner">
+                                            <h6 className="mint__sub-title">Buy Price</h6>
+                                            <h2 className="mint__numbers">$75<span className="text-xs"> (worth of)</span></h2>
+                                            <h4 className="mint__name text-uppercase">BNB</h4>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Remaining</h6>
-                                        <h2 className="mint__numbers">5,000</h2>
-                                        <h4 className="mint__name text-uppercase">NFTs</h4>
+                                        <div className="mint__inner">
+                                            <h6 className="mint__sub-title">Buy Date</h6>
+                                            <h2 className="mint__numbers">30th*</h2>
+                                            <h4 className="mint__name text-uppercase">June</h4>
+                                        </div>
                                     </div>
+                                </div>
+                                <div className="mt-[3rem]">
+                                    <div className="mint__item">
+                                        <div className="mint__inner">
+                                            <h6 className="mint__sub-title">Remaining</h6>
+                                            <h2 className="mint__numbers">5,000</h2>
+                                            <h4 className="mint__name text-uppercase">NFTs</h4>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
+                        <div className="text-center w-full md:w-fit default-btn !leading-normal">
+                            <Link href={`${HOST}/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068`} passHref>
+                                <a className="">Buy Now</a>
+                            </Link>
+                        </div>
+                        <div
+                            className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
+                            onClick={() => setCryptoDrop(true)}>
+                            View Airdrops
+                        </div>
+                    </div>
+                    
                     {/* <div className="w-full md:w-1/2">
                         <div className="mint__thumb aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000"> */}
                         {/* </div>
@@ -373,29 +369,17 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[5rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
             <div className="mint__wrapper">
-                <div className="flex flex-wrap items-center md:flex-row-reverse">
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal"> 
+                <div className="flex flex-wrap items-center">
+                    <div className="w-full">
+                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">2. Neon</span> Dreams</h2>
-                        <div className="flex gap-2 mt-[2rem]">
+                        <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-[3rem]">
-                            <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                                <Link href={`${HOST}/collection/binance-testnet/0x5cb763F5954fDeeF7F5c97Cc330EfD60e8EcB5D1`} passHref>
-                                    <a className="">Buy Now</a>
-                                </Link>
-                            </div>
-                            <div 
-                                className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
-                                onClick={() => setNeonDrop(true)}>
-                                <a className="">View Airdrops</a>
-                            </div>
                         </div>
                         <Transition appear show={neonDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setNeonDrop(false)}>
@@ -425,7 +409,7 @@ const Buy = ({ setShowMenu }) => {
                                     <Dialog.Panel className="w-full h-[564px] max-w-4xl transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900 text-center"
+                                            className="text-lg font-medium pt-6 leading-6 text-gray-900 text-center"
                                         >
                                             All Airdrops from <span className="font-bold">NEON DREAMS</span>
                                         </Dialog.Title>
@@ -443,12 +427,12 @@ const Buy = ({ setShowMenu }) => {
                                                 className={`rounded-md text-center p-3 px-4 bg-sky-200 transition hover:bg-sky-300 cursor-pointer text-sm ${phase == 4 ? 'ring-2 ring-offset-1 ring-sky-500' : ''}`}
                                                 onClick={() => setPhase(4)}>Phase 4</div>
                                         </div>
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center flex-wrap gap-3">
                                             <input
                                                 value={searchAddress}
                                                 onChange={(e) => setSearchAddress(e.target.value)}
                                                 placeholder='Search by Transaction Hash or Wallet Address'
-                                                className="border-neutral-200 w-96 text-sm rounded-md bg-neutral-200 p-2"
+                                                className="border-neutral-200 w-full md:w-fit flex-grow text-sm rounded-md bg-neutral-200 p-2"
                                                 type="text"/>
                                             <div className="flex gap-2 ml-2">
                                                 <div 
@@ -463,76 +447,80 @@ const Buy = ({ setShowMenu }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mt-2 max-h-[282px] md:max-h-[400px] overflow-y-scroll">
+                                        <div className="mt-2 max-h-[282px] md:max-h-[350px] overflow-y-scroll">
                                             <table className="table md:hidden w-max md:w-full text-xs">
-                                                <tr className="">
-                                                    <td className="text-sm font-bold p-2">Tx Hash</td>
-                                                    <td className="text-sm font-bold p-2">User</td>
-                                                    <td className="text-sm font-bold p-2">Time</td>
-                                                    <td className="text-sm font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedNeonAir?.length) || !Boolean(neonAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                    <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ): (
-                                                    <>
-                                                        {selectedNeonAir.filter(drops => drops.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
-                                                                        {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
-                                                                        <MdOutlineOpenInNew />
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        {chainIcon[drop.chainId.toString()]}
-                                                                        {drop.amount}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                    {!Boolean(selectedNeonAir?.length) || !Boolean(neonAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ): (
+                                                        <>
+                                                            {selectedNeonAir.filter(drops => drops.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
+                                                                            {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
+                                                                            <MdOutlineOpenInNew />
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            {chainIcon[drop.chainId.toString()]}
+                                                                            {drop.amount.toFixed(5)}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                             <table className="hidden md:table text-sm w-max md:w-full">
-                                                <tr className="">
-                                                    <td className="text-base font-bold p-2">Tx Hash</td>
-                                                    <td className="text-base font-bold p-2">Receiver</td>
-                                                    <td className="text-base font-bold p-2">Time</td>
-                                                    <td className="text-base font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedNeonAir?.length) || !Boolean(neonAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ) : (
-                                                    <>
-                                                        {selectedNeonAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
-                                                                        <MdOutlineOpenInNew />
-                                                                        {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
-                                                                            {chainIcon[drop.chainId.toString()]}
-                                                                            {drop.amount}
+                                                    {!Boolean(selectedNeonAir?.length) || !Boolean(neonAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ) : (
+                                                        <>
+                                                            {selectedNeonAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
+                                                                            <MdOutlineOpenInNew />
+                                                                            {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                                                {chainIcon[drop.chainId.toString()]}
+                                                                                {drop.amount.toFixed(5)}
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                         </div>
 
@@ -552,9 +540,9 @@ const Buy = ({ setShowMenu }) => {
                             </Dialog>
                         </Transition>
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2">
+                            <div className="grid grid-cols-2 md:grid-cols-4">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
@@ -594,8 +582,18 @@ const Buy = ({ setShowMenu }) => {
                             </div>
                         </div>
                     </div>
-                   
-                    
+                    <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
+                        <div className="text-center w-full md:w-fit default-btn !leading-normal">
+                            <Link href={`${HOST}/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f`} passHref>
+                                <a className="">Buy Now</a>
+                            </Link>
+                        </div>
+                        <div 
+                            className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
+                            onClick={() => setNeonDrop(true)}>
+                            <a className="">View Airdrops</a>
+                        </div>
+                    </div>
                     {/* <div className="w-full md:w-1/2">
                         <div className="mint__thumb aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000"> */}
                         {/* </div>
@@ -603,29 +601,17 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[5rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal"> 
+                    <div className="w-full">
+                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">3. Celestial</span> Beings</h2>
-                        <div className="flex gap-2 mt-[2rem]">
+                        <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-[3rem]">
-                            <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                                <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
-                                    <a className="">Buy Now</a>
-                                </Link>
-                            </div>
-                            <div 
-                                className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
-                                onClick={() => setCelestialDrop(true)}>
-                                    View Airdrops
-                            </div>
                         </div>
                         <Transition appear show={celestialDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCelestialDrop(false)}>
@@ -655,7 +641,7 @@ const Buy = ({ setShowMenu }) => {
                                     <Dialog.Panel className="w-full h-[564px] max-w-4xl transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900 text-center"
+                                            className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
                                             All Airdrops from <span className="font-bold">CELESTIAL BEINGS</span>
                                         </Dialog.Title>
@@ -673,12 +659,12 @@ const Buy = ({ setShowMenu }) => {
                                                 className={`rounded-md text-center p-3 px-4 bg-sky-200 transition hover:bg-sky-300 cursor-pointer text-sm ${phase == 4 ? 'ring-2 ring-offset-1 ring-sky-500' : ''}`}
                                                 onClick={() => setPhase(4)}>Phase 4</div>
                                         </div>
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center flex-wrap gap-3">
                                             <input
                                                 value={searchAddress}
                                                 onChange={(e) => setSearchAddress(e.target.value)}
                                                 placeholder='Search by Transaction Hash or Wallet Address'
-                                                className="border-neutral-200 w-96 text-sm rounded-md bg-neutral-200 p-2"
+                                                className="border-neutral-200 w-full md:w-fit flex-grow text-sm rounded-md bg-neutral-200 p-2"
                                                 type="text"/>
                                             <div className="flex gap-2 ml-2">
                                                 <div 
@@ -693,76 +679,80 @@ const Buy = ({ setShowMenu }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mt-2 max-h-[282px] md:max-h-[400px] overflow-y-scroll">
+                                        <div className="mt-2 max-h-[282px] md:max-h-[350px] overflow-y-scroll">
                                             <table className="table md:hidden w-max md:w-full text-xs">
-                                                <tr className="">
-                                                    <td className="text-sm font-bold p-2">Tx Hash</td>
-                                                    <td className="text-sm font-bold p-2">User</td>
-                                                    <td className="text-sm font-bold p-2">Time</td>
-                                                    <td className="text-sm font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedCelestialAir?.length) || !Boolean(celestialAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ): (
-                                                    <>
-                                                        {selectedCelestialAir.filter(drops => drops.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
-                                                                        {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
-                                                                        <MdOutlineOpenInNew />
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        {chainIcon[drop.chainId.toString()]}
-                                                                        {drop.amount}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                    {!Boolean(selectedCelestialAir?.length) || !Boolean(celestialAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ): (
+                                                        <>
+                                                            {selectedCelestialAir.filter(drops => drops.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
+                                                                            {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
+                                                                            <MdOutlineOpenInNew />
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            {chainIcon[drop.chainId.toString()]}
+                                                                            {drop.amount.toFixed(5)}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                             <table className="hidden md:table text-sm w-max md:w-full">
-                                                <tr className="">
-                                                    <td className="text-base font-bold p-2">Tx Hash</td>
-                                                    <td className="text-base font-bold p-2">Receiver</td>
-                                                    <td className="text-base font-bold p-2">Time</td>
-                                                    <td className="text-base font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedCelestialAir?.length) || !Boolean(celestialAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ) : (
-                                                    <>
-                                                        {selectedCelestialAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
-                                                                        <MdOutlineOpenInNew />
-                                                                        {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
-                                                                            {chainIcon[drop.chainId.toString()]}
-                                                                            {drop.amount}
+                                                    {!Boolean(selectedCelestialAir?.length) || !Boolean(celestialAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ) : (
+                                                        <>
+                                                            {selectedCelestialAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
+                                                                            <MdOutlineOpenInNew />
+                                                                            {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                                                {chainIcon[drop.chainId.toString()]}
+                                                                                {drop.amount.toFixed(5)}
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                         </div>
 
@@ -782,9 +772,9 @@ const Buy = ({ setShowMenu }) => {
                             </Dialog>
                         </Transition>
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2">
+                            <div className="grid grid-cols-2 md:grid-cols-4">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="mint__inner">
@@ -824,6 +814,18 @@ const Buy = ({ setShowMenu }) => {
                             </div>
                         </div>
                     </div>
+                    <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
+                        <div className="text-center w-full md:w-fit default-btn !leading-normal">
+                            <Link href={`${HOST}/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2`} passHref>
+                                <a className="">Buy Now</a>
+                            </Link>
+                        </div>
+                        <div 
+                            className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
+                            onClick={() => setCelestialDrop(true)}>
+                                View Airdrops
+                        </div>
+                    </div>
                     {/* <div className="w-full md:w-1/2">
                         <div className="mint__thumb aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000"> */}
                         {/* </div>
@@ -831,29 +833,17 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[5rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
             <div className="mint__wrapper">
-                <div className="flex flex-wrap items-center md:flex-row-reverse">
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal"> 
+                <div className="flex flex-wrap items-center">
+                    <div className="w-full">
+                        <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">4. Artifacts of</span> The Future</h2>
-                        <div className="flex gap-2 mt-[2rem]">
+                        <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-[3rem]">
-                            <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                                <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
-                                    <a className="">Buy Now</a>
-                                </Link>
-                            </div>
-                            <div 
-                                className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
-                                onClick={() => setFutureDrop(true)}>
-                                View Airdrops
-                            </div>
                         </div>
                         <Transition appear show={futureDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setFutureDrop(false)}>
@@ -883,7 +873,7 @@ const Buy = ({ setShowMenu }) => {
                                     <Dialog.Panel className="w-full h-[564px] max-w-4xl transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900 text-center"
+                                            className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
                                             All Airdrops from <span className="font-bold">ARTIFACTS OF THE FUTURE</span>
                                         </Dialog.Title>
@@ -901,12 +891,12 @@ const Buy = ({ setShowMenu }) => {
                                                 className={`rounded-md text-center p-3 px-4 bg-sky-200 transition hover:bg-sky-300 cursor-pointer text-sm ${phase == 4 ? 'ring-2 ring-offset-1 ring-sky-500' : ''}`}
                                                 onClick={() => setPhase(4)}>Phase 4</div>
                                         </div>
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center flex-wrap gap-3">
                                             <input
                                                 value={searchAddress}
                                                 onChange={(e) => setSearchAddress(e.target.value)}
                                                 placeholder='Search by Transaction Hash or Wallet Address'
-                                                className="border-neutral-200 w-96 text-sm rounded-md bg-neutral-200 p-2"
+                                                className="border-neutral-200 w-full md:w-fit flex-grow text-sm rounded-md bg-neutral-200 p-2"
                                                 type="text"/>
                                             <div className="flex gap-2 ml-2">
                                                 <div 
@@ -921,76 +911,80 @@ const Buy = ({ setShowMenu }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mt-2 max-h-[282px] md:max-h-[400px] overflow-y-scroll">
+                                        <div className="mt-2 max-h-[282px] md:max-h-[350px] overflow-y-scroll">
                                             <table className="table md:hidden w-max md:w-full text-xs">
-                                                <tr className="">
-                                                    <td className="text-sm font-bold p-2">Tx Hash</td>
-                                                    <td className="text-sm font-bold p-2">User</td>
-                                                    <td className="text-sm font-bold p-2">Time</td>
-                                                    <td className="text-sm font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedFutureAir?.length) || !Boolean(futureAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-xs font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
                                                     </tr>
-                                                ): (
-                                                    <>
-                                                        {selectedFutureAir.filter(drops => drops.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
-                                                                        {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
-                                                                        <MdOutlineOpenInNew />
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        {chainIcon[drop.chainId.toString()]}
-                                                                        {drop.amount}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
-                                            </table>
-                                            <table className="hidden md:table text-sm w-max md:w-full">
-                                                <tr className="">
-                                                    <td className="text-base font-bold p-2">Tx Hash</td>
-                                                    <td className="text-base font-bold p-2">Receiver</td>
-                                                    <td className="text-base font-bold p-2">Time</td>
-                                                    <td className="text-base font-bold p-2">Token</td>
-                                                </tr>
-                                                {!Boolean(selectedFutureAir?.length) || !Boolean(futureAir?.length) ? (
-                                                    <tr>
-                                                        <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
-                                                    </tr>
-                                                ) : (
-                                                    <>
-                                                        {selectedFutureAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
-                                                            <tr key={index}>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
-                                                                        <MdOutlineOpenInNew />
-                                                                        {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
-                                                                    </a>
-                                                                </td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
-                                                                <td className="p-2 border-0 border-slate-600/30 border-t">
-                                                                    <div className="flex items-center">
-                                                                        <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                    {!Boolean(selectedFutureAir?.length) || !Boolean(futureAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ): (
+                                                        <>
+                                                            {selectedFutureAir.filter(drops => drops.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank">
+                                                                            {drop.transactionHash.slice(0,3)}...{drop.transactionHash.slice(-3)}
+                                                                            <MdOutlineOpenInNew />
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,3)}...{drop.walletAddress.slice(-3)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
                                                                             {chainIcon[drop.chainId.toString()]}
                                                                             {drop.amount}
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                            <table className="hidden md:table text-sm w-max md:w-full">
+                                                <tbody>
+                                                    <tr className="">
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Tx Hash</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Receiver</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Time</th>
+                                                        <th className="text-base font-bold p-2 sticky top-0 bg-neutral-300">Token</th>
+                                                    </tr>
+                                                    {!Boolean(selectedFutureAir?.length) || !Boolean(futureAir?.length) ? (
+                                                        <tr>
+                                                            <td colSpan={4}><p className="text-neutral-500 text-center mt-6">No records found.</p></td>
+                                                        </tr>
+                                                    ) : (
+                                                        <>
+                                                            {selectedFutureAir.filter(filteredDrop => filteredDrop.phase == phase).map((drop, index) => (
+                                                                <tr key={index}>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <a href={`${chainExplorer[drop.chainId.toString()]}tx/${drop.transactionHash}`} target="_blank" className="flex items-center gap-1">
+                                                                            <MdOutlineOpenInNew />
+                                                                            {drop.transactionHash.slice(0,10)}...{drop.transactionHash.slice(-10)}
+                                                                        </a>
+                                                                    </td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">{drop.walletAddress.slice(0,10)}...{drop.walletAddress.slice(-10)}</td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t"><Moment fromNow>{drop.createdTime}</Moment></td>
+                                                                    <td className="p-2 border-0 border-slate-600/30 border-t">
+                                                                        <div className="flex items-center">
+                                                                            <div className="rounded-md p-1 bg-neutral-200 px-2 flex justify-center items-center">
+                                                                                {chainIcon[drop.chainId.toString()]}
+                                                                                {drop.amount}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </tbody>
                                             </table>
                                         </div>
 
@@ -1010,9 +1004,9 @@ const Buy = ({ setShowMenu }) => {
                             </Dialog>
                         </Transition>
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2">
+                            <div className="grid grid-cols-2 md:grid-cols-4">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
@@ -1050,6 +1044,18 @@ const Buy = ({ setShowMenu }) => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
+                        <div className="text-center w-full md:w-fit default-btn !leading-normal">
+                            <Link href={`${HOST}/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0`} passHref>
+                                <a className="">Buy Now</a>
+                            </Link>
+                        </div>
+                        <div 
+                            className="text-center w-full md:w-fit default-btn !leading-normal cursor-pointer"
+                            onClick={() => setFutureDrop(true)}>
+                            View Airdrops
                         </div>
                     </div>
                    

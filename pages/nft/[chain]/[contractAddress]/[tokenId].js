@@ -261,6 +261,7 @@ const Nft = (props) => { //props are from getServerSideProps
                 <img
                 src={getImagefromWeb3(nftContractData?.metadata?.image)}
                 className="h-full w-full object-cover"
+                loading='lazy'
                 />
             </>
             )}

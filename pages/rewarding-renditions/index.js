@@ -1,7 +1,6 @@
 import Faq from './components/Faq'
 import Buy from './components/Buy'
 import Hero from './components/Hero'
-import Team from './components/Team'
 import React, { useState } from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'

@@ -18,20 +18,8 @@ const HelmetMetaData = (props) => {
         <title>{title} - Nuva NFTs</title>
         <meta charSet="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="csrf_token" content="" />
-        <meta property="type" content="website" />
-        <meta property="url" content={currentUrl} />
-        <meta property="image" content={image} />
-        <meta property="title" key="title" content={title} />
-        <meta property="quote" key="quote" content={quote} />
-
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="_token" content="" />
-        <meta name="robots" content="noodp" />
-
+        <meta name="csrf_token" content="" />
 
         <meta property="og:locale" key="og:locale" content="en_GB" />
         <meta property="og:type" key="og:type" content="website" />
@@ -47,6 +35,19 @@ const HelmetMetaData = (props) => {
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={image} />
         <meta name="twitter:card" content={image} />
+
+        <meta property="type" content="website" />
+        <meta property="url" content={currentUrl} />
+        <meta property="image" content={image} />
+        <meta property="title" key="title" content={title} />
+        <meta property="quote" key="quote" content={quote} />
+
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="_token" content="" />
+        <meta name="robots" content="noodp" />
+
     </Helmet>
   )
 }

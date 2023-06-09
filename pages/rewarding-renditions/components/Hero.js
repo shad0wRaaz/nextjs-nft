@@ -63,9 +63,9 @@ const Hero = ({setShowMenu}) => {
                                     </Link>
                                 </li>
                             </ul>
-                            <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
+                            {/* <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
                                 <a className="default-btn">View On Nuva NFT</a>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>

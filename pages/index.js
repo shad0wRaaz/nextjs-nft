@@ -14,6 +14,7 @@ import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
 import PopularAudioNFTs from '../components/PopularAudioNFTs'
 import PopularVideoNFTs from '../components/PopularVideoNFTs'
+import RewardingRendition from '../components/RewardingRendition'
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
@@ -31,6 +32,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
           </>
              ) : ('')}
         </div>
+        <RewardingRendition />
         {backendAvailable ? <TopCollections/> : ''}
         {backendAvailable ? 
         <>

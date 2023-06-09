@@ -296,11 +296,11 @@ const Gallery = ({ setShowMenu }) => {
                             </div>
                         </div>
                     </div> */}
-                    <div className="text-center mt-[3rem]">
+                    {/* <div className="text-center mt-[3rem]">
                         <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
                             <a className="default-btn">View On Nuva NFT</a>
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

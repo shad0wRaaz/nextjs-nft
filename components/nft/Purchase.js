@@ -234,7 +234,7 @@ const MakeOffer = ({
     const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
     if(listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' && allowedContracts.includes(nftCollection._id)) 
     {
-      console.log('processing change of royalty receiver')
+      // console.log('processing change of royalty receiver')
       await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
       {
         contractAddress: listingData.assetContractAddress, 
@@ -322,7 +322,7 @@ const MakeOffer = ({
           }
         }
       }
-      console.log(network);
+      // console.log(network);
     }
 
 
@@ -358,7 +358,7 @@ const MakeOffer = ({
         sponsors.push({ receiver: sponsor_L5, token: tokenPriceinBNB * sponsor_L5_rate / 100 });
       }
 
-    console.log(sponsors);
+    // console.log(sponsors);
     // return;
 
     //send the tokens and get list of transaction hash to save in database
@@ -662,9 +662,6 @@ const MakeOffer = ({
                                 toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
                               });
           if(tx){
-
-              toastHandler.success('NFT purchase successful.', successToastStyle);
-        
               // mutateSaveTransaction({
               //   transaction: tx,
               //   id: nftContractData.tokenId,
@@ -755,6 +752,7 @@ const MakeOffer = ({
                       router.replace(router.asPath);
                       setLoadingNewPrice(false);
                       setBuyLoading(false)
+                      toastHandler.success('NFT purchase successful.', successToastStyle);
                     });
           }
       

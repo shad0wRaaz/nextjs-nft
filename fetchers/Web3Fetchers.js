@@ -33,8 +33,7 @@ export const getMarketOffers = (marketAddress, blockchain) => async({queryKey}) 
   }
   return null;
 }
-export const INFURA_getAllNFTs = 
-(chainId) => 
+export const INFURA_getAllNFTs = (chainId) => 
 async ({ queryKey }) => {
   const [_, collectionAddress] = queryKey;
 
@@ -46,8 +45,7 @@ async ({ queryKey }) => {
   });
   return data;
 }
-export const INFURA_getAllOwners = 
-(chainId) => 
+export const INFURA_getAllOwners = (chainId) => 
 async ({ queryKey }) => {
   const [_, collectionAddress, cursor] = queryKey;
 
@@ -111,6 +109,12 @@ export const INFURA_getNFTTransfers = () => async({queryKey}) => {
   const {data} = await axios.get(`${HOST}/api/infura/getTransferData/${chainId}/${contractAddress}/${tokenId}`);
   return (data? data.transfers: null);
 }
+export const INFURA_getCollectionMetaData = (chainId) => async({queryKey}) => {
+  const [_, contractAddress] = queryKey;
+  const {data} = await axios.get(`${HOST}/api/infura/getCollectionMetadata/${chainId}/${contractAddress}`);
+  return (data);
+}
+
 
 export const getAllNFTs =
   (blockchain) =>

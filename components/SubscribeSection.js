@@ -10,7 +10,7 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
-    wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[4rem]  pb-0 mt-0',
+    wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[3rem]  pb-0 mt-0',
 }
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
@@ -132,7 +132,7 @@ const SubscribeSection = () => {
     <div className={style.wrapper}>
         <div className="relative flex flex-col lg:flex-row lg:items-center">
             <div className="flex-shrink-0 mb-10 lg:mb-0 lg:mr-10 lg:w-2/5">
-                <h2 className="font-semibold text-5xl textGradBlue2">Never miss a Newsletter!</h2>
+                <h2 className="font-semibold text-5xl textGradBlue2 leading-normal">Keep getting Updated</h2>
                 <span className="block mt-5 text-sm">Subcribe to our super-exclusive newsletter subscription and be the first to get updated with latest news, build ups, ecosystem developments, etc.</span>
                 <ul className="space-y-4 mt-10 hidden">
                     <li className="flex items-center space-x-4">

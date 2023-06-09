@@ -227,6 +227,11 @@ body::-webkit-scrollbar-thumb,
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.textGradPink {
+  background: -webkit-linear-gradient(90deg, #CEFFB8, #E7FFDF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 .parallax-effect-img:hover > .inner-element { opacity: 1;}
 .parallax-effect-img:hover > .overlay { opacity: 1;}
 .parallax-effect {
@@ -377,6 +382,17 @@ height: 100%;
 backdrop-filter: blur(20px);
 background: #000000aa;
 z-index: 0;
+}
+.rewardingrenditions::before {
+content: ' ';
+position: absolute;
+top:0;
+left: 0;
+width: 100%;
+height: 100%;
+backdrop-filter: blur(0px);
+background: #000000aa;
+z-index: -1;
 }
 
 /** New featured card design ***/
@@ -703,6 +719,7 @@ right connector from last child*/
   font-family: Alfa Slab One,cursive;
   font-weight: 400;
   line-height: 1.2;
+  text-align: center;
 }
 .mint h6 {font-size:1.125rem}
 .mint h4, .roadmap  h4 {font-size:1.575rem;}
@@ -749,7 +766,7 @@ margin-bottom: 15px;
   .mint h6 {font-size:1.0rem}
   .mint h4, .roadmap  h4 {font-size:1.175rem;}
   .mint h2, .faq h2 , .community h2, .footer h2 {font-size:1.8rem;}
-
+  .slick-prev, .slick-next {display: none !important;}
 }
 @media (min-width: 576px){
 

@@ -391,7 +391,7 @@ app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req,
 app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, res) =>{
   const {chainId, tokenAddress} = req.params;
   try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}`, {
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens`, {
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
@@ -1437,7 +1437,7 @@ app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   return res.send(null);
 });
 
-const updateAirdrops = async() => {
+const updateAirDropData = async() => {
   const query = `*[_type == "users" && airdrops != undefined]{airdrops}`;
   const airdrops = await config.fetch(query);
   const airdrop_str = JSON.stringify(airdrops)
@@ -1445,10 +1445,21 @@ const updateAirdrops = async() => {
   return airdrop_str;
 }
 
+app.get('/api/updateAirdrops', async(req, res) => {
+  console.log('i am  called')
+  try{
+    await redis.del("airdrops");
+    const data = await updateAirDropData();
+    return res.status(200).send(data)
+  }catch(err){
+    return res.status(500).send({ message: 'airdrop error'})
+  }
+})
+
 app.get('/api/getAirdrops', async(req, res) => {
   const airdrops = await redis.get('airdrops');
   if(!airdrops){
-    const data = await updateAirdrops();
+    const data = await updateAirDropData();
     return res.status(200).send(data);
   }
   return res.status(200).send(airdrops);
@@ -1458,14 +1469,17 @@ app.get('/api/traitgenerator', async(req,res) => {
   let id = 0;
 let items = [];
 let obj;
-const Eyes = ["Round", "Googly", "Oval", "Black", "Normal", "1"]
-const Hair = ["Spiky", "Bald", "Trimmed", "Short", "Oiled", "2", "4", "5"]
-const Ear = ["Wedged", "Round", "Sliced", "Bulky", "Cut", "3"]
-const Horn = ["Backward", "Side", "Front", "Serrated", "Blunt" ,"4"]
-const Background = ["Blue", "Grey", "Green", "34", "4", "5"]
-const Clothes = ["Trouser", "Boxer", "Socks", "Mitten", "None", "Sunglasses", "Necklace", "Earring", "6"]
+const Background =  ["123", "asdf", "asdff","234","567","34er","ytgh","789"]
+const Cap = ["Round", "Googly", "Oval", "Black", "Normal", "1", "34"]
+const Crown = ["Spiky", "Bald"]
+const Scarf = ["Wedged", "Round", "Sliced", "Bulky", "Cut"]
+const Weapon = ["Backward", "Side"]
+const Flag = ["Blue", "Grey"]
+const Shoe = ["Blue", "Grey"]
+const Eyes = ["Blue", "Grey", "Asdf", "xcv",]
+const Mask = ["yes", "no"]
 
-const alltraits = [Eyes, Hair, Ear, Horn, Background];
+const alltraits = [Background, Cap, Crown, Scarf, Weapon, Flag, Shoe, Eyes, Mask];
 const result = await createCombinations(alltraits);
 return res.send(result.length)
 // console.log(result[0][0])

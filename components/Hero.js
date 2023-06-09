@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 const style = {
   wrapper: `relative`,
   container: ``,
-  contentWrapper: ` container mx-auto flex h-[70vh] relative justify-between px-[1.2rem] flex-wrap items-center`,
+  contentWrapper: ` container mx-auto flex relative justify-between px-[1.2rem] flex-wrap items-center`,
   copyContainer: `md:w-1/2 p-[20px]`,
   title: `relative text-black font-semibold shoutoutText`,
   description: `text-black container-[400px] text-2xl mt-[0.8rem] mb-[2.5rem]`,

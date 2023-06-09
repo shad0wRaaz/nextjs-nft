@@ -25,11 +25,11 @@ function MyApp({ Component, pageProps }) {
             <SearchProvider>
               <QueryClientProvider client={client}>
                 <MarketplaceProvider>
-                  <Head>
+                  {/* <Head>
                     <title>Nuva NFT: A Multichain NFT Marketplace</title>
                     <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
                     <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
-                  </Head>
+                  </Head> */}
                   <SettingsProvider>
                     <CollectionFilterProvider>
                       <Component {...pageProps} />

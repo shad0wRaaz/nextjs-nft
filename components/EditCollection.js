@@ -19,7 +19,7 @@ const style = {
     inputgroup: 'p-3 border rounded-xl transition linear',
     label: 'm-2 w-[8rem]',
     smallText: 'text-sm m-2 text-slate-400 mt-0',
-    previewImage: 'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
+    previewImage: 'previewImage relative m-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
     button: 'accentBackground flex gap-3 justify-center items-center rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold w-[9rem] ease-linear transition duration-500',
     profilePreview: 'aspect-video relative mr-[1rem] h-[200px] w-[250px] overflow-hidden m-[10px] rounded-lg border-dashed border border-slate-400 flex items-center',
     bannerPreview: 'aspect-video flex-grow relative mr-[1rem] h-[250px] overflow-hidden m-[10px] rounded-lg flex items-center justify-center border-dashed border border-slate-400',
@@ -37,8 +37,9 @@ const EditCollection = ({collection, setShowModal}) => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [newCollectionData, setNewCollectionData] = useState(collection);
   const [selectedCategory, setSelectedCategory] = useState({"value": collection.category, "label": collection.category});
+  const [updateStatus, setUpdateStatus] = useState('idle');
 
-  const { mutate: updateMetadata, status: updateStatus } = useMutation(
+  const { mutate: updateMetadata, status: updateStatus_Old } = useMutation(
       () => updateCollectionMetaData(newCollectionData, signer, profile),
       {
         onSuccess:  async (toastHandler = toast) => {
@@ -88,11 +89,13 @@ const EditCollection = ({collection, setShowModal}) => {
             })
             .commit()
             .finally(() => {
-              toast.success('Collection metadata has been updated', successToastStyle);
+              qc.invalidateQueries('collection').then(() => {
+                toast.success('Collection metadata has been updated', successToastStyle);
+              });
+              setUpdateStatus('success');
               setShowModal(false); 
             }).catch(err => console.log(err));
 
-            qc.invalidateQueries('collection'); 
             
           })()
           
@@ -122,7 +125,7 @@ const EditCollection = ({collection, setShowModal}) => {
         toastHandler.error('External link is not valid.', errorToastStyle);
         return
       }
-
+      setUpdateStatus('loading');
       updateMetadata() //Mutation function for updating collection metadata
   }
 
@@ -367,6 +370,11 @@ const EditCollection = ({collection, setShowModal}) => {
                 />
               </div> */}
             </div>
+            <div className={style.formRow + " flex-start !m-0"}>
+              <p className={style.label + " hidden md:block !my-0"}><span className="invisible">Submit Button</span></p>
+              <p className="text-xs pl-4">All the data including images will get saved in IPFS, so saving will take some time.</p>
+            </div>
+            
             <div className={style.formRow + " flex-start"}>
               <p className={style.label + " hidden md:block"}><span className="invisible">Submit Button</span></p>
               {updateStatus == "loading" ? (
