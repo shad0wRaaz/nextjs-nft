@@ -1,6 +1,12 @@
 import Link from 'next/link'
-import React, { Fragment, useEffect, useState } from 'react'
+import Image from 'next/image'
+import Moment from 'react-moment'
+import { CgClose } from 'react-icons/cg'
+import { useQuery } from 'react-query'
+import { MdOutlineOpenInNew } from 'react-icons/md'
+import { Dialog, Transition } from '@headlessui/react'
 import bannerbg from '../assets/images/banner-bg.webp'
+import React, { Fragment, useEffect, useState } from 'react'
 import creature1  from '../assets/cryptocreatures/creature01.jpeg'
 import creature2  from '../assets/cryptocreatures/creature02.jpeg'
 import creature3  from '../assets/cryptocreatures/creature03.jpeg'
@@ -17,14 +23,9 @@ import artifacts1  from '../assets/artifacts/artifacts1.jpeg'
 import artifacts2  from '../assets/artifacts/artifacts2.jpeg'
 import artifacts3  from '../assets/artifacts/artifacts3.jpeg'
 import artifacts4  from '../assets/artifacts/artifacts4.jpeg'
-import Image from 'next/image'
-import { Dialog, Transition } from '@headlessui/react'
-import { CgClose } from 'react-icons/cg'
-import { useQuery } from 'react-query'
 import { getAirDrops } from '../../../fetchers/SanityFetchers'
-import Moment from 'react-moment'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
-import { MdOutlineOpenInNew } from 'react-icons/md'
+import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5 } from 'react-icons/tb'
 
 const Buy = ({ setShowMenu }) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
@@ -141,12 +142,15 @@ const Buy = ({ setShowMenu }) => {
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">1. Crypto</span> Creatures</h2>
+                        <p className="text-center mt-3">A collection of unique digital creatures that live on the Binance Blockchain.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
+                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} className="inline"/></p>
+                        <p className="text-center">Earn from 10% Direct + 8% Indirect</p>
                         <Transition appear show={cryptoDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCryptoDrop(false)}>
                             <Transition.Child
@@ -375,12 +379,15 @@ const Buy = ({ setShowMenu }) => {
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">2. Neon</span> Dreams</h2>
+                        <p className="text-center mt-3">A series of bright and colourful and NFTs that capture the surreal nature of our dreams.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
+                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} className="inline"/></p>
+                        <p className="text-center">Earn from 10% Direct + (8% + 6%) Indirect</p>
                         <Transition appear show={neonDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setNeonDrop(false)}>
                             <Transition.Child
@@ -607,12 +614,15 @@ const Buy = ({ setShowMenu }) => {
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">3. Celestial</span> Beings</h2>
+                        <p className="text-center mt-3">A series of NFTs that feature mythical creatures and dieties from different cultures.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
+                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} className="inline"/></p>
+                        <p className="text-center">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
                         <Transition appear show={celestialDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCelestialDrop(false)}>
                             <Transition.Child
@@ -839,12 +849,15 @@ const Buy = ({ setShowMenu }) => {
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
                         <span className="color--gradient-y d-block">4. Artifacts of</span> The Future</h2>
+                        <p className="text-center mt-3">A collection of NFTs that showcase futuristic technology and inventions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
+                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} className="inline"/></p>
+                        <p className="text-center">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
                         <Transition appear show={futureDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setFutureDrop(false)}>
                             <Transition.Child
