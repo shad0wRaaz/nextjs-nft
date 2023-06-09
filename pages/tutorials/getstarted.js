@@ -7,6 +7,7 @@ import { type } from 'os'
 import { BsBasket, BsCollection, BsImage } from 'react-icons/bs'
 import { AiOutlineFire, AiOutlineTags } from 'react-icons/ai'
 import { RiCloseCircleLine } from 'react-icons/ri'
+import SEO from '../../components/SEO'
 
 
 
@@ -27,6 +28,7 @@ const getstarted = () => {
       }
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+        <SEO title="Getting Started"/>
       <Header />
       <div
         className={

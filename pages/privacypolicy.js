@@ -1,6 +1,7 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useThemeContext } from '../contexts/ThemeContext'
+import SEO from '../components/SEO'
 
 const privacypolicy = () => {
   const { dark } = useThemeContext()
@@ -22,6 +23,7 @@ const privacypolicy = () => {
   
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="Privacy Policy"/>
       <Header />
       <div
         className={

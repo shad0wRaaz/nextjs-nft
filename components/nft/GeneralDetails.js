@@ -21,6 +21,7 @@ import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
 import { createAwatar } from '../../utils/utilities'
+import SEO from '../SEO'
 
 
 const style = {
@@ -81,14 +82,10 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
       {nftContractData ? (
-        <HelmetMetaData 
+        <SEO 
           title={nftContractData?.metadata?.name}
           description={nftContractData?.metadata?.description}
-          image={nftContractData?.metadata?.image}
-          tokenId={nftContractData?.metadata?.properties?.tokenid}
-          contractAddress={nftContractData?.contract}>
-            
-        </HelmetMetaData>
+          image={getImagefromWeb3(nftContractData?.metadata?.image)}/>
       ) : ''}
       {/* Modal window*/}
       {showModal &&  

@@ -1,6 +1,7 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useThemeContext } from '../contexts/ThemeContext'
+import SEO from '../components/SEO'
 
 const termsandconditions = () => {
     const { dark } = useThemeContext()
@@ -21,6 +22,7 @@ const termsandconditions = () => {
     }
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="Terms & Conditions"/>
       <Header />
       <div
         className={

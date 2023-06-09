@@ -32,6 +32,7 @@ import { removeFollower, saveFollower } from '../../mutators/SanityMutators'
 import CollectionCardExternal from '../../components/CollectionCardExternal'
 import { getMyCollections, getMintedNFTs, getUser} from '../../fetchers/SanityFetchers'
 import { INFURA_getMyAllNFTs, INFURA_getMyCollections, getFullListings } from '../../fetchers/Web3Fetchers'
+import SEO from '../../components/SEO'
 
 
 
@@ -224,6 +225,7 @@ const User = () => {
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO />
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>

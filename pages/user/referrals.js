@@ -14,6 +14,7 @@ import { IconBNB } from '../../components/icons/CustomIcons'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getMyNetwork, getReferralPayment } from '../../fetchers/SanityFetchers'
 import { TbSquareRoundedNumber1Filled, TbSquareRoundedNumber2Filled, TbSquareRoundedNumber3Filled, TbSquareRoundedNumber4Filled, TbSquareRoundedNumber5Filled,  } from 'react-icons/tb'
+import SEO from '../../components/SEO'
 
 const referrals = () => {
     const address = useAddress();
@@ -91,6 +92,7 @@ const referrals = () => {
 
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>
+        <SEO title="Referrals"/>
         <Header />
         <div className={style.wrapper}>
             <Toaster position="bottom-right" reverseOrder={false} />

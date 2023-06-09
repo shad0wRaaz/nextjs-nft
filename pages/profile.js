@@ -22,6 +22,7 @@ import { checkValidEmail, generateRandomCode } from '../utils/utilities'
 import { IconCopy, IconLoading, IconVerified } from '../components/icons/CustomIcons'
 import { saveEmailVerificationCode, activateReferral, sendToken } from '../mutators/SanityMutators'
 import { checkDuplicateEmail, checkReferralUser, checkUsername, getUser } from '../fetchers/SanityFetchers'
+import SEO from '../components/SEO'
 
 const style = {
   wrapper: '',
@@ -274,9 +275,8 @@ const profile = () => {
   // )
 
   return (
-    <div
-      className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}
-    >
+    <div className={`overflow-hidden ${dark && 'darkBackground text-neutral-100'}`}>
+      <SEO title="Profile"/>
       <Header />
       <div className={style.wrapper}>
         <div

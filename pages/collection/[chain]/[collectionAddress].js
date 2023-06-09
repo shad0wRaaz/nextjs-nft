@@ -42,6 +42,7 @@ import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter,
 import NFTCardExternal from '../../../components/NFTCardExternal'
 import { HiChevronRight } from 'react-icons/hi'
 import AirdropSettings from '../../../components/collection/AirdropSettings'
+import SEO from '../../../components/SEO'
 
 const chainIcon = {
   '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
@@ -508,13 +509,10 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
       <Header />
       {/* {collectionStatus == 'loading' && <Loader />} */}
       {!isBlocked && Boolean(collectionData) && (
-        <HelmetMetaData
+        <SEO
           title={collectionData?.name}
           description={collectionData?.description}
-          image={getImagefromWeb3(collectionData?.web3imageprofile)}
-          tokenId={collectionData?._id}
-          contractAddress={collectionData?.contractAddress}>
-        </HelmetMetaData>
+          image={getImagefromWeb3(collectionData?.web3imageprofile)} />
       )}
 
       {showModal && Boolean(collectionData) && (

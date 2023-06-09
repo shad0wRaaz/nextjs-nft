@@ -24,6 +24,7 @@ import { Menu, Transition, Switch } from '@headlessui/react'
 import { BigNumber } from 'ethers'
 import ReactPaginate from 'react-paginate'
 import SearchItem from '../components/SearchItem'
+import SEO from '../components/SEO'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -223,6 +224,7 @@ console.log(currentItems)
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO />
       <Header />
       <div
         className={

@@ -1,3 +1,4 @@
+import SEO from '../components/SEO'
 import { useRouter } from 'next/router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
@@ -23,6 +24,8 @@ const Home = ({ featuredNfts, backendAvailable }) => {
   const router = useRouter();
 
   return (
+    <>
+      <SEO />
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
         <div className="herocarousel bg-top md:bg-center md:pb-[8rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`}}>
           <Header/>
@@ -46,6 +49,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
         <SubscribeSection />
         <Footer/>
       </div>
+    </>
   )
 }
 

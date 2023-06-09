@@ -1,6 +1,7 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useThemeContext } from '../contexts/ThemeContext'
+import SEO from '../components/SEO'
 
 const style = {
   wrapper: 'container mx-auto',
@@ -28,6 +29,7 @@ const cookiespolicy = () => {
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="Cookies Policy"/>
       <Header />
       <div
         className={

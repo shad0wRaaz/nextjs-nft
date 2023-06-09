@@ -28,6 +28,7 @@ import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetcher
 import { useAddress, useChain, useChainId, useSigner } from '@thirdweb-dev/react'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
+import SEO from '../../components/SEO'
 
 const Collection = () => {
   const router = useRouter();
@@ -158,6 +159,7 @@ const Collection = () => {
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="My NFTs and Collections"/>
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>

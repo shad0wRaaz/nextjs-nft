@@ -5,7 +5,7 @@ import Footer from '../../components/Footer';
 import Panda from '../../public/assets/adorable_panda.jpg'
 import Tiger from '../../public/assets/adorable_tiger.jpg'
 import Flower from '../../public/assets/flowers.jpg'
-
+import SEO from '../../components/SEO';
 
 const nftterms = () => {
   const { dark } = useThemeContext();
@@ -25,6 +25,7 @@ const nftterms = () => {
     
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="NFT Terms" />
     <Header />
     <div
       className={
