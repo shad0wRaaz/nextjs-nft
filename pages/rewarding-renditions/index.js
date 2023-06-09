@@ -30,6 +30,7 @@ const index = () => {
         description={dataForSEO.description}
         hashtag={dataForSEO.hashtag}
         image={dataForSEO.image}
+        currentUrl={dataForSEO.currentUrl}
       />
       <main className="rewardingrenditions">
           <Header showMenu={showMenu} setShowMenu={setShowMenu} />
