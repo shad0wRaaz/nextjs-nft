@@ -42,9 +42,6 @@ const HelmetMetaData = (props) => {
         <meta property="title" key="title" content={title} />
         <meta property="quote" key="quote" content={quote} />
 
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
         <meta name="_token" content="" />
         <meta name="robots" content="noodp" />
 

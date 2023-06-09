@@ -87,7 +87,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
     // console.log(t)
     if(!t) return
     if(t == "mumbai" || t == "polygon") { setThisNFTBlockchainCurrency(coinPrices?.maticprice); } 
-    else if(t == "mainnet" || t == "goerli") { setThisNFTBlockchainCurrency(coinPrices?.ethrice); }
+    else if(t == "mainnet" || t == "goerli") { setThisNFTBlockchainCurrency(coinPrices?.ethprice); }
     else if (t == "binance" || t == "binance-testnet") { setThisNFTBlockchainCurrency(coinPrices?.bnbprice); }
     else if(t == "avalanche" || t == "avalanche-fuji") { setThisNFTBlockchainCurrency(coinPrices?.avaxprice); }
 
@@ -454,10 +454,10 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
                                 </div>
 
                                 <div className="pt-4">
-                                  <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
-                                  <p className={style.smallText}>List this NFT for only selected period of time</p>
+                                  <p className={style.label + ' ml-0'}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
+                                  <p className={style.smallText + ' ml-0'}>List this NFT for only selected period of time</p>
                                   <div className="flex flex-row flex-wrap items-center mt-4">
-                                    <div className="relative w-full md:w-1/2 p-2">
+                                    <div className="relative w-full md:w-1/2 p-2 pl-0">
                                       <div className="pointer-events-none absolute inset-y-2 left-4 z-10 flex h-[40px] items-center pl-1">
                                         From:
                                       </div>
@@ -514,10 +514,10 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
                                   </div>
                                 </div>
 
-                                <div className="flex justify-start pt-4 gap-3">
+                                {/* <div className="flex justify-start pt-4 gap-3">
                                   <span>Platform Fees: </span>
                                   <span>5%</span>
-                                </div>
+                                </div> */}
 
                                 <div className="pt-4">
                                   {isLoading ? (
@@ -647,10 +647,10 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
                                   </div>
                                 </div>
 
-                                <div className="flex justify-start pt-4 gap-3">
+                                {/* <div className="flex justify-start pt-4 gap-3">
                                   <span>Platform Fees: </span>
                                   <span>5%</span>
-                                </div>
+                                </div> */}
 
                                 <div className="pt-8">
                                   {isLoading ? (

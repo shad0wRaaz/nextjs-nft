@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+// import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
@@ -17,8 +18,7 @@ import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
 import { IconLoading } from '../../components/icons/CustomIcons'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { useAddress, useSigner, ConnectWallet, useActiveChain } from '@thirdweb-dev/react'
-import { v4 as uuidv4 } from 'uuid'
+import { useAddress, useSigner, ConnectWallet, useActiveChain, useChain } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: '',
@@ -72,11 +72,11 @@ function reducer(state, action) {
         ...state,
         properties: { ...state.properties, category: action.payload.category },
       }
-    case 'ADD_TOKENID':
-      return {
-        ...state,
-        properties: { ...state.properties, tokenid: action.payload.tokenid }
-      }
+    // case 'ADD_TOKENID':
+    //   return {
+    //     ...state,
+    //     properties: { ...state.properties, tokenid: action.payload.tokenid }
+    //   }
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
@@ -91,8 +91,6 @@ function reducer(state, action) {
             },
           ],
           category: '',
-          itemtype: 'image',
-          tokenid: '',
         },
       }
     default:
@@ -100,7 +98,7 @@ function reducer(state, action) {
   }
 }
 
-const uuid = uuidv4();
+// const uuid = uuidv4();
 
 const mint = () => {
     const [state, dispatch] = useReducer(reducer, {
@@ -120,7 +118,7 @@ const mint = () => {
         tokenid: '',
         },
      })
-  const { HOST} = useSettingsContext();
+  const { HOST, blockchainName } = useSettingsContext();
   const fileInputRef = useRef(null);
   const [file, setFile] = useState();
   const signer = useSigner();
@@ -129,7 +127,7 @@ const mint = () => {
   const { myCollections, myUser } = useUserContext();
   const { errorToastStyle, successToastStyle } = useThemeContext();
   const [thisChainCollection, setThisChainCollection] = useState([]);
-  const connectedChain = useActiveChain();
+  const connectedChain = useChain();
   const address = useAddress();
   const { dark } = useThemeContext();
   const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
@@ -170,25 +168,25 @@ const mint = () => {
   }, [address])
 
 
-  useEffect(() => {
-    if(!uuid) return
-    dispatch({
-      type: 'ADD_TOKENID',
-      payload: { tokenid: uuid}
-    })
+  // useEffect(() => {
+  //   if(!uuid) return
+  //   dispatch({
+  //     type: 'ADD_TOKENID',
+  //     payload: { tokenid: uuid}
+  //   })
 
-    return() => {
-      //clean up function
-    }
-  }, [uuid]);
+  //   return() => {
+  //     //clean up function
+  //   }
+  // }, [uuid]);
 
   //handling Create NFT button
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault();
 
-    if(!uuid){
-      toastHandler.error("ID could not be defined. Refresh and try again.", errorToastStyle);
-    }
+    // if(!uuid){
+    //   toastHandler.error("ID could not be defined. Refresh and try again.", errorToastStyle);
+    // }
     if (state.name == '' || !file) {
       toastHandler.error('Fields marked * are required', errorToastStyle)
       return
@@ -223,51 +221,51 @@ const mint = () => {
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress)
       const tx = await nftCollection.erc721.mintTo(address, {...state, image: file})
 
-      const receipt = tx.receipt
+      // const receipt = tx.receipt
 
       
       //save NFT data into Sanity
-      const nftItem = {
-        _type: 'nftItem',
-        _id: uuid,
-        id: tx.id.toString(),
-        collection: { 
-          _ref: selectedCollection._id, 
-          _type: 'reference'
-        },
-        listed: false,
-        chainId: connectedChain.chainId,
-        createdBy: { 
-          _ref: address, 
-          _type: 'reference' 
-        },
-        ownedBy: { 
-          _ref: address, 
-          _type: 'reference' 
-        },
-        featured: false,
-        name: state.name,
-      }
+      // const nftItem = {
+      //   _type: 'nftItem',
+      //   _id: uuid,
+      //   id: tx.id.toString(),
+      //   collection: { 
+      //     _ref: selectedCollection._id, 
+      //     _type: 'reference'
+      //   },
+      //   listed: false,
+      //   chainId: connectedChain.chainId,
+      //   createdBy: { 
+      //     _ref: address, 
+      //     _type: 'reference' 
+      //   },
+      //   ownedBy: { 
+      //     _ref: address, 
+      //     _type: 'reference' 
+      //   },
+      //   featured: false,
+      //   name: state.name,
+      // }
       
-      await sanityClient.createIfNotExists(nftItem)
+      // await sanityClient.createIfNotExists(nftItem)
         
 
       //save Transaction Data into Sanity
-      const transactionData = {
-        _type: 'activities',
-        _id: receipt.transactionHash,
-        nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
-        transactionHash: receipt.transactionHash,
-        from: receipt.from,
-        to: receipt.to,
-        tokenid: tx.id.toString(),
-        event: 'Mint',
-        price: '-',
-        chainId: connectedChain.chainId,
-        dateStamp: new Date(),
-      }
+      // const transactionData = {
+      //   _type: 'activities',
+      //   _id: receipt.transactionHash,
+      //   nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
+      //   transactionHash: receipt.transactionHash,
+      //   from: receipt.from,
+      //   to: receipt.to,
+      //   tokenid: tx.id.toString(),
+      //   event: 'Mint',
+      //   price: '-',
+      //   chainId: connectedChain.chainId,
+      //   dateStamp: new Date(),
+      // }
       
-      await sanityClient.createIfNotExists(transactionData);
+      // await sanityClient.createIfNotExists(transactionData);
 
       setIsMinting(false);
 
@@ -275,7 +273,7 @@ const mint = () => {
       dispatch({ type: 'CLEAR_OUT_ALL' });
       setIsMinting(false);
       
-      router.push(`/nfts/${uuid}`);
+      router.push(`/nft/${blockchainName[connectedChain.chainId]}/${selectedCollection.contractAddress}/${tx.id.toString()}`);
     } catch (error) {
       toastHandler.error("Error in minting NFT.", errorToastStyle)
       setIsMinting(false)
@@ -349,18 +347,18 @@ const mint = () => {
     }
   }
 
-  const checkFileType = (base64) => {
-    let start = base64.indexOf(':') + 1
-    let end = base64.indexOf('/') - start
-    const currentFileType = base64.substr(start,end)
+  // const checkFileType = (base64) => {
+  //   let start = base64.indexOf(':') + 1
+  //   let end = base64.indexOf('/') - start
+  //   const currentFileType = base64.substr(start,end)
 
-    if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
-      toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
-      setFileType(undefined)
-      return
-    }
-    setFileType(currentFileType)
-  }
+  //   if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
+  //     toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
+  //     setFileType(undefined)
+  //     return
+  //   }
+  //   setFileType(currentFileType)
+  // }
   
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>

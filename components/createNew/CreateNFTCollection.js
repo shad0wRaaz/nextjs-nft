@@ -10,10 +10,10 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { IconLoading } from '../icons/CustomIcons'
-import { ConnectWallet, useActiveChain } from '@thirdweb-dev/react'
 import { checkValidURL } from '../../utils/utilities'
 import React, { useState, useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
+import { ConnectWallet, useChain } from '@thirdweb-dev/react'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { checkCollectionName } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -42,9 +42,9 @@ const style = {
 }
 
 const CreateNFTCollection = () => {
-  const activechain = useActiveChain();
+  const activechain = useChain();
   const chain = useChainId();
-  const { HOST } = useSettingsContext();
+  const { HOST, blockchainName } = useSettingsContext();
   const {dark, successToastStyle, errorToastStyle} = useThemeContext();
   const address = useAddress();
   const { myUser } = useUserContext();
@@ -179,7 +179,7 @@ const CreateNFTCollection = () => {
               .finally(() => {
                 toast.success('Collection created successfully.', successToastStyle);
                 
-                router.push(`/collections/${itemID}`);
+                router.push(`/collection/${blockchainName[activechain.chainId.toString()]}/${res}`);
               });
 
       } catch(err){
