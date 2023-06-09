@@ -1,8 +1,8 @@
 import React from 'react'
 import Head from 'next/head'
-import nuvanft from '../assets/nuvanft.png'
 
-const SEO = ({title, quote, hashtag, image, currentUrl,sitename, description}) => {
+
+const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) => {
     let seoTitle = Boolean(title) ? title + ': ' : '';
     let seoQuote = Boolean(quote) ? quote : '';
     let seoHashTag = Boolean(hashtag) ? hashtag : '#nuvanft';
@@ -18,18 +18,17 @@ const SEO = ({title, quote, hashtag, image, currentUrl,sitename, description}) =
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
         <meta name="csrf_token" content="" />
-        <link rel="icon" type="image/png" href={nuvanft.src}></link>
-        <meta property="og:locale" key="og:locale" content="en_GB" />
-        <meta property="og:type" key="og:type" content="website" />
-        <meta property="og:title" key="og:title" content={seoTitle} />
-        <meta property="og:quote" key="og:quote" content={seoQuote} />
-        <meta property="og:hashtag" key="og:hashtag" content={seoHashTag} />
-        <meta property="og:image" key="og:image" content={seoImage} />
-        <meta property="og:url" key="og:url" content={seoCurrentUrl} />
-        <meta property="og:site_name" key="og:site_name" content={seoSiteName} />
-        <meta property="og:description" key="og:description" content={seoDescription} />    
+        <link rel="icon" type="image/png" href="https://nuvanft.io/assets/nuvanft.png"></link>
 
-        <meta name="twitter:title" content={seoTitle} />
+        <meta property="og:title" content={seoTitle + "Nuva NFT"} />
+        <meta property="og:description" content={seoDescription} />    
+        <meta property="og:url" content={seoCurrentUrl} />
+        <meta property="og:image" content={seoImage} />
+        <meta property="og:site_name" content={seoSiteName} />
+        <meta property="og:hashtag" content={seoHashTag} />
+        <meta property="og:locale" content="en_GB" />
+
+        <meta name="twitter:title" content={seoTitle + "Nuva NFT"} />
         <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={seoImage} />
         <meta name="twitter:card" content={seoImage} />
@@ -37,7 +36,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl,sitename, description}) =
         <meta property="type" content="website" />
         <meta property="url" content={seoCurrentUrl} />
         <meta property="image" content={seoImage} />
-        <meta property="title" key="title" content={seoTitle} />
+        <meta property="title" key="title" content={seoTitle + "Nuva NFT"} />
         <meta property="quote" key="quote" content={seoQuote} />
 
         <meta name="_token" content="" />
