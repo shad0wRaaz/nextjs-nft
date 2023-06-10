@@ -27,10 +27,10 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
         <meta property="og:hashtag" content={seoHashTag} />
         <meta property="og:locale" content="en_GB" />
 
+        <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={seoTitle + "Nuva NFT"} />
         <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={seoImage} />
-        <meta name="twitter:card" content={seoImage} />
 
         <meta property="type" content="website" />
         <meta property="url" content={seoCurrentUrl} />
