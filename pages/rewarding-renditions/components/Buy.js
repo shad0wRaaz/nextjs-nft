@@ -89,7 +89,7 @@ const Buy = ({ setShowMenu }) => {
     const {data: coins, status: coinpricestatus} = useQuery(
         ['coinprice'],
         () => getCoinPrice(),{
-            onSuccess: (res) =>{ console.log(res)},
+            onSuccess: (res) =>{ },
             onerror:(err) => {}
         }
     );

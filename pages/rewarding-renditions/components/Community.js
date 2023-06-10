@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
-import bannerbg from '../assets/images/banner-bg.png'
+import bannerbg from '../assets/images/banner-bg.webp'
 
 const Community = ({setShowMenu }) => {
   return (

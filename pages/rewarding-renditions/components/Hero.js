@@ -1,6 +1,6 @@
 import React from 'react'
 import "@fontsource/alfa-slab-one";
-import bannerbg from '../assets/images/banner-bg.png'
+import bannerbg from '../assets/images/banner-bg.webp'
 import discord from '../assets/images/discord.png'
 import twitter from '../assets/images/twitter.png'
 import facebook from '../assets/images/facebook.png'
