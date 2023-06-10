@@ -26,9 +26,11 @@ import artifacts4  from '../assets/artifacts/artifacts4.jpeg'
 import { getAirDrops } from '../../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
 import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5 } from 'react-icons/tb'
+import axios from 'axios'
 
 const Buy = ({ setShowMenu }) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
+    const SERVER = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io:8080' : 'http://localhost:8080'
     const [cryptoDrop, setCryptoDrop] = useState(false);
     const [neonDrop, setNeonDrop] = useState(false);
     const [celestialDrop, setCelestialDrop] = useState(false);
@@ -77,6 +79,18 @@ const Buy = ({ setShowMenu }) => {
                 setFutureAir(af);
                 setSelectedFutureAir(af);
             }
+        }
+    );
+    const getCoinPrice = async() => {
+        const {data} = await axios.get(`${SERVER}/api/getcoinsprice`);
+        return data;
+    }
+
+    const {data: coins, status: coinpricestatus} = useQuery(
+        ['coinprice'],
+        () => getCoinPrice(),{
+            onSuccess: (res) =>{ console.log(res)},
+            onerror:(err) => {}
         }
     );
 
@@ -136,7 +150,7 @@ const Buy = ({ setShowMenu }) => {
         onClick={() => setShowMenu(false)}
         id="buy" 
         className="mint bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
-        <div className="container mx-auto px-8 border-b-2 border-dashed border-[#382447] pb-[4rem]">
+        <div className="container mx-auto px-8 border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -149,8 +163,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={creature3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} className="inline"/></p>
-                        <p className="text-center">Earn from 10% Direct + 8% Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} className="inline"/></p>
+                        <p className="text-center text-lg">Earn from 10% Direct + 8% Indirect</p>
                         <Transition appear show={cryptoDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCryptoDrop(false)}>
                             <Transition.Child
@@ -328,7 +342,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Buy Price</h6>
                                             <h2 className="mint__numbers">$75<span className="text-xs"> (worth of)</span></h2>
-                                            <h4 className="mint__name text-uppercase">BNB</h4>
+                                            <h4 className="mint__name text-uppercase">{(75 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -373,7 +387,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -386,8 +400,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={neon3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} className="inline"/></p>
-                        <p className="text-center">Earn from 10% Direct + (8% + 6%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} className="inline"/></p>
+                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6%) Indirect</p>
                         <Transition appear show={neonDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setNeonDrop(false)}>
                             <Transition.Child
@@ -564,7 +578,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Buy Price</h6>
                                         <h2 className="mint__numbers">$150<span className="text-xs"> (worth of)</span></h2>
-                                        <h4 className="mint__name text-uppercase">BNB</h4>
+                                        <h4 className="mint__name text-uppercase">{(150 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -608,7 +622,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -621,8 +635,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={celestial3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} className="inline"/></p>
-                        <p className="text-center">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} className="inline"/></p>
+                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
                         <Transition appear show={celestialDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCelestialDrop(false)}>
                             <Transition.Child
@@ -799,7 +813,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Buy Price</h6>
                                             <h2 className="mint__numbers">$250<span className="text-xs"> (worth of)</span></h2>
-                                            <h4 className="mint__name text-uppercase">BNB</h4>
+                                            <h4 className="mint__name text-uppercase">{(250 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -843,7 +857,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem]">
+        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -856,8 +870,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={artifacts3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center mt-3">Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} className="inline"/></p>
-                        <p className="text-center">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} className="inline"/></p>
+                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
                         <Transition appear show={futureDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setFutureDrop(false)}>
                             <Transition.Child
@@ -1034,7 +1048,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Buy Price</h6>
                                         <h2 className="mint__numbers">$350<span className="text-xs"> (worth of)</span></h2>
-                                        <h4 className="mint__name text-uppercase">BNB</h4>
+                                        <h4 className="mint__name text-uppercase">{(350 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -1080,9 +1094,6 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        {/* <div className="monkey-icon">
-            <img src="http://bored.labartisan.net/assets/images/mint/monkey.png" alt="Monkey Icon"/>
-        </div> */}
     </section>
   )
 }
