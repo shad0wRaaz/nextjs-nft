@@ -35,6 +35,7 @@ export const saveImageToWeb3 = async (formdata) => {
 
 export const getImagefromWeb3 = (ipfsuri) => {
   if(ipfsuri?.startsWith("https://")) return ipfsuri;
-  const image = "https://ipfs.thirdwebcdn.com/ipfs/" + String(ipfsuri).slice(7);
+  const image = "https://ipfs.io/ipfs/" + String(ipfsuri).slice(7);
+  // const image = "https://ipfs.thirdwebcdn.com/ipfs/" + String(ipfsuri).slice(7);
   return image;
 }
