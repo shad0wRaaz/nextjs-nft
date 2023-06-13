@@ -17,7 +17,6 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
-        <meta name="csrf_token" content="" />
 
         <meta property="og:title" content={seoTitle + "Nuva NFT"} />
         <meta property="og:description" content={seoDescription} />    
@@ -36,10 +35,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
         <meta property="url" content={seoCurrentUrl} />
         <meta property="image" content={seoImage} />
         <meta property="title" key="title" content={seoTitle + "Nuva NFT"} />
-        <meta property="quote" key="quote" content={seoQuote} />
 
-        <meta name="_token" content="" />
-        <meta name="robots" content="noodp" />
         <link rel="icon" type="image/png" href="https://nuvanft.io/assets/nuvanft.png"></link>
       </Head>
   )

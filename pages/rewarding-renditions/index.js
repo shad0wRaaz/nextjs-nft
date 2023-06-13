@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Faq from './components/Faq'
 import Buy from './components/Buy'
 import Hero from './components/Hero'
+import SEO from '../../components/SEO'
 import React, { useState } from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -9,9 +10,8 @@ import Videos from './components/Videos'
 import Gallery from './components/Gallery'
 import Roadmap from './components/Roadmap'
 import Community from './components/Community'
-import socialcoverimage from './assets/images/socialcoverimage.webp'
 import HelmetMetaData from '../../components/HelmetMetaData'
-import SEO from '../../components/SEO'
+import socialcoverimage from './assets/images/socialcoverimage.webp'
 
 const index = () => {
   const [showMenu, setShowMenu] = useState(false);
