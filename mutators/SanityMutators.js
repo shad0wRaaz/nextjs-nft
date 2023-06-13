@@ -42,34 +42,33 @@ export const isReferralActivated = async(address) => {
   return null;
 }
 
-export const saveReferrer = async(username, sponsor, address) => {
+export const saveAlias = async(username, address) => {
 //see if the sponsor has already got this username as direct referrals, only save if not present already
-  try{
-    const document = await config.getDocument(sponsor);
-    const isPresent = document.directs.findIndex(referrals => referrals._ref.toLowerCase() == address.toLowerCase());
 
-    if(isPresent >= 0){
-      //already present in sponsor's direct referrals, so no need to do anything
-      return
-    }
+  try{
+    // const document = await config.getDocument(address);
+    // const isPresent = document.directs.findIndex(referrals => referrals._ref.toLowerCase() == address.toLowerCase());
+
+    // if(isPresent >= 0){
+    //   //already present in sponsor's direct referrals, so no need to do anything
+    //   return
+    // }
 
     //save if it is not present
       await config
             .patch(address)
             .set({ 
               userName: username, 
-              referrer: { 
-                _type: 'reference', _ref: sponsor 
-              },
             })
-            .commit();
+            .commit()
+            .catch(err => console.log(err));
 
       //add this user in sponsor's direct referrals
-      await config
-              .patch(sponsor)
-              .setIfMissing({ directs: [] })
-              .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
-              .commit({ autoGenerateArrayKeys: true });
+      // await config
+      //         .patch(sponsor)
+      //         .setIfMissing({ directs: [] })
+      //         .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: address }])
+      //         .commit({ autoGenerateArrayKeys: true });
   }catch(error){
   console.error(error)
   }
@@ -159,11 +158,11 @@ export const saveAirdropData = async(transactions, chainId, contractAddress, tok
 
   //in the end update Airdrop in server redis
   const updateAirdropServer = await axios.get(`${HOST}/api/updateAirdrops`);
-  console.log(updateAirdropServer)
+
 
 }
 
-export const sendReferralCommission = async (receivers, address) => {
+export const sendReferralCommission = async (receivers, address, chainId) => {
   //first remove all referrers whose referral activation is not done yet; no need to send any tokens
   try{
     const unresolved = receivers.map(async r => await isReferralActivated(r.receiver));
@@ -189,9 +188,11 @@ export const sendReferralCommission = async (receivers, address) => {
         },
       }
     ).catch(err => {console.log(err)})
-    // console.log(tx)
+    
     if(!tx || !Boolean(tx.data.length)) return;
     
+    saveReferralCommissions(tx?.data, finalReferrals, chainId, address)
+    return;
     //saving all transaction in database;
     Promise.all(
       tx.data.map(
@@ -225,6 +226,65 @@ export const sendReferralCommission = async (receivers, address) => {
   }catch(err){
     console.error(err);
   }
+}
+
+const saveReferralCommissions = async (bonuses, finalReferrals, chainId, source) =>{
+  if(!bonuses || !finalReferrals) return
+  const allBonuses = bonuses?.map(tx => {
+    const sentTime = new Date();
+    const doc = 
+    {
+      transactionHash: tx.transactionHash,
+      chainId,
+      sentTime,
+      source,
+      recipient: finalReferrals[finalReferrals.findIndex(refs => String(refs.receiver).toLowerCase() == String(tx.to).toLowerCase())].receiver,
+      amount: finalReferrals[finalReferrals.findIndex(refs => String(refs.receiver).toLowerCase() == String(tx.to).toLowerCase())].token,
+    }
+    return doc;
+  });
+
+
+  const unresolved = allBonuses.map(async user => {
+    const query = `*[_type == "users" && _id == "${user.recipient}"]`;
+    const result = await config.fetch(query);
+    return result[0];
+  });
+
+  const resolved = await Promise.all(unresolved);
+
+  const bonusArray = resolved.map(user => {
+    let obj = '';
+    let bonusData = '';
+    if(!user.referralbonus){
+      bonusData = allBonuses.filter(data => data.recipient == user._id)
+      obj = { _id: user._id, referralbonus: bonusData }
+    }else{
+      const existingbonuses = JSON.parse(user.referralbonus);
+      const newData = allBonuses.filter(data => data.recipient == user._id);
+      obj = {
+        _id: user._id,
+        referralbonus: [
+          ...existingbonuses,
+          {
+            ...newData[0]
+          }
+        ]
+      }
+
+    }
+    return obj;
+  })
+
+  //patch all those users
+
+  bonusArray.map(async doc => {
+    await config
+          .patch(doc._id)
+          .set({ referralbonus: JSON.stringify(doc.referralbonus) })
+          .commit()
+          .catch(err => console.log(err));
+  })
 }
 
 //send nuva tokens as referral bonus; not used now

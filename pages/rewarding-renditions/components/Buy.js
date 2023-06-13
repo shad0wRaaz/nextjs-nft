@@ -150,7 +150,7 @@ const Buy = ({ setShowMenu }) => {
         onClick={() => setShowMenu(false)}
         id="buy" 
         className="mint bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
-        <div className="container mx-auto px-8 border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
+        <div className="container mx-auto px-8  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -387,7 +387,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
+        <div className="container mx-auto px-8 mt-[4rem]  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -622,7 +622,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
+        <div className="container mx-auto px-8 mt-[4rem]  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
@@ -857,7 +857,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-8 mt-[4rem] border-b-2 border-dashed border-[#382447] pb-[4rem] shadow-2xl rounded-xl">
+        <div className="container mx-auto px-8 mt-[4rem]  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">

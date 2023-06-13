@@ -5,7 +5,7 @@ import { BiWallet } from 'react-icons/bi'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
 import { useAddress } from '@thirdweb-dev/react'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createAwatar } from '../../utils/utilities';
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import { useUserContext } from '../../contexts/UserContext'
@@ -26,7 +26,17 @@ const referrals = () => {
     const levelfiveRef = useRef(0);
     const [totalBonus, setTotalBonus] = useState(0);
     const { chainExplorer, HOST } = useSettingsContext();
-    
+    const [referralBonuses, setReferralBonuses] = useState();
+
+    useEffect(() => {
+        if(!myUser || !Boolean(myUser?.referralbonus)) return
+        let bonuses = JSON.parse(myUser.referralbonus);
+
+        bonuses = bonuses.sort(function(a,b){
+            return new Date(b.sentTime) - new Date(a.sentTime);
+          })
+        setReferralBonuses(bonuses);
+    }, [myUser])
 
     const addteam = () => {
         teamcountRef.current += 1;
@@ -38,7 +48,7 @@ const referrals = () => {
         userul: dark ? 'before:border-l before:border-slate-700' :'before:border-l before:border-neutral-200',
         userli: dark ? 'before:border-t before:border-slate-700 after:border-t after:border-slate-700 last:before:border-r last:before:border-border-slate-700 after:border-l after:border-slate-700' :'before:border-t before:border-neutral-200 after:border-t after:border-neutral-200 last:before:border-r last:before:border-border-slate-200 after:border-l after:border-neutral-200',
         userbox: `${dark ? 'border border-slate-700': 'border border-neutral-200'} bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-400/50 to-blue-500/50`,
-        table: `text-sm w-full text-base`,
+        table: `text-sm w-full text-base whitespace-nowrap`,
         tableheader: `font-normal py-4 ${dark ? 'bg-slate-600' : ' bg-neutral-100'} text-left pl-2`,
         tablecell: 'py-3 pl-2',
         networklabel: 'mr-2 opacity-10 absolute top-3 left-2',
@@ -80,7 +90,7 @@ const referrals = () => {
         ['referralpayment'],
         getReferralPayment(address),
         {
-            enabled: Boolean(address),
+            enabled: Boolean(address) && false,
             onSuccess: (res) => 
             { 
                 const totals = res.map(r => r.amount);
@@ -318,17 +328,17 @@ const referrals = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {referralPaymentStatus == "success" && referralPaymentData.map((refdata, index) => (
-                                            <tr key={refdata._id}>
+                                        {referralBonuses?.map((bonus, index) => (
+                                            <tr key={index}>
                                                 <td className={style.tablecell}>{index + 1}</td>
-                                                <td className={style.tablecell}><Moment fromNow>{refdata._createdAt}</Moment></td>
+                                                <td className={style.tablecell}><Moment fromNow>{bonus.sentTime}</Moment></td>
                                                 <td className={style.tablecell}>
-                                                    <a href={`${chainExplorer[97]}tx/${refdata.txid}`} target="_blank" className="p-2 hover:bg-slate-600/20 rounded-lg">
-                                                        {refdata.txid.slice(0,5)}...{refdata.txid.slice(-5)}
+                                                    <a href={`${chainExplorer[bonus.chainId]}tx/${bonus.transactionHash}`} target="_blank" className="p-2 hover:bg-slate-600/20 rounded-lg">
+                                                        {bonus.transactionHash.slice(0,5)}...{bonus.transactionHash.slice(-5)}
                                                     </a>
                                                 </td>
-                                                <td className={style.tablecell}><IconBNB/>{refdata.amount}</td>
-                                                <td className={style.tablecell}>{refdata.referee._ref}</td>
+                                                <td className={style.tablecell}><IconBNB/>{bonus.amount}</td>
+                                                <td className={style.tablecell}>{bonus.source}</td>
                                             </tr>
                                         ))}
                                     </tbody>

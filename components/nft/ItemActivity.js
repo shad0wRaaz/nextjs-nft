@@ -80,7 +80,7 @@ const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) =>
       </div>
       {!toggle && (
         <div className="w-full overflow-auto max-h-[28rem]">
-          <table className="w-full sm:overflow-scroll">
+          <table className="w-full sm:overflow-auto">
             <thead>
               <tr>
                 <th

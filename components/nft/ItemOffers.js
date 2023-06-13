@@ -156,7 +156,7 @@ useEffect(() => {
           </div>
       </div>
       {!toggle && (
-        <table className="w-full max-h-[28rem] overflow-scroll pb-8">
+        <table className="w-full max-h-[28rem] overflow-auto pb-8">
           <tbody>
             {!listingData || eventData?.length == 0 || !eventData && (
               <tr>

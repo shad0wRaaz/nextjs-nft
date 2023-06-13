@@ -39,15 +39,7 @@ const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
         </div>
     )
   }
-  // console.log(new Date(parseInt(listingData.endTimeInEpochSeconds.hex, 16) * 1000))
-  // console.log(listingData)
-  // const sd = parseInt(listingData.startTimeInEpochSeconds.hex, 16) * 1000;
-  // const ed = parseInt(listingData.endTimeInEpochSeconds.hex, 16) * 1000;
-  // console.log(new Date((ed-sd) / 1000) )
-  // console.log('start time', new Date(parseInt(listingData.startTimeInEpochSeconds.hex, 16) * 1000))
-  // console.log(parseInt(listingData.endTimeInEpochSeconds.hex,16)*1000)
-  // console.log(Date.now())
-  // console.log('end time', new Date(parseInt(listingData.endTimeInEpochSeconds.hex,16)*1000 ))
+ 
   return (
     <div
       className={`py-9 text-center ${
@@ -58,7 +50,7 @@ const AuctionTimer = ({ selectedNft, listingData, auctionItem }) => {
         Boolean(selectedNft) && (
           <div className="space-y-5">
             <div className="flex items-center justify-center relative">
-              <div class="relative">
+              <div className="relative">
 
               <CgSandClock
                 className="animate-bounce duration-1000 absolute top-1 left-[-20px]"

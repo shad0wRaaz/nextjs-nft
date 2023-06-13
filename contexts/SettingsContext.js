@@ -102,7 +102,8 @@ export function SettingsProvider({children}) {
             referralAllowedCollections, 
             setReferralAllowedCollections,
             chainIcon,
-            blockchainIdFromName }}>
+            blockchainIdFromName
+             }}>
                 {children}
         </SettingsContext.Provider>
     )

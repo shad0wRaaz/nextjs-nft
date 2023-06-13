@@ -72,9 +72,8 @@ const chainName = {
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
 const Nft = (props) => { //props are from getServerSideProps
-  
   const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, royaltyData, contractAddress, tokenId } = props;
-  // const [totalLikers, setTotalLikers] = useState(metaDataFromSanity?.likedBy?.length);
+
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
   const signer = useSigner();
@@ -88,6 +87,7 @@ const Nft = (props) => { //props are from getServerSideProps
   const { setReferralCommission } = useSettingsContext();
   const router = useRouter();
   const { setSelectedProperties } = useCollectionFilterContext();
+  const [isAuctionItem, setIsAuctionItem] = useState(false);
 
   const {data, status} = useQuery(
     ['referralRate'],
@@ -155,12 +155,13 @@ const Nft = (props) => { //props are from getServerSideProps
     }
   }, [thisNFTMarketAddress, address, signer])
 
+  useEffect(() => {
+    if(Boolean(listingData?.reservePrice)) {
+      setIsAuctionItem(true);
+    }
+  }, [listingData])
 
-  let isAuctionItem = false;
-  if(listingData?.reservePrice) {
-    isAuctionItem = true;
-  }
-  
+
   //Add or Remove Likes/Heart
   // const addRemoveLike = async (
   //   e,
@@ -775,22 +776,22 @@ const Nft = (props) => { //props are from getServerSideProps
                 thisNFTblockchain={thisNFTblockchain}
                 />
 
-              {listingData && isAuctionItem && (parseInt(listingData?.endTimeInEpochSeconds.hex, 16) != parseInt(listingData?.startTimeInEpochSeconds.hex, 16)) && (
+              {/* {listingData && isAuctionItem && (parseInt(listingData?.endTimeInEpochSeconds.hex, 16) != parseInt(listingData?.startTimeInEpochSeconds.hex, 16)) && (
                 <AuctionTimer
                 selectedNft={nftContractData}
                 listingData={listingData}
                 auctionItem={isAuctionItem}
                 />
-              )}
+              )} */}
 
-              {/* <ItemOffers
+              <ItemOffers
               selectedNft={ownerData}
               listingData={listingData}
               metaDataFromSanity={metaDataFromSanity}
               thisNFTMarketAddress={thisNFTMarketAddress}
               thisNFTblockchain={thisNFTblockchain}
               isAuctionItem={isAuctionItem}
-              /> */}
+              />
 
               <ItemActivity
                 thisNFTblockchain={thisNFTblockchain}
@@ -803,17 +804,32 @@ const Nft = (props) => { //props are from getServerSideProps
                   metaDataFromSanity={ metaDataFromSanity }
                 />
               )}
-
-              {address && String(address).toLowerCase() == String(ownerData?.owners[0]?.ownerOf).toLowerCase() && (
-                <BurnCancel 
-                  nftContractData={nftContractData} 
-                  ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
-                  listingData={listingData} 
-                  nftCollection={metaDataFromSanity}
-                  thisNFTMarketAddress={thisNFTMarketAddress}
-                  thisNFTblockchain={thisNFTblockchain}
-                  />
+              {Boolean(listingData) ? (
+                  <BurnCancel 
+                    nftContractData={nftContractData} 
+                    ownerData={listingData.sellerAddress}
+                    listingData={listingData}
+                    auctionItem={isAuctionItem}
+                    nftCollection={metaDataFromSanity}
+                    thisNFTMarketAddress={thisNFTMarketAddress}
+                    thisNFTblockchain={thisNFTblockchain}
+                    />
+              ) : (
+                <>
+                  {address && String(address).toLowerCase() == String(ownerData?.owners[0]?.ownerOf).toLowerCase() && (
+                    <BurnCancel 
+                      nftContractData={nftContractData} 
+                      ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
+                      listingData={listingData}
+                      auctionItem={isAuctionItem}
+                      nftCollection={metaDataFromSanity}
+                      thisNFTMarketAddress={thisNFTMarketAddress}
+                      thisNFTblockchain={thisNFTblockchain}
+                      />
+                  )}
+                </>
               )}
+
             </div>
           </div>
         </main>

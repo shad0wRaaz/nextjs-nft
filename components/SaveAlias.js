@@ -4,24 +4,25 @@ import { checkReferralUser, checkUsername } from '../fetchers/SanityFetchers';
 import { toast } from 'react-hot-toast';
 import { useAddress } from '@thirdweb-dev/react';
 import { useMutation } from 'react-query';
-import { IconLoading } from './icons/CustomIcons';
-import { saveReferrer } from '../mutators/SanityMutators';
+import { IconCopy, IconLoading } from './icons/CustomIcons';
+import { saveAlias } from '../mutators/SanityMutators';
 import { useRouter } from 'next/router';
 
-const SaveReferral = ({setReferralModal, userData}) => {
+const SaveAlias = ({setReferralModal, userData}) => {
 
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const address = useAddress();
     const [username, setUsername] = useState('');
     const router = useRouter();
-    const { w } = router.query;
     const [sponsor, setSponsor] = useState('');
 
     const style = {
         input: `my-2 w-full outline-none p-3 border rounded-xl transition linear ${dark ? 'border-slate-600 bg-slate-700 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-100'}`,
-        button: 'w-[200px] flex justify-center gap-2 ml-0 mt-8 accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500',
-        secbutton: `w-[200px] flex justify-center gap-2 ml-0 mt-8  rounded-xl  text-center text-white cursor-pointer p-4 m-3 font-bold max-w-[12rem] ease-linear transition duration-500 border ${dark ? 'border-slate-700 bg-slate-700/50' : ''}`,
-        note: 'text-xs text-center'
+        buttonContainer : 'grid grid-cols-1 md:grid-cols-2 gap-4 mt-8',
+        profileLink: `relative text-sm p-3 pr-8 rounded-xl border break-all mt-2 ${dark ? 'border-slate-700' : ''}`,
+        copyicon : 'absolute cursor-pointer top-2.5 right-2 transition hover:rotate-12 origin-bottom',
+        button: 'w-full flex justify-center gap-2 ml-0 accentBackground rounded-xl gradBlue text-center text-white cursor-pointer p-4 font-bold ease-linear transition duration-500',
+        secbutton: `w-full flex justify-center gap-2 ml-0 rounded-xl  text-center text-white cursor-pointer p-4 font-bold ease-linear transition duration-500 border ${dark ? 'border-slate-700 bg-slate-700/50' : ''}`,
     }
     
     const doitlater = () => {
@@ -30,19 +31,19 @@ const SaveReferral = ({setReferralModal, userData}) => {
     }
 
     const handleSave = async (toastHandler = toast) => {
-        if(username == '' && sponsor == '') {
+        if(username == '') {
             return;
         }
-        if(sponsor == address){
-            toastHandler.error('Cannot put yourself as your own referral.', errorToastStyle);
-        return;
-        }
+        // if(sponsor == address){
+        //     toastHandler.error('Cannot put yourself as your own referral.', errorToastStyle);
+        // return;
+        // }
         //check if referrer already exist in the system
-        const userExist = await checkReferralUser(sponsor);
-        if(!userExist || userExist.length == 0){
-            toastHandler.error('Unknown referral wallet address.', errorToastStyle);
-            return;
-        }
+        // const userExist = await checkReferralUser(sponsor);
+        // if(!userExist || userExist.length == 0){
+        //     toastHandler.error('Unknown referral wallet address.', errorToastStyle);
+        //     return;
+        // }
 
         //check for duplicate username
         const res =  await checkUsername(username, address);
@@ -54,7 +55,7 @@ const SaveReferral = ({setReferralModal, userData}) => {
     }
 
     const {mutate: saveData, status} = useMutation(
-        async () => saveReferrer(username, sponsor, address),
+        async () => saveAlias(username, address),
         {
             onError:(err) => {
                 toast.error('Error in saving', errorToastStyle);
@@ -71,33 +72,29 @@ const SaveReferral = ({setReferralModal, userData}) => {
         setUsername(userData.userName);
     }, [userData]);
 
-    useEffect(() => {
-        if(!w) return;
-        setSponsor(w);
-    }, [w]);
 
-    //this is for saving referring wallet address if wallet is not connected
-    useEffect(() => {
-        //if there is not connected wallet, save the referral address in storage
-        if(!address) {
-            localStorage.setItem("refWallet", w)
-        }
-    }, [address])
   return (
     <div className="mt-8">
-        <p>Your Name (Alias):</p>
+        <p>Your Display Name (Alias) <span className="text-xs text-slate-400 italic">(optional)</span></p>
         <input 
             type="text" className={style.input}
             value={username}
             onChange={(e) => setUsername(e.target.value)}/>
 
-        <p className="mt-3">Referred By (Wallet Address only)</p>
-        <input 
-            type="text" className={style.input}
-            value={sponsor}
-            onChange={(e) => setSponsor(e.target.value)}/>
+        <p className="mt-3">Referral Link</p>
+        <div className={style.profileLink}>
+            https://nuvanft.io?w={address}
+            <div className={style.copyicon}
+                onClick={() => {
+                          navigator.clipboard.writeText(`https://nuvanft.io/?w=${address}`);
+                          toast.success('Referral link copied', successToastStyle);
+                        }}>
+                        <IconCopy />
+            </div>
+        </div>
+        <h2 className="text-center text-xl mt-2 mb-8 font-bold">Refer friends and GET REWARDED</h2>
 
-        <div className="flex justify-center gap-2">
+        <div className={style.buttonContainer}>
             {status == "loading" ? (
                 <button 
                     className={style.button + ' flex gap-2'}
@@ -114,12 +111,11 @@ const SaveReferral = ({setReferralModal, userData}) => {
             <button 
                 className={style.secbutton}
                 onClick={() => doitlater()}>
-                I will do it later
+                Don't show anymore
             </button>
         </div>
-        <p className={style.note}>If you choose to do it later, you can do it from your profile page.</p>
     </div>
   )
 }
 
-export default SaveReferral
+export default SaveAlias

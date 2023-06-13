@@ -466,3 +466,9 @@ export const getAirDrops = () => async() => {
   const { data } = await axios.get(`${HOST}/api/getAirdrops`);
   return data;
 }
+
+export const getReferralBonuses = () => async() => {
+  const query = `*[_type == "users" && referralbonus != undefined]{referralbonus, userName, _id}`;
+  const bonuses = await config.fetch(query);
+  return bonuses;
+}

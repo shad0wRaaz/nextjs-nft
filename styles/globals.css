@@ -15,7 +15,6 @@ body {
   padding: 0;
   margin: 0;
   background-color: #ffffff;
-  /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' %3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='0' y1='0' y2='1' gradientTransform='rotate(120,0.5,0.5)'%3E%3Cstop offset='0' stop-color='%2380F'/%3E%3Cstop offset='1' stop-color='%23f40'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpattern id='b' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Ccircle fill='%23ffffff' cx='5' cy='5' r='5'/%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23a)'/%3E%3Crect width='100%25' height='100%25' fill='url(%23b)' fill-opacity='0.1'/%3E%3C/svg%3E"); */
   background-attachment: fixed;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
@@ -247,14 +246,6 @@ body::-webkit-scrollbar-thumb,
 .browsebycategory .slick-track {display: inline-flex;}
 .browsebycategory .slick-slider { overflow: hidden; }
 .browsebycategory button { display: none !important; }
-/* .inner-element .slick-track { position: relative; max-width: 500px; height: 485px;}
-.inner-element .slick-track > * { position: absolute !important; top:0 !important; left: 0 !important;}
-.inner-element .slick-track > div > div { width: 100%; height: 100%; }
-.inner-element .slick-arrow { position: absolute; bottom: -60px; left: 50%; padding: 5px 15px; border: 1px solid #00000033; border-radius: 20px; font-size: 12px; transition: 0.3s; }
-.inner-element .slick-arrow:hover { background: #00000010; }
-.inner-element .slick-arrow.slick-prev { left:31%; }
-.inner-element .slick-arrow.slick-next { right:34%; } */
-/* .inner-element .slick-track .coverImage { width: 500px;} */
 
 .slick-slide {
   visibility: hidden;
@@ -420,44 +411,7 @@ z-index: -1;
   /* color: rgb(88 199 250 / 0%); */
   cursor: pointer;
 }
-.featuredCard:hover {
-  /* color: rgb(88 199 250 / 100%);
-  transition: color 1s; */
-}
-.featuredCard:hover::before, .featuredCard:hover::after{
-  /* animation: none;
-  opacity: 0; */
-}
-/* .featuredCard::before {
-  content: '';
-  width: 100%;
-  height: 103.5%;
-  border-radius: 8px;
-  background-image: linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2);
-  position: absolute;
-  top: -1.5%;
-  left: 0;
-  z-index: -1;
-  animation: spin 8.5s linear infinite;
-} */
-/* .featuredCard::after {
-  position: absolute;
-  content: '';
-  top: calc(var(--card-height) / 6);
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
-  transform: scale(0.8);
-  filter: blur(calc(var(--card-height) / 6));
-  background-image: linear-gradient(var(--rotate), aqua, #3c67e3 43%, #4e00c2);
-  opacity: 1;
-  transition: opacity 0.5s;
-  animation: spin 8.5s linear infinite;
-} */
+
 @keyframes spin {
   0% { --rotate: 0deg }
   100% { --rotate: 359deg }

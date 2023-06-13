@@ -1,4 +1,4 @@
-
+import SEO from '../SEO'
 import Link from 'next/link'
 import Report from '../Report'
 import toast from 'react-hot-toast'
@@ -8,11 +8,12 @@ import { useState, Fragment } from 'react'
 import HelmetMetaData from '../HelmetMetaData'
 import { HiOutlineMail } from 'react-icons/hi'
 import { useAddress } from '@thirdweb-dev/react'
-import { TbBrandTelegram, TbStack2 } from 'react-icons/tb'
 import { IconVerified } from '../icons/CustomIcons'
 import { MdOutlineBugReport } from 'react-icons/md'
 import { Menu, Transition } from '@headlessui/react'
+import { createAwatar } from '../../utils/utilities'
 import { getImagefromWeb3 } from '../../fetchers/s3'
+import { TbBrandTelegram, TbStack2 } from 'react-icons/tb'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { RiShareBoxLine , RiAuctionLine } from 'react-icons/ri'
 import { getUserContinuously } from '../../fetchers/SanityFetchers'
@@ -20,16 +21,13 @@ import { FiMoreVertical, FiFacebook, FiTwitter } from 'react-icons/fi'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { AiFillFire, AiOutlineReddit, AiOutlineWhatsApp } from 'react-icons/ai'
 import { FacebookShareButton, RedditShareButton, TwitterShareButton, WhatsappShareButton, TelegramShareButton, EmailShareButton } from 'react-share'
-import { createAwatar } from '../../utils/utilities'
-import SEO from '../SEO'
 
 
 const style = {
   wrapper: `flex`,
   infoContainer: `h-36 flex flex-col flex-1 justify-between mb-6`,
   accent: `text-black`,
-  collectionName:
-    'cursor-pointer rounded-md hover:opacity-90 text-sm p-2 bg-white text-black',
+  collectionName: 'cursor-pointer rounded-md hover:opacity-90 text-sm p-2 bg-white text-black',
   nftTitle: `text-3xl font-extrabold text-black mt-2`,
   otherInfo: `flex`,
   ownedBy: `text-black mr-4`,

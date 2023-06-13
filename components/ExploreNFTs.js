@@ -49,7 +49,7 @@ const ExploreNFTs = () => {
           <div
             className={`border ${
               dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-            } flex justify-between gap-2 overflow-scroll rounded-full p-1 shadow text-sm`}
+            } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow text-sm`}
           >
             <div
               className={`flex cursor-pointer flex-row items-center rounded-full p-2 px-4 transition ${

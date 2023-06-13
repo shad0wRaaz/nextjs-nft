@@ -1,8 +1,9 @@
 import Slider from 'react-slick'
+import SaveAlias from './SaveAlias'
 import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
 import "slick-carousel/slick/slick.css";
-import SaveReferral from './SaveReferral'
+import { useQuery } from 'react-query';
 import FeaturedItems from './FeaturedItems'
 import { RiCloseFill } from 'react-icons/ri';
 import { config } from '../lib/sanityClient';
@@ -11,7 +12,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
 import { getFullListings } from '../fetchers/Web3Fetchers';
-import { useQuery } from 'react-query';
 
 const style = {
   wrapper: `relative overflow-hidden`,
@@ -58,9 +58,9 @@ const HeroCarousel = (props) => {
       const data = await config.fetch(`*[_type == "users" && walletAddress == "${address}"]`);
       setUserData(data[0]);
 
-      if(!data[0].referrer){
+      if(!data[0]?.referrer){
 
-        //check if user has opted not to see the referral again
+        // check if user has opted not to see the referral again
         const askagain = localStorage.getItem('referral');
     
         if(askagain == 'false' || askagain == null ){
@@ -102,7 +102,7 @@ const HeroCarousel = (props) => {
                 onClick={() => setReferralModal(false) }>
                 <RiCloseFill fontSize={25}/>
               </div>
-              <SaveReferral setReferralModal={setReferralModal} userData={userData}/>
+              <SaveAlias setReferralModal={setReferralModal} userData={userData}/>
             </div>
           </div>
 

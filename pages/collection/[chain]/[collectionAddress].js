@@ -5,44 +5,44 @@ import toast from 'react-hot-toast'
 import Countdown from 'react-countdown'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import { BiChevronUp, BiGlobe } from 'react-icons/bi'
-import { createAwatar } from '../../../utils/utilities';
-import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
+import SEO from '../../../components/SEO'
 import { Fragment, useEffect } from 'react'
-import Loader from '../../../components/Loader'
-import Header from '../../../components/Header'
 import { FiSettings } from 'react-icons/fi'
-import Footer from '../../../components/Footer'
 import { useQueryClient } from 'react-query'
 import { RiCloseFill } from 'react-icons/ri'
 import { CgSandClock } from 'react-icons/cg'
-import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
+import Loader from '../../../components/Loader'
+import Header from '../../../components/Header'
+import { HiChevronRight } from 'react-icons/hi'
+import Footer from '../../../components/Footer'
 import NFTCard from '../../../components/NFTCard'
 import Property from '../../../components/Property'
-import SellAll from '../../../components/nft/SellAll'
 import { useQuery, useMutation } from 'react-query'
+import SellAll from '../../../components/nft/SellAll'
+import { BiChevronUp, BiGlobe } from 'react-icons/bi'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
-import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
+import { createAwatar } from '../../../utils/utilities';
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useUserContext } from '../../../contexts/UserContext'
+import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
 import HelmetMetaData from '../../../components/HelmetMetaData'
 import { useThemeContext } from '../../../contexts/ThemeContext'
+import NFTCardExternal from '../../../components/NFTCardExternal'
+import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
 import { changeShowUnlisted } from '../../../mutators/SanityMutators'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
-import { Menu, Transition, Switch, Dialog, Popover } from '@headlessui/react'
 import CollectionReferral from '../../../components/CollectionReferral'
-import EditCollectionPayment from '../../../components/EditCollectionPayment'
-import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
-import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
-import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
-import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
-import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
-import NFTCardExternal from '../../../components/NFTCardExternal'
-import { HiChevronRight } from 'react-icons/hi'
+import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
 import AirdropSettings from '../../../components/collection/AirdropSettings'
-import SEO from '../../../components/SEO'
+import { Menu, Transition, Switch, Dialog, Popover } from '@headlessui/react'
+import EditCollectionPayment from '../../../components/EditCollectionPayment'
+import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
+import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
+import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
+import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
 
 const chainIcon = {
   '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
@@ -235,7 +235,7 @@ const CollectionDetails = () => {
     {
       enabled: Boolean(collectionAddress),
       onSuccess: (res) => {
-        console.log(res);
+        // console.log(res);
       },
       onError:(err) => {
         console.log(err)
@@ -512,12 +512,13 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         <SEO
           title={collectionData?.name}
           description={collectionData?.description}
-          image={getImagefromWeb3(collectionData?.web3imageprofile)} />
+          image={getImagefromWeb3(collectionData?.web3imageprofile)}
+          currentUrl={`https://nuvanft.io/collection/${chain}/${collectionAddress}`} />
       )}
 
       {showModal && Boolean(collectionData) && (
         <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[55.5rem] h-[45rem] overflow-y-scroll z-50 relative`}>
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[55.5rem] h-[45rem] overflow-y-auto z-50 relative`}>
             <div
               className="absolute top-5 right-6 md:right-12  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
               onClick={() => setShowModal(false)}
@@ -531,7 +532,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
       {showPaymentModal && Boolean(collectionData) && (
         <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-auto z-50 relative`}>
             <div
               className="absolute top-5 right-6 md:right-12  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
               onClick={() => setPaymentModal(false)}
@@ -545,7 +546,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
       {hasReferralSetting && showReferralModal && Boolean(collectionData) && (
         <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-scroll z-50 relative`}>
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 rounded-3xl w-[40rem] overflow-y-auto z-50 relative`}>
             <div
               className="absolute top-5 right-6 md:right-12  transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
               onClick={() => setShowReferralModal(false)}
@@ -584,7 +585,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel className={`md:w-full lg:w-1/2 h-[600px] md:h-[700px] overflow-scroll transform rounded-2xl ${dark? 'bg-slate-800 text-white': 'bg-white'} p-6 text-left align-middle shadow-xl transition-all`}>
+                    <Dialog.Panel className={`md:w-full lg:w-1/2 h-[600px] md:h-[700px] overflow-auto transform rounded-2xl ${dark? 'bg-slate-800 text-white': 'bg-white'} p-6 text-left align-middle shadow-xl transition-all`}>
                       <button
                         className="absolute top-5 right-6 transition duration-[300] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70 cursor-pointer"
                         onClick={() => setShowListingModal(false)}
@@ -940,7 +941,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                                 >
                                   <Popover.Panel className="absolute left-1/2 z-40 top-[2rem] w-screen max-w-xs -translate-x-1/2 transform px-4 sm:px-0">
                                     <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                      <div className={`relative flex flex-col gap-8 max-h-[200px] overflow-y-scroll ${dark ? 'bg-slate-700' : 'bg-white'} p-7`}>
+                                      <div className={`relative flex flex-col gap-8 max-h-[200px] overflow-y-auto ${dark ? 'bg-slate-700' : 'bg-white'} p-7`}>
                                         {nftHolders.map((item) => (
                                           <a
                                             key={item}
@@ -1009,7 +1010,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
       {showAirdrop && hasReferralSetting && Boolean(collectionData) && (
         <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
-          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 md:mt-12 rounded-3xl w-[55.5rem] overflow-y-scroll z-50 relative`}>
+          <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 md:mt-12 rounded-3xl w-[55.5rem] overflow-y-auto z-50 relative`}>
             <AirdropSettings nftHolders={nftHolders} chain={chain} contractAddress={collectionData?.contractAddress} setShowAirdrop={setShowAirdrop} />
           </div>
         </div>
@@ -1082,7 +1083,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
               <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} mx-4 my-auto md:m-auto`}>
                 <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
                 <div className="w-full pt-4">
-                  <div className="mx-auto w-full max-w-md max-h-96 overflow-y-scroll py-4">
+                  <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto py-4">
                     {properties && (
                       <Property traits={properties} nftData={nfts} />
                     )}
@@ -1115,7 +1116,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
         {/* show applied filter keys */}
         {selectedProperties.length > 0 && (
-          <div className="w-full p-2 overflow-scroll mb-4 flex gap-2 items-center">
+          <div className="w-full p-2 overflow-auto mb-4 flex gap-2 items-center">
             <span className="text-xs">Filters:</span>
             {Boolean(selectedProperties[0].propertyKey) && (
               <>

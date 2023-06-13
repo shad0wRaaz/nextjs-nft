@@ -16,7 +16,6 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import toast, { Toaster } from 'react-hot-toast'
 import { BsArrowRightShort } from 'react-icons/bs'
 import React, { useEffect, useState } from 'react'
-import { createAwatar, updateUserDataToFindMaxPayLevel } from '../../utils/utilities'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import Sidebar from '../../components/admin/Sidebar'
 import BlockedNFTs from '../../components/admin/BlockedNFTs'
@@ -29,7 +28,9 @@ import ReferralSettings from '../../components/admin/ReferralSettings'
 import BlockedCollections from '../../components/admin/BlockedCollections'
 import { getTotalsforAdmin, updateListings } from '../../fetchers/Web3Fetchers'
 import { BiCategory, BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
+import { createAwatar, updateUserDataToFindMaxPayLevel } from '../../utils/utilities'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconLoading, IconPolygon } from '../../components/icons/CustomIcons'
+import ReferralBonuses from '../../components/admin/ReferralBonuses'
 
 const chainnum = {
     "80001": "mumbai",
@@ -174,6 +175,7 @@ const dashboard = () => {
                     <main className="col-span-5 p-4">
                         <div className="pt-10">
                             <div className="container mx-auto">
+                                {/* Statistics */}
                                 <div className="cards-container">
                                     <div className={`card flex justify-between items-center flex-row ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
@@ -244,46 +246,9 @@ const dashboard = () => {
                                 {/* End of first row */}
 
                                 {/* Start of second row*/}
-                                <div className="cards-container">
-                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                <div className="flex gap-[20px] p-[20px] flex-wrap md:flex-nowrap">
+                                    <div className={`card w-full md:w-1/3 !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
-                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
-                                                Add New Category
-                                            </div>
-                                            <div className="card-body text-sm pt-4">
-                                                <AddCategory setCategoryCount={setCategoryCount}/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
-                                        <div className="card-content">
-                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
-                                                Block NFTs from Display
-                                            </div>
-                                            <div className="card-body text-sm pt-4">
-                                                <BlockedNFTs />
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
-                                        <div className="card-content">
-                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
-                                                Block Collections from Display
-                                            </div>
-                                            <div className="card-body text-sm pt-4">
-                                                <BlockedCollections />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    
-                                </div>
-                                {/* End of second row*/}
-
-                                <div className="cards-container">
-                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
-                                    <div className="card-content">
                                             <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
                                                 All Users
                                             </div>
@@ -477,6 +442,20 @@ const dashboard = () => {
                                             </div>
                                         </div> */}
                                     </div>
+                                    <div className={`card !overflow-visible z-20 flex-grow ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Referral Bonuses
+                                            </div>
+                                            <div className="card-body pt-4">
+                                                <ReferralBonuses />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                {/* End of second row*/}
+                                <div className="cards-container">
                                     <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
                                         <div className="card-content">
                                             <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
@@ -548,6 +527,46 @@ const dashboard = () => {
                                         </div>
                                     </div>
                                 </div>
+                                {/* End of third row*/}
+                                
+                                <div className="cards-container">
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Add New Category
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <AddCategory setCategoryCount={setCategoryCount}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Block NFTs from Display
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <BlockedNFTs />
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`card !overflow-visible z-20 ${dark ? '!bg-slate-700' : ''}`}>
+                                        <div className="card-content">
+                                            <div className={`card-header font-semibold ${dark ? '!text-white' : ''}`}>
+                                                Block Collections from Display
+                                            </div>
+                                            <div className="card-body text-sm pt-4">
+                                                <BlockedCollections />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                                
+                                {/* End of fourth row*/}
+                                
                             </div>
                         </div>
                         <p className="p-4 text-sm">&copy; 2023 Meta Nuva</p>

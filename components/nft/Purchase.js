@@ -16,7 +16,7 @@ import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
 import { ChainId, NATIVE_TOKENS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { IconLoading, IconOffer, IconWallet } from '../icons/CustomIcons'
 import { getMyPayingNetwork, getUser } from '../../fetchers/SanityFetchers'
-import  { updateSingleUserDataToFindMaxPayLevel } from '../../utils/utilities'
+import { updateSingleUserDataToFindMaxPayLevel } from '../../utils/utilities'
 import { useChainId, useAddress, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { saveTransaction, addVolumeTraded, sendReferralCommission, updatePayableLevel, updateBoughtNFTs } from '../../mutators/SanityMutators'
 
@@ -65,6 +65,7 @@ const MakeOffer = ({
   }
 
   const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName } = useSettingsContext();
+
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const {myUser} = useUserContext();
   const chainId = useChainId();
@@ -257,7 +258,7 @@ const MakeOffer = ({
     }
     let sponsors = [];
     const payNetwork = await getMyPayingNetwork(address);
-    
+
     let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0]);
     if(Boolean(network?.sponsor)){
       network = {
@@ -358,11 +359,10 @@ const MakeOffer = ({
         sponsors.push({ receiver: sponsor_L5, token: tokenPriceinBNB * sponsor_L5_rate / 100 });
       }
 
-    // console.log(sponsors);
     // return;
 
     //send the tokens and get list of transaction hash to save in database
-    const tx = sendReferralCommission(sponsors, address);
+    const tx = sendReferralCommission(sponsors, address, nftCollection.chainId);
 
 
   }
@@ -586,6 +586,9 @@ const MakeOffer = ({
     qc = queryClient,
     sanityClient = config
     ) => {
+      //payout to network
+                // await payToMySponsors();
+                // return;
 
         //update pay info-> list of all bought NFTs from the selected Collections
         // const payObj =  {
@@ -779,6 +782,7 @@ const MakeOffer = ({
     setBidAmount(0);
     bidsettingRef.current.style.display = value;
   }
+
   const executeBiddingSales = async(
     listingId = listingData?.id?.toString(),
     toastHandler = toast,
@@ -928,6 +932,8 @@ const MakeOffer = ({
                 <span className="ml-2.5">Buy</span>
               </div>
             )}
+            {!isAllowedSeperateCommission && (
+              <>
                 {offerLoading ? (
                   <div className={`transition relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}>
                     <IconLoading dark={dark ? 'inbutton' : ''}/>
@@ -936,13 +942,15 @@ const MakeOffer = ({
                   ):(
                       <div
                         className={`transition ${buyLoading && 'pointer-events-none opacity-60'} relative inline-flex flex-1 w-full h-auto cursor-pointer items-center justify-center rounded-xl border ${dark ? 'border-slate-700 bg-slate-700 text-neutral-100 hover:bg-slate-600' : 'border-neutral-200 bg-white text-slate-700 hover:bg-neutral-100'} px-4 py-3 text-sm font-medium  transition-colors  focus:outline-none  focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 sm:px-6 sm:text-base`}
-                        onClick={() => openOfferSetting('block')}
-                      >
-                        <IconOffer />
-          
-                        <span className="ml-2.5"> Offer</span>
+                        onClick={() => openOfferSetting('block')}>
+                          <IconOffer />
+            
+                          <span className="ml-2.5"> Offer</span>
                       </div>  
                 )}
+              </>
+            )}
+
           </>
         )}
 

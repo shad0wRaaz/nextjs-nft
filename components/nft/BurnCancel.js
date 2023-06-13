@@ -17,7 +17,7 @@ import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 
 
-const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
+const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const address = useAddress();
     const chainid = useChainId();
@@ -63,8 +63,13 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
 
             const sdk = new ThirdwebSDK(signer);
             const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-
-            const tx = await contract.direct.cancelListing(listingData.id)
+            let tx = '';
+            // console.log(auctionItem)
+            if(!auctionItem){
+              tx = await contract.direct.cancelListing(listingData.id)
+            }else{
+              tx = await contract.auction.cancelListing(listingData.id)
+            }
             // console.log(tx.receipt)
             if (tx) {
     
@@ -103,14 +108,14 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
                 //update listing data
                 ;(async() => {
                   setLoadingNewPrice(true);
-                  await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).then(() => {
+                  await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).finally(() => {
                     setIsCanceling(false);
                     setLoadingNewPrice(false);
                     router.reload(window.location.pathname);
                     router.replace(router.asPath);
+                    toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
                   })
                 })()
-                toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
             }
           } catch (err) {
             console.error(err);
@@ -120,7 +125,7 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
           }
         })()
       }
-    // console.log(listingData)
+
     const burn = (e, sanityClient = config, toastHandler = toast) => {
       
       if (Boolean(listingData?.id)) {
@@ -355,9 +360,16 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
             </div>
         </div>
     )}
-    {address.toLowerCase() == ownerData?.ownerOf.toLowerCase() && (
+    {Boolean(address) && 
+      (
+        (
+          String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase()
+        ) 
+        || 
+          String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()
+      ) && (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-lg mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
-            {!Boolean(listingData?.message) && (
+            {Boolean(listingData) && (
               <>
                 {isCanceling ? (
                   <div className="w-full md:w-1/3 p-2">
@@ -413,7 +425,7 @@ const BurnCancel = ({nftContractData, listingData, nftCollection, thisNFTMarketA
               </div>
             )}
         </div>
-    )}
+      )}
     </>
   )
 }

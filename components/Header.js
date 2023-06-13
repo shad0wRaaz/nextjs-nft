@@ -2,6 +2,7 @@ import Link from 'next/link'
 import SearchBar from './SearchBar'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
+import { useRouter } from 'next/router'
 import { BiUser } from 'react-icons/bi'
 import { HiMenu } from 'react-icons/hi'
 import Notifications from './Notifications'
@@ -21,116 +22,123 @@ import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
 import { useAddress, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
-import { getMyCollections, getCoinPrices, getBlockedItems } from '../fetchers/SanityFetchers'
+import { getMyCollections, getCoinPrices, getBlockedItems, checkReferralUser } from '../fetchers/SanityFetchers'
 
 
 
 
 const Header = () => {
   
+  const router = useRouter();
+  const { w } = router.query;
   const address = useAddress();
-    const chainid = useChainId();
-    const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-    const { setCoinPrices, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections } = useSettingsContext();
-    const [isLogged, setIsLogged] = useState(false)
-    const { setMyUser, setMyCollections } = useUserContext()
-    const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
-    const [isAdmin, setIsAdmin] = useState(false);
+  const chainid = useChainId();
+  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
+  const { setCoinPrices, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections } = useSettingsContext();
+  const [isLogged, setIsLogged] = useState(false)
+  const { setMyUser, setMyCollections } = useUserContext()
+  const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
+  const [isAdmin, setIsAdmin] = useState(false);
   
-    const style = {
-      wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-50 flex justify-center`,
-      logoContainer: `flex items-center cursor-pointer m-0`,
-      logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
-      searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] h-[50px] w-full items-center border rounded-lg transition-all linear`,
-      searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
-      searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
-      headerItems: `flex items-center justify-end nonMobileMenu`,
-      headerItem: `px-4 cursor-pointer font-bold`,
-      headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
-      menuWrapper: 'relative',
-      menu: 'absolute',
-      menuText: `${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl p-2 cursor-pointer`,
-      walletAddress:
-        'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
-      balance:
-        'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
+  const style = {
+    wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-50 flex justify-center`,
+    logoContainer: `flex items-center cursor-pointer m-0`,
+    logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
+    searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] h-[50px] w-full items-center border rounded-lg transition-all linear`,
+    searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
+    searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
+    headerItems: `flex items-center justify-end nonMobileMenu`,
+    headerItem: `px-4 cursor-pointer font-bold`,
+    headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
+    menuWrapper: 'relative',
+    menu: 'absolute',
+    menuText: `${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl p-2 cursor-pointer`,
+    walletAddress:
+      'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
+    balance:
+      'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
+  }
+
+  const getAllAdminUsers = async () => {
+    const query = '*[_type == "settings"]{adminusers, referralcollections}';
+    const res = await config.fetch(query);
+    setReferralAllowedCollections(res[0].referralcollections); //save all collections that are allowed to have referral commission settings
+    return res[0].adminusers;
+  }
+
+  const { data: collectionData, status: collectionStatus } = useQuery(
+    ['mycollections', address],
+    getMyCollections(),
+    {
+      enabled: Boolean(address), //only run this query if address is provided
+      onError: () => {
+        toast.error('Error fetching collection data. Refresh and try again', errorToastStyle);
+      },
+      onSuccess: async (res) => {
+        setMyCollections(res);
+      },
     }
-  
-    const getAllAdminUsers = async () => {
-      const query = '*[_type == "settings"]{adminusers, referralcollections}';
-      const res = await config.fetch(query);
-      setReferralAllowedCollections(res[0].referralcollections); //save all collections that are allowed to have referral commission settings
-      return res[0].adminusers;
+  )
+
+  const { data: coinData, status: coinStatus } = useQuery(
+    ['coinPrices'],
+    getCoinPrices(),
+    {
+      enabled: true,
+      onError : () => {
+        toast.error('Error getting latest price from cypto market.', errorToastStyle)
+      },
+      onSuccess: (res) => {
+        setCoinPrices(res);
+      }
     }
-  
-    const { data: collectionData, status: collectionStatus } = useQuery(
-      ['mycollections', address],
-      getMyCollections(),
-      {
-        enabled: Boolean(address), //only run this query if address is provided
-        onError: () => {
-          toast.error('Error fetching collection data. Refresh and try again', errorToastStyle);
-        },
-        onSuccess: async (res) => {
-          setMyCollections(res);
-        },
-      }
+    ) 
+
+    const { data: latestNfts, status: latestNftsStatus } = useQuery(
+    ['latestNfts', selectedBlockchain],
+    getLatestNfts(24),
+    {
+      onError: () => {
+        toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
+      },
+      onSuccess: (res) => {
+        setLatestNfts(res);
+      },
+    }
     )
-  
-    const { data: coinData, status: coinStatus } = useQuery(
-      ['coinPrices'],
-      getCoinPrices(),
-      {
-        enabled: true,
-        onError : () => {
-          toast.error('Error getting latest price from cypto market.', errorToastStyle)
-        },
-        onSuccess: (res) => {
-          setCoinPrices(res);
-        }
-      }
-     ) 
-  
-     const { data: latestNfts, status: latestNftsStatus } = useQuery(
-      ['latestNfts', selectedBlockchain],
-      getLatestNfts(24),
-      {
-        onError: () => {
-          toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
-        },
-        onSuccess: (res) => {
-          setLatestNfts(res);
-        },
-      }
-     )
-  
-    const { data: marketData, status: marketStatus } = useQuery(
-      ['marketplace', selectedBlockchain],
-      getActiveListings(),
-      {
-        onError: () => {
-          toast.error(
-            'Error fetching marketplace data. Refresh and try again.',
-            errorToastStyle
-          );
-        },
-        onSuccess: (res) => {
-          setActiveListings(res);
-        },
-      }
-    )
-  
-    const { data:blockedItems, status:blockedItemStatus } = useQuery(
-        ["blockedItems"], 
-        getBlockedItems(), {
-            onSuccess: (res) => {
-              if(res){
-                setBlockedCollections(res[0]?.blockedcollections);
-                setBlockedNfts(res[0]?.blockednfts);
-              }
+
+  const { data: marketData, status: marketStatus } = useQuery(
+    ['marketplace', selectedBlockchain],
+    getActiveListings(),
+    {
+      onError: () => {
+        toast.error(
+          'Error fetching marketplace data. Refresh and try again.',
+          errorToastStyle
+        );
+      },
+      onSuccess: (res) => {
+        setActiveListings(res);
+      },
+    }
+  )
+
+  const { data:blockedItems, status:blockedItemStatus } = useQuery(
+      ["blockedItems"], 
+      getBlockedItems(), {
+          onSuccess: (res) => {
+            if(res){
+              setBlockedCollections(res[0]?.blockedcollections);
+              setBlockedNfts(res[0]?.blockednfts);
             }
-        }
-    );
+          }
+      }
+  );
+
+  useEffect(() => {
+    if(!w) return
+    localStorage.setItem('refWallet', w)
+  }, [w])
 
   useEffect(() => {
     if (!address) {
@@ -139,21 +147,79 @@ const Header = () => {
       setMyUser();
       return
     }
+    //check referrer exists or not
     ;(async () => {
-      const userDoc = {
-        _type: 'users',
-        _id: address,
-        userName: 'Unnamed',
-        walletAddress: address,
-        volumeTraded: 0,
-        verified: false,
-        refactivation: true,
-        tokensent: false,
-        payablelevel: 1,
+      const referrer = localStorage.getItem('refWallet');
+      let refExists;
+      if(referrer){
+        refExists = await checkReferralUser(referrer);
+      }
+
+      let userDoc;
+      if(!Boolean(refExists?.length > 0)){
+        userDoc = {
+          _type: 'users',
+          _id: address,
+          userName: 'Unnamed',
+          walletAddress: address,
+          volumeTraded: 0,
+          verified: false,
+          refactivation: true,
+          tokensent: false,
+          payablelevel: 1,
+        }
+      }else{
+        userDoc = {
+          _type: 'users',
+          _id: address,
+          userName: 'Unnamed',
+          walletAddress: address,
+          volumeTraded: 0,
+          verified: false,
+          refactivation: true,
+          tokensent: false,
+          payablelevel: 1,
+          referrer: { _type: 'reference', _ref: referrer}
+        }
+        //delete the referal info from storage as it is not needed anymore
+        // localStorage.removeItem('refWallet');
       }
 
       //saves new user if not present otherwise returns the w data
       const user = await config.createIfNotExists(userDoc);
+
+
+      if(Boolean(refExists?.length > 0)){
+        await config.getDocument(referrer)
+              .then(async (document) => {
+                const directs = document.directs;
+
+                let uniqueDirects = [...directs];
+                const isDuplicate = directs.some(reference => String(reference._ref).toLowerCase() == String(address).toLowerCase());
+                if(!isDuplicate){
+                  uniqueDirects = [
+                    ...uniqueDirects,
+                    {
+                      _type: 'reference',
+                      _ref: address,
+                      _key: address,
+                    }
+                  ]
+
+                  //add this user in sponsor's direct referrals , only after checking if the referral does not have it already
+        
+                if(directs.length != uniqueDirects.length) {
+
+                  await config
+                    .patch(referrer)
+                    .setIfMissing({ directs: [] })
+                    .set({ directs: uniqueDirects})
+                    .commit()
+                    .catch(err => console.log(err));
+                  }
+                }
+              });
+      }
       setMyUser(user);
       setIsLogged(true);
     })();
@@ -170,7 +236,7 @@ const Header = () => {
         //do nothing//clean up function
 
     }
-  }, [address])
+  }, [address]);
 
   useEffect(() => {
     if(!chainid) return

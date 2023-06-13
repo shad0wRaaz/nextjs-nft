@@ -1,23 +1,24 @@
-import { useActiveChain, useAddress, useSigner } from '@thirdweb-dev/react';
+import axios from 'axios';
 import Script from 'next/script'
 import { v4 as uuidv4 } from 'uuid'
-import React, { useEffect, useState } from 'react'
-import { MdClose, MdDeleteOutline, MdOutlineSell } from 'react-icons/md';
-import { RiAuctionLine } from 'react-icons/ri';
-import { useThemeContext } from '../../contexts/ThemeContext';
-import { useSettingsContext } from '../../contexts/SettingsContext';
-import 'react-datepicker/dist/react-datepicker.css'
-import DatePicker from 'react-datepicker'
 import toast from 'react-hot-toast'
-import { config } from '../../lib/sanityClient'
-import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../icons/CustomIcons';
-import { getImagefromWeb3 } from '../../fetchers/s3';
-import axios from 'axios';
-import { useUserContext } from '../../contexts/UserContext';
-import { activateReferral } from '../../mutators/SanityMutators'
-import { useMutation } from 'react-query';
 import { useRouter } from 'next/router';
+import DatePicker from 'react-datepicker'
+import { useMutation } from 'react-query';
+import { differenceInSeconds } from 'date-fns';
+import { RiAuctionLine } from 'react-icons/ri';
+import { config } from '../../lib/sanityClient'
+import React, { useEffect, useState } from 'react'
+import 'react-datepicker/dist/react-datepicker.css'
+import { getImagefromWeb3 } from '../../fetchers/s3';
+import { useUserContext } from '../../contexts/UserContext';
+import { useThemeContext } from '../../contexts/ThemeContext';
+import { activateReferral } from '../../mutators/SanityMutators'
+import { useSettingsContext } from '../../contexts/SettingsContext';
+import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { useAddress, useChain, useSigner } from '@thirdweb-dev/react';
+import { MdClose, MdDeleteOutline, MdOutlineSell } from 'react-icons/md';
+import { IconAvalanche, IconBNB, IconEthereum, IconLoading, IconPolygon } from '../icons/CustomIcons';
 
 const blockchainCurrency = {
     "80001" : {currency: "MATIC", icon: <IconPolygon />, DATABASE_COIN_NAME: "maticprice"},
@@ -31,28 +32,28 @@ const blockchainCurrency = {
     }
 
 const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
-    const router = useRouter();
-    const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-    const activeChain = useActiveChain();
-    const address = useAddress();
     const signer = useSigner();
+    const router = useRouter();
+    const address = useAddress();
+    const activeChain = useChain();
     const { myUser } = useUserContext();
-    const { coinPrices, HOST, blockchainName } = useSettingsContext();
+    const [endDate, setEndDate] = useState()
     const [isOpen, setIsOpen] = useState(false)
-    const [listingPrice, setListingPrice] = useState(0)
+    const [startDate, setStartDate] = useState()
     const [buyoutPrice, setBuyoutPrice] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
+    const [listingPrice, setListingPrice] = useState(0)
     const [reservePrice, setReservePrice] = useState(0)
+    const [includedNfts, setIncludedNfts] = useState([]);
+    const [endAuctionDate, setAuctionEndDate] = useState()
+    const [startAuctionDate, setAuctionStartDate] = useState()
     const [listingDuration, setListingDuration] = useState('')
     const [auctionDuration, setAuctionDuration] = useState('')
-    const [startDate, setStartDate] = useState()
-    const [endDate, setEndDate] = useState()
-    const [startAuctionDate, setAuctionStartDate] = useState()
-    const [endAuctionDate, setAuctionEndDate] = useState()
-    const [isLoading, setIsLoading] = useState(false)
-    const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
-    const [directorauction, setdirectorauction] = useState(true);
     const [batchListingData, setBatchListingData] = useState([]);
-    const [includedNfts, setIncludedNfts] = useState([]);
+    const [directorauction, setdirectorauction] = useState(true);
+    const { coinPrices, HOST, blockchainName } = useSettingsContext();
+    const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+    const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
 
     //include only non-listed nfts to be in the list
     useEffect(() => {
@@ -72,7 +73,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
     const style = {
         canvasMenu:
-          'bg-slate-900 h-[100vh] shadow-xl px-[2rem] overflow-y-scroll z-20 text-white',
+          'bg-slate-900 h-[100vh] shadow-xl px-[2rem] overflow-y-auto z-20 text-white',
         blur: 'filter: blur(1px)',
         closeButton:
             'absolute transition duration-[300] top-[20px] right-[20px] rounded-md bg-[#ef4444] text-white p-1 hover:opacity-70 z-30',
@@ -95,7 +96,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
     else if (t == "56" || t == "97") { setThisNFTBlockchainCurrency(coinPrices?.bnbprice); }
     else if(t == "43113" || t == "43114") { setThisNFTBlockchainCurrency(coinPrices?.avaxprice); }
 
-    if(activeChain.chainId != t) {
+    if(activeChain.chainId.toString() != t) {
         toast.error('Wallet is connected to wrong chain. Switching network now.', errorToastStyle);
         return;
         // switchNetwork(Number(blockchainId[thisNFTblockchain]));
@@ -116,19 +117,34 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
         }
       );
 
+    useEffect(() => {
+    if (!startDate || !endDate) return
+    setListingDuration(differenceInSeconds(endDate, startDate));
+
+    return() =>{ 
+        //do nothing
+    }
+    }, [startDate, endDate])
+
+    useEffect(() => {
+    if (!startAuctionDate || !endAuctionDate) return
+    setAuctionDuration(differenceInSeconds(endAuctionDate, startAuctionDate));
+
+    return() =>{ 
+        //do nothing
+    }
+    }, [startAuctionDate, endAuctionDate])
+
     const directListItem = async (e, toastHandler = toast, sanityClient = config) => {
         if(!listingPrice){
             toastHandler.error('Listing price not set', errorToastStyle);
             return;
         }
         if(!collectionData){
-            toastHandler.error('NFT Collection could not be location', errorToastStyle);
+            toastHandler.error('NFT Collection could not be located', errorToastStyle);
             return;
         }
-        // if(batchListingData.length == 0){
-        //     toastHandler.error("Error building listing data", errorToastStyle);
-        //     return;
-        // }
+
         if(includedNfts.length == 0){
             toastHandler.error("No NFTs are seleted to list", errorToastStyle);
             return;
@@ -162,15 +178,19 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             const sdk = new ThirdwebSDK(signer);
             const contract = await sdk.getContract(marketContractAddress, "marketplace");
             
-            const tx = await contract?.direct.createListingsBatch(listings);
-            console.log(tx);
+            // const tx = await contract?.direct.createListingsBatch(listings);
+            const prep_tx = await contract?.direct.createListingsBatch.prepare(listings);
+            const estimatedGasLimit = await prep_tx.estimateGasLimit();
+            prep_tx.setGasLimit(estimatedGasLimit * 2)
+            const tx = await prep_tx.execute();
 
             if(collectionData.floorPrice > Number(listingPrice)){
                 //update Floor Price
                 await sanityClient
                 .patch(collectionData?._id)
                 .set({ 'floorPrice': Number(listingPrice)})
-                .commit();
+                .commit()
+                .catch(err => console.log(err));
             }
 
             //saving transactions in database
@@ -188,7 +208,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             //     to: tx[0].receipt.to,
             //     event: 'List',
             //     price: listingPrice.toString(),
-            //     chainId: activeChain.chainId,
+            //     chainId: activeChain.chainId.toString(),
             //     dateStamp: new Date(),
             //     }
             //     console.log(doc)
@@ -196,11 +216,11 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
             //update listing data
             ;(async() => {
-                await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId]}`).finally(() => {
-                toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
-                router.reload(window.location.pathname);
-                router.replace(router.asPath);
-                }).catch(err => {console.log(err)})
+                await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                    router.reload(window.location.pathname);
+                    router.replace(router.asPath);
+                    toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                }).catch(err => {console.log(err)});
             })()
 
             //activate referral system, only if not activated
@@ -213,8 +233,108 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             setIsLoading(false);
         }
     }
-    
-    const auctionListItem = () => {}
+
+    const auctionListItem = async (e, toastHandler = toast, sanityClient = config) => 
+    {
+        if (!buyoutPrice) {
+            toastHandler.error('Buyout price not set.', errorToastStyle)
+            return
+          }
+          if (!reservePrice) {
+            toastHandler.error('Reserve price not set.', errorToastStyle)
+            return
+          }
+        if(!collectionData){
+            toastHandler.error('NFT Collection could not be located', errorToastStyle);
+            return;
+        }
+
+        if(includedNfts.length == 0){
+            toastHandler.error("No NFTs are seleted to list", errorToastStyle);
+            return;
+        }
+
+        setIsLoading(true);
+        //generate listing metadata
+
+        let auction = [];
+        if(includedNfts.length > 0){
+            includedNfts.map(nft => {
+                const listing = {
+                    assetContractAddress: collectionData.contractAddress,
+                    tokenId: nft.tokenId,
+                    startTimestamp: new Date(),
+                    listingDurationInSeconds: Number(auctionDuration) || 31449600,
+                    quantity: 1,
+                    currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                    buyoutPricePerToken: buyoutPrice,
+                    reservePricePerToken: reservePrice,
+                  }
+                auction.push(listing);
+            });
+        }
+
+        if(auction.length == 0){
+            toastHandler.error('No NFT is selected to auction', errorToastStyle);
+            return;
+        }
+
+        try{
+            const sdk = new ThirdwebSDK(signer);
+            const contract = await sdk.getContract(marketContractAddress, "marketplace");
+            
+            const prep_tx = await contract?.auction.createListingsBatch.prepare(auction);
+            const estimatedGasLimit = await prep_tx.estimateGasLimit();
+            prep_tx.setGasLimit(estimatedGasLimit * 2)
+            const tx = await prep_tx.execute();
+
+            // if(collectionData.floorPrice > Number(listingPrice)){
+            //     //update Floor Price
+            //     await sanityClient
+            //     .patch(collectionData?._id)
+            //     .set({ 'floorPrice': Number(listingPrice) })
+            //     .commit();
+            // }
+
+            //saving transactions in database
+            // const newItems = includedNfts?.map(item => {
+            //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
+            //     return itemref;
+            //   });
+
+            // const doc = {
+            //     _type: 'activities',
+            //     _id: tx[0].receipt.transactionHash, 
+            //     transactionHash: tx[0].receipt.transactionHash,
+            //     nftItems: newItems,
+            //     from: tx[0].receipt.from,
+            //     to: tx[0].receipt.to,
+            //     event: 'List',
+            //     price: listingPrice.toString(),
+            //     chainId: activeChain.chainId.toString(),
+            //     dateStamp: new Date(),
+            //     }
+            //     console.log(doc)
+            //     await sanityClient.createIfNotExists(doc)
+
+            //update listing data
+            ;(async() => {
+                await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                router.reload(window.location.pathname);
+                router.replace(router.asPath);
+                }).catch(err => {console.log(err)})
+            })()
+
+            //activate referral system, only if not activated
+            if(!myUser?.refactivation){
+                activate(address);
+            }
+        }catch(error){
+            console.log(error)
+            setIsLoading(false);
+        }
+    }
     
     // useEffect(() => {
     //     if(!nfts) return
@@ -249,7 +369,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
         <div className="flex flex-col md:flex-row">
             <div className="w-full lg:w-1/3">
                 <span>NFTs to be listed</span>
-                <div className=" max-h-[520px] overflow-scroll pt-3">
+                <div className=" max-h-[520px] overflow-auto pt-3">
                     {includedNfts.length > 0 && includedNfts.map((nft, index) => (
                         <div key={index}>
                         {Boolean(nft.metadata) && (
@@ -273,37 +393,50 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             <div className="relative flex md:w-full  lg:w-2/3 flex-col gap-5 mt-5 md:mt-0">
                 Choose type of listing
                 <div className="flex flex-row gap-4">
-                <div
-                    className={`directListing w-fit flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border p-2 ${directorauction ? 'bg-slate-600 border-slate-500' :'border-slate-700'} transition hover:bg-slate-700`}
-                    onClick={() => setdirectorauction(true)}
-                >
-                    <MdOutlineSell fontSize="25px" />
-                    <span className="text-md text-white">Direct Listing</span>
-                </div>
-                <div
-                    className={`autionListing flex w-fit grow cursor-pointer items-center justify-center gap-3 rounded-xl border p-2 ${!directorauction ? 'bg-slate-600 border-slate-500' :'border-slate-700'} transition hover:bg-slate-700`}
-                    onClick={() => setdirectorauction(false)}
-                >
-                    <RiAuctionLine fontSize="25px" /> Auction Listing
-                </div>
+                    <div
+                        className={`directListing w-fit flex grow cursor-pointer items-center justify-center gap-3 rounded-xl border p-2 
+                        ${directorauction ? 
+                            (dark
+                            ? 'border-slate-600 bg-slate-700 hover:bg-slate-600 text-neutral-200'
+                            : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90 text-sky-400')
+                            : (dark ? 'border-slate-700 hover:bg-slate-600 text-neutral-200' : 'border-neutral-200 text-neutral-500 hover:bg-sky-200/90 hover:text-sky-400 hover:border-sky-200/70')} 
+                        transition`}
+                        onClick={() => setdirectorauction(true)}
+                        >
+                        <MdOutlineSell fontSize="20px" />
+                        <span className="text-md">Direct Listing</span>
+                    </div>
+                    <div
+                        className={`autionListing flex w-fit grow cursor-pointer items-center justify-center gap-3 rounded-xl border p-2 
+                        ${!directorauction ? 
+                            (dark
+                            ? 'border-slate-600 bg-slate-700 hover:bg-slate-600 text-neutral-200'
+                            : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90 text-sky-400')
+                            : (dark ? 'border-slate-700 hover:bg-slate-600 text-neutral-200' : 'border-neutral-200 text-neutral-500 hover:bg-sky-200/90 hover:text-sky-400 hover:border-sky-200/70')} 
+                        transition`}
+                        onClick={() => setdirectorauction(false)}
+                        >
+                        <RiAuctionLine fontSize="20px" /> Auction Listing
+                    </div>  
                 </div>
                 {directorauction ? (
                     <div className="w-full">
                         <div className="">
                         <p className={style.label}>Price*</p>
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex flex-row items-center gap-2 relative">
+                            <span className="absolute top-2.5 left-3">{blockchainCurrency[collectionData.chainId].icon}</span>
                             <input
-                            className={style.input}
+                            className={style.input + ' pl-10'}
                             style={{ margin: '0' }}
                             type="number"
                             name="listingPrice"
                             value={listingPrice}
                             onChange={(e) => setListingPrice(e.target.value)}
                             />
-                            <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3 py-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
+                            {/* <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3 py-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
                                 {blockchainCurrency[collectionData.chainId].icon}
                                 {blockchainCurrency[collectionData.chainId].currency}
-                            </div>
+                            </div> */}
                         </div>
                         <div className="p-2 text-sm">
                             ≈ $ {parseFloat(listingPrice * thisNFTBlockchainCurrency).toFixed(2)} 
@@ -395,19 +528,20 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                     <div className="flex flex-row flex-wrap justify-between">
                         <div className="w-full">
                             <p className={style.label}>Buyout Price*</p>
-                            <div className="flex flex-row items-center gap-2">
-                            <input
-                                className={style.input + ' md:w-20'}
-                                style={{ margin: '0' }}
-                                type="number"
-                                name="buyoutPrice"
-                                value={buyoutPrice}
-                                onChange={(e) => setBuyoutPrice(e.target.value)}
-                            />
-                            <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
-                                {blockchainCurrency[collectionData.chainId].icon}
-                                {blockchainCurrency[collectionData.chainId].currency}
-                            </div>
+                            <div className="flex flex-row items-center gap-2 relative">
+                                <span className="absolute top-2.5 left-3">{blockchainCurrency[collectionData.chainId].icon}</span>
+                                <input
+                                    className={style.input + ' md:w-20 pl-10'}
+                                    style={{ margin: '0' }}
+                                    type="number"
+                                    name="buyoutPrice"
+                                    value={buyoutPrice}
+                                    onChange={(e) => setBuyoutPrice(e.target.value)}
+                                />
+                                {/* <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
+                                    {blockchainCurrency[collectionData.chainId].icon}
+                                    {blockchainCurrency[collectionData.chainId].currency}
+                                </div> */}
                             </div>
                             <div className="p-2 text-sm">
                             ≈ $ {parseFloat(buyoutPrice * thisNFTBlockchainCurrency).toFixed(2)} 
@@ -417,82 +551,83 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
                         <div className="w-full">
                             <p className={style.label}>Minimum Bidding Price*</p>
-                            <div className="flex flex-row items-center gap-2">
-                            <input
-                                className={style.input + ' md:w-[140px]'}
-                                style={{ margin: '0' }}
-                                type="number"
-                                name="minimumPrice"
-                                value={reservePrice}
-                                onChange={(e) => setReservePrice(e.target.value)}
-                            />
-                            <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
-                                {blockchainCurrency[collectionData.chainId].icon}
-                                {blockchainCurrency[collectionData.chainId].currency}
-                            </div>
+                            <div className="flex flex-row items-center gap-2 relative">
+                                <span className="absolute top-2.5 left-3">{blockchainCurrency[collectionData.chainId].icon}</span>
+                                <input
+                                    className={style.input + ' md:w-[140px] pl-10'}
+                                    style={{ margin: '0' }}
+                                    type="number"
+                                    name="minimumPrice"
+                                    value={reservePrice}
+                                    onChange={(e) => setReservePrice(e.target.value)}
+                                />
+                                {/* <div className={`text-sm inline-flex justify-center items-center rounded-md ${dark ? 'bg-slate-700' : 'bg-neutral-100'} p-3.5 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
+                                    {blockchainCurrency[collectionData.chainId].icon}
+                                    {blockchainCurrency[collectionData.chainId].currency}
+                                </div> */}
                             </div>
                         </div>
                     </div>
 
                     <div className="pt-4">
-                    <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
-                    <p className={style.smallText}>List this NFT for only specified period of time.</p>
-                    <div className="flex flex-row flex-wrap items-center mt-4">
-                        <div className="relative w-full md:w-1/2 p-2">
-                        <div className="pointer-events-none absolute inset-y-2 left-4 z-10 flex h-[40px] items-center pl-1">
-                            From:
-                        </div>
-                        <div className="pointer-events-none absolute inset-y-2 right-4 z-10 flex h-[40px] items-center pl-1">
-                            <svg
-                            className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                            >
-                            <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                            ></path>
-                            </svg>
-                        </div>
+                        <p className={style.label}>Duration <span className="text-xs opacity-40">(Optional)</span></p>
+                        <p className={style.smallText}>List this NFT for only specified period of time.</p>
+                        <div className="flex flex-row flex-wrap items-center mt-4">
+                            <div className="relative w-full md:w-1/2 p-2">
+                            <div className="pointer-events-none absolute inset-y-2 left-4 z-10 flex h-[40px] items-center pl-1">
+                                From:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-2 right-4 z-10 flex h-[40px] items-center pl-1">
+                                <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                                >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                    clipRule="evenodd"
+                                ></path>
+                                </svg>
+                            </div>
 
-                        <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={startAuctionDate}
-                            minDate={new Date()}
-                            onChange={(date) => setAuctionStartDate(date)}
-                            className={`opacity-1 block w-full cursor-pointer ring-0 outline-none rounded-lg ${dark? 'bg-slate-700 hover:bg-slate-600' :'bg-neutral-100 hover:bg-neutral-200'} p-2.5 pl-[4rem] text-slate-200 sm:text-sm`}
-                        />
-                        </div>
-                        <div className="relative w-full md:w-1/2 p-2">
-                        <div className="pointer-events-none absolute inset-y-2 left-4 z-10 flex h-[40px] items-center pl-1">
-                            To:
-                        </div>
-                        <div className="pointer-events-none absolute inset-y-2 right-4 z-10 flex h-[40px] items-center pl-1">
-                            <svg
-                            className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                            >
-                            <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                            ></path>
-                            </svg>
-                        </div>
+                            <DatePicker
+                                dateFormat="dd/MM/yyyy HH:mm:SS"
+                                selected={startAuctionDate}
+                                minDate={new Date()}
+                                onChange={(date) => setAuctionStartDate(date)}
+                                className={`opacity-1 block w-full cursor-pointer ring-0 outline-none rounded-lg ${dark? 'bg-slate-700 hover:bg-slate-600' :'bg-neutral-100 hover:bg-neutral-200'} p-2.5 pl-[4rem] text-slate-200 sm:text-sm`}
+                            />
+                            </div>
+                            <div className="relative w-full md:w-1/2 p-2">
+                            <div className="pointer-events-none absolute inset-y-2 left-4 z-10 flex h-[40px] items-center pl-1">
+                                To:
+                            </div>
+                            <div className="pointer-events-none absolute inset-y-2 right-4 z-10 flex h-[40px] items-center pl-1">
+                                <svg
+                                className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                                >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                    clipRule="evenodd"
+                                ></path>
+                                </svg>
+                            </div>
 
-                        <DatePicker
-                            dateFormat="dd/MM/yyyy HH:mm:SS"
-                            selected={endAuctionDate}
-                            minDate={startAuctionDate}
-                            onChange={(date) => setAuctionEndDate(date)}
-                            className={`opacity-1 block w-full cursor-pointer ring-0 outline-none rounded-lg ${dark? 'bg-slate-700 hover:bg-slate-600' :'bg-neutral-100 hover:bg-neutral-200'} p-2.5 pl-[4rem] text-slate-200 sm:text-sm`}
-                        />
+                            <DatePicker
+                                dateFormat="dd/MM/yyyy HH:mm:SS"
+                                selected={endAuctionDate}
+                                minDate={startAuctionDate}
+                                onChange={(date) => setAuctionEndDate(date)}
+                                className={`opacity-1 block w-full cursor-pointer ring-0 outline-none rounded-lg ${dark? 'bg-slate-700 hover:bg-slate-600' :'bg-neutral-100 hover:bg-neutral-200'} p-2.5 pl-[4rem] text-slate-200 sm:text-sm`}
+                            />
+                            </div>
                         </div>
-                    </div>
                     </div>
 
                     {/* <div className="flex justify-start pt-4 gap-3">
