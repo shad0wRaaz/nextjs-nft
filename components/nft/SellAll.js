@@ -59,7 +59,9 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
     useEffect(() => {
         if(!nfts) return;
 
-        const nonlistedNfts = nfts.filter(nft => 
+        const myNfts = nfts.filter(nft => String(nft?.ownerOf).toLowerCase() == String(address).toLowerCase());
+
+        const nonlistedNfts = myNfts.filter(nft => 
         {
             const returndata = marketData.some(mdata => (mdata.assetContractAddress.toLowerCase() == nft.tokenAddress.toLowerCase() && mdata.asset.id == nft.tokenId));
             return !returndata;
@@ -181,7 +183,8 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             // const tx = await contract?.direct.createListingsBatch(listings);
             const prep_tx = await contract?.direct.createListingsBatch.prepare(listings);
             const estimatedGasLimit = await prep_tx.estimateGasLimit();
-            prep_tx.setGasLimit(estimatedGasLimit * 2)
+            prep_tx.setGasLimit(1000000)
+
             const tx = await prep_tx.execute();
 
             if(collectionData.floorPrice > Number(listingPrice)){
