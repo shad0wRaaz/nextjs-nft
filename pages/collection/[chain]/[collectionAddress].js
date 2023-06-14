@@ -43,6 +43,9 @@ import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@t
 import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
 import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
+import axios from 'axios'
+
+const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
 const chainIcon = {
   '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
@@ -56,12 +59,14 @@ const chainIcon = {
   '56': <IconBNB width="30px" height="30px"/>,
 }
 
-const CollectionDetails = () => {
+const CollectionDetails = (props) => {
+
   const router = useRouter();
   const bannerRef = useRef();
   const qc = useQueryClient();
   const activeNetwork = useChain();
-  const { chain, collectionAddress } = router.query;
+  // const { chain, collectionAddress } = router.query;
+  const { chain, collectionAddress, collectionData } = props;
   const [owners, setOwners] = useState();
   const [showFilter, setShowFilter] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -69,10 +74,10 @@ const CollectionDetails = () => {
   const { myUser, queryStaleTime } = useUserContext();
   const [showUnlisted, setShowUnlisted] = useState(false);
   const [showPaymentModal, setPaymentModal] = useState(false);
-  const { blockchainName, marketplace, chainExplorer, referralAllowedCollections, blockchainIdFromName, blockedCollections } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
   const [properties, setProperties] = useState([]);
+  const { blockchainName, marketplace, chainExplorer, referralAllowedCollections, blockchainIdFromName, blockedCollections } = useSettingsContext();
   const { selectedProperties, setSelectedProperties } = useCollectionFilterContext();
   const [filteredNftData, setFilteredNftData] = useState();
   const [isBlocked, setIsBlocked] = useState(false);
@@ -160,30 +165,30 @@ const CollectionDetails = () => {
   }, [referralAllowedCollections])
 
   //collections' sanity data
-  const { data: collectionData, status: collectionStatus } = useQuery(
-    ['collection', collectionAddress],
-    getNewNFTCollection(blockchainIdFromName[chain]),
-    {
-      enabled: Boolean(collectionAddress),
-      onError: () => {
-        toast.error(
-          'Error fetching collection data. Refresh and try again.',
-          errorToastStyle
-        )
-      },
-      onSuccess: (res) => {
-        // console.log(res)
-        if(res){
-          const nowtime = new Date();
-          const datediff = nowtime - new Date(res.revealtime);
-          if(datediff > 0){ setRevealed(true); }
-          setCollectionId(res._id);
-          setShowUnlisted(res?.showUnlisted);
-          setThisCollectionMarketAddress(marketplace[res.chainId]);
-        }
-      },
-    }
-  );
+  // const { data: collectionData, status: collectionStatus } = useQuery(
+  //   ['collection', collectionAddress],
+  //   getNewNFTCollection(blockchainIdFromName[chain]),
+  //   {
+  //     enabled: Boolean(collectionAddress),
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching collection data. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     },
+  //     onSuccess: (res) => {
+  //       // console.log(res)
+  //       if(res){
+  //         const nowtime = new Date();
+  //         const datediff = nowtime - new Date(res.revealtime);
+  //         if(datediff > 0){ setRevealed(true); }
+  //         setCollectionId(res._id);
+  //         setShowUnlisted(res?.showUnlisted);
+  //         setThisCollectionMarketAddress(marketplace[res.chainId]);
+  //       }
+  //     },
+  //   }
+  // );
 
   //collections' contract data
 
@@ -208,6 +213,14 @@ const CollectionDetails = () => {
         setExternalLink(collectionData?.external_link)
       }
     }
+
+    const nowtime = new Date();
+    const datediff = nowtime - new Date(collectionData.revealtime);
+    if(datediff > 0){ setRevealed(true); }
+    setCollectionId(collectionData._id);
+    setShowUnlisted(collectionData?.showUnlisted);
+    setThisCollectionMarketAddress(marketplace[collectionData.chainId]);
+
       return() => {
         //do nothing, clean up function
       }
@@ -468,7 +481,7 @@ const CollectionDetails = () => {
 //count down timer design renderer
 const renderer = ({ days, hours, minutes, seconds, completed }) => {
   if(completed){
-    window.location.reload(false);
+    // window.location.reload(false);
   }
   return (
     <div className="py-9">
@@ -602,7 +615,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           </div>
         )}
 
-        {!isBlocked && collectionStatus == 'success' && Boolean(collectionData) && (
+        {!isBlocked && Boolean(collectionData) && (
           <div className="w-full">
             <div className="relative h-96 w-full md:h-60 2xl:h-96">
               <div className="absolute inset-0" ref={bannerRef}>
@@ -661,7 +674,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     </div>
                   </div>
 
-                  {Boolean(collectionData?.creator.walletAddress) && (
+                  {Boolean(collectionData?.creator?.walletAddress) && (
                     <div className={`${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
                       <a href={`/user/${collectionData?.creator?.walletAddress}`}>
                         <div className="flex my-4">
@@ -1223,4 +1236,31 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 }
 
 export default CollectionDetails
+
+export async function getServerSideProps(context){
+  const {chain, collectionAddress } = context.params;
+  const blockchainIdFromName = { 
+    'mainnet' : '1',
+    'goerli': '5',
+    'avalanche': '43114',
+    'avalanche-fuji': '43113',
+    'polygon': '137',
+    'mumbai': '80001',
+    'binance': '56',
+    'binance-testnet': '97',
+    'arbitrum-goerli': '421563',
+    'arbitrum': '421564',
+  }
+  const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${collectionAddress}`;
+
+  const collectionData = await axios.get(fetchPoint);
+
+  return {
+    props : {
+      chain,
+      collectionAddress,
+      collectionData: collectionData?.data
+    }
+  }
+}
 

@@ -490,10 +490,10 @@ app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
 });
 
 //This will return Sanity Database data of an NFT
-app.get('/api/infura/getCollectionSanityData/:chain/:contractAddress/', async(req, res) => {  
-  const {chain, contractAddress} = req.params;
+app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(req, res) => {  
+  const {chainId, contractAddress} = req.params;
 
-  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}"] {...}`;
+  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainId}"] {...}`;
   const sanityData = await config.fetch(query);
   if(sanityData.length > 0){
     return res.status(200).json(sanityData[0]);
