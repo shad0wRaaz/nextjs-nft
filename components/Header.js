@@ -151,9 +151,13 @@ const Header = () => {
     ;(async () => {
       const referrer = localStorage.getItem('refWallet');
       let refExists;
+      let userExists;
       if(referrer){
         refExists = await checkReferralUser(referrer);
+        userExists = await checkReferralUser(address);
       }
+
+
 
       let userDoc;
       if(!Boolean(refExists?.length > 0)){
@@ -184,9 +188,21 @@ const Header = () => {
         //delete the referal info from storage as it is not needed anymore
         // localStorage.removeItem('refWallet');
       }
+      //if user already exists and refWallet is present save the referrer
+      if(Boolean(userExists?.length > 0)){
+        await config
+              .patch(address)
+              .set({ referrer: { _type: 'reference', _ref: referrer } })
+              .commit()
+              .finally(() => localStorage.removeItem('refWallet'))
+              .catch(err => console.log(err));
+        setMyUser(userExists[0]);
+      }else{
+        //saves new user if not present otherwise returns the w data
+        const user = await config.createIfNotExists(userDoc);
+        setMyUser(user);
 
-      //saves new user if not present otherwise returns the w data
-      const user = await config.createIfNotExists(userDoc);
+      }
 
 
       if(Boolean(refExists?.length > 0)){
@@ -215,12 +231,13 @@ const Header = () => {
                     .setIfMissing({ directs: [] })
                     .set({ directs: uniqueDirects})
                     .commit()
+                    .finally(() => { localStorage.removeItem('refWallet')})
                     .catch(err => console.log(err));
                   }
                 }
               });
       }
-      setMyUser(user);
+      
       setIsLogged(true);
     })();
 

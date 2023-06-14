@@ -10,7 +10,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
     let seoSiteName = Boolean(sitename) ? sitename : 'Nuva NFT';
     let seoDescription = Boolean(description) ? description : 'Nuva NFT is one of the largest NFT marketplace integrated with Ethereum, Binance Smart Chain, Polygon and Avalanche.';
     let seoImage = Boolean(image) ? image : 'https://nuvanft.io/assets/sharingimage.webp';
-  console.log(seoImage)
+
   return (
     <Head>
         <title>{seoTitle + "Nuva NFT"}</title>
