@@ -214,9 +214,15 @@ const CollectionDetails = (props) => {
       }
     }
 
-    const nowtime = new Date();
-    const datediff = nowtime - new Date(collectionData.revealtime);
-    if(datediff > 0){ setRevealed(true); }
+    if(Boolean(collectionData?.revealtime)){
+      const nowtime = new Date();
+      const datediff = nowtime - new Date(collectionData.revealtime);
+      if(datediff > 0){ setRevealed(true); }
+      else { setRevealed(false);}
+    }else{
+      setRevealed(true);
+    }
+
     setCollectionId(collectionData._id);
     setShowUnlisted(collectionData?.showUnlisted);
     setThisCollectionMarketAddress(marketplace[collectionData.chainId]);
@@ -481,7 +487,7 @@ const CollectionDetails = (props) => {
 //count down timer design renderer
 const renderer = ({ days, hours, minutes, seconds, completed }) => {
   if(completed){
-    // window.location.reload(false);
+    window.location.reload(false);
   }
   return (
     <div className="py-9">
