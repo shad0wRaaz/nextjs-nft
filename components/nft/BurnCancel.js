@@ -368,7 +368,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
         || 
           String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()
       ) && (
-        <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-lg mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
+        <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
             {Boolean(listingData) && (
               <>
                 {isCanceling ? (
