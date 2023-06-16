@@ -1,11 +1,13 @@
 import { useRef } from 'react'
+import { ethers } from 'ethers'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
 import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
 import { BsImages } from 'react-icons/bs'
+import Header from '../../components/Header'
+import Footer from '../../components/Footer'
 import { RadioGroup } from '@headlessui/react'
-import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { config } from '../../lib/sanityClient'
 import toast, { Toaster } from 'react-hot-toast'
 import { getImagefromWeb3 } from '../../fetchers/s3'
@@ -14,13 +16,11 @@ import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useUserContext } from '../../contexts/UserContext'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import React, { useState, useEffect, useReducer } from 'react'
-import { useSettingsContext } from '../../contexts/SettingsContext'
-import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai'
-import { useAddress, useSigner, ConnectWallet, useActiveChain } from '@thirdweb-dev/react'
 import { IconLoading } from '../../components/icons/CustomIcons'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
-import { ethers } from 'ethers'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from '@thirdweb-dev/sdk'
+import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai'
+import { useAddress, useSigner, ConnectWallet, useChain } from '@thirdweb-dev/react'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -90,7 +90,8 @@ const batchupload = () => {
   const { errorToastStyle, successToastStyle, dark } = useThemeContext();
   const [thisChainCollection, setThisChainCollection] = useState([]);
   const [propertyKey, setPropertyKey] = useState(['']);
-  const connectedChain = useActiveChain();
+  const connectedChain = useChain();
+  const { blockchainName } = useSettingsContext();
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
@@ -103,7 +104,6 @@ const batchupload = () => {
       //clean up function
     }
   }, [myCollections, connectedChain])
-
   const address = useAddress();
   const [sanityCollection, setSanityCollection] = useState([]); //this is for getting all collections from sanity
   const [selectedCollection, setSelectedCollection] = useState({contractAddress: ''});
@@ -112,7 +112,7 @@ const batchupload = () => {
   const [batchMetaData, setBatchMetaData] = useState([]);
   const [category, setCategory] = useState('');
   const [propertyTraits, setPropertyTraits] = useState([{ propertyKey: '', propertyValue: ''}])
-
+  
   const style = {
     wrapper: '',
     pageBanner: 'pb-[4rem] pt-[10rem] gradSky mb-[2rem]',
@@ -166,12 +166,36 @@ const batchupload = () => {
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
     e.preventDefault();
 
+    //get final properties and then add it to batchmetadata
+    if (!files) {
+      toastHandler.error('Fields marked * are required', errorToastStyle)
+      return
+    }
+    if (selectedCollection.contractAddress == '') {
+      toastHandler.error('Collection is not selected. Select a collection to mint this NFT to.', errorToastStyle)
+      return
+    }
+    
+    if (!(nftCollection)) {
+      //Some issue is there
+      toastHandler.error('Error in minting. Cannot find NFT Collection', errorToastStyle)
+      return
+    }
+    if(!address){
+      toastHandler.error('Wallet is not connected.', errorToastStyle);
+      return;
+    }
+    
     if(!files || files?.length == 0){
       toastHandler.error("Images are not uploaded", errorToastStyle);
       return;
     }
     const f = Array.from(files);
-
+    
+    if(propertyKey.length == 1 && propertyKey[0] == ''){
+      toastHandler.error('No properties is defined. Add at least one property.', errorToastStyle);
+      return;
+    }
     //build up traits array of all uploaded files
     let itemArray = [];
     let count = 0;
@@ -198,31 +222,11 @@ const batchupload = () => {
         properties: {
           traits: traitsArray[0],
           category: category,
-          itemtype: 'image',
-          tokenid: uuidv4(),
         },
       })
     }
 
-    //get final properties and then add it to batchmetadata
-    if (!files) {
-      toastHandler.error('Fields marked * are required', errorToastStyle)
-      return
-    }
-    if (selectedCollection.contractAddress == '') {
-      toastHandler.error('Collection is not selected. Select a collection to mint this NFT to.', errorToastStyle)
-      return
-    }
     
-    if (!(nftCollection)) {
-      //Some issue is there
-      toastHandler.error('Error in minting. Cannot find NFT Collection', errorToastStyle)
-      return
-    }
-    if(!address){
-      toastHandler.error('Wallet is not connected.', errorToastStyle);
-      return;
-    }
     
     try {
       setIsMinting(true);
@@ -230,80 +234,93 @@ const batchupload = () => {
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
 
       // console.log(itemArray)
-      const batchData = itemArray.map(item => {
-        const doc = {
-          to: address,
-          metadata : { ...item },
-          currencyAddress: NATIVE_TOKEN_ADDRESS,
-          mintStartTime: new Date(),
-          primarySaleRecipient: address,
-          quantity: 1,
-        }
-        return doc;
-      })
+      //this is used with signature batch minting
+      // const batchData = itemArray.map(item => {
+      //   const doc = {
+      //     to: address,
+      //     metadata : { ...item },
+      //     currencyAddress: NATIVE_TOKEN_ADDRESS,
+      //     mintStartTime: new Date(),
+      //     primarySaleRecipient: address,
+      //     quantity: 1,
+      //   }
+      //   return doc;
+      // })
+      // const batchData = itemArray.map(item => {
+      //   const doc = {
+      //     to: address,
+      //     metadata : { ...item },
+      //     currencyAddress: NATIVE_TOKEN_ADDRESS,
+      //     mintStartTime: new Date(),
+      //     primarySaleRecipient: address,
+      //     quantity: 1,
+      //   }
+      //   return doc;
+      // })
 
-      console.log(batchData)
-      const signedpayload = await nftCollection.erc721.signature.generateBatch(batchData);
-      console.log(signedpayload)
-      const tx = await nftCollection.erc721.signature.mintBatch(signedpayload);
-      console.log(tx)
+      console.log(itemArray)
+      // const signedpayload = await nftCollection.erc721.signature.generateBatch(batchData);
+      // console.log(signedpayload)
+      // const tx = await nftCollection.erc721.signature.mintBatch(signedpayload);
+      // console.log(tx)
+      const tx = await nftCollection.erc721.mintBatch(itemArray)
 
-      const docs = tx?.map((tr, index) => {
-        const nftItem = {
-          _type: 'nftItem',
-          _id: batchData[index].metadata.properties.tokenid,
-          id: tr.id.toString(),
-          collection: { 
-            _ref: selectedCollection._id, 
-            _type: 'reference'
-          },
-          listed: false,
-          chainId: connectedChain.chainId,
-          createdBy: { 
-            _ref: address, 
-            _type: 'reference' 
-          },
-          ownedBy: { 
-            _ref: address, 
-            _type: 'reference' 
-          },
-          featured: false,
-          name: batchData[index].metadata.name,
-        }
-        return nftItem
-      });
-      Promise.all(
-        docs.map(
-          document => 
-            sanityClient.createIfNotExists(document)))
-                        .then(async (res) => {
+      // const docs = tx?.map((tr, index) => {
+      //   const nftItem = {
+      //     _type: 'nftItem',
+      //     _id: batchData[index].metadata.properties.tokenid,
+      //     id: tr.id.toString(),
+      //     collection: { 
+      //       _ref: selectedCollection._id, 
+      //       _type: 'reference'
+      //     },
+      //     listed: false,
+      //     chainId: connectedChain.chainId,
+      //     createdBy: { 
+      //       _ref: address, 
+      //       _type: 'reference' 
+      //     },
+      //     ownedBy: { 
+      //       _ref: address, 
+      //       _type: 'reference' 
+      //     },
+      //     featured: false,
+      //     name: batchData[index].metadata.name,
+      //   }
+      //   return nftItem
+      // });
+      // Promise.all(
+      //   docs.map(
+      //     document => 
+      //       sanityClient.createIfNotExists(document)))
+      //                   .then(async (res) => {
 
-                          const newItems = res?.map(item => {
-                            const itemref = { _ref: item._id, _type: 'reference', _key: uuidv4() };
-                            return itemref;
-                          });
+      //                     const newItems = res?.map(item => {
+      //                       const itemref = { _ref: item._id, _type: 'reference', _key: uuidv4() };
+      //                       return itemref;
+      //                     });
 
-                          const transaction = {
-                            _type: 'activities',
-                            _id: tx[0].receipt.transactionHash, 
-                            transactionHash: tx[0].receipt.transactionHash,
-                            nftItems: newItems,
-                            from: tx[0].receipt.from,
-                            to: tx[0].receipt.to,
-                            event: 'Mint',
-                            price: '-',
-                            chainId: connectedChain.chainId,
-                            dateStamp: new Date(),
-                          }
+      //                     const transaction = {
+      //                       _type: 'activities',
+      //                       _id: tx[0].receipt.transactionHash, 
+      //                       transactionHash: tx[0].receipt.transactionHash,
+      //                       nftItems: newItems,
+      //                       from: tx[0].receipt.from,
+      //                       to: tx[0].receipt.to,
+      //                       event: 'Mint',
+      //                       price: '-',
+      //                       chainId: connectedChain.chainId,
+      //                       dateStamp: new Date(),
+      //                     }
                         
-                        await sanityClient.createIfNotExists(transaction);
-                        })
-                        .catch(err => console.log(err));
+      //                   await sanityClient.createIfNotExists(transaction);
+      //                   })
+      //                   .catch(err => console.log(err));
       toastHandler.success('NFTs minted successfully', successToastStyle);
       dispatch({ type: 'CLEAR_OUT_ALL' });
       removeItem(null, null, true);
       setIsMinting(false);
-      router.push(`/collections/${selectedCollection._id}`);
+      router.push(`/collection/${blockchainName[connectedChain.chainId.toString()]}/${selectedCollection.contractAddress}`);
       
       
     } catch (error) {

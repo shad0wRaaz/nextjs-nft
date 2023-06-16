@@ -68,7 +68,7 @@ const search = ({category}) => {
   const [currentItems, setCurrentItems] = useState(null)
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
-console.log(currentItems)
+
   useEffect(() => {
     if (!filteredListings) return
     const endOffset = itemOffset + itemsPerPage;
@@ -167,7 +167,7 @@ console.log(currentItems)
     //filter according to category selected
     if (selectedCategory != 'all') {
       data = data.filter((item) => {
-        return (item.asset.properties.category == selectedCategory);
+        return (item.asset?.properties?.category == selectedCategory);
       })
     }
     

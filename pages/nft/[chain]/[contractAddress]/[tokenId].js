@@ -252,7 +252,7 @@ const Nft = (props) => { //props are from getServerSideProps
     >
       {isZoom && (
         <div className=" h-full fixed z-20 w-full top-0 left-0 backdrop-blur-3xl bg-[#00000022] flex justify-center items-center cursor-pointer" onClick={() => setIsZoom(false)}>
-          <div className="relative max-w-lg max-h-lg ">
+          <div className="relative">
             {!playItem && itemType == "video" && (
               <>
                 <video className="w-full h-full" autoPlay loop>

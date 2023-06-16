@@ -350,17 +350,20 @@ app.get('/api/infura/getMarketData/:chainId/:contractAddress', async(req, res) =
 })
 
 //get NFT Owner Data
-app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
-  const {chainId, tokenAddress, tokenid} = req.params;
-  try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
+const getNFTOwnerDataFromInfura = async(chainId, tokenAddress, tokenid) => {
+  const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
       }
   })
-  
-  return res.send(data);
+  return data;
+}
+app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
+  const {chainId, tokenAddress, tokenid} = req.params;
+  try{
+    const ownerData = await getNFTOwnerDataFromInfura(chainId, tokenAddress, tokenid);
+    return res.status(200).send(ownerData);
   
   }catch(error){
     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
@@ -388,20 +391,33 @@ app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req,
 });
 
 //get Collection Metadata
-app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, res) =>{
-  const {chainId, tokenAddress} = req.params;
-  try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens`, {
+const getCollectionMetaDataFromInfura = async(chainId, tokenAddress) => {
+  const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}`, {
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
       }
   })
-  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
-  // console.log(data)
-  
-  return res.send(data);
-  
+  const tokens = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  })
+
+  const returnObject = {
+    ...data,
+    total: tokens?.data?.total,
+  }
+  return returnObject;
+}
+app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, res) =>{
+  const {chainId, tokenAddress} = req.params;
+  try{
+    const collectionData = await getCollectionMetaDataFromInfura(chainId,tokenAddress);
+    console.log(collectionData)
+    return res.status(200).send(collectionData);
+
   }catch(error){
     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
   }
@@ -492,14 +508,58 @@ app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
 //This will return Sanity Database data of an NFT
 app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(req, res) => {  
   const {chainId, contractAddress} = req.params;
+  //first find collection data in sanity, if not found, find from infura
 
   const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainId}"] {...}`;
   const sanityData = await config.fetch(query);
+
+  const tokens = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tokens`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${INFURA_AUTH}`,
+      }
+  });
+
   if(sanityData.length > 0){
-    return res.status(200).json(sanityData[0]);
+    const returnObject = {
+      ...sanityData[0],
+      total: tokens?.data?.total,
+    }
+    return res.status(200).send(returnObject);
   }
   else {
-    return res.status(200).json({"message": "Collection data not found"});
+    //get data from INFURA, if the collection is not deployed in this platform
+    const data =  await getCollectionMetaDataFromInfura(chainId, contractAddress);
+      
+
+    // get minter/creator address details from any token
+    const minterData = await getNFTOwnerDataFromInfura(chainId,contractAddress, 1);
+
+    const owner = minterData?.data?.owners[0]?.ownerOf;
+
+    //get yesterdays date for reveal time, other wise all collection will show not revealed
+    let today = new Date();
+    today.setDate(today.getDate() - 1);
+
+    const contractObj = {
+      name: data.name,
+      contractAddress: data.contract,
+      creator: {
+        userName: 'Unnamed',
+        walletAddress: owner,
+      },
+      chainId,
+      description: '',
+      revealtime: today.toString(),
+      createdBy: {
+        _ref: ''
+      },
+      collectionData: 0,
+      total: data?.total
+    }
+
+    return res.status(200).send(contractObj);
+    // return res.status(200).json({"message": "Collection data not found"});
   }
 });
 

@@ -763,7 +763,7 @@ const MakeOffer = ({
       // console.log(error?.message)
       setBuyLoading(false);
       setLoadingNewPrice(false);
-      toastHandler.error(error.message, errorToastStyle)
+      toastHandler.error('Error in buying NFT', errorToastStyle);
       return
     }
   }

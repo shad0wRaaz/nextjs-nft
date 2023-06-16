@@ -54,90 +54,90 @@ const RewardingRendition = () => {
             <div className="">Nuva NFT's exclusive 4 sets of NFT Collections which allows the holders to earn from the Unilevel network, get shared Royalty Fee on every sale, get shared Platform fees and occasional BNB Airdrops.</div>
 
             <div className={style.collectionWrapper}>
-                <div className={style.collection}>
-                        <div className={style.productImage}>
-                            <Image src={fierymonkey.src} height="200px" width="200px" objectFit='fit'/>
+                <Link href="/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068">
+                    <div className={style.collection}>
+                            <div className={style.productImage}>
+                                <Image src={fierymonkey.src} height="200px" width="200px" objectFit='fit'/>
+                            </div>
+                        <div className={style.productBackground + style.orange}>
+                            <div className={style.bigtext}>
+                                CRYPTO
+                            </div>
                         </div>
-                    <div className={style.productBackground + style.orange}>
-                        <div className={style.bigtext}>
-                            CRYPTO
-                        </div>
-                    </div>
-                    <div className={style.productDescriptionBox}>
-                        <p className={style.collectionTitle}>Crypto Creatures</p>
-                        <p className={style.nftCount + style.orange}>5,000 NFTs</p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + 8% Indirect<br/><br/></p>
-                        <button className={style.buyButton + style.orange}>
-                            <Link href="/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068">
-                                View Collection
-                            </Link>
-                        </button>
-                    </div>
-                </div>
-                <div className={style.collection}>
-                        <div className={style.productImage}>
-                            <Image src={neon.src} height="200px" width="200px" objectFit='fit'/>
-                        </div>
-                    <div className={style.productBackground + style.neon}>
-                        <div className={style.bigtext}>
-                            NEONDR
+                        <div className={style.productDescriptionBox}>
+                            <p className={style.collectionTitle}>Crypto Creatures</p>
+                            <p className={style.nftCount + style.orange}>5,000 NFTs</p>
+                            <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} /> </p>
+                            <p className="text-left text-sm mt-2">Earn from 10% Direct + 8% Indirect<br/><br/></p>
+                            <button className={style.buyButton + style.orange}>
+                                    View Collection
+                            </button>
                         </div>
                     </div>
-                    <div className={style.productDescriptionBox}>
-                        <p className={style.collectionTitle}>Neon Dreams</p>
-                        <p className={style.nftCount + style.neon}>5,000 NFTs</p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6%) Indirect</p>
-                        <button className={style.buyButton + style.neon}>
-                            <Link href="/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f">
-                                View Collection
-                            </Link>
-                        </button>
-                    </div>
-                </div>
-                <div className={style.collection}>
-                        <div className={style.productImage}>
-                            <Image src={rockycelestial.src} height="200px" width="200px" objectFit='fit'/>
+                </Link>
+                <Link href="/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f">
+                    <div className={style.collection}>
+                            <div className={style.productImage}>
+                                <Image src={neon.src} height="200px" width="200px" objectFit='fit'/>
+                            </div>
+                        <div className={style.productBackground + style.neon}>
+                            <div className={style.bigtext}>
+                                NEONDR
+                            </div>
                         </div>
-                    <div className={style.productBackground + style.flamingo}>
-                        <div className={style.bigtext}>
-                            CELEST
-                        </div>
-                    </div>
-                    <div className={style.productDescriptionBox}>
-                        <p className={style.collectionTitle}>Celestial Beings</p>
-                        <p className={style.nftCount + style.flamingo}>10,000 NFTs</p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
-                        <button className={style.buyButton + style.flamingo}>
-                            <Link href="/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2">
-                                View Collection
-                            </Link>
-                        </button>
-                    </div>
-                </div>
-                <div className={style.collection}>
-                        <div className={style.productImage}>
-                            <Image src={artifacts.src} height="200px" width="200px" objectFit='fit'/>
-                        </div>
-                    <div className={style.productBackground + style.apple}>
-                        <div className={style.bigtext}>
-                            ARTIFA
+                        <div className={style.productDescriptionBox}>
+                            <p className={style.collectionTitle}>Neon Dreams</p>
+                            <p className={style.nftCount + style.neon}>5,000 NFTs</p>
+                            <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} /> </p>
+                            <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6%) Indirect</p>
+                            <button className={style.buyButton + style.neon}>
+                                    View Collection
+                            </button>
                         </div>
                     </div>
-                    <div className={style.productDescriptionBox}>
-                        <p className={style.collectionTitle}>Artifacts of the Future</p>
-                        <p className={style.nftCount + style.apple}>20,000 NFTs</p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
-                        <button className={style.buyButton + style.apple}>
-                            <Link href="/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0">
-                                View Collection
-                            </Link>
-                        </button>
+                </Link>
+                <Link href="/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2">
+                    <div className={style.collection}>
+                            <div className={style.productImage}>
+                                <Image src={rockycelestial.src} height="200px" width="200px" objectFit='fit'/>
+                            </div>
+                        <div className={style.productBackground + style.flamingo}>
+                            <div className={style.bigtext}>
+                                CELEST
+                            </div>
+                        </div>
+                        <div className={style.productDescriptionBox}>
+                            <p className={style.collectionTitle}>Celestial Beings</p>
+                            <p className={style.nftCount + style.flamingo}>10,000 NFTs</p>
+                            <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} /> </p>
+                            <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
+                            <button className={style.buyButton + style.flamingo}>
+                                    View Collection
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </Link>
+                <Link href="/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0">
+                    <div className={style.collection}>
+                            <div className={style.productImage}>
+                                <Image src={artifacts.src} height="200px" width="200px" objectFit='fit'/>
+                            </div>
+                        <div className={style.productBackground + style.apple}>
+                            <div className={style.bigtext}>
+                                ARTIFA
+                            </div>
+                        </div>
+                        <div className={style.productDescriptionBox}>
+                            <p className={style.collectionTitle}>Artifacts of the Future</p>
+                            <p className={style.nftCount + style.apple}>20,000 NFTs</p>
+                            <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} /> </p>
+                            <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
+                            <button className={style.buyButton + style.apple}>
+                                    View Collection
+                            </button>
+                        </div>
+                    </div>
+                </Link>
             </div>
 
             <div className="flex justify-center mt-[3rem] z-100">

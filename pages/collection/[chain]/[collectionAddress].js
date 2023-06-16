@@ -1,3 +1,4 @@
+import axios from 'axios'
 import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
@@ -43,7 +44,6 @@ import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@t
 import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
 import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
-import axios from 'axios'
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
@@ -248,19 +248,20 @@ const CollectionDetails = (props) => {
   )
 
   //this query is just to get the total no of NFTs in the given collection
-  const {data: collectionMetaData, status: collectionMetaDataStatus } = useQuery(
-    ['nftnumber', collectionAddress],
-    INFURA_getCollectionMetaData(blockchainIdFromName[chain]),
-    {
-      enabled: Boolean(collectionAddress),
-      onSuccess: (res) => {
-        // console.log(res);
-      },
-      onError:(err) => {
-        console.log(err)
-      }
-    }
-  )
+  
+  // const {data: collectionMetaData, status: collectionMetaDataStatus } = useQuery(
+  //   ['nftnumber', collectionAddress],
+  //   INFURA_getCollectionMetaData(blockchainIdFromName[chain]),
+  //   {
+  //     enabled: Boolean(collectionAddress) && false,
+  //     onSuccess: (res) => {
+  //       console.log(res);
+  //     },
+  //     onError:(err) => {
+  //       console.log(err)
+  //     }
+  //   }
+  // )
 
   const { data: dataNFT, status: statusNFT } = useQuery(
     ['collectionnft', collectionAddress, cursor],
@@ -487,7 +488,9 @@ const CollectionDetails = (props) => {
 //count down timer design renderer
 const renderer = ({ days, hours, minutes, seconds, completed }) => {
   if(completed){
-    window.location.reload(false);
+    if(typeof window != undefined){
+      // window.location.reload(false);
+    }
   }
   return (
     <div className="py-9">
@@ -754,7 +757,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               )}
                             </div>
                             {/* this option is only available if the user is creator of this collection */}
-                            {collectionData && collectionData?.createdBy._ref ==
+                            {collectionData && collectionData?.createdBy?._ref ==
                               myUser?.walletAddress && (
                               <div className="z-20 flex gap-2">
                                 {/* show airdrop only to selected collections */}
@@ -931,7 +934,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     >
                       <span className="text-sm">NFTs</span>
                       <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                        {collectionMetaDataStatus == "success" ? collectionMetaData?.total : ''}
+                        {collectionData?.total}
                       </span>
                     </div>
                     <div className={`${
@@ -1014,7 +1017,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 }
               >
                 <h2 className={style.errorTitle}>No NFT Minted yet.</h2>
-                {collectionData?.createdBy._ref == myUser?.walletAddress && (
+                {collectionData?.createdBy?._ref == myUser?.walletAddress && (
                   <Link href="/contracts">
                     <button className="text-md gradBlue cursor-pointer rounded-xl p-4 px-8 text-center font-bold text-white">
                       Mint NFT
@@ -1125,11 +1128,11 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 </div>
             </div>
           )}
-          {collectionData && collectionData?.createdBy._ref == myUser?.walletAddress && (
+          {collectionData && collectionData?.createdBy?._ref == myUser?.walletAddress && (
             <button
               className="relative h-auto w-auto items-center justify-center rounded-lg mb-5 bg-blue-700 hover:bg-blue-800 p-3 font-medium text-neutral-50 transition-colors"
               onClick={() => setShowListingModal(true)}>
-              List Multiple NFTs
+              List NFTs in Batch
             </button>
           )}
 
@@ -1260,7 +1263,7 @@ export async function getServerSideProps(context){
   const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${collectionAddress}`;
 
   const collectionData = await axios.get(fetchPoint);
-
+ console.log(collectionData)
   return {
     props : {
       chain,
@@ -1269,4 +1272,3 @@ export async function getServerSideProps(context){
     }
   }
 }
-

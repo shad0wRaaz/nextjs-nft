@@ -7,7 +7,7 @@ import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 
 
 const SearchItem = ({ nftItem, selectedBlockchain }) => {
-  console.log(selectedBlockchain)
+
   const address = useAddress()
   const { dark } = useThemeContext()
   // const [likers, setLikers] = useState([])

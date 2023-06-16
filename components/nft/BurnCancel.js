@@ -13,8 +13,8 @@ import { RiCloseCircleLine } from 'react-icons/ri'
 import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 
 
 const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
@@ -66,11 +66,27 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             let tx = '';
             // console.log(auctionItem)
             if(!auctionItem){
-              tx = await contract.direct.cancelListing(listingData.id)
+              tx = await contract.direct
+                                  .cancelListing(listingData.id)
+                                  .catch(err => {
+                                    if(err.reason == 'user rejected transaction'){
+                                      toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                                    }
+                                    setIsCanceling(false);
+                                    setLoadingNewPrice(false);
+                                  });
             }else{
-              tx = await contract.auction.cancelListing(listingData.id)
+              tx = await contract.auction
+                                  .cancelListing(listingData.id)
+                                  .catch(err => {
+                                    if(err.reason == 'user rejected transaction'){
+                                      toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                                    }
+                                    setIsCanceling(false);
+                                    setLoadingNewPrice(false);
+                                    });
             }
-            // console.log(tx.receipt)
+
             if (tx) {
     
               //saving transaction in sanity
@@ -118,8 +134,8 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
                 })()
             }
           } catch (err) {
-            console.error(err);
-            toastHandler.error('Error in delisting this NFT.', errorToastStyle);
+            // console.error(err);
+            // toastHandler.error('Error in delisting this NFT.', errorToastStyle);
             setIsCanceling(false);
             return
           }
@@ -161,7 +177,30 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             const sdk = new ThirdwebSDK(signer);
             const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
               
-              const tx = await contract.burn(nftContractData?.tokenId)
+            const tx = await contract
+                              .burn(nftContractData?.tokenId)
+                              .catch(err => {
+                                if (err.reason == 'user rejected transaction'){
+                                  toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                                  setIsBurning(false);
+                                  return;
+                                }
+                                });
+            if(tx){
+              //update listing data
+              ;(async() => {
+                await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
+                  queryClient.invalidateQueries(['marketplace']);
+                  queryClient.invalidateQueries(['activities']);
+                  queryClient.invalidateQueries(['user']);
+                  setIsBurning(false);
+                })
+                .finally(() => {
+                  router.reload(window.location.pathname);
+                  router.replace(router.asPath);
+                })
+              })()
+            }
 
               //saving transaction in sanity
               // const transactionData = {
@@ -193,22 +232,10 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             //   toastHandler.error('Error saving Transaction Activity. Contact administrator.', errorToastStyle);
             //   return
             // })
-            //update listing data
-            ;(async() => {
-              await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
-                router.reload(window.location.pathname);
-                router.replace(router.asPath);
-              })
-            })()
-
-            queryClient.invalidateQueries(['marketplace']);
-            queryClient.invalidateQueries(['activities']);
-            queryClient.invalidateQueries(['user']);
-            setIsBurning(false);
           })();
       } catch (error) {
       toastHandler.error('NFT not burnt.', errorToastStyle)
-      console.error(error)
+      // console.error(error)
       setIsBurning(false);
       }
     }

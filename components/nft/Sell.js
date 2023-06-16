@@ -198,64 +198,74 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
       const prep_tx = await contract?.direct.createListing.prepare(listing)
       const estimatedGasLimit = await prep_tx.estimateGasLimit();
       prep_tx.setGasLimit(estimatedGasLimit * 2);
-      const tx = await prep_tx.execute();
 
+      const tx = await prep_tx
+                .execute()
+                .catch(err => {
+                  if (err.reason == 'user rejected transaction'){
+                    toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                    setLoadingNewPrice(false);
+                    setIsLoading(false);
+                    return;
+                  }
+                 });
 
-      //update market listing id in database
-      // const marketListingId = tx.id.toString();
-      // ;(async(id = marketListingId , dbClient = sanityClient)=> {
-      //   await dbClient.patch(nftContractData?.metadata?.properties?.tokenid).set({ 'listingid': id }).commit();
-      // })()
-
-      //update Floor Price
-      ;(async( dbClient = sanityClient) => {
-        // console.log(listingPrice, nftCollection);
-        if(nftCollection?.floorPrice == 0 || nftCollection?.floorPrice > listingPrice){
-          await dbClient
-                .patch(nftCollection?._id)
-                .set({ 'floorPrice': Number(listingPrice) })
-                .commit()
-                .catch(err => console.log(err));
+      if(tx){
+        //update market listing id in database
+        // const marketListingId = tx.id.toString();
+        // ;(async(id = marketListingId , dbClient = sanityClient)=> {
+        //   await dbClient.patch(nftContractData?.metadata?.properties?.tokenid).set({ 'listingid': id }).commit();
+        // })()
+  
+        //update Floor Price
+        ;(async( dbClient = sanityClient) => {
+          // console.log(listingPrice, nftCollection);
+          if(nftCollection?.floorPrice == 0 || nftCollection?.floorPrice > listingPrice){
+            await dbClient
+                  .patch(nftCollection?._id)
+                  .set({ 'floorPrice': Number(listingPrice) })
+                  .commit()
+                  .catch(err => console.log(err));
+          }
+        })();
+  
+  
+        //saving transaction data
+        // mutateSaveTransaction({
+        //   transaction: tx,
+        //   chainid: chainid,
+        //   eventName: 'List',
+        //   price: listingPrice,
+        //   id: nftContractData.metadata.id.toString(),
+        //   itemid: nftContractData.metadata.properties.tokenid,
+        // })
+  
+        queryClient.invalidateQueries(['activities']);
+        queryClient.invalidateQueries(['owner']);
+        queryClient.invalidateQueries(['marketplace']);
+        
+        
+        //update listing data
+        ;(async() => {
+          await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
+            router.reload(window.location.pathname);
+            router.replace(router.asPath);
+            setLoadingNewPrice(false);
+            setIsLoading(false);
+            toastHandler.success("NFT successfully listed in the marketplace. Please wait for a while. Getting the NFT's latest price from the marketplace.", successToastStyle);
+          }).catch(err => {console.log(err)})
+        })()
+  
+        //activate referral system, only if not activated
+        if(!myUser?.refactivation){
+          activate(address);
         }
-      })();
-
-
-      //saving transaction data
-      // mutateSaveTransaction({
-      //   transaction: tx,
-      //   chainid: chainid,
-      //   eventName: 'List',
-      //   price: listingPrice,
-      //   id: nftContractData.metadata.id.toString(),
-      //   itemid: nftContractData.metadata.properties.tokenid,
-      // })
-
-      queryClient.invalidateQueries(['activities']);
-      queryClient.invalidateQueries(['owner']);
-      queryClient.invalidateQueries(['marketplace']);
-      
-      
-      //update listing data
-      ;(async() => {
-        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
-          router.reload(window.location.pathname);
-          router.replace(router.asPath);
-          setLoadingNewPrice(false);
-          setIsLoading(false);
-          toastHandler.success("NFT successfully listed in the marketplace. Please wait for a while. Getting the NFT's latest price from the marketplace.", successToastStyle);
-        }).catch(err => {console.log(err)})
-      })()
-
-      //activate referral system, only if not activated
-      if(!myUser?.refactivation){
-        activate(address);
       }
-
     } catch (error) {
       setLoadingNewPrice(false);
       setIsLoading(false);
-      toastHandler.error(error.message, errorToastStyle)
-      console.error(error)
+      // toastHandler.error('Failed to sell NFT in the marketplace', errorToastStyle)
+      // console.error(error)
     }
     
   }
@@ -298,7 +308,36 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
       const prep_tx = await contract.auction.createListing.prepare(auction);
       const estimatedGasLimit = await prep_tx.estimateGasLimit();
       prep_tx.setGasLimit(estimatedGasLimit * 2);
-      const tx = await prep_tx.execute();
+      const tx = await prep_tx
+                        .execute()
+                        .catch(err => {
+                          if (err.reason == 'user rejected transaction'){
+                            toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                            setLoadingNewPrice(false);
+                            setIsLoading(false);
+                            return;
+                          }
+                        });
+      if(tx){
+        queryClient.invalidateQueries(['activities']);
+        queryClient.invalidateQueries(['owner']);
+        queryClient.invalidateQueries(['marketplace']);
+
+        setAuctionEndDate('');
+        setAuctionDuration('');
+        setAuctionStartDate('');
+
+        //update listing data
+        ;(async() => {
+          setLoadingNewPrice(true);
+          await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).finally(() => {
+            setLoadingNewPrice(false);
+            router.reload(window.location.pathname);
+            router.replace(router.asPath);
+            toastHandler.success('NFT successfully auctioned in the marketplace.', successToastStyle);
+          }).catch(err => console.log(err))
+        })();
+      }
       // const receipt = tx.receipt
       // const newListingId = tx.id
       
@@ -312,30 +351,10 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
       //   price: buyoutPrice,
       //   chainid: chainid,
       // })
-
-      queryClient.invalidateQueries(['activities'])
-      queryClient.invalidateQueries(['owner'])
-      queryClient.invalidateQueries(['marketplace'])
-
-      setAuctionEndDate('')
-      setAuctionDuration('')
-      setAuctionStartDate('')
-
-      //update listing data
-      ;(async() => {
-        setLoadingNewPrice(true);
-        await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).finally(() => {
-          setLoadingNewPrice(false);
-          router.reload(window.location.pathname);
-          router.replace(router.asPath);
-          toastHandler.success('NFT successfully auctioned in the marketplace.', successToastStyle);
-        }).catch(err => console.log(err))
-      })()
-
       // window.location.reload(false); //refresh the page
     } catch (error) {
-      toastHandler.error(error.message, errorToastStyle)
-      console.error(error)
+      toastHandler.error('Error in listing the NFT', errorToastStyle);
+      // console.error(error)
     }
     setIsLoading(false)
   }
@@ -698,6 +717,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
                               </div>
                             )}
                           </div>
+                          <p className="text-sm text-center mt-3 text-slate-400">In case of error, try increasing gas limit in the your wallet, when it prompts to 'Confirm' the sell transaction. </p>
                         </>
                       )}
                       {!address && <><ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl ml-4" /></>}

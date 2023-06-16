@@ -180,56 +180,65 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             const sdk = new ThirdwebSDK(signer);
             const contract = await sdk.getContract(marketContractAddress, "marketplace");
             
-            // const tx = await contract?.direct.createListingsBatch(listings);
             const prep_tx = await contract?.direct.createListingsBatch.prepare(listings);
             const estimatedGasLimit = await prep_tx.estimateGasLimit();
-            prep_tx.setGasLimit(1000000)
+            prep_tx.setGasLimit(estimatedGasLimit)
 
-            const tx = await prep_tx.execute();
-
-            if(collectionData.floorPrice > Number(listingPrice)){
-                //update Floor Price
-                await sanityClient
-                .patch(collectionData?._id)
-                .set({ 'floorPrice': Number(listingPrice)})
-                .commit()
-                .catch(err => console.log(err));
+            const tx = await prep_tx
+                                .execute()
+                                .catch(err => {
+                                    if (err.reason == 'user rejected transaction'){
+                                    toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                                    setLoadingNewPrice(false);
+                                    setIsLoading(false);
+                                    }
+                                });
+            if(tx){
+                if(collectionData.floorPrice > Number(listingPrice)){
+                    //update Floor Price
+                    await sanityClient
+                    .patch(collectionData?._id)
+                    .set({ 'floorPrice': Number(listingPrice)})
+                    .commit()
+                    .catch(err => console.log(err));
+                }
+    
+                //saving transactions in database
+                // const newItems = includedNfts?.map(item => {
+                //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
+                //     return itemref;
+                //   });
+    
+                // const doc = {
+                //     _type: 'activities',
+                //     _id: tx[0].receipt.transactionHash, 
+                //     transactionHash: tx[0].receipt.transactionHash,
+                //     nftItems: newItems,
+                //     from: tx[0].receipt.from,
+                //     to: tx[0].receipt.to,
+                //     event: 'List',
+                //     price: listingPrice.toString(),
+                //     chainId: activeChain.chainId.toString(),
+                //     dateStamp: new Date(),
+                //     }
+                //     console.log(doc)
+                //     await sanityClient.createIfNotExists(doc)
+    
+                //update listing data
+                ;(async() => {
+                    await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                        router.reload(window.location.pathname);
+                        router.replace(router.asPath);
+                        toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                    }).catch(err => {console.log(err)});
+                })()
+    
+                //activate referral system, only if not activated
+                if(!myUser?.refactivation){
+                    activate(address);
+                }
             }
 
-            //saving transactions in database
-            // const newItems = includedNfts?.map(item => {
-            //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
-            //     return itemref;
-            //   });
-
-            // const doc = {
-            //     _type: 'activities',
-            //     _id: tx[0].receipt.transactionHash, 
-            //     transactionHash: tx[0].receipt.transactionHash,
-            //     nftItems: newItems,
-            //     from: tx[0].receipt.from,
-            //     to: tx[0].receipt.to,
-            //     event: 'List',
-            //     price: listingPrice.toString(),
-            //     chainId: activeChain.chainId.toString(),
-            //     dateStamp: new Date(),
-            //     }
-            //     console.log(doc)
-            //     await sanityClient.createIfNotExists(doc)
-
-            //update listing data
-            ;(async() => {
-                await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
-                    router.reload(window.location.pathname);
-                    router.replace(router.asPath);
-                    toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
-                }).catch(err => {console.log(err)});
-            })()
-
-            //activate referral system, only if not activated
-            if(!myUser?.refactivation){
-                activate(address);
-            }
 
         }catch(error){
             console.log(error)
@@ -290,49 +299,51 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
             const estimatedGasLimit = await prep_tx.estimateGasLimit();
             prep_tx.setGasLimit(estimatedGasLimit * 2)
             const tx = await prep_tx.execute();
-
-            // if(collectionData.floorPrice > Number(listingPrice)){
-            //     //update Floor Price
-            //     await sanityClient
-            //     .patch(collectionData?._id)
-            //     .set({ 'floorPrice': Number(listingPrice) })
-            //     .commit();
-            // }
-
-            //saving transactions in database
-            // const newItems = includedNfts?.map(item => {
-            //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
-            //     return itemref;
-            //   });
-
-            // const doc = {
-            //     _type: 'activities',
-            //     _id: tx[0].receipt.transactionHash, 
-            //     transactionHash: tx[0].receipt.transactionHash,
-            //     nftItems: newItems,
-            //     from: tx[0].receipt.from,
-            //     to: tx[0].receipt.to,
-            //     event: 'List',
-            //     price: listingPrice.toString(),
-            //     chainId: activeChain.chainId.toString(),
-            //     dateStamp: new Date(),
-            //     }
-            //     console.log(doc)
-            //     await sanityClient.createIfNotExists(doc)
-
-            //update listing data
-            ;(async() => {
-                await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
-                toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
-                router.reload(window.location.pathname);
-                router.replace(router.asPath);
-                }).catch(err => {console.log(err)})
-            })()
-
-            //activate referral system, only if not activated
-            if(!myUser?.refactivation){
-                activate(address);
+            if(tx){
+                // if(collectionData.floorPrice > Number(listingPrice)){
+                //     //update Floor Price
+                //     await sanityClient
+                //     .patch(collectionData?._id)
+                //     .set({ 'floorPrice': Number(listingPrice) })
+                //     .commit();
+                // }
+    
+                //saving transactions in database
+                // const newItems = includedNfts?.map(item => {
+                //     const itemref = { _ref: item.metadata.properties.tokenid, _type: 'reference', _key: uuidv4() };
+                //     return itemref;
+                //   });
+    
+                // const doc = {
+                //     _type: 'activities',
+                //     _id: tx[0].receipt.transactionHash, 
+                //     transactionHash: tx[0].receipt.transactionHash,
+                //     nftItems: newItems,
+                //     from: tx[0].receipt.from,
+                //     to: tx[0].receipt.to,
+                //     event: 'List',
+                //     price: listingPrice.toString(),
+                //     chainId: activeChain.chainId.toString(),
+                //     dateStamp: new Date(),
+                //     }
+                //     console.log(doc)
+                //     await sanityClient.createIfNotExists(doc)
+    
+                //update listing data
+                ;(async() => {
+                    await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                    toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                    router.reload(window.location.pathname);
+                    router.replace(router.asPath);
+                    }).catch(err => {console.log(err)})
+                })()
+    
+                //activate referral system, only if not activated
+                if(!myUser?.refactivation){
+                    activate(address);
+                }
             }
+
         }catch(error){
             console.log(error)
             setIsLoading(false);
@@ -365,7 +376,6 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
         const tempArr = includedNfts.filter((nft,index) => index!=id);
         setIncludedNfts([...tempArr])
     }
-
   return (
     <div>
         <Script src="https://unpkg.com/flowbite@1.4.7/dist/datepicker.js" />
@@ -379,7 +389,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                             <div className={`${dark ? 'border-slate-600 hover:bg-slate-700' : 'border-neutral-100 hover:bg-neutral-100'} group transition border border-dashed p-2 rounded-lg lg:mr-5 mb-5 lg:mb-0 flex justify-between mt-2 relative`}>
                                 <div className="text-sm">
                                     <img 
-                                        src={nft.metadata?.image.startsWith('ipfs') ? getImagefromWeb3(nft.metadata?.image) : nft.metadata?.image}
+                                        src={nft.metadata?.image?.startsWith('ipfs') ? getImagefromWeb3(nft.metadata?.image) : nft.metadata?.image}
                                         className="w-[30px] h-[30px] object-cover rounded-md mr-1 inline-block" /> {nft.metadata.name}
                                 </div>
                                 <div 

@@ -655,6 +655,11 @@ right connector from last child*/
   background: linear-gradient(0deg,#f6fff2,#c3ffa9);
   -webkit-background-clip: text;
 }
+.color--gradient-ad {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(0deg,#fff,#8bdcff);
+  -webkit-background-clip: text;
+}
 .text-uppercase {
   text-transform: uppercase!important;
 }
