@@ -10,7 +10,6 @@ import React, { useState } from 'react'
 import SEO from '../../../components/SEO'
 import { Fragment, useEffect } from 'react'
 import { FiSettings } from 'react-icons/fi'
-import { useQueryClient } from 'react-query'
 import { RiCloseFill } from 'react-icons/ri'
 import { CgSandClock } from 'react-icons/cg'
 import Loader from '../../../components/Loader'
@@ -23,6 +22,7 @@ import { useQuery, useMutation } from 'react-query'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
 import { createAwatar } from '../../../utils/utilities';
+import { useInfiniteQuery, useQueryClient } from 'react-query'
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useUserContext } from '../../../contexts/UserContext'
 import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
@@ -33,7 +33,6 @@ import HelmetMetaData from '../../../components/HelmetMetaData'
 import { useThemeContext } from '../../../contexts/ThemeContext'
 import NFTCardExternal from '../../../components/NFTCardExternal'
 import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
-import { changeShowUnlisted, importMyCollection } from '../../../mutators/SanityMutators'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
 import CollectionReferral from '../../../components/CollectionReferral'
 import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
@@ -41,12 +40,14 @@ import AirdropSettings from '../../../components/collection/AirdropSettings'
 import { Menu, Transition, Switch, Dialog, Popover } from '@headlessui/react'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
+import { changeShowUnlisted, importMyCollection } from '../../../mutators/SanityMutators'
 import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
 import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
+const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + process.env.NEXT_PUBLIC_INFURA_SECRET_KEY,).toString('base64');
 
 const chainIcon = {
   '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
@@ -285,6 +286,32 @@ const CollectionDetails = (props) => {
   //     }
   //   }
   // )
+  const fetchInfiniteNfts = async(cursor) => {
+    if(!blockchainIdFromName || !chain) return
+    try{
+      const fetchPoint = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens`; 
+      const { data } = await axios.get(fetchPoint, {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Basic ${INFURA_AUTH}`,
+                }
+            })
+            console.log('data',data)
+            return data
+    }catch(err){
+
+    }
+
+  }
+  const { data: infiniteNFT, status: infiniteNFTStatus, fetchNextPage, hasNextPage, error } = useInfiniteQuery(
+    {
+      queryKey: ['inifinitenfts'],
+      queryFn: fetchInfiniteNfts,
+      getNextPageParam: (lastPage, pages) => lastPage?.cursor,
+      
+      onSuccess: res => {console.log(res)}
+      
+});
 
   const { data: dataNFT, status: statusNFT } = useQuery(
     ['collectionnft', collectionAddress, cursor],
@@ -319,7 +346,7 @@ const CollectionDetails = (props) => {
         let propObj = [];
 
         parsedData?.map(nft => {
-          //this will be for  nfts minted in house
+          //this will be for  nfts minted in house and opensea
           if(Boolean(nft?.metadata?.properties?.traits)){
             nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
               if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){

@@ -13,6 +13,7 @@ import madmonkey4 from '../assets/images/madmonkey4.png'
 
 import Link from 'next/link';
 import { IconAvalanche, IconBNB, IconEthereum } from '../../../components/icons/CustomIcons';
+import OtherReferralCommissions from '../../../components/referralCommissions/OtherReferralCommissions';
 
 const Hero = ({setShowMenu}) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
@@ -92,23 +93,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
-        <div className="fixed bottom-2 w-full p-2 z-50 flex justify-center">
-            <div className="bg-[#ffffff88] backdrop-blur-lg rounded-xl text-slate-900 text-normal p-2 px-5 text-xl text-center">
-                Referral Collections on other chains
-                <div className="grid grid-cols-3 mt-3 gap-3">
-                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
-                        <IconEthereum/>Ethereum<br/>ETH
-                    </div>
-                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
-                        <IconBNB/> Binance <br/>BNB
-                    </div>
-                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
-                        <IconAvalanche/>Avalanche<br/>AVAX
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        <OtherReferralCommissions currentChain={'polygon'}/>
     </section>
   )
 }

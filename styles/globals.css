@@ -626,10 +626,10 @@ right connector from last child*/
   transform-origin: right;
   transition: all .3s ease;
 }
-.rewardingrenditions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
+.rewardingrenditions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); color: #ffffff;}
 .admirabledepictions .default-btn{ background-image: linear-gradient(to right top, #00bf72, #a8eb12); color: #232323; }
-.majesticvisions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
-.eminentcreations .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
+.majesticvisions .default-btn{ background: linear-gradient(90deg,#42BEE7,#3190B9); color: #fff;}
+.eminentcreations .default-btn{ background: linear-gradient(90deg,#f2ffc1,#fffc00); color: #000; }
 
 .default-btn {
   line-height: 56px;
@@ -663,6 +663,17 @@ right connector from last child*/
   background: linear-gradient(0deg,#fff,#bbb200);
   -webkit-background-clip: text;
 }
+.color--gradient-mv, .majesticvisions .mint__numbers {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(0deg,#21ff8f,#c5ff00);
+  -webkit-background-clip: text;
+}
+.color--gradient-ec, .eminentcreations .mint__numbers {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(0deg,#fff,#bbb200);
+  -webkit-background-clip: text;
+}
+
 .rewardingrenditions .mint__numbers {
   color: #abff87;
 }
@@ -687,6 +698,8 @@ right connector from last child*/
 }
 .rewardingrenditions { color: #ecffe1; }
 .admirabledepictions { color: #fff; background: #220145 }
+.majesticvisions { color: #fff; background: linear-gradient(153deg, #283970, #131734); background-attachment: fixed; }
+.eminentcreations { color: #fff; background: linear-gradient(153deg, #6a1a42, #2b0010); background-attachment: fixed; }
 
 .mint h6 {font-size:1.125rem}
 .mint h4, .roadmap  h4 {font-size:1.575rem;}
@@ -704,6 +717,8 @@ right connector from last child*/
 }
 .rewardingrenditions .roadmap__item { background: linear-gradient(0deg,#f6fff2,#c3ffa9); }
 .admirabledepictions .roadmap__item { background: linear-gradient(0deg,#ffffff,#fffa99); }
+.majesticvisions .roadmap__item { background: linear-gradient(0deg,#ffffff,#99fffd); }
+.eminentcreations .roadmap__item { background: linear-gradient(0deg,#ffffff,#beff99); }
 
 .roadmap__inner {text-align: center; display: flex; justify-content: center; flex-direction: column; align-items: center;}
 .roadmap__content h4, .roadmap__content p {

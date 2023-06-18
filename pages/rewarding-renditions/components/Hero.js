@@ -12,6 +12,7 @@ import madmonkey3 from '../assets/images/madmonkey3.png'
 import madmonkey4 from '../assets/images/madmonkey4.png'
 
 import Link from 'next/link';
+import OtherReferralCommissions from '../../../components/referralCommissions/OtherReferralCommissions';
 
 const Hero = ({setShowMenu}) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
@@ -91,6 +92,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
+        <OtherReferralCommissions currentChain={'binance'}/>
     </section>
   )
 }

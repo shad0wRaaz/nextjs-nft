@@ -423,6 +423,7 @@ app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, r
   }
 });
 
+
 //get all owners of a collection
 //this gives nft metadata in string format and gives current owner and minter as well
 app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) => {

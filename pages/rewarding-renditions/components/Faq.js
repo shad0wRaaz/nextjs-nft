@@ -14,11 +14,11 @@ const Faq = ({ setShowMenu }) => {
         },
         {
             title: 'How does the NFT work with Uni level?',
-            content: 'Earning from your direct referrals is always free. But if you want to earn from more deeper levels, you need to hold an NFT. NFTs from different collection will unlock different levels in Uni level.'
+            content: 'Earning from your direct referrals is always free. But if you want to earn from deeper levels, you need to hold an NFT. NFTs from different collection will unlock different levels in Uni level.'
         },
         {
             title: 'What is Shared Royalty Fee?',
-            content: 'When an NFT is bought, you will be paying certain amount to the creator as a royalty. If you are the first buyer of any NFT in these collection, the creator will keep half of the royalty and sharing the other half with you. '
+            content: 'When an NFT is bought, you will be paying certain amount to the creator as royalty. If you are the first buyer of any NFT in these collection, the creator will keep half of the royalty and sharing the other half with you. '
         },
         {
             title: 'What is Shared Platform Fee?',

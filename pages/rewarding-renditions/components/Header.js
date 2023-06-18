@@ -94,7 +94,7 @@ const Header = ({setShowMenu, showMenu}) => {
                         <a className="nav-link text-center" href="#faq" onClick={() => setShowMenu(false)}>Faq</a>
                     </div>
                     <div className="social-btns  text-center md:ml-5">
-                        <ConnectWallet accentColor="#0053f2" colorMode="light" className="default-btn" />
+                        <ConnectWallet accentColor="#0053f2" colorMode="light" className="default-btn !text-neutral-100" />
                         {/* <a href="#" className="default-btn">
                             <span>Connect Wallet</span>
                         </a> */}
