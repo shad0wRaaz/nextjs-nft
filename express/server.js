@@ -510,7 +510,7 @@ app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(
   const {chainId, contractAddress} = req.params;
   //first find collection data in sanity, if not found, find from infura
 
-  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainId}"] {...}`;
+  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainId}"] {...,"creator": createdBy->}`;
   const sanityData = await config.fetch(query);
 
   const tokens = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tokens`, {
@@ -524,6 +524,7 @@ app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(
     const returnObject = {
       ...sanityData[0],
       total: tokens?.data?.total,
+      datasource: 'internal',
     }
     return res.status(200).send(returnObject);
   }
@@ -535,7 +536,7 @@ app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(
     // get minter/creator address details from any token
     const minterData = await getNFTOwnerDataFromInfura(chainId,contractAddress, 1);
 
-    const owner = minterData?.data?.owners[0]?.ownerOf;
+    const owner = minterData?.owners[0]?.ownerOf;
 
     //get yesterdays date for reveal time, other wise all collection will show not revealed
     let today = new Date();
@@ -555,7 +556,8 @@ app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(
         _ref: ''
       },
       collectionData: 0,
-      total: data?.total
+      total: data?.total,
+      datasource: 'external',
     }
 
     return res.status(200).send(contractObj);

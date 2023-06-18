@@ -10,10 +10,10 @@ const Footer = ({ setShowMenu }) => {
   return (
     <footer 
         onClick={() => setShowMenu(false)} className="footer">
-        <div className="footer__wrapper alfaslab bg-[#23162c] py-[70px] md:py-[100px] !pb-0" data-aos="fade-up" data-aos-duration="1000">
+        <div className="footer__wrapper alfaslab py-[70px] md:py-[100px] !pb-0" data-aos="fade-up" data-aos-duration="1000">
             <div className="container mx-auto p-8">
                 <div className="footer__content text-center">
-                    <h2 className="color--gradient-y">Follow Us!</h2>
+                    <h2 className="color--gradient-ad">Follow Us!</h2>
                     <p>If two Heads Area Better Than One, 40,000 Heads Should Be Way Better!<br/>Join Our Community.</p>
                     <ul className="social justify-content-center flex justify-center gap-3 mt-8">
                         <li className="social__item"><Link href="https://discord.gg/4xCqUjME" className="social__link"><a target="_blank"><img src={discord.src} alt="Discord"/></a></Link></li>

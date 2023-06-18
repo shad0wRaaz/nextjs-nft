@@ -6,10 +6,12 @@ import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { BiChevronUp } from 'react-icons/bi'
-import { Disclosure, Tab } from '@headlessui/react'
+import SEO from '../../../../components/SEO'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import Header from '../../../../components/Header'
 import Footer from '../../../../components/Footer'
+import { Disclosure, Tab } from '@headlessui/react'
+import { MdOutlineOpenInNew } from 'react-icons/md'
 import { config } from '../../../../lib/sanityClient'
 import { MdAudiotrack, MdBlock } from 'react-icons/md'
 import { getImagefromWeb3 } from '../../../../fetchers/s3'
@@ -28,7 +30,6 @@ import BrowseByCategory from '../../../../components/BrowseByCategory'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
-import { MdOutlineOpenInNew } from 'react-icons/md'
 import { IconAvalanche, IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
 import {
   HiOutlineDocumentText,
@@ -72,7 +73,7 @@ const chainName = {
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
 const Nft = (props) => { //props are from getServerSideProps
-  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, royaltyData, contractAddress, tokenId } = props;
+  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, royaltyData, contractAddress } = props;
 
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
@@ -247,9 +248,7 @@ const Nft = (props) => { //props are from getServerSideProps
   // }, [metaDataFromSanity, address])
 
   return (
-    <div
-      className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}
-    >
+    <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}>
       {isZoom && (
         <div className=" h-full fixed z-20 w-full top-0 left-0 backdrop-blur-3xl bg-[#00000022] flex justify-center items-center cursor-pointer" onClick={() => setIsZoom(false)}>
           <div className="relative">
@@ -281,13 +280,18 @@ const Nft = (props) => { //props are from getServerSideProps
             {!playItem && (
               <img
                 src={getImagefromWeb3(nftContractData?.metadata?.image)}
-                className="h-full w-full object-cover"
+                className="relative top-10" style={{ maxHeight: '850px' }}
               />
             )}
           </div>
         </div>
       ) }
       <Header />
+      <SEO 
+        title={nftContractData?.metadata?.name}
+        description={nftContractData?.metadata?.description}
+        image={getImagefromWeb3(nftContractData?.metadata?.image)}
+        currentUrl={`https://nuvanft.io/${thisNFTblockchain}/${contractAddress}/${nftContractData.tokenId}`} />
       {isBlocked ? (
         <div className="p-[4rem] text-center">
           <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>

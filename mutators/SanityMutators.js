@@ -162,7 +162,7 @@ export const saveAirdropData = async(transactions, chainId, contractAddress, tok
 
 }
 
-export const sendReferralCommission = async (receivers, address, chainId) => {
+export const sendReferralCommission = async (receivers, address, chainId, connectedChainName) => {
   //first remove all referrers whose referral activation is not done yet; no need to send any tokens
   try{
     const unresolved = receivers.map(async r => await isReferralActivated(r.receiver));
@@ -179,7 +179,8 @@ export const sendReferralCommission = async (receivers, address, chainId) => {
       `${FAUCETHOST}/api/nft/sendreferralcommissionsinbnb`,
       {
         receivers: finalReferrals,
-        secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
+        secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY,
+        chain: connectedChainName,
       },
       {
         headers: {
@@ -633,5 +634,42 @@ export const saveEmailVerificationCode = async(id, randomCode) => {
     return true;
   }catch(err){
     return false;
+  }
+}
+export const importMyCollection = async(collectionData, address, collectionId) => {
+  //check if the collection exist already
+  const query = `*[_type == "nftCollection" && chainId == "${collectionData.chainId}" && contractAddress == "${collectionData.contractAddress}"]`;
+  const collectionExist = await config.fetch(query);
+
+  if(collectionExist?.length > 0){
+    return 'already exists'
+  }else{
+    const collectionDoc = {
+      _type: 'nftCollection',
+      _id: collectionId,
+      name: collectionData.name,
+      contractAddress: collectionData.contractAddress,
+      description: collectionData.description,
+      chainId: collectionData.chainId,
+      createdBy: {
+        _type: 'reference',
+        _ref: address,
+      },
+      volumeTraded: 0,
+      floorPrice: 0,
+      referralrate_one: 0,
+      referralrate_two: 0,
+      referralrate_three: 0,
+      referralrate_four: 0,
+      referralrate_five: 0,
+      payablelevel: 0,
+    }
+  
+    const newCollection = await config
+          .createIfNotExists(collectionDoc)
+          .catch(err => {
+            console.log(err)
+            });
+    return newCollection;
   }
 }

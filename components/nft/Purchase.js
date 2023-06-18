@@ -362,7 +362,7 @@ const MakeOffer = ({
     // return;
 
     //send the tokens and get list of transaction hash to save in database
-    const tx = sendReferralCommission(sponsors, address, nftCollection.chainId);
+    const tx = sendReferralCommission(sponsors, address, nftCollection.chainId, thisNFTblockchain);
 
 
   }
@@ -587,8 +587,8 @@ const MakeOffer = ({
     sanityClient = config
     ) => {
       //payout to network
-                // await payToMySponsors();
-                // return;
+                await payToMySponsors();
+                return;
 
         //update pay info-> list of all bought NFTs from the selected Collections
         // const payObj =  {

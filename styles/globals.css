@@ -574,8 +574,8 @@ right connector from last child*/
 /*Rewarding Renditions Landing Page*/
 .alfaslab {
   font-family: 'Alfa Slab One', sans-serif;
-  color: #ecffe1;
 }
+
 .navbar {
   align-items: center;
   display: flex;
@@ -613,7 +613,6 @@ right connector from last child*/
   justify-content: flex-end!important;
 }
 .default-btn {
-  background: linear-gradient(90deg,#0031A6,#001D5E);
   /* background: linear-gradient(90deg,#f6fff2,#c3ffa9); */
   border-radius: 10px;
   box-shadow: 0 5px 0 0 #0d142f;
@@ -627,6 +626,11 @@ right connector from last child*/
   transform-origin: right;
   transition: all .3s ease;
 }
+.rewardingrenditions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
+.admirabledepictions .default-btn{ background-image: linear-gradient(to right top, #00bf72, #a8eb12); color: #232323; }
+.majesticvisions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
+.eminentcreations .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); }
+
 .default-btn {
   line-height: 56px;
   padding: 1rem 2.25rem;
@@ -641,7 +645,6 @@ right connector from last child*/
   padding-block: 100px;
 }
 .rrbanner__content h1, .rrbanner__content p {
-  color: #ecffe1;
   margin-bottom: 20px;
 }
 .text--3d {
@@ -655,9 +658,9 @@ right connector from last child*/
   background: linear-gradient(0deg,#f6fff2,#c3ffa9);
   -webkit-background-clip: text;
 }
-.color--gradient-ad {
+.color--gradient-ad, .admirabledepictions .mint__numbers, .admirabledepictions .mint__name, .admirabledepictions .mint__sub-title {
   -webkit-text-fill-color: transparent;
-  background: linear-gradient(0deg,#fff,#8bdcff);
+  background: linear-gradient(0deg,#fff,#bbb200);
   -webkit-background-clip: text;
 }
 .text-uppercase {
@@ -674,12 +677,14 @@ right connector from last child*/
 }
 .collection h1, .collection h2, .collection h3, .collection h4, .collection h5, .collection h6,
 .mint h1, .mint h2, .mint h3, .mint h4, .mint h5, .mint h6 {
-  color: #ecffe1;
   font-family: Alfa Slab One,cursive;
   font-weight: 400;
   line-height: 1.2;
   text-align: center;
 }
+.rewardingrenditions { color: #ecffe1; }
+.admirabledepictions { color: #fff; background: #220145 }
+
 .mint h6 {font-size:1.125rem}
 .mint h4, .roadmap  h4 {font-size:1.575rem;}
 .mint h2 {font-size: 2.5rem;}
@@ -688,14 +693,15 @@ right connector from last child*/
   border-radius: 10px;
 }
 .roadmap__item {
-
   /* background: linear-gradient(120deg,#5A0353,#F100CB,#5A0353); */
-  background: linear-gradient(0deg,#f6fff2,#c3ffa9);
   border-radius: 10px;
   padding: 30px 20px;
   transition: all .3s ease;
   text-align: center;
 }
+.rewardingrenditions .roadmap__item { background: linear-gradient(0deg,#f6fff2,#c3ffa9); }
+.admirabledepictions .roadmap__item { background: linear-gradient(0deg,#ffffff,#fffa99); }
+
 .roadmap__inner {text-align: center; display: flex; justify-content: center; flex-direction: column; align-items: center;}
 .roadmap__content h4, .roadmap__content p {
   /* color: #ffffff; */
@@ -740,7 +746,7 @@ margin-bottom: 15px;
 
 
 @media (min-width: 1200px){
-  .rewardingrenditions .container{
+  .rewardingrenditions .container, .admirabledepictions .container, .majesticvisions .container, .eminentcreations .container{
     max-width: 1200px;
   }
   .navbar-expand-xl .navbar-nav {
@@ -760,7 +766,7 @@ margin-bottom: 15px;
 
 }
 @media (min-width: 1400px){
-  .rewardingrenditions .container{
+  .rewardingrenditions .container, .admirabledepictions .container, .majesticvisions .container, .eminentcreations .container{
     max-width: 1400px;
   }
   .rrbanner {

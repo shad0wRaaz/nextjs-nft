@@ -3,6 +3,7 @@ import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 import Countdown from 'react-countdown'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -20,19 +21,19 @@ import NFTCard from '../../../components/NFTCard'
 import Property from '../../../components/Property'
 import { useQuery, useMutation } from 'react-query'
 import SellAll from '../../../components/nft/SellAll'
-import { BiChevronUp, BiGlobe } from 'react-icons/bi'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
 import { createAwatar } from '../../../utils/utilities';
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useUserContext } from '../../../contexts/UserContext'
 import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
+import { BiChevronUp, BiGlobe, BiImport } from 'react-icons/bi'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
 import HelmetMetaData from '../../../components/HelmetMetaData'
 import { useThemeContext } from '../../../contexts/ThemeContext'
 import NFTCardExternal from '../../../components/NFTCardExternal'
 import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
-import { changeShowUnlisted } from '../../../mutators/SanityMutators'
+import { changeShowUnlisted, importMyCollection } from '../../../mutators/SanityMutators'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
 import CollectionReferral from '../../../components/CollectionReferral'
 import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
@@ -42,7 +43,7 @@ import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
 import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
-import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
+import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
 import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
@@ -101,6 +102,7 @@ const CollectionDetails = (props) => {
   const [compact, setCompact] = useState(false);
   const [cursor, setCursor] = useState();
   const [showAirdrop, setShowAirdrop] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -202,6 +204,27 @@ const CollectionDetails = (props) => {
   //     }
   //   }
   // );
+
+  const importCollection = async(toastHandler = toast) => {
+    if(!address || !collectionData) return
+    const collectionId = uuidv4();
+    setIsImporting(true);
+    const newCollection = await importMyCollection(collectionData, address, collectionId);
+
+    if(newCollection == 'already exists'){
+      toastHandler.success('Collection already exists', errorToastStyle);
+      setIsImporting(false);
+      // router.reload(window.location.pathname);
+    }else if(newCollection != null){
+      router.replace(router.asPath).then(()=>{
+        toastHandler.error('Collection has been imported', successToastStyle);
+        setIsImporting(false);
+      });
+    }else{
+      toastHandler.error('Error in importing collection', errorToastStyle);
+      setIsImporting(false);
+    }
+  }
 
 
   useEffect(() => {
@@ -756,9 +779,28 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                                 </span>
                               )}
                             </div>
+
+                            {/* this option is only available if the collection is not in database */}
+                            {collectionData.datasource == 'external' && collectionData.creator?.walletAddress == address &&  (
+                              <div>
+                                <button 
+                                  className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
+                                  onClick={() => importCollection()}>
+                                    {isImporting ? (
+                                      <>
+                                        <IconLoading dark="inbutton"/> <span className="hidden md:block">Importing</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <BiImport fontSize="18px" className=" hover:animate-bounce transition"/> <span className="hidden md:block">Import</span>
+                                      </>
+                                    )}
+                                </button>
+                              </div>
+                            )}
                             {/* this option is only available if the user is creator of this collection */}
                             {collectionData && collectionData?.createdBy?._ref ==
-                              myUser?.walletAddress && (
+                              myUser?.walletAddress  && collectionData.datasource =='internal' && (
                               <div className="z-20 flex gap-2">
                                 {/* show airdrop only to selected collections */}
                                 {hasReferralSetting && (
@@ -1263,12 +1305,12 @@ export async function getServerSideProps(context){
   const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${collectionAddress}`;
 
   const collectionData = await axios.get(fetchPoint);
- console.log(collectionData)
+
   return {
     props : {
       chain,
       collectionAddress,
-      collectionData: collectionData?.data
+      collectionData: collectionData?.data,
     }
   }
 }

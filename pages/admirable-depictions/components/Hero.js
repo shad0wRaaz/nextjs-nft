@@ -1,6 +1,6 @@
 import React from 'react'
 import "@fontsource/alfa-slab-one";
-import bannerbg from '../assets/images/banner-bg.webp'
+import bannerbg from '../assets/images/banner-bg-ad.webp'
 import discord from '../assets/images/discord.png'
 import twitter from '../assets/images/twitter.png'
 import facebook from '../assets/images/facebook.png'
@@ -12,6 +12,7 @@ import madmonkey3 from '../assets/images/madmonkey3.png'
 import madmonkey4 from '../assets/images/madmonkey4.png'
 
 import Link from 'next/link';
+import { IconAvalanche, IconBNB, IconEthereum } from '../../../components/icons/CustomIcons';
 
 const Hero = ({setShowMenu}) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
@@ -89,6 +90,23 @@ const Hero = ({setShowMenu}) => {
                     <img src={madmonkey4.src} alt="Crypto Creatures Mad Monkey" className="relative md:left-[-20%] md:h-[300px]"/>
                 </div>
 
+            </div>
+        </div>
+        <div className="fixed bottom-2 w-full p-2 z-50 flex justify-center">
+            <div className="bg-[#ffffff88] backdrop-blur-lg rounded-xl text-slate-900 text-normal p-2 px-5 text-xl text-center">
+                Referral Collections on other chains
+                <div className="grid grid-cols-3 mt-3 gap-3">
+                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
+                        <IconEthereum/>Ethereum<br/>ETH
+                    </div>
+                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
+                        <IconBNB/> Binance <br/>BNB
+                    </div>
+                    <div className="text-sm rounded-lg p-2 border-neutral-300/40 border text-center">
+                        <IconAvalanche/>Avalanche<br/>AVAX
+                    </div>
+
+                </div>
             </div>
         </div>
     </section>

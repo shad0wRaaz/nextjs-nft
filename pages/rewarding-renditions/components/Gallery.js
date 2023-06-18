@@ -67,7 +67,7 @@ const Gallery = ({ setShowMenu }) => {
             <div className="section-header aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000">
                 <div className="section-header__content flex justify-center flex-col text-center max-w-lg m-auto">
                     <h2 className="text-4xl md:text-[4.5rem]">
-                        <span className="color--gradient-y">Our NFT</span> Collections
+                        <span className="color--gradient-y">Our NFT Collections</span>
                     </h2>
                     <p className="m-auto text-[1.125rem]">40,000 Unique NFTs Trying to Blend With The Norites On The Binance Smart Blockchain.</p>
                 </div>

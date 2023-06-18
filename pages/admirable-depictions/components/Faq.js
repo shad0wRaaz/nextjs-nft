@@ -10,7 +10,7 @@ const Faq = ({ setShowMenu }) => {
         },
         {
             title: 'What will the buy price be?',
-            content: 'We want to provide our community with the best quality art from real artist for affordable price that holds a value in real world. We have 4 collections whose price ranges from $75 to $350 worth of BNB.'
+            content: 'We want to provide our community with the best quality art from real artist for affordable price that holds a value in real world. We have 4 collections whose price ranges from $50 to $250 worth of BNB.'
         },
         {
             title: 'How does the NFT work with Uni level?',
@@ -28,14 +28,14 @@ const Faq = ({ setShowMenu }) => {
   return (
     <section 
         onClick={() => setShowMenu(false)} 
-        id="faq" className="faq alfaslab py-[70px] md:py-[100px] bg-[#23162c]">
+        id="faq" className="faq alfaslab ad-basecolor py-[70px] md:py-[100px]">
         <div className="container mx-auto p-8">
             <div className="faq__wrapper">
                 <div className="grid grid-cols-1">
                     <div className="text-center mx-auto">
                         <div className="section-header">
                             <div className="section-header__content text-start">
-                                <h2 className="mx-0 text-center"> <span className="color--gradient-y d-block"> F.A.Q</span></h2>
+                                <h2 className="mx-0 text-center"> <span className="color--gradient-ad d-block"> F.A.Q</span></h2>
                             </div>
                         </div>
                         <div className="max-w-xl mx-auto">
@@ -44,7 +44,7 @@ const Faq = ({ setShowMenu }) => {
                                     {({ open }) => (
                                         <div className="mt-3">
                                             <Disclosure.Button 
-                                                style={{ background: 'linear-gradient(0deg,#f6fff2,#c3ffa9)' }} 
+                                                style={{ background: 'linear-gradient(0deg,#ffffff,#fffa99)' }} 
                                                 className="flex w-full justify-between rounded-lg px-4 py-5 text-left text-sm font-medium text-[#0d142f]">
                                                 <span className="text-[1.5rem]">{faq.title}</span>
                                                 <HiChevronDown

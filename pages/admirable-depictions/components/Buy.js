@@ -149,13 +149,13 @@ const Buy = ({ setShowMenu }) => {
     <section 
         onClick={() => setShowMenu(false)}
         id="buy" 
-        className="mint bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
+        className="mint bg-cover alfaslab py-[70px] pt-0">
         <div className="container mx-auto px-8  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">1. Artistic </span> Alchemy</h2>
+                        <span className="color--gradient-ad d-block">1. Artistic  Alchemy</span></h2>
                         <p className="text-center mt-3">Artistic Alchemy is an NFT collection that explores the transformative power of artistic expression. It represents the fusion of different artistic elements, techniques, and inspirations to create something entirely new and captivating. The collection features a diverse range of artworks that blend various mediums, styles, and subject matters, showcasing the alchemical process of artistic experimentation and innovation.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -333,7 +333,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Project Size</h6>
                                             <h2 className="mint__numbers">5,000</h2>
-                                            <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                            <h4 className="mint__name text-uppercase">NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -392,8 +392,8 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">2. Neon</span> Dreams</h2>
-                        <p className="text-center mt-3">A series of bright and colourful and NFTs that capture the surreal nature of our dreams.</p>
+                        <span className="color--gradient-ad d-block">2. Canvas Chronicles</span></h2>
+                        <p className="text-center mt-3">Canvas Chronicles is an NFT collection that celebrates the timeless beauty and power of traditional canvas-based artwork. It pays homage to the rich history and evolution of art on canvas, capturing the essence of artistic narratives and personal expressions. Within the Canvas Chronicles collection, each artwork tells a unique story, unfolding a narrative that transcends time and space. The collection showcases a wide array of artistic styles, including classical, impressionist, abstract, and contemporary, offering a diverse range of visual experiences for art enthusiasts.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -569,7 +569,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Project Size</h6>
                                         <h2 className="mint__numbers">5,000</h2>
-                                        <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                        <h4 className="mint__name text-uppercase">NFT's</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -627,8 +627,8 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">3. Celestial</span> Beings</h2>
-                        <p className="text-center mt-3">A series of NFTs that feature mythical creatures and dieties from different cultures.</p>
+                        <span className="color--gradient-ad d-block">3. Palette Perceptions</span> </h2>
+                        <p className="text-center mt-3">Palette Perceptions is an NFT collection that explores the fascinating realm of colors and their subjective interpretations. It delves into the way colors evoke emotions, trigger memories, and shape our perceptions of the world around us. Within the Palette Perceptions collection, each artwork is a vibrant symphony of hues and tones, carefully selected and arranged to convey specific moods and messages. Artists employ a diverse range of color palettes, from vibrant and bold to soft and pastel, creating visual experiences that captivate the senses.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -804,7 +804,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Project Size</h6>
                                             <h2 className="mint__numbers">10,000</h2>
-                                            <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                            <h4 className="mint__name text-uppercase">NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -862,8 +862,8 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">4. Artifacts of</span> The Future</h2>
-                        <p className="text-center mt-3">A collection of NFTs that showcase futuristic technology and inventions.</p>
+                        <span className="color--gradient-ad d-block">4. Brushstroke Symphony</span></h2>
+                        <p className="text-center mt-3">Brushstroke Symphony is an NFT collection that celebrates the captivating beauty and expressive power of brushstrokes in art. It is a harmonious symphony of artistic movements, where each brushstroke becomes a note, and the artwork itself becomes a melodic composition. Within the Brushstroke Symphony collection, each artwork is a testament to the artist's skill and creativity, showcasing a variety of brushstroke techniques and styles. From bold and energetic strokes that convey passion and intensity to delicate and precise strokes that exhibit subtlety and grace, the collection encompasses a wide range of brushwork expressions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -1039,7 +1039,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Project Size</h6>
                                         <h2 className="mint__numbers">20,000</h2>
-                                        <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                        <h4 className="mint__name text-uppercase">NFT's</h4>
                                     </div>
                                     </div>
                                 </div>

@@ -79,12 +79,6 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
 
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
-      {nftContractData ? (
-        <SEO 
-          title={nftContractData?.metadata?.name}
-          description={nftContractData?.metadata?.description}
-          image={getImagefromWeb3(nftContractData?.metadata?.image)}/>
-      ) : ''}
       {/* Modal window*/}
       {showModal &&  
         <Report 

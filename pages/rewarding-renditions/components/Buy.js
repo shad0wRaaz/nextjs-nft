@@ -155,7 +155,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">1. Crypto</span> Creatures</h2>
+                        <span className="color--gradient-y d-block">1. Crypto Creatures</span></h2>
                         <p className="text-center mt-3">A collection of unique digital creatures that live on the Binance Blockchain.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -392,7 +392,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">2. Neon</span> Dreams</h2>
+                        <span className="color--gradient-y d-block">2. Neon Dreams</span></h2>
                         <p className="text-center mt-3">A series of bright and colourful and NFTs that capture the surreal nature of our dreams.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -627,7 +627,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">3. Celestial</span> Beings</h2>
+                        <span className="color--gradient-y d-block">3. Celestial Beings</span></h2>
                         <p className="text-center mt-3">A series of NFTs that feature mythical creatures and dieties from different cultures.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -862,7 +862,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">4. Artifacts of</span> The Future</h2>
+                        <span className="color--gradient-y d-block">4. Artifacts of The Future</span></h2>
                         <p className="text-center mt-3">A collection of NFTs that showcase futuristic technology and inventions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>

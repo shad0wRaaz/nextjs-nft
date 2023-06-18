@@ -7,7 +7,7 @@ const Roadmap = ({ setShowMenu }) => {
   return (
     <section 
         onClick={() => setShowMenu(false)}
-        className="roadmap padding-top padding-bottom alfaslab pb-[70px] md:pb-[100px] bg-[#23162c]" id="roadmap">
+        className="roadmap padding-top padding-bottom alfaslab ad-basecolor pb-[70px] md:pb-[100px]" id="roadmap">
         <div className="container mx-auto p-8 pt-0">
             <div className="section-header aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000">
                 <div className="section-header__content text-center w-full max-w-[1000px] mx-auto">
