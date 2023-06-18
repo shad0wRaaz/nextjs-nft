@@ -291,7 +291,7 @@ const Nft = (props) => { //props are from getServerSideProps
         title={nftContractData?.metadata?.name}
         description={nftContractData?.metadata?.description}
         image={getImagefromWeb3(nftContractData?.metadata?.image)}
-        currentUrl={`https://nuvanft.io/${thisNFTblockchain}/${contractAddress}/${nftContractData.tokenId}`} />
+        currentUrl={`https://nuvanft.io/nft/${thisNFTblockchain}/${contractAddress}/${nftContractData.tokenId}`} />
       {isBlocked ? (
         <div className="p-[4rem] text-center">
           <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
