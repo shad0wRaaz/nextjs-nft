@@ -92,7 +92,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
-        <OtherReferralCommissions currentChain={'binance'}/>
+        {/* <OtherReferralCommissions currentChain={'binance'}/> */}
     </section>
   )
 }
