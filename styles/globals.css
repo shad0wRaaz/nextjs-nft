@@ -663,6 +663,9 @@ right connector from last child*/
   background: linear-gradient(0deg,#fff,#bbb200);
   -webkit-background-clip: text;
 }
+.rewardingrenditions .mint__numbers {
+  color: #abff87;
+}
 .text-uppercase {
   text-transform: uppercase!important;
 }

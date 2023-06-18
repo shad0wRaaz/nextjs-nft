@@ -333,7 +333,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Project Size</h6>
                                             <h2 className="mint__numbers">5,000</h2>
-                                            <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                            <h4 className="mint__name text-uppercase">NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -569,7 +569,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Project Size</h6>
                                         <h2 className="mint__numbers">5,000</h2>
-                                        <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                        <h4 className="mint__name text-uppercase">NFT's</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -804,7 +804,7 @@ const Buy = ({ setShowMenu }) => {
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Project Size</h6>
                                             <h2 className="mint__numbers">10,000</h2>
-                                            <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                            <h4 className="mint__name text-uppercase">NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -1039,7 +1039,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Project Size</h6>
                                         <h2 className="mint__numbers">20,000</h2>
-                                        <h4 className="mint__name text-uppercase text-[#abff87]">NFT's</h4>
+                                        <h4 className="mint__name text-uppercase">NFT's</h4>
                                     </div>
                                     </div>
                                 </div>
