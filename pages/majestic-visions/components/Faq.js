@@ -10,7 +10,7 @@ const Faq = ({ setShowMenu }) => {
         },
         {
             title: 'What will the buy price be?',
-            content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from $50 to $250 worth of BNB.'
+            content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from $75 to $350 worth of ETH.'
         },
         {
             title: 'How does the NFT work with Uni level?',

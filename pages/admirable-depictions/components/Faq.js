@@ -10,19 +10,19 @@ const Faq = ({ setShowMenu }) => {
         },
         {
             title: 'What will the buy price be?',
-            content: 'We want to provide our community with the best quality art from real artist for affordable price that holds a value in real world. We have 4 collections whose price ranges from $50 to $250 worth of BNB.'
+            content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from $50 to $250 worth of MATIC.'
         },
         {
             title: 'How does the NFT work with Uni level?',
-            content: 'Earning from your direct referrals is always free. But if you want to earn from deeper levels, you need to hold an NFT. NFTs from different collection will unlock different levels in Uni level.'
+            content: 'Earning from your direct referrals is always free. But if you want to earn from deeper levels, you need to hold an NFT from different collection which will unlock different levels in Uni level.'
         },
         {
             title: 'What is Shared Royalty Fee?',
-            content: 'When an NFT is bought, you will be paying certain amount to the creator as royalty. If you are the first buyer of any NFT in these collection, the creator will keep half of the royalty and sharing the other half with you. '
+            content: 'When an NFT is bought, you will be paying certain amount to the creator as royalty. If you are the first buyer of any NFT in these collection, the creator will keep 50% of the royalty and sharing the other 50% with you. '
         },
         {
             title: 'What is Shared Platform Fee?',
-            content: 'When an NFT is bought or sold, you will be paying certain amount to the platform as a service fee. We are sharing certain portion of the fees generated from any transaction in the platform with our community. The NFT you hold will determine how much of your share is.'
+            content: 'When an NFT is bought or sold, you will be paying certain amount to the platform as service fee. We are sharing % of the fees generated from any transaction from amongs your network. The NFT you hold will determine levels of % earned.'
         },
     ]
   return (
