@@ -30,7 +30,6 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
   const [toggle, setToggle] = useState(true);
   const [marketOffer, setMarketOffer] = useState([]);
   const [coinMultiplier, setCoinMultiplier] = useState();
-  // const [isAuctionItem, setIsAuctionItem] = useState(false);
   const { coinPrices } = useSettingsContext();
   const signer = useSigner();
 
@@ -38,31 +37,30 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
   
   useEffect(() => {
     if(!marketOffer) return
-    const marketArray = [
-      process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
-      process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
-    ];
+    // const marketArray = [
+    //   process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE, 
+    //   process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
+    // ];
 
 
     if(isAuctionItem) {
       //get winning bid and send to offer array
       ;(async() => {
         let sdk = '';
-        let contract = '';
         if(signer){
           sdk = new ThirdwebSDK(signer);
         }
         else {
           sdk = new ThirdwebSDK(thisNFTblockchain);
         }
-        contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-        const winningBid = await contract.auction.getWinningBid(listingData?.id);
+        const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
+        const winningBid = await contract.englishAuctions.getWinningBid(listingData?.id);
         setWinningBid(winningBid);
       })();
     }
@@ -70,7 +68,6 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     // if (marketArray.includes(selectedNft?.owner)) {
     //   // mark this item as Auctioned Item
     //   setIsAuctionItem(true);
-      
       
     //   return;
     // }
@@ -82,13 +79,16 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
 
   const { data: eventData, status: eventDataLoading } = useQuery(
     ['eventData', listingData?.id],
-    getMarketOffers(thisNFTMarketAddress, thisNFTblockchain),
+    getMarketOffers(thisNFTMarketAddress, thisNFTblockchain, listingData),
     {
       enabled: Boolean(listingData?.id),
       onError: (err) => {
         // console.log(err)
       },
       onSuccess: async(res) => {
+
+        // console.log('listings', listingData)
+        // console.log('bids', res)
         // const unresolved = res?.map(async(offer) => {
         //   const user = await getUser(offer.buyerAddress);
         //   return {...offer, offeredBy: {...user}}
@@ -101,7 +101,6 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     }
   )
 
-
 useEffect(() => {
   if (!listingData) return
 
@@ -112,7 +111,7 @@ useEffect(() => {
     setCoinMultiplier(coinPrices?.ethprice);
   } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'AVAX') {
     setCoinMultiplier(coinPrices?.avaxprice);
-  } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'BNB') {
+  } else if (listingData?.buyoutCurrencyValuePerToken?.symbol == 'BNB' || listingData?.buyoutCurrencyValuePerToken?.symbol == 'TBNB') {
     setCoinMultiplier(coinPrices?.bnbprice);
   }else {
     setCoinMultiplier(undefined);
@@ -162,7 +161,7 @@ useEffect(() => {
               <tr>
                 <td colSpan="5" className="p-4 text-center">
                   <span className="text-sm">
-                    {((eventDataLoading == "success" || eventDataLoading == "error") && !eventData) ? 'No offers found' : '' } 
+                    {((eventDataLoading == "success" || eventDataLoading == "error") && !eventData) ? Boolean(listingData?.type == 0) ? 'No offers yet' : 'No bids yet' : '' } 
                     {(eventDataLoading == "loading") && (
                       <div className="flex gap-1 justify-center items-center">
                         {dark? <IconLoading dark="inbutton"/> : <IconLoading/>} Loading

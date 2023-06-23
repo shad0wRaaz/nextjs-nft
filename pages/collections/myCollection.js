@@ -1,6 +1,7 @@
 import moment from 'moment'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import SEO from '../../components/SEO'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
 import { CgUserList } from 'react-icons/cg'
@@ -24,11 +25,11 @@ import { MdOutlineCollections, MdVerified } from 'react-icons/md'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
 import { useAddress, useChain, useChainId, useSigner } from '@thirdweb-dev/react'
+import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
-import SEO from '../../components/SEO'
+import axios from 'axios'
 
 const Collection = () => {
   const router = useRouter();
@@ -36,7 +37,7 @@ const Collection = () => {
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-  const { blockchainName } = useSettingsContext();
+  const { blockchainName, HOST } = useSettingsContext();
   const bannerRef = useRef();
   const activechain = useChain();
   const [listStyle, setListStyle] = useState('grid');
@@ -46,7 +47,7 @@ const Collection = () => {
   const [compact, setcompact] = useState(true);
   const [cursor, setCursor] = useState();
   const [cursorHistory, setCursorHistory] = useState([])
-
+  const [mynfts, setMynfts] = useState();
   const style = {
     nftwrapper:
     `grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${compact ? 'grid-cols-6' : 'xl:grid-cols-4'} place-items-center`,
@@ -61,9 +62,9 @@ const Collection = () => {
     ['fulllistings', blockchainName[chainid]], 
     getFullListings(),
     {
-      enabled: Boolean(chainid),
+      enabled: Boolean(chainid) && false,
       onSuccess: (res) => {
-        // console.log(res);
+        console.log(res);
       }
     });
 
@@ -84,15 +85,27 @@ const Collection = () => {
   //   }
   // )
 
-  const { data: mynfts, status: mynftstatus } = useQuery(
-    ['mynfts', address, cursor],
+  const { data, status: mynftstatus } = useQuery(
+    ['mynfts', address, cursor, activechain],
     INFURA_getMyAllNFTs(activechain?.chainId),
     {
       enabled: Boolean(address) && Boolean(activechain),
       onError:() => {},
       onSuccess:(res) => 
       {
+        const unresovled = res?.assets.map(async nft => {
+          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[activechain.chainId]}/${nft.contract}/${nft.tokenId}`);
+          const newObject= {
+            ...nft,
+            listingData: data[0]
+          }
+          return newObject;
+        })
 
+        ;(async() => {
+          const resolved = await Promise.all(unresovled);
+          setMynfts(resolved);
+        })()
       }
     }
   )
@@ -297,7 +310,7 @@ const Collection = () => {
                   <FiImage fontSize="30px" className="mb-2" />
                   <span className="text-sm">NFTs</span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                  {Boolean(mynfts?.total) ? mynfts?.total : 0}
+                  {Boolean(mynfts?.length) ? mynfts?.length : 0}
                   </span>
                 </div>
 
@@ -478,10 +491,10 @@ const Collection = () => {
 
 
         {showType == 'myallnfts' &&
-          (mynftstatus == "success" && mynfts?.assets?.length > 0 ? (
+          (mynfts?.length > 0 ? (
             <>
               <div className={style.nftwrapper}>
-                {mynfts?.assets?.map((nftItem, id) => (
+                {mynfts?.map((nftItem, id) => (
 
                     <NFTCardExternal
                       key={id}
@@ -524,12 +537,11 @@ const Collection = () => {
             <div className="flex w-full justify-center">No Liked NFTs yet.</div>
           ))} */}
 
-        {mynftstatus == 'loading' ||
-          (favouriteNftStatus == 'loading' && (
+        {mynftstatus == 'loading' && (
             <div className="flex items-center justify-center">
               <IconLoading />
             </div>
-          ))}
+          )}
       </div>
       <Footer />
     </div>

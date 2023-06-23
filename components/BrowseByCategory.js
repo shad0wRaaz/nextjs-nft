@@ -9,8 +9,8 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext';
 
 const style = {
-  wrapper: 'container mx-auto lg:p-[8rem] p-[2rem] lg:pb-0 overflow-hidden',
-  container: 'text-white browseWrapper p-[2rem] md:p-[4rem] rounded-3xl ',
+  wrapper: 'container mx-auto lg:p-[8rem] p-[1.2rem] lg:pb-0 overflow-hidden',
+  container: 'text-white browseWrapper p-[2rem] md:p-[4rem] rounded-xl ',
   title: `font-bold text-[2rem] flex justify-between items-center text-center mb-[2rem]`,
   contentWrapper:
     'flex justify-center items-center flex-row flex-nowrap gap-[20px]',

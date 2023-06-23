@@ -157,7 +157,7 @@ const Nft = (props) => { //props are from getServerSideProps
   }, [thisNFTMarketAddress, address, signer])
 
   useEffect(() => {
-    if(Boolean(listingData?.reservePrice)) {
+    if(Boolean(listingData?.type == 1)) {
       setIsAuctionItem(true);
     }
   }, [listingData])
@@ -787,15 +787,16 @@ const Nft = (props) => { //props are from getServerSideProps
                 auctionItem={isAuctionItem}
                 />
               )} */}
-
-              <ItemOffers
-              selectedNft={ownerData}
-              listingData={listingData}
-              metaDataFromSanity={metaDataFromSanity}
-              thisNFTMarketAddress={thisNFTMarketAddress}
-              thisNFTblockchain={thisNFTblockchain}
-              isAuctionItem={isAuctionItem}
-              />
+              {Boolean(listingData) && (
+                <ItemOffers
+                selectedNft={ownerData}
+                listingData={listingData}
+                metaDataFromSanity={metaDataFromSanity}
+                thisNFTMarketAddress={thisNFTMarketAddress}
+                thisNFTblockchain={thisNFTblockchain}
+                isAuctionItem={isAuctionItem}
+                />
+              )}
 
               <ItemActivity
                 thisNFTblockchain={thisNFTblockchain}
@@ -808,31 +809,16 @@ const Nft = (props) => { //props are from getServerSideProps
                   metaDataFromSanity={ metaDataFromSanity }
                 />
               )}
-              {Boolean(listingData) ? (
-                  <BurnCancel 
-                    nftContractData={nftContractData} 
-                    ownerData={listingData.sellerAddress}
-                    listingData={listingData}
-                    auctionItem={isAuctionItem}
-                    nftCollection={metaDataFromSanity}
-                    thisNFTMarketAddress={thisNFTMarketAddress}
-                    thisNFTblockchain={thisNFTblockchain}
-                    />
-              ) : (
-                <>
-                  {address && String(address).toLowerCase() == String(ownerData?.owners[0]?.ownerOf).toLowerCase() && (
-                    <BurnCancel 
-                      nftContractData={nftContractData} 
-                      ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
-                      listingData={listingData}
-                      auctionItem={isAuctionItem}
-                      nftCollection={metaDataFromSanity}
-                      thisNFTMarketAddress={thisNFTMarketAddress}
-                      thisNFTblockchain={thisNFTblockchain}
-                      />
-                  )}
-                </>
-              )}
+
+              <BurnCancel 
+                nftContractData={nftContractData} 
+                ownerData={ownerData?.owners[0].ownerOf}
+                listingData={listingData}
+                auctionItem={isAuctionItem}
+                nftCollection={metaDataFromSanity}
+                thisNFTMarketAddress={thisNFTMarketAddress}
+                thisNFTblockchain={thisNFTblockchain}
+                />
 
             </div>
           </div>
@@ -891,90 +877,17 @@ export async function getServerSideProps(context){
         `${HOST}/api/infura/getNFTMetadata/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`,
         `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}/`,
         `${HOST}/api/infura/getNFTOwnerData/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`,
-        `${HOST}/api/nft/marketListing/${chain}/${contractAddress}/${tokenId}`,
+        `${HOST}/api/mango/getSingle/${chain}/${contractAddress}/${tokenId}`,
       ]
-
+      //old marketlisting fetchpoint
+      // `${HOST}/api/nft/marketListing/${chain}/${contractAddress}/${tokenId}`,
       const unresolved = endPoints.map(point => fetch(point));
       const resolved = await Promise.all(unresolved);
 
       const unresolvedJSON = resolved.map(data => data.json());
       resolvedJSON = await Promise.all(unresolvedJSON);
-
-      // const response = await fetch(`${HOST}/api/infura/getNFTMetadata/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`);
-      // nftcontractdata = await response.json();
-
-      // const anotherresponse = await fetch(`${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}/`);
-      // sanityData = await anotherresponse.json();
-
-      // const response3 = await fetch(`${HOST}/api/infura/getNFTOwnerData/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`);
-      // ownerdata = await response3.json();
-
-      //get royalty info
-      // const sdk = new ThirdwebSDK(chain);
-      // const contract = await sdk.getContract(contractAddress, "nft-collection");
-      // const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
-
-      // royaltyData = {...royalty};
-
-      // const response4 = await fetch(`${HOST}/api/nft/marketListing/${chain}/${contractAddress}/${tokenId}`);
-      // nftdata = await response4.json();
-      // console.log(nftdata)
-    // }catch(err){
-    //   console.log(err)
-    // }
   }
-
-  // var nftdata = "";
-  
-  
   var allListedFromThisChain = "";
-  // var marketAddress = process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE; //by default, save a market address
-  // var nftChainid = 56;
-
-  // const blockchainName = {
-  //   '80001': 'mumbai',
-  //   '137': 'polygon',
-  //   '43113': 'avalanche-fuji',
-  //   '43114': 'avalanche',
-  //   '97': 'binance-testnet',
-  //   '56': 'binance',
-  //   '421563': 'arbitrum-goerli',
-  //   '5': 'goerli',
-  //   '1': 'mainnet',
-  // }
-
-  // try {
-  //   const response = await fetch(`${HOST}/api/nft/listing/${chain}/${contractAddress}/${tokenid}`).catch(err => {
-  //     console.error('Error getting NFT Listing data')
-  //   }); 
-  //   if(response.status == 200) {nftdata = await response.json();}
-
-  //   const response2 = await fetch(`${HOST}/api/nft/${query.nftid}`).catch(err => {
-  //         console.error('Error getting NFT data')
-  //       });
-  //   if(response2.status == 200) { sanityData = await response2.json(); }
-
-
-  //   const collectionAddress = sanityData.collection?.contractAddress;
-  //   const response3 = await fetch(`${HOST}/api/nft/contract/${sanityData.chainId}/${collectionAddress}/${sanityData.id}`).catch(err => {
-  //         console.error('Error getting Collection data')
-  //       });
-  //   if(response3.status == 200) { nftcontractdata = await response3.json(); }
-
-
-  //   //determine which marketplace is current NFT is in
-
-  //   nftChainid = sanityData?.collection.chainId;
-
-  //   marketAddress = marketplace[nftChainid];
-
-  //   const response4 = await fetch(`${HOST}/api/getAllListings/${blockchainName[nftChainid]}`);
-  //   allListedFromThisChain = await response4.json();
-  // }catch(err){
-  //   console.error(err)
-  // }
-  
-
   return {
     props: {
       contractAddress,

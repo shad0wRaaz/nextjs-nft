@@ -23,13 +23,29 @@ export const getContractData = async (collectionData) => {
   return (await contract.metadata.get())
 }
 
-export const getMarketOffers = (marketAddress, blockchain) => async({queryKey}) => {
+export const getMarketOffers = (marketAddress, blockchain, listingData) => async({queryKey}) => {
   const [_, listingId] = queryKey
   if(listingId && marketAddress && blockchain) {
+
     const sdk = new ThirdwebSDK(blockchain);
-    const contract = await sdk.getContract(marketAddress, "marketplace");
-    const marketOffers = await contract.getOffers(listingId);
-    return marketOffers;
+    const contract = await sdk.getContract(marketAddress, "marketplace-v3");
+
+    if(listingData?.type == 0){
+      try{
+        const marketOffers = await contract.offers.getAllValid({
+          tokenContract: listingData?.assetContractAddress,
+          tokenId: BigNumber.from(listingData.tokenId).toString(),
+        });
+        return marketOffers;
+      }catch(err){
+        return null;
+      }
+    }else if(listingData?.type == 1){
+      console.log('auction')
+      const marketBids = await contract?.englishAuctions.getAll();
+      console.log(marketBids)
+      return marketBids;
+    }
   }
   return null;
 }
@@ -45,6 +61,48 @@ async ({ queryKey }) => {
   });
   return data;
 }
+//gives performance issues when no of nfts are huge, do not use
+// export const INFURA_getEverything = (chainId) => 
+// async({queryKey}) => {
+//   const [_, collectionAddress, cursor] = queryKey;
+//   let nfts = [];
+//   let newcursor = cursor;
+//   do{
+//     const { data } = await axios.get(`${HOST}/api/infura/getCollectionOwners/${chainId}/${collectionAddress}`,
+//     {
+//       params: {
+//         cursor: newcursor
+//       }
+//     },
+//     {
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
+    
+//     newcursor = data.cursor;
+    
+//     if (nfts.length == 0){
+//       nfts = [...data.owners];
+//     }
+//     else{
+
+//       const result = nfts.filter(prevItem => {
+//         return data.owners.some(newItem => {
+//           return prevItem.tokenId === newItem.tokenId && prevItem.tokenAddress === newItem.tokenAddress;
+//         });
+//       });
+
+//       if(result.length == 0){
+//         nfts = [
+//           ...nfts, ...data.owners
+//         ]
+//       }
+//     }
+//   }while(newcursor != null)
+//   return nfts;
+// }
+
 export const INFURA_getAllOwners = (chainId) => 
 async ({ queryKey }) => {
   const [_, collectionAddress, cursor] = queryKey;

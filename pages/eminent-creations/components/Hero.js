@@ -1,6 +1,6 @@
 import React from 'react'
 import "@fontsource/alfa-slab-one";
-import bannerbg from '../assets/images/banner-bg-ec.jpeg'
+import bannerbg from '../assets/images/banner-bg-ec.webp'
 import discord from '../assets/images/discord.png'
 import twitter from '../assets/images/twitter.png'
 import facebook from '../assets/images/facebook.png'
@@ -18,14 +18,14 @@ import OtherReferralCommissions from '../../../components/referralCommissions/Ot
 const Hero = ({setShowMenu}) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
   return (
-    <section onClick={() => setShowMenu(false)} id="home" className="rrbanner !pb-0 !pt-[12rem] md:!pt-[150px]" style={{ fontFamily: 'Alfa Slab One', backgroundImage: `url('${bannerbg.src}')`}}>
+    <section onClick={() => setShowMenu(false)} id="home" className="rrbanner !pb-0 !pt-[12rem] md:!pt-[150px]" style={{ fontFamily: 'Alfa Slab One' }}>
         <div className="container mx-auto px-8">
             <div className="rrbanner__wrapper">
                 <div className="flex items-center justify-center gap-5">
                     <div className="col">
                         <div className="rrbanner__content text-center aos-init aos-animate" data-aos="fade-up" data-aos-duration="2000">
                             <h1 className="text--3d text-uppercase leading-[1.2]"> 
-                                <span className="color--gradient-ad">Eminent<br/>Creations</span> 
+                                <span className="color--gradient-ec">Eminent<br/>Creations</span> 
                             </h1>
                             <p className="font-normal leading-[2rem] md:leading-[4rem]">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Shared Royalty for Life<br/>Shared Platform Fee<br/>Starting from 30th of June, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10">

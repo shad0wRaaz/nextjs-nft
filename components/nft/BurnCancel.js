@@ -33,7 +33,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
     const [isTransfer, setIsTransfer] = useState(false);
     const [transferModal, setTransferModal] = useState(false);
     const [transferAddress, setTransferAddress] = useState('');
-    const switchChain = useSwitchChain()
+    const switchChain = useSwitchChain();
 
     const cancelListing = (
         e,
@@ -46,7 +46,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
           toast.error("Wallet not connected.", errorToastStyle);
           return
         }
-
+        
         if(chainid != nftCollection?.chainId){
           toast.error("Wallet is connected to wrong chain. Switching to correct chain.", errorToastStyle);
           switchChain(Number(nftCollection?.chainId)).catch((err) => {
@@ -54,39 +54,39 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
           })
           return;
         }
-
-
+        
+        
         ;(async () => {
           try {
             setCancelModal(false);
             setIsCanceling(true);
-
+            
             const sdk = new ThirdwebSDK(signer);
-            const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+            const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
             let tx = '';
             // console.log(auctionItem)
-            if(!auctionItem){
-              tx = await contract.direct
-                                  .cancelListing(listingData.id)
-                                  .catch(err => {
-                                    if(err.reason == 'user rejected transaction'){
-                                      toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-                                    }
-                                    setIsCanceling(false);
-                                    setLoadingNewPrice(false);
-                                  });
+            if(listingData?.type  == 0){
+              tx = await contract.directListings
+              .cancelListing(listingData.id)
+              .catch(err => {
+                if(err.reason == 'user rejected transaction'){
+                  toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                }
+                setIsCanceling(false);
+                setLoadingNewPrice(false);
+              });
             }else{
-              tx = await contract.auction
-                                  .cancelListing(listingData.id)
-                                  .catch(err => {
-                                    if(err.reason == 'user rejected transaction'){
-                                      toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-                                    }
-                                    setIsCanceling(false);
-                                    setLoadingNewPrice(false);
-                                    });
+              tx = await contract.englishAuctions
+              .cancelAuction(listingData.id)
+              .catch(err => {
+                if(err.reason == 'user rejected transaction'){
+                  toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                }
+                setIsCanceling(false);
+                setLoadingNewPrice(false);
+              });
             }
-
+            
             if (tx) {
     
               //saving transaction in sanity
@@ -120,18 +120,32 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
               //     })
                 queryClient.invalidateQueries(['marketplace']);
                 queryClient.invalidateQueries(['activities']);
-                  
-                //update listing data
+                
+                //delete data from market data in mango
                 ;(async() => {
                   setLoadingNewPrice(true);
-                  await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).finally(() => {
-                    setIsCanceling(false);
-                    setLoadingNewPrice(false);
-                    router.reload(window.location.pathname);
-                    router.replace(router.asPath);
-                    toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
-                  })
+                  await axios
+                        .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.contract}/${nftContractData?.tokenId}`)
+                        .catch(err => console.log(err))
+                        .then((res) =>{
+                          setIsCanceling(false);
+                          setLoadingNewPrice(false);
+                          router.reload(window.location.pathname);
+                          router.replace(router.asPath);
+                          toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
+                        })
                 })()
+                //update listing data
+                // ;(async() => {
+                //   setLoadingNewPrice(true);
+                //   await axios.get(process.env.NODE_ENV == 'production' ? `https://nuvanft.io:8080/api/updateListings/${thisNFTblockchain}` : `http://localhost:8080/api/updateListings/${thisNFTblockchain}`).finally(() => {
+                //     setIsCanceling(false);
+                //     setLoadingNewPrice(false);
+                //     router.reload(window.location.pathname);
+                //     router.replace(router.asPath);
+                //     toastHandler.success('The NFT has been delisted from the marketplace.', successToastStyle);
+                //   })
+                // })()
             }
           } catch (err) {
             // console.error(err);
@@ -316,6 +330,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
       setIsTransfer(false);
     }
 
+
   return (
     <>
     {showBurnModal && (
@@ -387,16 +402,10 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             </div>
         </div>
     )}
-    {Boolean(address) && 
-      (
-        (
-          String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase()
-        ) 
-        || 
-          String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()
-      ) && (
+    {/* String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase() */}
+    {Boolean(address) && (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
-            {Boolean(listingData) && (
+            {Boolean(listingData) && String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
               <>
                 {isCanceling ? (
                   <div className="w-full md:w-1/3 p-2">
@@ -417,39 +426,43 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
                 )}
               </>
             )}
-            {isTransfer ? (
-              <div className="w-full md:w-1/3 p-2">
-                <button 
-                      className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                      onClick={() => setBurnModal(true)}>
-                        <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
-                  </button>
-              </div>
-            ) : (
-              <div className="w-full md:w-1/3 p-2">
-                <button 
-                      className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                      onClick={() => setTransferModal(true)}>
-                        <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
-                  </button>
-              </div>
-            )}
-            {isBurning ? (
-              <div className="w-full md:w-1/3 p-2">
-                <button 
-                    className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                    disabled>
-                    <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
-                </button>
-              </div>
-            ):(
-              <div className="w-full md:w-1/3 p-2">
-                <button 
-                    className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                    onClick={() => setBurnModal(true)}>
-                    <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
-                </button>
-              </div>
+            {(String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) && (
+              <>
+                {isTransfer ? (
+                  <div className="w-full md:w-1/3 p-2">
+                    <button 
+                          className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                          onClick={() => setBurnModal(true)}>
+                            <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
+                      </button>
+                  </div>
+                ) : (
+                  <div className="w-full md:w-1/3 p-2">
+                    <button 
+                          className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                          onClick={() => setTransferModal(true)}>
+                            <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
+                      </button>
+                  </div>
+                )}
+                {isBurning ? (
+                  <div className="w-full md:w-1/3 p-2">
+                    <button 
+                        className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                        disabled>
+                        <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
+                    </button>
+                  </div>
+                ):(
+                  <div className="w-full md:w-1/3 p-2">
+                    <button 
+                        className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                        onClick={() => setBurnModal(true)}>
+                        <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
+                    </button>
+                  </div>
+                )}
+              </>
             )}
         </div>
       )}

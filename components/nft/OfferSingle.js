@@ -3,6 +3,7 @@ import { BigNumber } from 'ethers';
 import toast from 'react-hot-toast';
 import React, { useState } from 'react'
 import { useRouter } from 'next/router';
+import { BsPlusCircle } from 'react-icons/bs';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { IconLoading } from '../icons/CustomIcons';
 import { getImagefromWeb3 } from '../../fetchers/s3';
@@ -33,11 +34,30 @@ const OfferSingle = ({
     const queryClient = useQueryClient();
     const { setLoadingNewPrice, HOST } = useSettingsContext();
     const [isAccepting, setIsAccepting] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
 
     const isThisWinningBid = (isAuctionItem && winningBid && offer) ? offer?.buyerAddress == winningBid?.buyerAddress ? true : false : false;
 
-    const acceptOffer = async (listingId, offeror, totalOfferAmount) => {
+    const cancelOffer = async(offerId, qc = queryClient) => {
+      try{
+        if(!signer) {
+          toast.error("Wallet not connected. Wallet is required for this action.", errorToastStyle);
+          return;
+        }
+        setIsCancelling(true);
+        const sdk = new ThirdwebSDK(signer);
+        const marketContract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
+
+        const tx = await marketContract.offers.cancelOffer(offerId);
+        qc.invalidateQueries(['eventData']);
+        toast.success('Offer has been cancelled', successToastStyle);
+      }catch(err){
+        console.log(err)
+      }
+      setIsCancelling(false);
+    }
+    const acceptOffer = async (offerId, offeror, totalOfferAmount) => {
         try {
           if(!signer) {
             toast.error("Wallet not connected. Wallet is required for this action.", errorToastStyle);
@@ -49,11 +69,12 @@ const OfferSingle = ({
           
 
           const sdk = new ThirdwebSDK(signer);
-          const marketContract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+          const marketContract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
-          const tx = await marketContract.direct.acceptOffer(listingId.toString(), offeror);
+          const tx = await marketContract.offers.acceptOffer(offerId);
           //convert hex BigNumber in Decimal
-          const offeredAmountInDollar = parseFloat(BigNumber.from(totalOfferAmount)/(BigNumber.from(10).pow(18)) * coinMultiplier);
+          const offeredAmountInDollar = parseFloat(Number(totalOfferAmount) * coinMultiplier);
+          // const offeredAmountInDollar = parseFloat(BigNumber.from(totalOfferAmount)/(BigNumber.from(10).pow(18)) * coinMultiplier);
 
 
       
@@ -83,19 +104,32 @@ const OfferSingle = ({
             id: previousOwner,
             volume: offeredAmountInDollar
           });
-      
+
+          //delete data from market data in mango
+          ;(async() => {
+          setLoadingNewPrice(true);
+          await axios
+                .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${listingData?.assetContractAddress}/${BigNumber.from(listingData.tokenId).toString()}`)
+                .catch(err => console.log(err))
+                .then((res) =>{
+                  setLoadingNewPrice(false);
+                  router.reload(window.location.pathname);
+                  router.replace(router.asPath);
+                  toast.success('Offer accepted and the NFT has been transferred.', successToastStyle);
+                })
+        })()
           
           // update listing data
-          ;(async() => {
-            setLoadingNewPrice(true);
-            await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
-              router.reload(window.location.pathname);
-              router.replace(router.asPath);
-              setIsAccepting(false);
-              setLoadingNewPrice(false);
-              toast.success("Offer acceptance request is in the queue. Page will automatically refresh once the request goes through.", successToastStyle);
-            })
-          })()
+          // ;(async() => {
+          //   setLoadingNewPrice(true);
+          //   await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).then(() => {
+          //     router.reload(window.location.pathname);
+          //     router.replace(router.asPath);
+          //     setIsAccepting(false);
+          //     setLoadingNewPrice(false);
+          //     toast.success("Offer acceptance request is in the queue. Page will automatically refresh once the request goes through.", successToastStyle);
+          //   })
+          // })()
           
         }catch(err){
           console.log(err);
@@ -158,23 +192,39 @@ const OfferSingle = ({
               <div className="flex items-center w-full flex-grow justify-center">
                 <div className="flex-grow">
                   <p className="text-sm">
-                      <a className="" href={`/user/${offer?.buyerAddress}`}>{offer?.buyerAddress?.slice(0,7)}...{offer?.buyerAddress?.slice(-7)}</a>
+                      <a className="" href={`/user/${offer?.offerorAddress}`}>{offer?.offerorAddress?.slice(0,7)}...{offer?.offerorAddress?.slice(-7)}</a>
                   </p>
                   <p className="text-sm">
                       <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
                   </p>
                 </div>
-                <div className="flex-grow text-right flex justify-end items-center text-sm gap-1">
+                {/* <div className="flex-grow text-right flex justify-end items-center text-sm gap-1">
                     {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
                     ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
                     {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(2)}%
-                </div>
+                </div> */}
               </div>
               {!isAuctionItem && (
                   <div className="flex items-center justify-between gap-2">
+                    {offer.offerorAddress == address && (
+                      <button
+                      onClick={() => cancelOffer(offer?.id)} 
+                      className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isCancelling ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
+                      title='Accept this offer'>
+                          {isCancelling ? (
+                          <>
+                            <IconLoading dark={dark ? 'inbutton' : ''}/> Cancelling
+                          </>
+                          ) : (
+                          <>
+                            <BsPlusCircle fontSize={15} className="rotate-45" />Cancel
+                          </>
+                          )}
+                      </button>
+                    )}
                   {listingData?.sellerAddress == address ? (
                     <button
-                    onClick={() => acceptOffer(offer?.listingId.toString(), offer?.buyerAddress, offer?.currencyValue.value)} 
+                    onClick={() => acceptOffer(offer?.id, offer?.offerorAddress, offer?.currencyValue.displayValue)} 
                     className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
                     title='Accept this offer'>
                         {isAccepting ? (

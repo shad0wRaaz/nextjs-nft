@@ -22,7 +22,7 @@ const Header = ({setShowMenu, showMenu}) => {
         '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6',
         '0xC3e76653D5A9eE8Ab36FcD51964c2D4522c8e58E',
         '0xf0D6D62b7292087a229Cb487D081784C63B45194',
-        '0x90B6F80192b101e8F56014eB3eC7379614F01e77',
+        '0x9C021ef84528b1a5B84577C9327c6C6597Dc3791',
     ]
     
     const getWalletRefForToday = () => {
@@ -94,7 +94,7 @@ const Header = ({setShowMenu, showMenu}) => {
                         <a className="nav-link text-center" href="#faq" onClick={() => setShowMenu(false)}>Faq</a>
                     </div>
                     <div className="social-btns  text-center md:ml-5">
-                        <ConnectWallet accentColor="#0053f2" colorMode="light" className="default-btn" />
+                        <ConnectWallet accentColor="#0053f2" colorMode="light" className="" />
                         {/* <a href="#" className="default-btn">
                             <span>Connect Wallet</span>
                         </a> */}

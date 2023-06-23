@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
 import Link from 'next/link'
 import NFTItem from './NFTItem'
 import toast from 'react-hot-toast'
+import React, { useState } from 'react'
 import bsclogo from '../assets/bsc.png'
 import maticlogo from '../assets/matic.png'
 import { useAddress } from '@thirdweb-dev/react'
@@ -121,9 +121,7 @@ const ExploreNFTs = () => {
         <div className={style.nftwrapper}>
           {latestNfts?.map((nftItem, id) => (
             <React.Fragment key={id}>
-              {nftItem.asset.properties?.tokenid && (
                 <NFTItem key={id} nftItem={nftItem} chain={selectedBlockchain} compact={compact}/>
-              )}
             </React.Fragment>
           ))}
         </div>

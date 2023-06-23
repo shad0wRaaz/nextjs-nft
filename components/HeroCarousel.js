@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import "slick-carousel/slick/slick.css";
 import { useQuery } from 'react-query';
 import FeaturedItems from './FeaturedItems'
+import {CountdownTimer} from './CountdownTimer'
 import { RiCloseFill } from 'react-icons/ri';
 import { config } from '../lib/sanityClient';
 import { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
 import { getFullListings } from '../fetchers/Web3Fetchers';
+import NoSSR from 'react-no-ssr';
 
 const style = {
   wrapper: `relative overflow-hidden`,
@@ -128,6 +130,12 @@ const HeroCarousel = (props) => {
               >
                 Tutorials
               </button>
+            </div>
+            <div className="p-[20px]">
+              <p className="text-lg  mt-8">First ever NFT Referral on multiple chains coming in</p>
+              <NoSSR>
+                <CountdownTimer targetDate={new Date('June 30, 2023 15:00:00')} align={'left'}/>
+              </NoSSR>
             </div>
           </div>
           {featuredListedNFTs && (

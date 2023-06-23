@@ -1,0 +1,67 @@
+import { BigNumber } from 'ethers';
+import { MongoClient, ServerApiVersion } from 'mongodb';
+
+const uri = `mongodb+srv://92d787155e4849783203de6afba9ea:WeYbKmSILCdHvjsN@nuvanft.yzqcmom.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.NEXT_PUBLIC_MANGO_USERNAME}:${process.env.NEXT_PUBLIC_MANGO_PASSWORD}@${process.env.NEXT_PUBLIC_MANGO_ATLAS_URI}`;
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+let conn;
+let mangodb;
+try {
+  conn = await client.connect();
+  mangodb = conn.db('nftdb');
+} catch(e) {
+  console.error(e);
+}
+
+
+export const getMarketData = async(contractAddress, tokenId, chain) => {
+  const collection = await mangodb.collection(`activelistings-${chain}`);
+  const bigTokenId = BigNumber.from(tokenId)
+  const query = {'tokenId.hex': bigTokenId._hex, assetContractAddress : String(contractAddress).toLowerCase()};
+  // const options = { sort : { assetContractAddress:1 }, projection : { assetContractAddress: 1}}
+  const result = await collection.find( query ).toArray();
+  return result;
+}
+
+export const saveMarketData = async(document, chain) => {
+  // const newDocument = JSON.parse(document);
+  const collection = await mangodb.collection(`activelistings-${chain}`);
+  const result = await collection.insertOne(document);
+  return result;
+}
+
+export const saveMultipleMarketData = async(documents, chain) => {
+  // const documents = JSON.parse(documentObjects);
+  const collection = await mangodb.collection(`activelistings-${chain}`);
+  const result = await collection.insertMany(documents);
+  return result;
+
+}
+
+export const deleteMarketData = async(contractAddress, tokenId, chain) => {
+  const collection = await mangodb.collection(`activelistings-${chain}`);
+  const bigTokenId = BigNumber.from(tokenId);
+  const query = {'tokenId.hex': bigTokenId._hex, assetContractAddress : contractAddress};
+  const result = await collection.deleteOne( query );
+  return result;
+}
+
+export const latestMarketData = async(chain, lim) => {
+
+  const collection = await mangodb.collection(`activelistings-${chain}`);
+  const query = {};
+  const result = await collection.find().limit(parseInt(lim)).toArray();
+  return result;
+}
+
+
+export default mangodb;

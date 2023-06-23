@@ -15,6 +15,7 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { INFURA_AUTH } from './infura/config.js'
 import { emailBody } from './emails/templates.js'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
+import { deleteMarketData, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
 
 const app = express()
 app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
@@ -143,7 +144,37 @@ const getCoinPricefromCMC = () => {
     }
   });
 }
+app.get('/api/mango/getSingle/:chain/:contractAddress/:tokenId', async(req,res) => {
+  const { contractAddress, tokenId, chain } = req.params;
+  res.status(200).send(await getMarketData(contractAddress, tokenId, chain));
+})
 
+app.post('/api/mango/insertSingle', async(req,res) => {
+  const { document, chain } = req.body;
+
+  try{
+    await saveMarketData(document, chain);
+    return res.status(200).send('success');
+  }catch(err){
+    console.log(err)
+    return res.status(500).send('error');
+  }
+})
+
+app.post('/api/mango/insertMany', async(req, res) => {
+  const { documents, chain } = req.body;
+  try{
+    await saveMultipleMarketData(documents, chain);
+    return res.status(200).send('success');
+  }catch(err){
+    return res.status(500).send('error');
+  }
+})
+
+app.get('/api/mango/deleteSingle/:chain/:contractAddress/:tokenId', async(req, res) => {
+  const { contractAddress, tokenId, chain } = req.params;
+  return res.status(200).send(await deleteMarketData(contractAddress, tokenId, chain));
+})
 // app.get("/api/updateCoinPrices", async(req,res) => {
 //   console.log('i am called')
 //   let response = null;
@@ -349,7 +380,7 @@ app.get('/api/infura/getMarketData/:chainId/:contractAddress', async(req, res) =
   }
 })
 
-//get NFT Owner Data
+//get NFT Owner Data with metadata and minter address as well
 const getNFTOwnerDataFromInfura = async(chainId, tokenAddress, tokenid) => {
   const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
     headers: {
@@ -370,24 +401,25 @@ app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req
   }
 });
 
-//get NFT Metadata
-app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
-  const {chainId, tokenAddress, tokenid} = req.params;
+//get NFT Metadata, contract address
+const getNFTMetaData = async(chainId, tokenAddress, tokenid) => {
   try{
     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenid}`, {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
-  })
-  // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
-  // console.log(data)
-  
-  return res.send(data);
-  
-  }catch(error){
-    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${INFURA_AUTH}`,
+        }
+    })
+    return data;
+  }catch(err){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", err);
+    return null
   }
+}
+app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
+  const {chainId, tokenAddress, tokenid} = req.params;
+  const nftmetadata = await getNFTMetaData(chainId, tokenAddress, tokenid);
+  return res.send(nftmetadata);
 });
 
 //get Collection Metadata
@@ -612,7 +644,7 @@ return res.status(200).send(null)
 });
 
 app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
-  console.log(req.headers)
+
   const file = req.file.buffer;
   try{
     const fileURI = await web3storage.upload(file);
@@ -724,6 +756,7 @@ app.get('/api/getAllListings/:blockchain', async (req, res) => {
 
   let cache = await redis.get("activelistings-" + blockchain);
   globalActiveListings = JSON.parse(cache);
+  return res.status(200).json(globalActiveListings)
   //get blocked nfts and collections
   const rawdata = JSON.parse(await redis.get("blockeditems"));
   let filterednfts = globalActiveListings;
@@ -814,41 +847,46 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
 
   const blockchain = req.params.blockchain;
   const nftQuantity = req.query.quantity;
-  const cache = await redis.get("activelistings-" + blockchain);
 
-  const allArr = JSON.parse(cache);
+  const result = await latestMarketData(blockchain, nftQuantity);
+
+  return res.status(200).json(result);
+
+  // const cache = await redis.get("activelistings-" + blockchain);
+
+  // const allArr = JSON.parse(cache);
 
 
-  var selectedChainCurrency = '';
+  // var selectedChainCurrency = '';
 
-  if(blockchain != undefined){
-    if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
-    else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
-    else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'tBNB'; } 
-    else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
-    else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
+  // if(blockchain != undefined){
+  //   if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
+  //   else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
+  //   else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'tBNB'; } 
+  //   else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
+  //   else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
 
-    const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
-    //get blocked nfts and collections
-    const rawdata = JSON.parse(await redis.get("blockeditems"));
-    let blockednfts = [], blockedcollections = [];
-    if(rawdata != null){
-       blockednfts = rawdata[0]?.blockednfts;
-       blockedcollections = rawdata[0]?.blockedcollections;
-    }
+  //   const thisChainNfts = allArr?.filter((item) => item.buyoutCurrencyValuePerToken.symbol == selectedChainCurrency);
+  //   //get blocked nfts and collections
+  //   const rawdata = JSON.parse(await redis.get("blockeditems"));
+  //   let blockednfts = [], blockedcollections = [];
+  //   if(rawdata != null){
+  //      blockednfts = rawdata[0]?.blockednfts;
+  //      blockedcollections = rawdata[0]?.blockedcollections;
+  //   }
 
-    //remove blocked nfts.
-    let filterednfts = thisChainNfts;
-    if(blockednfts.length != 0){
-      filterednfts = thisChainNfts?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
-    }
+  //   //remove blocked nfts.
+  //   let filterednfts = thisChainNfts;
+  //   if(blockednfts.length != 0){
+  //     filterednfts = thisChainNfts?.filter( obj => !blockednfts.some( obj2 => obj?.asset?.properties?.tokenid === obj2._id ));
+  //   }
 
-    const latestNfts = filterednfts?.slice(-nftQuantity); 
+  //   const latestNfts = filterednfts?.slice(-nftQuantity); 
 
-    return res.status(200).json(latestNfts?.reverse())
-  }
+  //   return res.status(200).json(latestNfts?.reverse())
+  // }
   
-  return res.status(200).json(allArr.reverse())
+  // return res.status(200).json(allArr.reverse())
 })
 
 app.get('/api/popularaudionfts/:blockchain', async(req, res) => {
@@ -1075,6 +1113,14 @@ app.get('/api/nft/marketdata/:chain/:marketplace/:contractAddress/', async (req,
 //this will return Listing Data of a NFT
 app.get('/api/nft/marketListing/:chain/:contractAddress/:tokenId', async (req, res) => {
   const { chain, contractAddress, tokenId } = req.params;
+
+  // const sdk = new ThirdwebSDK(chain);
+  // const contract = await sdk.getContract("0x0bFc480e8e9D391a0A601ed5B54151D3e526BACd", "marketplace");
+  // const listing = await contract.getActiveListings({
+  //   tokenContract: contractAddress,
+  //   tokenId: tokenId,
+  // });
+  // return res.status(200).json(listing);
 
   const tokenListings = await redis.get("activelistings-" + chain);
 

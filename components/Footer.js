@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Link from 'next/link'
+import Image from 'next/image'
 import React, { useState } from 'react'
 import { CgReadme } from 'react-icons/cg'
 import { config } from '../lib/sanityClient'
@@ -11,7 +12,6 @@ import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
 import { FaFacebookF, FaTelegramPlane, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa'
-import Image from 'next/image'
 
 
 
@@ -79,7 +79,7 @@ const Footer = () => {
   const style = {
     partnerContainer:
       'container mx-auto bg-neutral-50 border-t border-neutral-200 p-[50px] text-center partnerContainer mt-[80px]',
-    bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[2rem]  pb-0 mt-0',
+    bottomWrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[0rem]  pb-0 mt-0',
     bottomContainer:
       'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
     footerContainer:
@@ -90,8 +90,8 @@ const Footer = () => {
     socialWrapper: 'flex flex-wrap gap-3',
     socialItem:
       'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
-    copyright: 'text-sm',
-    footerLinksWrapper: 'flex gap-3 mt-3 md:mt-0 flex-col md:flex-row',
+    copyright: 'text-sm text-center',
+    footerLinksWrapper: 'flex gap-3 mt-3 md:mt-0 flex-col md:flex-row justify-center items-center',
     footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
     subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
     subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',

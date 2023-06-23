@@ -10,6 +10,7 @@ import Videos from './components/Videos'
 import Gallery from './components/Gallery'
 import Roadmap from './components/Roadmap'
 import Community from './components/Community'
+import bannerbg from './assets/images/banner-bg-ec.webp'
 import HelmetMetaData from '../../components/HelmetMetaData'
 import socialcoverimage from './assets/images/socialcoverimage.webp'
 
@@ -32,7 +33,7 @@ const index = () => {
         image={dataForSEO.image}
         currentUrl={dataForSEO.currentUrl}
       />
-      <main className="eminentcreations">
+      <main className="eminentcreations" style={{ backgroundImage: `url('${bannerbg.src}')`, backgroundAttachment: 'fixed', backgroundSize: 'cover'}}>
           <Header showMenu={showMenu} setShowMenu={setShowMenu} />
           <Hero setShowMenu={setShowMenu}/>
           <Gallery setShowMenu={setShowMenu}/>

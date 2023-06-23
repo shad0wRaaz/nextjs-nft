@@ -155,8 +155,11 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-ad d-block">1. Artistic  Alchemy</span></h2>
-                        <p className="text-center mt-3">Artistic Alchemy is an NFT collection that explores the transformative power of artistic expression. It represents the fusion of different artistic elements, techniques, and inspirations to create something entirely new and captivating. The collection features a diverse range of artworks that blend various mediums, styles, and subject matters, showcasing the alchemical process of artistic experimentation and innovation.</p>
+                        <span className="color--gradient-ad d-block">1. Blockchain Beauties</span></h2>
+                        <p className="text-center mt-3">Enter the realm of elegance and sophistication with "Blockchain Beauties," a captivating NFT collection that celebrates the essence of beauty, empowerment, and blockchain technology. Prepare to be mesmerized by a gallery of digital artworks that showcase the diverse beauty and strength of women.</p>
+                        <p className="text-center mt-3">"Blockchain Beauties" presents a collection of stunning digital portraits, each capturing the unique essence and individuality of its subject. These artworks embody a celebration of femininity, highlighting the beauty that transcends physical appearance and encompasses inner strength, resilience, and empowerment.</p>
+                        <p className="text-center mt-3">As a collector of "Blockchain Beauties" NFTs, you embrace the spirit of empowerment and support for female artists and creators within the blockchain community. By owning these digital artworks, you become a patron of the arts, fostering a space where beauty, creativity, and inclusivity thrive.</p>
+                        <p className="text-center mt-3">Unlock the power of beauty and blockchain technology with "Blockchain Beauties" as you embrace a world where art transcends boundaries, celebrates diversity, and empowers individuals to embrace their unique beauty.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -195,7 +198,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">CRYPTO CREATURES</span>
+                                            All Airdrops from <span className="font-bold">Blockchain Beauties</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -392,8 +395,10 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-ad d-block">2. Canvas Chronicles</span></h2>
-                        <p className="text-center mt-3">Canvas Chronicles is an NFT collection that celebrates the timeless beauty and power of traditional canvas-based artwork. It pays homage to the rich history and evolution of art on canvas, capturing the essence of artistic narratives and personal expressions. Within the Canvas Chronicles collection, each artwork tells a unique story, unfolding a narrative that transcends time and space. The collection showcases a wide array of artistic styles, including classical, impressionist, abstract, and contemporary, offering a diverse range of visual experiences for art enthusiasts.</p>
+                        <span className="color--gradient-ad d-block">2. Techno Trove</span></h2>
+                        <p className="text-center mt-3">Welcome to the cutting-edge world of "Techno Trove," a futuristic NFT collection that merges technology, innovation, and artistic expression. Prepare to embark on a journey through a digital treasure trove of captivating and dynamic artworks that push the boundaries of imagination.</p>
+                        <p className="text-center mt-3">"Techno Trove" presents a mesmerizing assortment of NFTs that showcase the harmonious fusion of technology and artistry. From futuristic cityscapes and sleek cybernetic beings to mesmerizing visual effects and intricate digital sculptures, each artwork within the collection is a testament to the creative potential of the digital realm.</p>
+                        <p className="text-center mt-3">Welcome to "Techno Trove," where art meets technology, and the boundaries of creativity are redefined. Unlock the digital treasures that await within this captivating collection and embark on a journey of discovery in the ever-evolving landscape of the digital age.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -432,7 +437,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium pt-6 leading-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">NEON DREAMS</span>
+                                            All Airdrops from <span className="font-bold">Techno Trove</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -627,8 +632,11 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-ad d-block">3. Palette Perceptions</span> </h2>
-                        <p className="text-center mt-3">Palette Perceptions is an NFT collection that explores the fascinating realm of colors and their subjective interpretations. It delves into the way colors evoke emotions, trigger memories, and shape our perceptions of the world around us. Within the Palette Perceptions collection, each artwork is a vibrant symphony of hues and tones, carefully selected and arranged to convey specific moods and messages. Artists employ a diverse range of color palettes, from vibrant and bold to soft and pastel, creating visual experiences that captivate the senses.</p>
+                        <span className="color--gradient-ad d-block">3. Virtual Vortex</span> </h2>
+                        <p className="text-center mt-3">Step into the mesmerizing world of "Virtual Vortex," a captivating NFT collection that transcends the boundaries of reality and transports you to a digital dimension of endless possibilities. Brace yourself for an immersive journey where art, technology, and the virtual realm converge.</p>
+                        <p className="text-center mt-3">"Virtual Vortex" unveils a collection of digital artworks that harness the power of the vortex, creating a captivating visual experience like no other. Each NFT within this collection serves as a portal to a virtual realm, where dynamic visuals, vibrant colors, and mind-bending perspectives come together in perfect harmony.</p>
+                        <p className="text-center mt-3">Immerse yourself in the swirling energy of the "Virtual Vortex," where reality and imagination intertwine. These digital artworks are meticulously crafted to evoke a sense of wonder and awe, inviting you to explore abstract dimensions, surreal landscapes, and dreamlike vistas that defy conventional understanding.</p>
+                        <p className="text-center mt-3">Prepare to be entranced by the power of the virtual vortex, where the boundaries of reality dissolve and the digital realm unfolds with infinite possibilities. Welcome to "Virtual Vortex," where art transcends limitations and takes you on an immersive journey into the realms of the virtual unknown.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -667,7 +675,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">CELESTIAL BEINGS</span>
+                                            All Airdrops from <span className="font-bold">Virtual Vortex</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -862,8 +870,11 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-ad d-block">4. Brushstroke Symphony</span></h2>
-                        <p className="text-center mt-3">Brushstroke Symphony is an NFT collection that celebrates the captivating beauty and expressive power of brushstrokes in art. It is a harmonious symphony of artistic movements, where each brushstroke becomes a note, and the artwork itself becomes a melodic composition. Within the Brushstroke Symphony collection, each artwork is a testament to the artist's skill and creativity, showcasing a variety of brushstroke techniques and styles. From bold and energetic strokes that convey passion and intensity to delicate and precise strokes that exhibit subtlety and grace, the collection encompasses a wide range of brushwork expressions.</p>
+                        <span className="color--gradient-ad d-block">4. Artistic Auras</span></h2>
+                        <p className="text-center mt-3">Enter the ethereal world of "ArtisticAuras," a mesmerizing NFT collection that explores the intangible beauty and emotional resonance of artistic expressions. Prepare to be captivated by a collection of artworks that evoke a sense of wonder, evoke deep emotions, and unveil the hidden dimensions of the artistic realm.</p>
+                        <p className="text-center mt-3">"ArtisticAuras" presents a breathtaking assortment of NFTs that transcend the physical canvas and delve into the realms of energy, emotion, and spiritual resonance. Each artwork within the collection is a testament to the power of artistic expression, capturing the essence of emotions, thoughts, and experiences through vivid colors, intricate forms, and evocative compositions.</p>
+                        <p className="text-center mt-3">Immerse yourself in a world where art becomes a conduit for the unseen, the unspoken, and the ineffable. Each "ArtisticAura" NFT exudes a unique energy, radiating an aura that speaks to the soul, provokes introspection, and connects with the viewer on a profound level.</p>
+                        <p className="text-center mt-3">Welcome to "ArtisticAuras," where art transcends the physical and touches the realms of the intangible. Unlock the captivating energies, explore the depths of human emotion, and allow yourself to be immersed in the mesmerizing beauty of artistic expressions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -902,7 +913,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">ARTIFACTS OF THE FUTURE</span>
+                                            All Airdrops from <span className="font-bold">Artistic Auras</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 

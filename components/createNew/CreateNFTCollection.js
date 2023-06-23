@@ -115,7 +115,7 @@ const CreateNFTCollection = () => {
           fee_recipient: form.fee_recipient.value,
           primary_sale_recipient: form.primary_sale_recipient.value,
           seller_fee_basis_points: form.seller_fee_basis_points.value * 100,
-          platform_fee_basis_points: 500,
+          platform_fee_basis_points: 2.5,
           platform_fee_recipient: process.env.NODE_ENV == 'production' ? '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e' : '0x9D2036BAfd465bAFaCFeEb6A4a97659D9f2a8A30',
           trusted_forwarders: [],
         }

@@ -616,7 +616,6 @@ right connector from last child*/
   /* background: linear-gradient(90deg,#f6fff2,#c3ffa9); */
   border-radius: 10px;
   box-shadow: 0 5px 0 0 #0d142f;
-  color: #f6fff2;
   font-family: Alfa Slab One,cursive;
   font-size: 1.125rem;
   line-height: 50px;
@@ -629,7 +628,7 @@ right connector from last child*/
 .rewardingrenditions .default-btn{ background: linear-gradient(90deg,#0031A6,#001D5E); color: #ffffff;}
 .admirabledepictions .default-btn{ background-image: linear-gradient(to right top, #00bf72, #a8eb12); color: #232323; }
 .majesticvisions .default-btn{ background: linear-gradient(90deg,#42BEE7,#3190B9); color: #fff;}
-.eminentcreations .default-btn{ background: linear-gradient(90deg,#f2ffc1,#fffc00); color: #000; }
+.eminentcreations .default-btn{ background: linear-gradient(90deg,#b0b0b0,#ffffff); color: #000000;}
 
 .default-btn {
   line-height: 56px;
@@ -670,7 +669,7 @@ right connector from last child*/
 }
 .color--gradient-ec, .eminentcreations .mint__numbers {
   -webkit-text-fill-color: transparent;
-  background: linear-gradient(0deg,#fff,#bbb200);
+  background: linear-gradient(0deg,#fff,#fff);
   -webkit-background-clip: text;
 }
 
@@ -699,7 +698,7 @@ right connector from last child*/
 .rewardingrenditions { color: #ecffe1; }
 .admirabledepictions { color: #fff; background: #220145 }
 .majesticvisions { color: #fff; background: linear-gradient(153deg, #283970, #131734); background-attachment: fixed; }
-.eminentcreations { color: #fff; background: linear-gradient(153deg, #6a1a42, #2b0010); background-attachment: fixed; }
+.eminentcreations { color: #fff; background: #58011e; }
 
 .mint h6 {font-size:1.125rem}
 .mint h4, .roadmap  h4 {font-size:1.575rem;}

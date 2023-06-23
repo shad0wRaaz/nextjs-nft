@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Sell from './Sell'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { config } from '../../lib/sanityClient'
@@ -193,8 +193,8 @@ const MakeOffer = ({
       //get minimum next bid
       ;(async() => {
         const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
-        const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
-        const minBid = await contract.auction.getMinimumNextBid(listingData?.id);
+        const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
+        const minBid = await contract.englishAuctions.getMinimumNextBid(listingData?.id);
         setMinNextBig(minBid);
         // console.log(minBid);
   
@@ -465,14 +465,15 @@ const MakeOffer = ({
     try {
       setOfferLoading(true); 
       const sdk = new ThirdwebSDK(signer);
-      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
-      const tx = await contract.direct.makeOffer(
-              listingId,
-              quantityDesired,
-              NATIVE_TOKENS[blockchainNum[thisNFTblockchain]].wrapped.address,
-              offerAmount
-            ).catch(err => {
+      const tx = await contract?.offers.makeOffer(
+              {
+                assetContractAddress: nftContractData?.contract,
+                tokenId: nftContractData?.tokenId,
+                quantity: quantityDesired,
+                totalPrice: offerAmount,
+            }).catch(err => {
               setOfferLoading(false);
               setOfferAmount(0); 
               openOfferSetting('none');
@@ -546,16 +547,17 @@ const MakeOffer = ({
       setBidLoading(true)
       // await module.setBidBufferBps(500) //bid buffer, next bid must be at least 5% higher than the current bid
       const sdk = new ThirdwebSDK(signer);
-      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+      const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
-      const tx = await contract.auction.makeBid(listingId, bidAmount).catch(err => {
-        setBidLoading(false);
-        setBidAmount(0); 
-        openBidSetting('none');
-        toast.error("Error in bidding. Possible reason: Insufficient funds", errorToastStyle);
-      })
+      const tx = await contract.englishAuctions.makeBid(listingId, bidAmount)
+          .catch(err => {
+            setBidLoading(false);
+            setBidAmount(0); 
+            openBidSetting('none');
+            toast.error("Error in bidding. Possible reason: Insufficient funds", errorToastStyle);
+          })
       if(tx) {
-        toastHandler.success('Bid successful.', successToastStyle)
+        toastHandler.success('Bid placed successfully', successToastStyle);
         
         //save transaction
         // mutateSaveTransaction({
@@ -586,9 +588,10 @@ const MakeOffer = ({
     qc = queryClient,
     sanityClient = config
     ) => {
+
       //payout to network
-                await payToMySponsors();
-                return;
+        // await payToMySponsors();
+        // return;
 
         //update pay info-> list of all bought NFTs from the selected Collections
         // const payObj =  {
@@ -650,14 +653,14 @@ const MakeOffer = ({
           setLoadingNewPrice(true);
 
           const sdk = new ThirdwebSDK(signer);
-          const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
+          const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
-          const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
-          const divider = BigNumber.from(10).pow(18);
-          const buyOutPrice = bigNumberPrice / divider;
-        
-          const tx = await contract
-                          .buyoutListing(listingId, quantityDesired)
+          // const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 18);
+          // const divider = BigNumber.from(10).pow(18);
+          // const buyOutPrice = bigNumberPrice / divider;
+          const buyOutPrice = ethers.utils.formatUnits(listingData.buyoutPrice.hex, 18);
+          const tx = await contract.directListings
+                          .buyFromListing(listingId, quantityDesired, address)
                           .catch(err => 
                               {
                                 setBuyLoading(false);
@@ -747,16 +750,31 @@ const MakeOffer = ({
               qc.invalidateQueries(['owner']);
               qc.invalidateQueries(['marketplace']);
               
+              //delete data from market data in mango
+              ;(async() => {
+                setLoadingNewPrice(true);
+                await axios
+                      .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.contract}/${nftContractData?.tokenId}`)
+                      .catch(err => console.log(err))
+                      .then((res) =>{
+                        setBuyLoading(false);
+                        setLoadingNewPrice(false);
+                        router.reload(window.location.pathname);
+                        router.replace(router.asPath);
+                        toastHandler.success('NFT bought successfully.', successToastStyle);
+                      })
+              })()
+
               //update listing data
-              await axios
-                    .get(`${HOST}/api/updateListings/${thisNFTblockchain}`)
-                    .finally(() => {
-                      router.reload(window.location.pathname);
-                      router.replace(router.asPath);
-                      setLoadingNewPrice(false);
-                      setBuyLoading(false)
-                      toastHandler.success('NFT purchase successful.', successToastStyle);
-                    });
+              // await axios
+              //       .get(`${HOST}/api/updateListings/${thisNFTblockchain}`)
+              //       .finally(() => {
+              //         router.reload(window.location.pathname);
+              //         router.replace(router.asPath);
+              //         setLoadingNewPrice(false);
+              //         setBuyLoading(false)
+              //         toastHandler.success('NFT purchase successful.', successToastStyle);
+              //       });
           }
       
     } catch (error) {
@@ -845,15 +863,15 @@ const MakeOffer = ({
 
   // console.log(nftContractData)
   return (
-    <div className="pb-5">
+    <div className="">
       {testnet && (
         <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 mb-5">
           <TiWarningOutline fontSize={18}/> Testnet NFT
         </span>
       )}
       {listed && (
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
-          <div className="relative flex flex-1 flex-col items-baseline rounded-xl border-2 border-green-500 p-6 sm:flex-row justify-center">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mt-4">
+          <div className="relative flex flex-1 flex-col items-center rounded-xl border-2 border-green-500 p-6 sm:flex-row justify-center">
             <span className="absolute bottom-full translate-y-3 rounded-lg bg-green-500 py-1 px-1.5 text-sm text-white">
               Current Price
             </span>
@@ -863,16 +881,13 @@ const MakeOffer = ({
             </div>) : (
               <>
                 <span className="text-3xl font-semibold text-green-500 xl:text-4xl">
-                  {listingData?.buyoutCurrencyValuePerToken?.displayValue}{' '}
+                  {parseInt(listingData?.buyoutPrice.hex, 16) / Math.pow(10, 18)}{' '}
                   {listingData?.buyoutCurrencyValuePerToken?.symbol}
                 </span>
                 {coinMultiplier && (
                   <span className="text-lg text-neutral-400 sm:ml-5">
                     ( ≈ $
-                    {parseFloat(
-                      Number(listingData?.buyoutCurrencyValuePerToken?.displayValue) *
-                        coinMultiplier
-                    ).toFixed(5)}
+                    {parseFloat((parseInt(listingData?.buyoutPrice.hex, 16) / Math.pow(10, 18)) * coinMultiplier).toFixed(5)}
                     )
                   </span>
                 )}
@@ -883,7 +898,7 @@ const MakeOffer = ({
       )}
 
       {!listed && (
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-center">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-center mt-4">
           <div className={`relative flex flex-1 flex-col ${isburnt ? 'bg-red-500' : ''} items-baseline justify-center rounded-xl border-2 border-red-500 p-6 sm:flex-row`}>
             {loadingNewPrice ? (
               <div className="flex gap-2 justify-center text-red-500 text-center w-full">

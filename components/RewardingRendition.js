@@ -13,7 +13,7 @@ const RewardingRendition = () => {
     const { dark } = useThemeContext();
     const style = {
         wrapperContainer: 'rewardingrenditions text-center bg-center bg-top md:bg-center md:bg-cover z-0 relative',
-        wrapper: 'container mx-auto lg:p-[8rem] lg:pt-[6rem] p-[2rem]',
+        wrapper: 'container mx-auto lg:p-[8rem] lg:pt-[4rem] p-[2rem]',
         title: 'font-bold mb-[0.5rem] grow text-center flex flex-col md:flex-row justify-center items-center gap-2 text-white text-[3rem]',
         subtitle: 'mb-[4rem]',
         collectionWrapper:

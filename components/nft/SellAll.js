@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useRouter } from 'next/router';
 import DatePicker from 'react-datepicker'
 import { useMutation } from 'react-query';
+import { BigNumber, ethers } from 'ethers';
 import { differenceInSeconds } from 'date-fns';
 import { RiAuctionLine } from 'react-icons/ri';
 import { config } from '../../lib/sanityClient'
@@ -51,22 +52,40 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
     const [auctionDuration, setAuctionDuration] = useState('')
     const [batchListingData, setBatchListingData] = useState([]);
     const [directorauction, setdirectorauction] = useState(true);
-    const { coinPrices, HOST, blockchainName } = useSettingsContext();
+    const { coinPrices, HOST, blockchainName, currencyByChainName } = useSettingsContext();
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const [thisNFTBlockchainCurrency, setThisNFTBlockchainCurrency] = useState(0)
-
+    const [isLoadingNFT, setIsLoadingNFT] = useState(false);
     //include only non-listed nfts to be in the list
     useEffect(() => {
         if(!nfts) return;
-
+        setIsLoadingNFT(true);
         const myNfts = nfts.filter(nft => String(nft?.ownerOf).toLowerCase() == String(address).toLowerCase());
 
-        const nonlistedNfts = myNfts.filter(nft => 
-        {
-            const returndata = marketData.some(mdata => (mdata.assetContractAddress.toLowerCase() == nft.tokenAddress.toLowerCase() && mdata.asset.id == nft.tokenId));
-            return !returndata;
-        }).filter(nft => Boolean(nft.metadata)); //also remove all nfts with no metadata
-        setIncludedNfts(nonlistedNfts)
+        // const nonlistedNfts = myNfts.filter(nft => 
+        // {
+        //     const returndata = marketData.some(mdata => (mdata.assetContractAddress.toLowerCase() == nft.tokenAddress.toLowerCase() && mdata.asset.id == nft.tokenId));
+        //     return !returndata;
+        // }).filter(nft => Boolean(nft.metadata)); //also remove all nfts with no metadata
+        // const nonlistedNfts = myNfts.filter(nft=> 
+        //     {
+        //         const {data} = axios.get(`${HOST}/api/mango/getSingle/${blockchainName[collectionData?.chainId]}/${collectionData?.contractAddress}/${nft?.tokenId}`)
+        //         const result = data.length == 0 ? false : true
+        //         return true;
+        // })
+        const unresolved = myNfts.map(async nft => {
+            const {data} = await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[collectionData?.chainId]}/${collectionData?.contractAddress}/${nft?.tokenId}`)
+            return data[0];
+        });
+
+        ;(async() => {
+            const listingData = await Promise.all(unresolved);
+
+            const nonlistedNfts = myNfts.filter((nft, index) => !listingData[index])
+
+            setIncludedNfts(nonlistedNfts)
+            setIsLoadingNFT(false);
+        })();
 
         return() => {
             //do nothing, clean up function
@@ -154,18 +173,21 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
         setIsLoading(true);
         //generate listing metadata
+        const startingDate = startDate || new Date();
+        const endingDate = endDate ? endDate : new Date(startingDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
         let listings = [];
         if(includedNfts.length > 0){
             includedNfts.map(nft => {
                 const listing = {
-                    quantity: 1,
-                    startTimestamp: new Date(),
-                    buyoutPricePerToken: Number(listingPrice),
-                    tokenId: nft.tokenId,
-                    currencyContractAddress: NATIVE_TOKEN_ADDRESS,
                     assetContractAddress: collectionData.contractAddress,
-                    listingDurationInSeconds: Number(listingDuration) || 31449600,
+                    tokenId: nft.tokenId,
+                    startTimestamp: startingDate,
+                    endTimeStamp: endingDate,
+                    quantity: 1,
+                    currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                    pricePerToken: Number(listingPrice),
+                    isReservedListing: false,
                   }
                 listings.push(listing);
             });
@@ -178,21 +200,27 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
         try{
             const sdk = new ThirdwebSDK(signer);
-            const contract = await sdk.getContract(marketContractAddress, "marketplace");
+            const contract = await sdk.getContract(marketContractAddress, "marketplace-v3");
             
-            const prep_tx = await contract?.direct.createListingsBatch.prepare(listings);
-            const estimatedGasLimit = await prep_tx.estimateGasLimit();
-            prep_tx.setGasLimit(estimatedGasLimit)
+            const tx = await contract?.directListings.createListingsBatch(listings)
+                        .catch(err => {
+                            if (err.reason == 'user rejected transaction'){
+                            toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                            setIsLoading(false);
+                            }
+                        });
+            // const prep_tx = await contract?.direct.createListingsBatch.prepare(listings);
+            // const estimatedGasLimit = await prep_tx.estimateGasLimit();
+            // prep_tx.setGasLimit(estimatedGasLimit)
 
-            const tx = await prep_tx
-                                .execute()
-                                .catch(err => {
-                                    if (err.reason == 'user rejected transaction'){
-                                    toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-                                    setLoadingNewPrice(false);
-                                    setIsLoading(false);
-                                    }
-                                });
+            // const tx = await prep_tx
+            //                     .execute()
+            //                     .catch(err => {
+            //                         if (err.reason == 'user rejected transaction'){
+            //                         toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+            //                         setIsLoading(false);
+            //                         }
+            //                     });
             if(tx){
                 if(collectionData.floorPrice > Number(listingPrice)){
                     //update Floor Price
@@ -202,6 +230,53 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                     .commit()
                     .catch(err => console.log(err));
                 }
+
+                //save listing data in database
+                const documents = tx.map((tr,index) => {
+                    const document = {
+                        id: tr?.id.toString(),
+                        assetContractAddress: String(collectionData.contractAddress).toLowerCase(),
+                        buyoutPrice: {
+                        type: "BigNumber",
+                        hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
+                        },
+                        currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                        buyoutCurrencyValuePerToken: {
+                            symbol: currencyByChainName[blockchainName[collectionData?.chainId]],
+                            value: {
+                                type: "BigNumber",
+                                hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
+                            },
+                            displayValue: listingPrice,
+                        },
+                        tokenId: {
+                            type: "BigNumber",
+                            hex: BigNumber.from(listings[index].tokenId)._hex,
+                        },
+                        quantity: {
+                            type: "BigNumber",
+                            hex: 1,
+                        },
+                        startTime: startingDate,
+                        endTime: endingDate,
+                        sellerAddress: address,
+                        asset: {...includedNfts[index].metadata},
+                        type: 0,
+                    }
+                    return document;
+                });
+
+                await axios.post(`${HOST}/api/mango/insertMany`, 
+                {
+                    documents,
+                    chain: blockchainName[collectionData?.chainId],
+                }).catch(err => console.log(err))
+                .then(() => {
+                    setIsLoading(false);
+                    toastHandler.success("NFT successfully listed in the marketplace. ", successToastStyle);
+                    router.reload(window.location.pathname);
+                    router.replace(router.asPath);
+                })
     
                 //saving transactions in database
                 // const newItems = includedNfts?.map(item => {
@@ -225,13 +300,13 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                 //     await sanityClient.createIfNotExists(doc)
     
                 //update listing data
-                ;(async() => {
-                    await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
-                        router.reload(window.location.pathname);
-                        router.replace(router.asPath);
-                        toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
-                    }).catch(err => {console.log(err)});
-                })()
+                // ;(async() => {
+                //     await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                //         // router.reload(window.location.pathname);
+                //         // router.replace(router.asPath);
+                //         toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                //     }).catch(err => {console.log(err)});
+                // })()
     
                 //activate referral system, only if not activated
                 if(!myUser?.refactivation){
@@ -262,12 +337,14 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
         }
 
         if(includedNfts.length == 0){
-            toastHandler.error("No NFTs are seleted to list", errorToastStyle);
+            toastHandler.error("No NFTs are seleted for auction", errorToastStyle);
             return;
         }
 
         setIsLoading(true);
         //generate listing metadata
+        const startingDate = startAuctionDate || new Date();
+        const endingDate = endAuctionDate ? endAuctionDate : new Date(startingDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
         let auction = [];
         if(includedNfts.length > 0){
@@ -275,12 +352,12 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                 const listing = {
                     assetContractAddress: collectionData.contractAddress,
                     tokenId: nft.tokenId,
-                    startTimestamp: new Date(),
-                    listingDurationInSeconds: Number(auctionDuration) || 31449600,
-                    quantity: 1,
+                    buyoutBidAmount: buyoutPrice,
+                    minimumBidAmount: reservePrice,
                     currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                    buyoutPricePerToken: buyoutPrice,
-                    reservePricePerToken: reservePrice,
+                    quantity: 1,
+                    startTimestamp: startingDate,
+                    endTimestamp: endingDate,
                   }
                 auction.push(listing);
             });
@@ -293,12 +370,20 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
 
         try{
             const sdk = new ThirdwebSDK(signer);
-            const contract = await sdk.getContract(marketContractAddress, "marketplace");
+            const contract = await sdk.getContract(marketContractAddress, "marketplace-v3");
             
-            const prep_tx = await contract?.auction.createListingsBatch.prepare(auction);
-            const estimatedGasLimit = await prep_tx.estimateGasLimit();
-            prep_tx.setGasLimit(estimatedGasLimit * 2)
-            const tx = await prep_tx.execute();
+            const tx = await contract?.englishAuctions.createAuctionsBatch(auction)
+                    .catch(err => {
+                        if (err.reason == 'user rejected transaction'){
+                        toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+                        setIsLoading(false);
+                        return;
+                        }
+                    })
+            // const prep_tx = await contract?.auction.createListingsBatch.prepare(auction);
+            // const estimatedGasLimit = await prep_tx.estimateGasLimit();
+            // prep_tx.setGasLimit(estimatedGasLimit * 2)
+            // const tx = await prep_tx.execute();
             if(tx){
                 // if(collectionData.floorPrice > Number(listingPrice)){
                 //     //update Floor Price
@@ -328,15 +413,61 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                 //     }
                 //     console.log(doc)
                 //     await sanityClient.createIfNotExists(doc)
-    
-                //update listing data
-                ;(async() => {
-                    await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
-                    toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                //save listing data in database
+                const documents = tx.map((tr,index) => {
+                    const document = {
+                        id: tr?.id.toString(),
+                        assetContractAddress: String(collectionData.contractAddress).toLowerCase(),
+                        buyoutPrice: {
+                        type: "BigNumber",
+                        hex: ethers.utils.parseUnits(buyoutPrice.toString(), 18)._hex,
+                        },
+                        currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                        buyoutCurrencyValuePerToken: {
+                            symbol: currencyByChainName[blockchainName[collectionData?.chainId]],
+                            value: {
+                                type: "BigNumber",
+                                hex: ethers.utils.parseUnits(buyoutPrice.toString(), 18)._hex,
+                            },
+                            displayValue: listingPrice,
+                        },
+                        tokenId: {
+                            type: "BigNumber",
+                            hex: BigNumber.from(auction[index].tokenId)._hex,
+                        },
+                        quantity: {
+                            type: "BigNumber",
+                            hex: 1,
+                        },
+                        startTime: startingDate,
+                        endTime: endingDate,
+                        sellerAddress: address,
+                        asset: {...includedNfts[index].metadata},
+                        type: 1,
+                    }
+                    return document;
+                });
+
+                await axios.post(`${HOST}/api/mango/insertMany`, 
+                {
+                    documents,
+                    chain: blockchainName[collectionData?.chainId],
+                }).catch(err => console.log(err))
+                .then(() => {
+                    setIsLoading(false);
+                    toastHandler.success("NFT successfully listed in the auction marketplace. ", successToastStyle);
                     router.reload(window.location.pathname);
                     router.replace(router.asPath);
-                    }).catch(err => {console.log(err)})
-                })()
+                })
+    
+                //update listing data
+                // ;(async() => {
+                //     await axios.get(`${HOST}/api/updateListings/${blockchainName[activeChain.chainId.toString()]}`).finally(() => {
+                //     toastHandler.success("NFTs successfully listed in the marketplace. Please wait for a while. Getting NFT's latest price from the marketplace.", successToastStyle);
+                //     router.reload(window.location.pathname);
+                //     router.replace(router.asPath);
+                //     }).catch(err => {console.log(err)})
+                // })()
     
                 //activate referral system, only if not activated
                 if(!myUser?.refactivation){
@@ -381,27 +512,36 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
         <Script src="https://unpkg.com/flowbite@1.4.7/dist/datepicker.js" />
         <div className="flex flex-col md:flex-row">
             <div className="w-full lg:w-1/3">
-                <span>NFTs to be listed</span>
-                <div className=" max-h-[520px] overflow-auto pt-3">
-                    {includedNfts.length > 0 && includedNfts.map((nft, index) => (
-                        <div key={index}>
-                        {Boolean(nft.metadata) && (
-                            <div className={`${dark ? 'border-slate-600 hover:bg-slate-700' : 'border-neutral-100 hover:bg-neutral-100'} group transition border border-dashed p-2 rounded-lg lg:mr-5 mb-5 lg:mb-0 flex justify-between mt-2 relative`}>
-                                <div className="text-sm">
-                                    <img 
-                                        src={nft.metadata?.image?.startsWith('ipfs') ? getImagefromWeb3(nft.metadata?.image) : nft.metadata?.image}
-                                        className="w-[30px] h-[30px] object-cover rounded-md mr-1 inline-block" /> {nft.metadata.name}
-                                </div>
-                                <div 
-                                    className="cursor-pointer hidden group-hover:flex absolute top-1 right-1 p-0.5 rounded-md bg-red-500 hover:bg-red-400 justify-center items-center"
-                                    onClick={() => handleRemove(index)}>
-                                    <MdDeleteOutline />
-                                </div>
-                            </div>
-                        )}
-                        </div>
-                    ))}
+                <div className="flex justify-between items-center pr-[1.25rem]">
+                    <span>NFTs to be listed</span>
+                    <span className={` w-8 text-center p-1 text-xs rounded-full border ${dark ? 'border-slate-700 text-slate-400' : ''}`}>{includedNfts?.length}</span>
                 </div>
+                {isLoadingNFT ? (
+                    <div className="flex gap-2 mt-8 justify-center">
+                        <IconLoading dark="inbutton"/> Loading
+                    </div>
+                ) : (
+                    <div className=" max-h-[520px] overflow-auto pt-3">
+                        {includedNfts.length > 0 && includedNfts.map((nft, index) => (
+                            <div key={index}>
+                            {Boolean(nft.metadata) && (
+                                <div className={`${dark ? 'border-slate-600 hover:bg-slate-700' : 'border-neutral-200 hover:bg-neutral-200 hover-border-neutral-300'} group transition border border-dashed p-2 rounded-lg lg:mr-5 mb-5 lg:mb-0 flex justify-between mt-2 relative`}>
+                                    <div className="text-sm">
+                                        <img 
+                                            src={nft.metadata?.image?.startsWith('ipfs') ? getImagefromWeb3(nft.metadata?.image) : nft.metadata?.image}
+                                            className="w-[30px] h-[30px] object-cover rounded-md mr-1 inline-block" /> {nft.metadata.name}
+                                    </div>
+                                    <div 
+                                        className="cursor-pointer hidden group-hover:flex absolute -top-1.5 -right-2 p-0.5 rounded-md bg-red-500 hover:bg-red-400 justify-center items-center text-white"
+                                        onClick={() => handleRemove(index)}>
+                                        <MdDeleteOutline />
+                                    </div>
+                                </div>
+                            )}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
             <div className="relative flex md:w-full  lg:w-2/3 flex-col gap-5 mt-5 md:mt-0">
                 Choose type of listing

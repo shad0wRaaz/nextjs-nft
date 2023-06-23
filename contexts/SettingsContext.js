@@ -45,7 +45,7 @@ export function SettingsProvider({children}) {
         '137': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
         '56': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
       }
-    const currencyByChainId = {
+      const currencyByChainId = {
         "97": "TBNB",
         "56": "BNB",
         "5": "ETH",
@@ -54,6 +54,16 @@ export function SettingsProvider({children}) {
         "80001": "MATIC",
         "43113": "AVAX",
         "43114": "AVAX",
+    }
+    const currencyByChainName = {
+        "binance-testnet": "TBNB",
+        "binance": "BNB",
+        "goerli": "ETH",
+        "mainnet": "ETH",
+        "polygon": "MATIC",
+        "mumbai": "MATIC",
+        "avalanche-fuji": "AVAX",
+        "avalanche": "AVAX",
     }
     const chainExplorer = {
         '97': process.env.NEXT_PUBLIC_EXPLORER_TBNB,
@@ -89,6 +99,7 @@ export function SettingsProvider({children}) {
             HOST, 
             blockchainName,
             currencyByChainId,
+            currencyByChainName,
             chainExplorer,
             marketplace,
             blockedCollections,

@@ -155,8 +155,11 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-mv d-block">1. Artistic  Alchemy</span></h2>
-                        <p className="text-center mt-3">Artistic Alchemy is an NFT collection that explores the transformative power of artistic expression. It represents the fusion of different artistic elements, techniques, and inspirations to create something entirely new and captivating. The collection features a diverse range of artworks that blend various mediums, styles, and subject matters, showcasing the alchemical process of artistic experimentation and innovation.</p>
+                        <span className="color--gradient-mv d-block">1. Etherverse</span></h2>
+                        <p className="text-center mt-3">Welcome to "EtherVerse," a boundless digital cosmos where imagination knows no limits. Step into a vibrant and immersive metaverse that merges the infinite possibilities of blockchain technology with the realms of fantasy, science fiction, and beyond.</p>
+                        <p className="text-center mt-3">The "EtherVerse" NFT collection unveils a breathtaking tapestry of interconnected worlds, each teeming with rich lore, captivating characters, and awe-inspiring landscapes. From sprawling cyberpunk cities to mystical realms of magic, "EtherVerse" is a digital playground where dreams and realities converge.</p>
+                        <p className="text-center mt-3">Immerse yourself in the intricate details and mesmerizing aesthetics of the "EtherVerse" artworks. Each NFT unveils a unique portal, granting access to unexplored dimensions and hidden treasures. Traverse through these realms, interact with their inhabitants, and uncover the secrets that lie within.</p>
+                        <p className="text-center mt-3">Welcome to a realm where imagination becomes reality—welcome to "EtherVerse," where the boundaries of what is possible are continually redefined.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -195,7 +198,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">CRYPTO CREATURES</span>
+                                            All Airdrops from <span className="font-bold">Etherverse</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -392,8 +395,12 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-mv d-block">2. Canvas Chronicles</span></h2>
-                        <p className="text-center mt-3">Canvas Chronicles is an NFT collection that celebrates the timeless beauty and power of traditional canvas-based artwork. It pays homage to the rich history and evolution of art on canvas, capturing the essence of artistic narratives and personal expressions. Within the Canvas Chronicles collection, each artwork tells a unique story, unfolding a narrative that transcends time and space. The collection showcases a wide array of artistic styles, including classical, impressionist, abstract, and contemporary, offering a diverse range of visual experiences for art enthusiasts.</p>
+                        <span className="color--gradient-mv d-block">2. BitBots</span></h2>
+                        <p className="text-center mt-3">Enter the world of "BitBots," where the realms of artificial intelligence and creativity intersect in a mesmerizing fusion. Brace yourself for an extraordinary collection of digital beings, each a unique embodiment of technology and imagination.</p>
+                        <p className="text-center mt-3">"BitBots" presents a captivating assortment of digital creatures, meticulously crafted with pixel-perfect precision. These endearing and enigmatic bots are brought to life with intricate details, vibrant colors, and a touch of whimsy. From cute companions to futuristic automatons, each "BitBot" possesses its own distinct personality and charm.</p>
+                        <p className="text-center mt-3">As a collector of "BitBots" NFTs, you become the caretaker of these digital companions, nurturing their virtual existence and fostering connections within the community. These collectible bots hold both aesthetic value and potential utility, with the possibility of unlocking special features, accessing exclusive content, or participating in interactive experiences.</p>
+                        <p className="text-center mt-3">Whether you're captivated by their pixel art aesthetics, the allure of their unique abilities, or the joy of building your own personalized collection, "BitBots" offers a world of endless discovery and creative expression.</p>
+                        <p className="text-center mt-3">Embrace the charm and wonder of these delightful digital companions. Welcome to "BitBots," where artistry and technology unite to bring a touch of digital magic to your world.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -432,7 +439,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium pt-6 leading-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">NEON DREAMS</span>
+                                            All Airdrops from <span className="font-bold">Bitbots</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -627,8 +634,12 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-mv d-block">3. Palette Perceptions</span> </h2>
-                        <p className="text-center mt-3">Palette Perceptions is an NFT collection that explores the fascinating realm of colors and their subjective interpretations. It delves into the way colors evoke emotions, trigger memories, and shape our perceptions of the world around us. Within the Palette Perceptions collection, each artwork is a vibrant symphony of hues and tones, carefully selected and arranged to convey specific moods and messages. Artists employ a diverse range of color palettes, from vibrant and bold to soft and pastel, creating visual experiences that captivate the senses.</p>
+                        <span className="color--gradient-mv d-block">3. Meta Marvels</span> </h2>
+                        <p className="text-center mt-3">Prepare to witness the extraordinary with "Meta Marvels," a collection of awe-inspiring NFTs that brings together the power of mythology, fantasy, and modern storytelling. Immerse yourself in a realm where legendary heroes, mythical creatures, and epic tales come alive in breathtaking digital form.</p>
+                        <p className="text-center mt-3">"Meta Marvels" showcases a lineup of captivating characters and creatures, each meticulously designed with intricate details and imbued with their own unique abilities and backstories. From mighty warriors and majestic beasts to enigmatic sorcerers and celestial entities, these digital marvels embody the essence of heroism, adventure, and the eternal struggle between good and evil.</p>
+                        <p className="text-center mt-3">Through the vividly illustrated and animated NFTs of "Meta Marvels," you'll embark on a journey through ancient realms and extraordinary worlds. Delve into mythological sagas, traverse enchanted landscapes, and witness legendary battles unfolding before your eyes.</p>
+                        <p className="text-center mt-3">Immerse yourself in the excitement of exclusive events, epic quests, and collaborative projects within the "Meta Marvels" community. Unleash your imagination and join forces with other heroes to shape the destiny of this fantastical world.</p>
+                        <p className="text-center mt-3">Welcome to a realm where legends are born, where heroes rise, and where "Meta Marvels" forever etch their mark on the annals of digital mythology.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -667,7 +678,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">CELESTIAL BEINGS</span>
+                                            All Airdrops from <span className="font-bold">Meta Marvels</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 
@@ -862,8 +873,12 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-mv d-block">4. Brushstroke Symphony</span></h2>
-                        <p className="text-center mt-3">Brushstroke Symphony is an NFT collection that celebrates the captivating beauty and expressive power of brushstrokes in art. It is a harmonious symphony of artistic movements, where each brushstroke becomes a note, and the artwork itself becomes a melodic composition. Within the Brushstroke Symphony collection, each artwork is a testament to the artist's skill and creativity, showcasing a variety of brushstroke techniques and styles. From bold and energetic strokes that convey passion and intensity to delicate and precise strokes that exhibit subtlety and grace, the collection encompasses a wide range of brushwork expressions.</p>
+                        <span className="color--gradient-mv d-block">4. Pixel Palace</span></h2>
+                        <p className="text-center mt-3">Step into the enchanting realm of "PixelPalace," where nostalgia and pixel art intertwine to create a captivating NFT collection. Prepare to be transported back to the golden age of gaming, where vibrant colors, charming characters, and retro aesthetics reign supreme.</p>
+                        <p className="text-center mt-3">"PixelPalace" celebrates the artistry and creativity of pixel art, paying homage to classic video games and the pixelated wonders that captivated generations. Each NFT in the collection is a meticulously crafted masterpiece, showcasing the intricate details, limited color palettes, and nostalgic charm that defined the pixel art era.</p>
+                        <p className="text-center mt-3">Immerse yourself in a virtual palace adorned with vibrant landscapes, whimsical architecture, and a myriad of pixelated wonders. Traverse through fantastical worlds, encounter lovable heroes, and face off against formidable foes. Each artwork within the "PixelPalace" collection tells a story, evoking a sense of adventure and igniting memories of pixelated quests and epic battles.</p>
+                        <p className="text-center mt-3">As a collector of "PixelPalace" NFTs, you become a curator of pixel art history, preserving the legacy of this beloved art form in the digital realm. Display your collection proudly, share your love for pixel art with a passionate community, and unlock exclusive benefits within the "PixelPalace" ecosystem.</p>
+                        <p className="text-center mt-3">Welcome to "PixelPalace," where pixels come alive, nostalgia thrives, and the magic of classic gaming awaits. Let the enchantment of pixel art take you on a nostalgic journey through a digital palace of pixelated wonders.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -902,7 +917,7 @@ const Buy = ({ setShowMenu }) => {
                                             as="h3"
                                             className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center"
                                         >
-                                            All Airdrops from <span className="font-bold">ARTIFACTS OF THE FUTURE</span>
+                                            All Airdrops from <span className="font-bold">Pixel Palace</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center my-5">
                                             <div 

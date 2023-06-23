@@ -2,6 +2,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
+import NoSSR from 'react-no-ssr'
 import toast from 'react-hot-toast'
 import { v4 as uuidv4 } from 'uuid'
 import Countdown from 'react-countdown'
@@ -17,6 +18,7 @@ import Header from '../../../components/Header'
 import { HiChevronRight } from 'react-icons/hi'
 import Footer from '../../../components/Footer'
 import NFTCard from '../../../components/NFTCard'
+import { BiGlobe, BiImport } from 'react-icons/bi'
 import Property from '../../../components/Property'
 import { useQuery, useMutation } from 'react-query'
 import SellAll from '../../../components/nft/SellAll'
@@ -26,10 +28,8 @@ import { useInfiniteQuery, useQueryClient } from 'react-query'
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useUserContext } from '../../../contexts/UserContext'
 import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
-import { BiChevronUp, BiGlobe, BiImport } from 'react-icons/bi'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
-import HelmetMetaData from '../../../components/HelmetMetaData'
 import { useThemeContext } from '../../../contexts/ThemeContext'
 import NFTCardExternal from '../../../components/NFTCardExternal'
 import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
@@ -37,16 +37,16 @@ import { useSettingsContext } from '../../../contexts/SettingsContext'
 import CollectionReferral from '../../../components/CollectionReferral'
 import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
 import AirdropSettings from '../../../components/collection/AirdropSettings'
+import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import { Menu, Transition, Switch, Dialog, Popover } from '@headlessui/react'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
 import { changeShowUnlisted, importMyCollection } from '../../../mutators/SanityMutators'
 import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
-import { getNFTCollection, getAllOwners, getNewNFTCollection } from '../../../fetchers/SanityFetchers'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
-import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData } from '../../../fetchers/Web3Fetchers'
-
-const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
+import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData, INFURA_getEverything } from '../../../fetchers/Web3Fetchers'
+//do not remove HOST, need it for serverside props so cannot use it from context
+const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + process.env.NEXT_PUBLIC_INFURA_SECRET_KEY,).toString('base64');
 
 const chainIcon = {
@@ -101,9 +101,9 @@ const CollectionDetails = (props) => {
   const [myNfts, setMyNfts] = useState([]);
   const [showMine, setShowMine] = useState(false);
   const [compact, setCompact] = useState(false);
-  const [cursor, setCursor] = useState();
   const [showAirdrop, setShowAirdrop] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -251,9 +251,7 @@ const CollectionDetails = (props) => {
     setShowUnlisted(collectionData?.showUnlisted);
     setThisCollectionMarketAddress(marketplace[collectionData.chainId]);
 
-      return() => {
-        //do nothing, clean up function
-      }
+    return() => {}
   }, [collectionData])
 
 
@@ -286,88 +284,193 @@ const CollectionDetails = (props) => {
   //     }
   //   }
   // )
-  const fetchInfiniteNfts = async(cursor) => {
-    if(!blockchainIdFromName || !chain) return
-    try{
-      const fetchPoint = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens`; 
-      const { data } = await axios.get(fetchPoint, {
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Basic ${INFURA_AUTH}`,
-                }
-            })
-            console.log('data',data)
-            return data
-    }catch(err){
+  // const fetchInfiniteNfts = async(cursor) => {
+  //   if(!blockchainIdFromName || !chain) return
+  //   try{
+  //     const fetchPoint = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${blockchainIdFromName[chain]}/nfts/${tokenAddress}/tokens`; 
+  //     const { data } = await axios.get(fetchPoint, {
+  //             headers: {
+  //                 'Content-Type': 'application/json',
+  //                 'Authorization': `Basic ${INFURA_AUTH}`,
+  //               }
+  //           })
+  //           console.log('data',data)
+  //           return data
+  //   }catch(err){
 
-    }
+  //   }
 
-  }
-  const { data: infiniteNFT, status: infiniteNFTStatus, fetchNextPage, hasNextPage, error } = useInfiniteQuery(
-    {
-      queryKey: ['inifinitenfts'],
-      queryFn: fetchInfiniteNfts,
-      getNextPageParam: (lastPage, pages) => lastPage?.cursor,
-      
-      onSuccess: res => {console.log(res)}
-      
+  // }
+  const getInfiniteNfts = async ({pageParam}) => {
+    const cursor = pageParam;    
+    const { data } = await axios.get(`${HOST}/api/infura/getCollectionOwners/${blockchainIdFromName[chain]}/${collectionAddress}`, {params: {cursor}}, {headers: {'Content-Type': 'application/json'}});
+    return data;
+}
+
+const { data: infiniteData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: statusNFT } = useInfiniteQuery(
+    ['infinitenfts'],
+    getInfiniteNfts,
+    { 
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+      onSuccess:(res) => { console.log(res); setIsLoading(true) },
+      getNextPageParam: (page) => {
+        return page.cursor
+      },
+    },
+)
+
+const loadMoreRef = useRef();
+
+useIntersectionObserver({
+  target: loadMoreRef,
+  onIntersect: fetchNextPage,
+  enabled: hasNextPage,
 });
 
-  const { data: dataNFT, status: statusNFT } = useQuery(
-    ['collectionnft', collectionAddress, cursor],
-    INFURA_getAllOwners(blockchainIdFromName[chain]),
-    {
-      enabled: Boolean(collectionAddress),
-      onError: () => {
-        toast.error('Error in getting owner info.', errorToastStyle)
-      },
-      onSuccess: (res) => {
+useEffect(() => {
+  if(!infiniteData) return
+  //nft metadata are in string, so need to parse it
+  let parsedData = []
+  infiniteData.pages.map(page => {
+    page.owners.map(item => {
+      const newData = {
+        ...item,
+        metadata: JSON.parse(item.metadata),
+      };
+      parsedData.push(newData);
+    });
+  });
 
-        const allowners = res.owners;
 
-        //nft metadata are in string, so need to parse it
-        const parsedData = allowners.map(nft => {
-          const pdata = { ...nft, metadata: JSON.parse(nft.metadata) }
-          return pdata
+    const unresolved = parsedData.map(async nft => {
+      const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
+      const newObject= {
+        ...nft,
+        listingData: data[0]
+      }
+      return newObject;
+    });
+
+    ;(async() => {
+      const resolved = await Promise.all(unresolved);
+      setNfts(resolved); //these are all nfts, for displaying nft cards
+      setFilteredNftData(resolved);
+    })();
+
+
+    //this is for showing owners details
+    const ownerArray = parsedData.map(o => o.ownerOf);
+    const ownerset = new Set(ownerArray);
+    setNftHolders(Array.from(ownerset));
+
+    let propObj = [];
+
+    parsedData?.map(nft => {
+      //this will be for  nfts minted in house and opensea
+      if(Boolean(nft?.metadata?.properties?.traits)){
+        nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
+          if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
+            propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
+          }
         });
+      }
+      //this will be for any other nfts
+      else if(Boolean(nft?.metadata?.attributes)){
+        nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
+          if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
+            propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
+          }
+        });
+      }
+
+    })
+    setProperties(propObj);
+    setIsLoading(false);
+}, [infiniteData])
+
+
+//gives huge performance issues when no of nfts are huge
+// const {data:moreNfts, status: moreNftStatus} = useQuery(
+//   ['allitems', collectionAddress],
+//   INFURA_getEverything(blockchainIdFromName[chain]),
+//   {
+//     enabled: true,
+//     onError:(err) => {
+//       console.log(err)
+//     },
+//     onSuccess:(res) => {
+//       console.log('all at once', res);
+//     }
+//   }
+// );
+
+//this gives at most 100 NFTs, but will gives cursor to go to next page
+  // const { data: dataNFT, status: statusNFT } = useQuery(
+  //   ['collectionnft', collectionAddress], //cursor is also needed, if this function is required, then define another state->cursor and add here
+  //   INFURA_getAllOwners(blockchainIdFromName[chain]),
+  //   {
+  //     enabled: Boolean(collectionAddress) && false,
+  //     onError: () => {
+  //       toast.error('Error in getting owner info.', errorToastStyle)
+  //     },
+  //     onSuccess: (res) => {
+
+  //       const allowners = res.owners;
+
+  //       //nft metadata are in string, so need to parse it
+  //       const parsedData = allowners.map(nft => {
+  //         const pdata = { ...nft, metadata: JSON.parse(nft.metadata) }
+  //         return pdata
+  //       });
         
-        // console.log(parsedData);
 
-        setNfts(parsedData); //these are all nfts, for displaying nft cards
+  //       const unresolved = parsedData.map(async nft => {
+  //         const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
+  //         const newObject= {
+  //           ...nft,
+  //           listingData: data[0]
+  //         }
+  //         return newObject;
+  //       });
 
-        //this is for showing owners details
-        const ownerArray = res.owners.map(o => o.ownerOf);
-        const ownerset = new Set(ownerArray);
-        setNftHolders(Array.from(ownerset));
+  //       ;(async() => {
+  //         const resolved = await Promise.all(unresolved);
+  //         setNfts(resolved); //these are all nfts, for displaying nft cards
+  //         setFilteredNftData(resolved);
+  //       })();
 
 
-        setFilteredNftData(parsedData);
-        // console.log(parsedData)
-        let propObj = [];
+  //       //this is for showing owners details
+  //       const ownerArray = res.owners.map(o => o.ownerOf);
+  //       const ownerset = new Set(ownerArray);
+  //       setNftHolders(Array.from(ownerset));
 
-        parsedData?.map(nft => {
-          //this will be for  nfts minted in house and opensea
-          if(Boolean(nft?.metadata?.properties?.traits)){
-            nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
-              if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
-                propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
-              }
-            });
-          }
-          //this will be for any other nfts
-          else if(Boolean(nft?.metadata?.attributes)){
-            nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
-              if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
-                propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
-              }
-            });
-          }
+  //       let propObj = [];
 
-        })
-        setProperties(propObj);
-      },
-    }
-  )
+  //       parsedData?.map(nft => {
+  //         //this will be for  nfts minted in house and opensea
+  //         if(Boolean(nft?.metadata?.properties?.traits)){
+  //           nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
+  //             if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
+  //               propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
+  //             }
+  //           });
+  //         }
+  //         //this will be for any other nfts
+  //         else if(Boolean(nft?.metadata?.attributes)){
+  //           nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
+  //             if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
+  //               propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
+  //             }
+  //           });
+  //         }
+
+  //       })
+  //       setProperties(propObj);
+  //     },
+  //   }
+  // )
 
   const { mutate: updateShowListed } = useMutation(
     ({ collectionid, showUnlisted }) =>
@@ -405,6 +508,7 @@ const CollectionDetails = (props) => {
       });
       setShowModal(false);
     }
+    return() => {}
   }, [showModal]);
   
   useEffect(() => {
@@ -416,6 +520,7 @@ const CollectionDetails = (props) => {
       });
       setShowListingModal(false);
     }
+    return() => {}
   }, [showListingModal]);
 
   useEffect(() => {
@@ -427,6 +532,7 @@ const CollectionDetails = (props) => {
       });
       setPaymentModal(false);
     }
+    return() => {}
   }, [showPaymentModal]);
 
   useEffect(() => {
@@ -534,13 +640,10 @@ const CollectionDetails = (props) => {
     setSelectedProperties(properties);
   }
 
-
 //count down timer design renderer
 const renderer = ({ days, hours, minutes, seconds, completed }) => {
-  if(completed){
-    if(typeof window != undefined){
-      // window.location.reload(false);
-    }
+  if(days + hours + minutes + seconds <= 0){
+    return null;
   }
   return (
     <div className="py-9">
@@ -808,7 +911,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             </div>
 
                             {/* this option is only available if the collection is not in database */}
-                            {collectionData.datasource == 'external' && collectionData.creator?.walletAddress == address &&  (
+                            {collectionData.datasource == 'external' && String(collectionData.creator?.walletAddress).toLowerCase() == String(address).toLowerCase() &&  (
                               <div>
                                 <button 
                                   className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
@@ -1079,7 +1182,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
         {!isBlocked && revealed && (
           <div className="">
-            {statusNFT == 'success' && nfts.length == 0 && (
+            {statusNFT == 'success' && filteredNftData.length == 0 && (
               <div
                 className={
                   dark ? style.errorBox + ' border-sky-400/20' : style.errorBox
@@ -1160,11 +1263,11 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <button 
                     className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
                     onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-                </div>
+                </div> */}
               </div>
             </div>
           )}
@@ -1197,7 +1300,8 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 </div>
             </div>
           )}
-          {collectionData && collectionData?.createdBy?._ref == myUser?.walletAddress && (
+          
+          {collectionData && String(collectionData?.createdBy?._ref).toLowerCase() == String(myUser?.walletAddress).toLowerCase() &&  (
             <button
               className="relative h-auto w-auto items-center justify-center rounded-lg mb-5 bg-blue-700 hover:bg-blue-800 p-3 font-medium text-neutral-50 transition-colors"
               onClick={() => setShowListingModal(true)}>
@@ -1241,9 +1345,9 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
             </div>
           )}
 
-          {statusNFT == 'loading' && <div className="m-[5rem]"><Loader /></div>}
+          {/* {statusNFT == 'loading' && <div className="m-[5rem]"><Loader /></div>} */}
 
-          {!isBlocked && revealed && statusNFT == 'success' &&
+          {!isBlocked && revealed &&
             (
               <>
                 {showMine && myNfts.length == 0 && (
@@ -1283,13 +1387,42 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       )
                       )
                     }
+                    {/* {
+                      filteredNftData?.map((nftItem, id) => (
+                          <NFTCardExternal
+                            key={id}
+                            nftItem={nftItem}
+                            chain={chain}
+                            collectionAddress={collectionAddress}
+                            listings={marketData}
+                            showUnlisted={showUnlisted}
+                            creator={collectionData?.createdBy}
+                            hasOwner={true}
+                            compact={compact}
+                          />
+                      )
+                      )
+                    } */}
                   </div>
                 )}
-                <div className="mt-5 flex justify-end">
+
+                <div ref={loadMoreRef} className={`${!hasNextPage ? "hidden" : ""} mt-[3rem] text-center`}>
+                  {isFetchingNextPage ? (
+                    <div className="flex justify-center items-center gap-1">
+                      {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Loading..
+                    </div>
+                  ) : ''}
+                </div>
+                {isLoading ? (
+                      <div className="flex justify-center items-center mt-[3rem] gap-1">
+                        {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Parsing Data..
+                      </div>
+                    ) : ''}
+                {/* <div className="mt-5 flex justify-end">
                   <button 
                     className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
                     onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-                </div>
+                </div> */}
               </>
             )
           }
@@ -1297,7 +1430,9 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
         {!revealed && Boolean(collectionData) && (
           <div className="mx-auto flex justify-center">
-            <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />
+            <NoSSR>
+              <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />
+            </NoSSR>
           </div>
         )}
         {isBlocked && (

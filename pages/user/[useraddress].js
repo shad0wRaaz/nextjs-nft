@@ -1,7 +1,9 @@
+import axios from 'axios'
 import moment from 'moment'
 import Link from 'next/link'
 import millify from 'millify'
 import toast from 'react-hot-toast'
+import SEO from '../../components/SEO'
 import { useRouter } from 'next/router'
 import { FiImage } from 'react-icons/fi'
 import { VscHeart } from 'react-icons/vsc'
@@ -32,7 +34,6 @@ import { removeFollower, saveFollower } from '../../mutators/SanityMutators'
 import CollectionCardExternal from '../../components/CollectionCardExternal'
 import { getMyCollections, getMintedNFTs, getUser} from '../../fetchers/SanityFetchers'
 import { INFURA_getMyAllNFTs, INFURA_getMyCollections, getFullListings } from '../../fetchers/Web3Fetchers'
-import SEO from '../../components/SEO'
 
 
 
@@ -48,14 +49,14 @@ const User = () => {
   const activeChain = useChain();
   const [showCollection, setShowCollection] = useState(true);
   const { selectedBlockchain } = useMarketplaceContext();
-  const { blockchainIdFromName, chainIcon } = useSettingsContext();
+  const { blockchainIdFromName, blockchainName, chainIcon, HOST } = useSettingsContext();
   const { data: fullListingData } = useQuery(['fulllistings'], getFullListings());
   const [compact, setCompact] = useState(true);
   const [cursor, setCursor] = useState();
   const [collectionsFromInfura, setCollectionsFromInfura] = useState([]);
   const [collectionCount, setCollectionCount] = useState(0);
   const [nftCount, setNftCount] = useState(0);
-
+  const [mynfts, setMyNfts] = useState();
   const style = {
     collectionWrapper:
       'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center',
@@ -123,7 +124,7 @@ const User = () => {
         // console.log(res);
       }
     }
-  )
+  );
 //filter out only those collections deployed in third party websites
   useEffect(() => {
     if(collectionStatus == 'success' && outsideCollectionStatus == 'success' ){
@@ -139,9 +140,9 @@ const User = () => {
     return () => {
       //do nothing, just clean up function
     }
-  }, [collectionStatus, outsideCollectionStatus])
+  }, [collectionStatus, outsideCollectionStatus]);
 
-  const { data: mynfts, status: mynftstatus } = useQuery(
+  const { data, status: mynftstatus } = useQuery(
     ['mynfts', address, cursor, selectedBlockchain, activeChain?.chainId],
     INFURA_getMyAllNFTs(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain]),
     {
@@ -149,11 +150,25 @@ const User = () => {
       onError:() => {},
       onSuccess:(res) => 
       {
-        // console.log(res);
+        console.log(res);
         // console.log(res.cursor)
+        const selectedChain = Boolean(activeChain?.chainId) ? blockchainName[activeChain.chainId] : selectedBlockchain 
+        const unresovled = res?.assets.map(async nft => {
+          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${selectedChain}/${nft.contract}/${nft.tokenId}`);
+          const newObject= {
+            ...nft,
+            listingData: data[0]
+          }
+          return newObject;
+        })
+
+        ;(async() => {
+          const resolved = await Promise.all(unresovled);
+          setMyNfts(resolved);
+        })();
       }
     }
-  )
+  );
 
   //follow function
   const { mutate, isLoading: followLoading } = useMutation(
@@ -221,7 +236,7 @@ const User = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [])
+  }, []);
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
@@ -595,13 +610,13 @@ const User = () => {
 
             {mynftstatus == 'loading' && <Loader/>}
             
-            {mynftstatus == 'success' && mynfts.length == 0 && (
+            {mynftstatus == 'success' && mynfts?.length == 0 && (
               <p className="text-center mt-[3rem]">No NFTs yet</p>
             )}
 
-            {mynftstatus == 'success' && mynfts?.assets?.length > 0 && Boolean(fullListingData) && (
+            {mynftstatus == 'success' && mynfts?.length > 0 && Boolean(fullListingData) && (
               <div className={style.nftWrapper}>
-                {mynfts?.assets?.filter(nft => Boolean(nft.metadata)).map((nftItem, index) => (
+                {mynfts?.filter(nft => Boolean(nft.metadata)).map((nftItem, index) => (
                     <NFTCardExternal
                       key={index}
                       chain={selectedBlockchain}

@@ -5,6 +5,7 @@ import Countdown from 'react-countdown'
 import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
 import { MdAudiotrack } from 'react-icons/md'
+import { RiAuctionLine } from 'react-icons/ri'
 import { getImagefromWeb3 } from '../fetchers/s3'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -46,36 +47,35 @@ const NFTCardExternal = ({
   const { myUser } = useUserContext()
   const [listedItem, setListedItem] = useState()
   const [isAuctionItem, setIsAuctionItem] = useState(null)
+  // useEffect(() => {
+  //   if (!listings || !nftItem) return
+  //   let listing = [];
 
-  useEffect(() => {
-    if (!listings || !nftItem) return
-    let listing = [];
-
-    if(hasOwner){
-      //check if the nftItem is contract data or owner data,, main idea is to get the nft collection's contract address
-      if(Boolean(nftItem?.contract)){
-        listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.contract.toLowerCase() && listing.asset.id == nftItem.tokenId)
-      }
-      else if(Boolean(nftItem?.tokenAddress)){
-        listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.tokenAddress.toLowerCase() && listing.asset.id == nftItem.tokenId)
-      }
-    }else{
-      //check if the nftItem is contract data or owner data
-      if(Boolean(nftItem?.contract)){
-        listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.contract.toLowerCase() && listing.asset.id == nftItem.tokenId)
-      }
-      else if(Boolean(nftItem?.tokenAddress)){
-        listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.tokenAddress.toLowerCase() && listing.asset.id == nftItem.tokenId)
-      }
-    }
-    // console.log(listing);
-    if (Boolean(listing)) {
-      setListedItem(listing)
-    }
-    return() =>{
-      //do nothing
-    }
-  }, [listings, nftItem])
+  //   if(hasOwner){
+  //     //check if the nftItem is contract data or owner data,, main idea is to get the nft collection's contract address
+  //     if(Boolean(nftItem?.contract)){
+  //       listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.contract.toLowerCase() && listing.asset.id == nftItem.tokenId)
+  //     }
+  //     else if(Boolean(nftItem?.tokenAddress)){
+  //       listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.tokenAddress.toLowerCase() && listing.asset.id == nftItem.tokenId)
+  //     }
+  //   }else{
+  //     //check if the nftItem is contract data or owner data
+  //     if(Boolean(nftItem?.contract)){
+  //       listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.contract.toLowerCase() && listing.asset.id == nftItem.tokenId)
+  //     }
+  //     else if(Boolean(nftItem?.tokenAddress)){
+  //       listing = listings.find((listing) => listing.assetContractAddress.toLowerCase() == nftItem.tokenAddress.toLowerCase() && listing.asset.id == nftItem.tokenId)
+  //     }
+  //   }
+  //   // console.log(listing);
+  //   if (Boolean(listing)) {
+  //     setListedItem(listing)
+  //   }
+  //   return() =>{
+  //     //do nothing
+  //   }
+  // }, [listings, nftItem])
 
   // useEffect(() => {
   //   //getting NFT likes from Sanity
@@ -126,6 +126,11 @@ const NFTCardExternal = ({
                     loading='lazy'
                   />
                 </div>
+                {Boolean(nftItem?.listingData?.type == 1) && (
+                  <div className="absolute left-2 top-2 bg-slate-800/90 rounded-full p-2">
+                    <RiAuctionLine />
+                  </div>
+                )}
               </div>
 
               <div className="absolute  bottom-2.5 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white md:h-9 md:w-9">
@@ -143,7 +148,7 @@ const NFTCardExternal = ({
               </div> */}
 
               {/* Remaining timer is currently disabled in every NFT card, performance issues */}
-              {Boolean(listedItem) && false && (
+              {/* {Boolean(listedItem) && false && (
                 <div className="absolute top-[-1px] right-[-1px] flex items-center">
                   <svg
                     className={`w-44 ${
@@ -192,7 +197,7 @@ const NFTCardExternal = ({
                     </span>
                   </div>
                 </div>
-              )}
+              )} */}
 
               <div className="absolute left-[-1px] bottom-[-0.4px] ">
                 <svg
@@ -219,22 +224,21 @@ const NFTCardExternal = ({
                     <div className="pt-1">
                       <div
                         className={`relative flex items-baseline rounded-lg border ${
-                          Boolean(listedItem)
+                          Boolean(nftItem?.listingData)
                             ? ' border-green-500'
                             : ' border-rose-500'
                         } py-1.5 px-2.5 text-xs font-semibold sm:text-base md:py-2 md:px-3.5 `}
                       >
-                        {Boolean(listedItem) ? (
+                        {Boolean(nftItem?.listingData) ? (
                           <>
                             {/* <span className="absolute bottom-full -mx-1 block translate-y-1 rounded-md bg-green-500 py-0 px-3 text-xs font-normal text-white">
                               Price
                             </span> */}
                             <span className=" !leading-none text-green-500">
                               {
-                                listedItem?.buyoutCurrencyValuePerToken
-                                  .displayValue
+                                parseInt(nftItem?.listingData?.buyoutPrice.hex, 16) / Math.pow(10, 18)
                               }{' '}
-                              <span className="text-xs">{listedItem?.buyoutCurrencyValuePerToken.symbol}</span>
+                              <span className="text-xs">{nftItem?.listingData?.buyoutCurrencyValuePerToken.symbol}</span>
                             </span>
                           </>
                         ) : (

@@ -5,8 +5,11 @@ import { MdAudiotrack } from 'react-icons/md'
 // import { useAddress } from '@thirdweb-dev/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
+import { getImagefromWeb3 } from '../fetchers/s3'
+import { RiAuctionLine } from 'react-icons/ri'
 
 const NFTItem = ({ nftItem, chain, compact }) => {
+  if(!nftItem.asset) return
   const { dark } = useThemeContext();
   // const [isLiked, setIsLiked] = useState(false);
   // const address = useAddress();
@@ -57,7 +60,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
       } group flex flex-col rounded-3xl p-2.5 shadow-md transition hover:shadow-xl overflow-hidden`}
     >
       <Link
-      href={`/nft/${chain}/${nftItem.assetContractAddress}/${nftItem.asset.id}`}
+      href={`/nft/${chain}/${nftItem.assetContractAddress}/${parseInt(nftItem.tokenId.hex, 16)}`}
       passHref>
       {/* <Link
       href={`/nfts/${nftItem.asset.properties?.tokenid}`}
@@ -66,12 +69,17 @@ const NFTItem = ({ nftItem, chain, compact }) => {
         <div className="relative flex-shrink-0 cursor-pointer">
           <div className={`aspect-w-11 aspect-h-12 relative z-0 flex ${compact ? 'h-[250px]' : 'h-[415px]'} w-full overflow-hidden rounded-2xl`}>
             <img
-              src={nftItem.asset.image}
+              src={getImagefromWeb3(nftItem?.asset?.image)}
               className="rounded-2xl object-cover h-full w-full transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-              alt={nftItem.asset.name}
+              alt={nftItem?.asset?.name}
               loading='lazy'
             />
           </div>
+          {Boolean(nftItem?.type == 1) && (
+            <div className="absolute left-2 top-2 bg-slate-800/90 rounded-full p-2">
+              <RiAuctionLine />
+            </div>
+          )}
 
           <div className="absolute  bottom-2.5 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white md:h-9 md:w-9">
             {nftItem?.asset?.properties?.itemtype == "audio" ? <MdAudiotrack /> :
@@ -154,7 +162,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
               ></path>
             </svg>
 
-            <div className="absolute left-4 bottom-[12px] w-48 ">
+            <div className="absolute left-4 bottom-[12px]">
               <h2 className="text-left text-sm font-semibold">
                 {nftItem.asset.name}
               </h2>
@@ -165,7 +173,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
                       Price
                     </span>
                     <span className=" !leading-none text-green-500">
-                      {nftItem.buyoutCurrencyValuePerToken.displayValue}{' '}
+                      {parseInt(nftItem?.buyoutPrice.hex, 16) / Math.pow(10, 18)}{' '}
                       <span className="text-xs">{nftItem.buyoutCurrencyValuePerToken.symbol}</span>
                     </span>
                   </div>

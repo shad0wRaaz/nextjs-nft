@@ -160,7 +160,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
               !ownerData ? (
                 auctionedItem ? (
                   <div className="flex items-center justify-center gap-2 rounded-lg bg-pink-500 p-2 px-4 text-white">
-                    <RiAuctionLine className="text-xl" /> <span>Auctioned NFT</span>
+                    <RiAuctionLine className="text-xl" /> <span>In Auction</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">

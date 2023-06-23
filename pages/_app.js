@@ -18,18 +18,20 @@ function MyApp({ Component, pageProps }) {
   const client = new QueryClient()
   return (
     // <ThirdwebProvider activeChain="ethereum">
-    <ThirdwebProvider activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}>
+    <ThirdwebProvider 
+      activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}
+      dAppMeta={{
+        name: 'Nuva NFT',
+        description: 'A Multichain NFT Marketplace',
+        logoUrl: 'https://nuvanft.io/assets/nuvanft.png',
+        url: 'https://nuvanft.io'
+      }}>
       <ThemeProvider>
         <UserProvider>
           <AdminUserProvider>
             <SearchProvider>
               <QueryClientProvider client={client}>
                 <MarketplaceProvider>
-                  {/* <Head>
-                    <title>Nuva NFT: A Multichain NFT Marketplace</title>
-                    <link rel="icon" type="image/png" sizes="32x32" href={icon32.src} key={'icon-32x32'} />
-                    <link rel="icon" type="image/png" sizes="16x16" href={icon16.src} key={'icon-16x16'} />
-                  </Head> */}
                   <SettingsProvider>
                     <CollectionFilterProvider>
                       <Component {...pageProps} />
