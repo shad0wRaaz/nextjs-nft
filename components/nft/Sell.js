@@ -296,6 +296,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
           endTime: endingDate,
           sellerAddress: address,
           asset: {...nftContractData.metadata},
+          chainId: nftCollection?.chainId,
           type: 0,
         }
 
@@ -444,6 +445,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
           endTime: endingDate,
           sellerAddress: address,
           asset: {...nftContractData.metadata},
+          chainId: nftCollection?.chainId,
           type: 1,
         }
 

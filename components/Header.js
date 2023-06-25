@@ -111,6 +111,7 @@ const Header = () => {
     ['marketplace', selectedBlockchain],
     getActiveListings(),
     {
+      enabled: false,
       onError: () => {
         toast.error(
           'Error fetching marketplace data. Refresh and try again.',

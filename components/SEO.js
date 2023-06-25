@@ -13,31 +13,40 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
 
   return (
     <Head>
-        <title>{seoTitle + "Nuva NFT"}</title>
-        <meta charSet="UTF-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+      {/* Google tag (gtag.js) */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-BBEXJ0P1FY"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)}
+        gtag('js', new Date());
 
-        <meta property="og:title" content={seoTitle + "Nuva NFT"} />
-        <meta property="og:description" content={seoDescription} />    
-        <meta property="og:url" content={seoCurrentUrl} />
-        <meta property="og:image" content={seoImage} />
-        <meta property="og:site_name" content={seoSiteName} />
-        <meta property="og:hashtag" content={seoHashTag} />
-        <meta property="og:locale" content="en_GB" />
+        gtag('config', 'G-BBEXJ0P1FY');
+      </script>
+      <title>{seoTitle + "Nuva NFT"}</title>
+      <meta charSet="UTF-8" />
+      <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoTitle + "Nuva NFT"} />
-        <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content={seoImage} />
+      <meta property="og:title" content={seoTitle + "Nuva NFT"} />
+      <meta property="og:description" content={seoDescription} />    
+      <meta property="og:url" content={seoCurrentUrl} />
+      <meta property="og:image" content={seoImage} />
+      <meta property="og:site_name" content={seoSiteName} />
+      <meta property="og:hashtag" content={seoHashTag} />
+      <meta property="og:locale" content="en_GB" />
 
-        <meta property="type" content="website" />
-        <meta property="url" content={seoCurrentUrl} />
-        <meta property="image" content={seoImage} />
-        <meta property="title" key="title" content={seoTitle + "Nuva NFT"} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={seoTitle + "Nuva NFT"} />
+      <meta name="twitter:description" content={seoDescription} />
+      <meta name="twitter:image" content={seoImage} />
 
-        <link rel="icon" type="image/png" href="https://nuvanft.io/assets/nuvanft.png"></link>
-      </Head>
+      <meta property="type" content="website" />
+      <meta property="url" content={seoCurrentUrl} />
+      <meta property="image" content={seoImage} />
+      <meta property="title" key="title" content={seoTitle + "Nuva NFT"} />
+
+      <link rel="icon" type="image/png" href="https://nuvanft.io/assets/nuvanft.png"></link>
+    </Head>
   )
 }
 

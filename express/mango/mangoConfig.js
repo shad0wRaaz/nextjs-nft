@@ -22,6 +22,44 @@ try {
   console.error(e);
 }
 
+export const findListedNFTs = async(name) => {
+  const unresolvedCollections = [
+    await mangodb.collection('activelistings-goerli'),
+    await mangodb.collection('activelistings-goerli'),
+    await mangodb.collection('activelistings-binance-testnet'),
+    await mangodb.collection('activelistings-binance'),
+    await mangodb.collection('activelistings-mumbai'),
+    await mangodb.collection('activelistings-polygon'),
+    await mangodb.collection('activelistings-polygon'),
+  ];
+  
+  const allCollections = await Promise.all(unresolvedCollections);
+
+  const query = { 'asset.name': {'$regex' : name, '$options' : 'i'} }
+
+  const unresolvedResult = allCollections.map(async coll => { const newres = await coll.find( query ).toArray();  return newres; });
+  const resolved = await Promise.all(unresolvedResult);
+  // let allResults = [];
+  // resolved.map(chainResult => {
+  //   chainResult.map(nft => allResults.push(nft));
+  // })
+  return resolved.flat();
+
+
+
+  const goerliCollection = await mangodb.collection('activelistings-goerli');
+  const ethereumCollection = await mangodb.collection('activelistings-mainnet');
+  const binancetestnetCollection = await mangodb.collection('activelistings-binance-testnet');
+  const binanceCollection = await mangodb.collection('activelistings-binance');
+  const mumbaiCollection = await mangodb.collection('activelistings-mumbai');
+  const polygonollection = await mangodb.collection('activelistings-polygon');
+  const avalancheCollection = await mangodb.collection('activelistings-polygon');
+
+  const result = await goerliCollection.find( query ).toArray();
+
+  return result;
+
+}
 
 export const getMarketData = async(contractAddress, tokenId, chain) => {
   const collection = await mangodb.collection(`activelistings-${chain}`);
@@ -56,7 +94,6 @@ export const deleteMarketData = async(contractAddress, tokenId, chain) => {
 }
 
 export const latestMarketData = async(chain, lim) => {
-
   const collection = await mangodb.collection(`activelistings-${chain}`);
   const query = {};
   const result = await collection.find().limit(parseInt(lim)).toArray();

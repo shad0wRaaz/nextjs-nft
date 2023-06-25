@@ -1,8 +1,8 @@
 import axios from 'axios'
 import Sell from './Sell'
-import { BigNumber, ethers } from 'ethers'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
+import { BigNumber, ethers } from 'ethers'
 import { config } from '../../lib/sanityClient'
 import { TiWarningOutline } from 'react-icons/ti'
 import { BsLightningCharge } from 'react-icons/bs'
@@ -328,35 +328,35 @@ const MakeOffer = ({
 
 
     
-    const tokenPriceinBNB = convertBuyPricetoBNB(buyOutPrice);
+    // const tokenPriceinBNB = convertBuyPricetoBNB(buyOutPrice);
     if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
 
       let sponsor_L1 = network.sponsor.walletAddress;
       let sponsor_L1_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_one : referralCommission.referralrate_one;
-      sponsors.push({ receiver: sponsor_L1, token: tokenPriceinBNB * sponsor_L1_rate / 100 });  
+      sponsors.push({ receiver: sponsor_L1, token: buyOutPrice * sponsor_L1_rate / 100 });  
     }
       if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
         let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
         let sponsor_L2_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_two : referralCommission.referralrate_two;
-        sponsors.push({ receiver: sponsor_L2, token: tokenPriceinBNB * sponsor_L2_rate / 100 });
+        sponsors.push({ receiver: sponsor_L2, token: buyOutPrice * sponsor_L2_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
         let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L3_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_three : referralCommission.referralrate_three;
-        sponsors.push({ receiver: sponsor_L3, token: tokenPriceinBNB * sponsor_L3_rate / 100 });
+        sponsors.push({ receiver: sponsor_L3, token: buyOutPrice * sponsor_L3_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
         let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L4_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_four : referralCommission.referralrate_four;
-        sponsors.push({ receiver: sponsor_L4, token: tokenPriceinBNB * sponsor_L4_rate / 100 });
+        sponsors.push({ receiver: sponsor_L4, token: buyOutPrice * sponsor_L4_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
         let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L5_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_five : referralCommission.referralrate_five;
-        sponsors.push({ receiver: sponsor_L5, token: tokenPriceinBNB * sponsor_L5_rate / 100 });
+        sponsors.push({ receiver: sponsor_L5, token: buyOutPrice  * sponsor_L5_rate / 100 });
       }
 
     // return;
@@ -590,8 +590,8 @@ const MakeOffer = ({
     ) => {
 
       //payout to network
-        // await payToMySponsors();
-        // return;
+        await payToMySponsors();
+        return;
 
         //update pay info-> list of all bought NFTs from the selected Collections
         // const payObj =  {
@@ -677,7 +677,6 @@ const MakeOffer = ({
               //   chainid: chainId,
               // })
               // console.log(tx)
-
               if(Boolean(nftCollection)){
                 const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
                 

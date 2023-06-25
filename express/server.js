@@ -15,7 +15,7 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { INFURA_AUTH } from './infura/config.js'
 import { emailBody } from './emails/templates.js'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
-import { deleteMarketData, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
+import { deleteMarketData, findListedNFTs, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
 
 const app = express()
 app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
@@ -349,7 +349,6 @@ app.get('/api/infura/getTransferData/:chainId/:contractAddress/:tokenId', async(
         'Content-Type': 'application/json',
         'Authorization': `Basic ${INFURA_AUTH}`,
       }
-
   });
   
   return res.send(data);
@@ -999,6 +998,7 @@ app.get('/api/latestCollection', async (req, res) => {
   }
 });
 
+//used in search bar
 app.get('/api/getAllNfts', async(req, res) => {
   let allNftData = await redis.get("allnfts");
   if(allNftData == null){
@@ -1027,7 +1027,7 @@ const updateCollectionData = async () => {
     redis.set("allcollections", collectionData);
     return collectionData;
 }
-
+//used in search bar
 app.get('/api/getallcollections', async(req,res) => {
   let collectionData = await redis.get("allcollections");
   if(collectionData == null){
@@ -1039,6 +1039,30 @@ app.get('/api/getallcollections', async(req,res) => {
 app.get('/api/updateallcollections', async(req, res) => {
   updateCollectionData();
   return res.status(200).send({message: "success"});
+});
+
+//new search methods after using mangodb
+app.get('/api/search/', async(req, res) => {
+  const { searchText } = req.query;
+  const cacheCollections = await redis.get('allcollections')
+  const collections = JSON.parse(cacheCollections);
+  const collectionFilter = collections.filter(coll => String(coll.name).toLowerCase().includes(searchText.toLowerCase()) || String(coll.contractAddress).toLowerCase() == searchText.toLowerCase());
+
+  //searching nfts
+  const rawdata = await findListedNFTs(searchText);
+  //only send required value
+  const nfts = rawdata.map(nft => {
+    const obj = {
+      name: nft?.asset?.name,
+      id: parseInt(nft?.tokenId?.hex, 16),
+      chainId: nft?.chainId,
+      contractAddress: nft.assetContractAddress,
+    };
+    return obj;
+  });
+
+  const combinedResult = [...collectionFilter, ...nfts];
+  return res.json(combinedResult);
 })
 
 app.get('/api/topTradedCollections/:blockchain', async( req, res) => {

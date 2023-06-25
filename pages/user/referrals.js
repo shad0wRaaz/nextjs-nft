@@ -25,7 +25,7 @@ const referrals = () => {
     const levelfourRef = useRef(0);
     const levelfiveRef = useRef(0);
     const [totalBonus, setTotalBonus] = useState(0);
-    const { chainExplorer, HOST } = useSettingsContext();
+    const { chainExplorer, chainIcon, HOST } = useSettingsContext();
     const [referralBonuses, setReferralBonuses] = useState();
 
     useEffect(() => {
@@ -337,7 +337,7 @@ const referrals = () => {
                                                         {bonus.transactionHash.slice(0,5)}...{bonus.transactionHash.slice(-5)}
                                                     </a>
                                                 </td>
-                                                <td className={style.tablecell}><IconBNB/>{bonus.amount}</td>
+                                                <td className={style.tablecell}>{chainIcon[bonus.chainId]} {bonus.amount}</td>
                                                 <td className={style.tablecell}>{bonus.source}</td>
                                             </tr>
                                         ))}

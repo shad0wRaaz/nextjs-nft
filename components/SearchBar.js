@@ -1,11 +1,13 @@
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { useDebounce } from "use-debounce";
 import { config } from '../lib/sanityClient'
 import { RiSearchLine } from 'react-icons/ri'
 import { Combobox, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext'
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { getSearchValue } from '../fetchers/SanityFetchers'
 
 const style = {
   comboMenu: `absolute max-h-[300px] md:max-h-[500px] lg:left-[-22px] lg:top-[40px] overflow-hidden mt-1 rounded-xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm w-[360px] md:w-[500px] lg:w-[550px] searchOutputBox`,
@@ -14,67 +16,95 @@ const style = {
 const SearchBar = () => {
   const [selected, setSelected] = useState('Search NFTs/Collections')
   const [query, setQuery] = useState('')
-  const [collectionArray, setCollectionArray] = useState([])
+  const [filteredCollection, setFilteredCollection] = useState([])
   const router = useRouter()
   const { dark } = useThemeContext()
+  const [loading, setLoading] = useState(false);
   const { HOST, chainIcon, blockchainName } = useSettingsContext();
+  const [debouncedText] = useDebounce(query, 700);
+
+  useEffect(() => {
+    const source = axios.CancelToken.source();
+    setLoading(true);
+    if (debouncedText) {
+      ;(async() => {
+        await getSearchValue(debouncedText, source.token)
+          .then(res => setFilteredCollection(res?.data))
+          .catch((e) => {
+            if (axios.isCancel(source)) {
+              return;
+            }
+            setFilteredCollection([]);
+          });
+      })() 
+    } else {
+      setFilteredCollection([]);
+    }
+    setLoading(false);
+    return () => {
+      source.cancel(
+        "Canceled because of component unmounted or debounce Text changed"
+      );
+    };
+  }, [debouncedText]);
+
 
   //get all collection names from sanity
-  useEffect(() => {
-    let searchData = [];
-    ;(async () => {
+  // useEffect(() => {
+  //   return
+  //   let searchData = [];
+  //   ;(async () => {
 
-      //get collection details
-      await axios.get(`${HOST}/api/getallcollections`).then(collections => {
-        collections = JSON.parse(collections.data)
-        // console.log(collections)
-        // setCollectionArray(collections);
-        searchData.push(...collections);
-      }).catch(err => {
-        console.error(err);
-      });
-    })()
+  //     //get collection details
+  //     await axios.get(`${HOST}/api/getallcollections`).then(collections => {
+  //       collections = JSON.parse(collections.data)
+  //       // console.log(collections)
+  //       // setCollectionArray(collections);
+  //       searchData.push(...collections);
+  //     }).catch(err => {
+  //       console.error(err);
+  //     });
+  //   })();
 
-    ;(async () => {
-      //get nft details
-      await axios.get(`${HOST}/api/getAllNfts`).then(nfts => {
-        nfts = JSON.parse(nfts.data)
+  //   ;(async () => {
+  //     //get nft details
+  //     await axios.get(`${HOST}/api/getAllNfts`).then(nfts => {
+  //       nfts = JSON.parse(nfts.data)
 
-        searchData.push(...nfts)
-      }).catch(err => {
-        console.error(err);
-      });
-    })()
+  //       searchData.push(...nfts)
+  //     }).catch(err => {
+  //       console.error(err);
+  //     });
+  //   })()
 
-    setCollectionArray(searchData);
+  //   setCollectionArray(searchData);
 
-    return() => {
-      //do nothing
-    }
-  }, []);
+  //   return() => {
+  //     //do nothing
+  //   }
+  // }, []);
   
-  let filteredCollection = '';
-  if(collectionArray){
-    filteredCollection =
-      query === ''
-        ? ''
-        : collectionArray.filter(
-            (collection) =>
-              collection.name
-                ?.toLowerCase()
-                .replace(/\s+/g, '')
-                .includes(query.toLowerCase().replace(/\s+/g, '')) ||
-              collection.contractAddress
-              ?.toLowerCase()
-              ?.replace(/\s+/g, '')
-              ?.includes(query.toLowerCase().replace(/\s+/g, '')) ||
-              collection._id
-                ?.toLowerCase()
-                ?.replace(/\s+/g, '')
-                ?.includes(query.toLowerCase().replace(/\s+/g, ''))
-          )
-  }
-
+  // let filteredCollection = '';
+  // if(collectionArray){
+  //   filteredCollection =
+  //     query === ''
+  //       ? ''
+  //       : collectionArray.filter(
+  //           (collection) =>
+  //             collection.name
+  //               ?.toLowerCase()
+  //               .replace(/\s+/g, '')
+  //               .includes(query.toLowerCase().replace(/\s+/g, '')) ||
+  //             collection.contractAddress
+  //             ?.toLowerCase()
+  //             ?.replace(/\s+/g, '')
+  //             ?.includes(query.toLowerCase().replace(/\s+/g, '')) ||
+  //             collection._id
+  //               ?.toLowerCase()
+  //               ?.replace(/\s+/g, '')
+  //               ?.includes(query.toLowerCase().replace(/\s+/g, ''))
+  //         )
+  // }
 
   return (
     <div
@@ -82,8 +112,7 @@ const SearchBar = () => {
         dark
           ? 'text-black placeholder:text-neutral-200'
           : 'text-black placeholder:text-neutral-100'
-      }`}
-    >
+      }`}>
       <Combobox value={selected} onChange={setSelected}>
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left  sm:text-sm">
@@ -121,14 +150,15 @@ const SearchBar = () => {
               }
             >
               <div className="max-h-[300px] md:max-h-[500px] overflow-scroll">
-                {filteredCollection.length === 0 && query !== '' ? (
+                {loading && 'Loading..'}
+                {!loading && filteredCollection.length === 0 && query !== '' ? (
                   <div
                     className={`relative cursor-default text-center select-none bg-transparent bg-none p-4 ${
                       dark ? ' text-neutral-100' : ' text-gray-700'
                     } `}
                   >
                     <span>Nothing found.</span>
-                    <button
+                    {/* <button
                       onClick={() => router.push('/search')}
                       className={`mt-3 block rounded-lg w-full border ${
                         dark
@@ -137,15 +167,18 @@ const SearchBar = () => {
                       } p-2 text-[12px] `}
                     >
                       Use Advanced Search
-                    </button>
+                    </button> */}
                   </div>
                 ) : (
                   filteredCollection.length > 0 &&
-                  filteredCollection?.map((collectionArray) => (
+                  filteredCollection?.map((collectionArray,index) => (
 
                       <a
-                        key={collectionArray._id}
-                        href={collectionArray.item == "collection" ? `/collection/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}` : `/nft/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}/${collectionArray.id}`}
+                        key={collectionArray.index}
+                        href={
+                          collectionArray.item == "collection" ? 
+                          `/collection/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}` : 
+                          `/nft/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}/${collectionArray.id}`}
                         className="cursor-pointer"
                       >
 

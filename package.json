@@ -58,6 +58,7 @@
     "slick-carousel": "^1.8.1",
     "svg-loaders-react": "^2.2.1",
     "url": "^0.11.0",
+    "use-debounce": "^9.0.4",
     "vercel": "^25.1.0"
   },
   "devDependencies": {

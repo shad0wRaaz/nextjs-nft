@@ -472,3 +472,10 @@ export const getReferralBonuses = () => async() => {
   const bonuses = await config.fetch(query);
   return bonuses;
 }
+
+export const getSearchValue = async(searchText, token) => {
+  return axios
+    .get(`${HOST}/api/search/?searchText=${searchText}`, {
+      cancelToken: token,
+    });
+}

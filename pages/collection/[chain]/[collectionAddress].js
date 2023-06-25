@@ -313,7 +313,10 @@ const { data: infiniteData, fetchNextPage, hasNextPage, isFetchingNextPage, isLo
     { 
       staleTime: Infinity,
       refetchOnWindowFocus: false,
-      onSuccess:(res) => { console.log(res); setIsLoading(true) },
+      onSuccess:(res) => { 
+        // console.log(res); 
+        setIsLoading(true)
+      },
       getNextPageParam: (page) => {
         return page.cursor
       },

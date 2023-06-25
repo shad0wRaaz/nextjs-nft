@@ -55,6 +55,7 @@ export function SettingsProvider({children}) {
         "43113": "AVAX",
         "43114": "AVAX",
     }
+
     const currencyByChainName = {
         "binance-testnet": "TBNB",
         "binance": "BNB",

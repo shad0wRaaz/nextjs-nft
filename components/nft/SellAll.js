@@ -261,6 +261,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                         endTime: endingDate,
                         sellerAddress: address,
                         asset: {...includedNfts[index].metadata},
+                        chainId: collectionData?.chainId,
                         type: 0,
                     }
                     return document;
@@ -443,6 +444,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                         endTime: endingDate,
                         sellerAddress: address,
                         asset: {...includedNfts[index].metadata},
+                        chainId: collectionData?.chainId,
                         type: 1,
                     }
                     return document;
