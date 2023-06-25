@@ -12,39 +12,56 @@ import { SettingsProvider } from '../contexts/SettingsContext'
 import { ThirdwebProvider, ChainId } from '@thirdweb-dev/react'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
+import Script from 'next/script'
 
 
 function MyApp({ Component, pageProps }) {
   const client = new QueryClient()
   return (
-    // <ThirdwebProvider activeChain="ethereum">
-    <ThirdwebProvider 
-      activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}
-      dAppMeta={{
-        name: 'Nuva NFT',
-        description: 'A Multichain NFT Marketplace',
-        logoUrl: 'https://nuvanft.io/assets/nuvanft.png',
-        url: 'https://nuvanft.io'
-      }}>
-      <ThemeProvider>
-        <UserProvider>
-          <AdminUserProvider>
-            <SearchProvider>
-              <QueryClientProvider client={client}>
-                <MarketplaceProvider>
-                  <SettingsProvider>
-                    <CollectionFilterProvider>
-                      <Component {...pageProps} />
-                    </CollectionFilterProvider>
-                  </SettingsProvider>
-                  <ReactQueryDevtools />
-                </MarketplaceProvider>
-              </QueryClientProvider>
-            </SearchProvider>
-          </AdminUserProvider>
-        </UserProvider>
-      </ThemeProvider>
-    </ThirdwebProvider>
+    <>
+      <Script strategy='afterInteractive' src="https://www.googletagmanager.com/gtag/js?id=G-BBEXJ0P1FY"/>
+      <Script
+        id='google-analytics'
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-BBEXJ0P1FY', {
+              page_path: window.location.pathname,
+            });
+          `,
+          }}
+      />
+      <ThirdwebProvider 
+        activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}
+        dAppMeta={{
+          name: 'Nuva NFT',
+          description: 'A Multichain NFT Marketplace',
+          logoUrl: 'https://nuvanft.io/assets/nuvanft.png',
+          url: 'https://nuvanft.io'
+        }}>
+        <ThemeProvider>
+          <UserProvider>
+            <AdminUserProvider>
+              <SearchProvider>
+                <QueryClientProvider client={client}>
+                  <MarketplaceProvider>
+                    <SettingsProvider>
+                      <CollectionFilterProvider>
+                        <Component {...pageProps} />
+                      </CollectionFilterProvider>
+                    </SettingsProvider>
+                    <ReactQueryDevtools />
+                  </MarketplaceProvider>
+                </QueryClientProvider>
+              </SearchProvider>
+            </AdminUserProvider>
+          </UserProvider>
+        </ThemeProvider>
+      </ThirdwebProvider>
+    </>
   )
 }
 
