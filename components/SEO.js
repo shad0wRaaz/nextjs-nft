@@ -13,7 +13,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
 
   return (
     <Head>
-      {/* Google tag (gtag.js) */}
+      {/* Google tag (gtag.js)
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-BBEXJ0P1FY"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
@@ -21,7 +21,7 @@ const SEO = ({title, quote, hashtag, image, currentUrl, sitename, description}) 
         gtag('js', new Date());
 
         gtag('config', 'G-BBEXJ0P1FY');
-      </script>
+      </script> */}
       <title>{seoTitle + "Nuva NFT"}</title>
       <meta charSet="UTF-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
