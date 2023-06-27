@@ -41,9 +41,8 @@ export const getMarketOffers = (marketAddress, blockchain, listingData) => async
         return null;
       }
     }else if(listingData?.type == 1){
-      console.log('auction')
-      const marketBids = await contract?.englishAuctions.getAll();
-      console.log(marketBids)
+      const marketBids = await contract?.offers.getAllValid();
+      console.log('bids?', marketBids);
       return marketBids;
     }
   }

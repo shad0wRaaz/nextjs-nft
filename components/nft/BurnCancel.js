@@ -403,29 +403,29 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
         </div>
     )}
     {/* String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase() */}
-    {Boolean(address) && (
+    {Boolean(address) &&  String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
-            {Boolean(listingData) && String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
-              <>
-                {isCanceling ? (
-                  <div className="w-full md:w-1/3 p-2">
-                    <button
-                        className="flex gap-2 justify-center pointer-events-none bg-slate-500 hover:bg-slate-600 text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                        disabled>
-                          <IconLoading dark="inbutton" /><span className="inline-block ml-1">Cancelling</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="w-full md:w-1/3 p-2">
-                    <button
-                        className="bg-slate-500 hover:bg-slate-600 w-full text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                        onClick={() => setCancelModal(true)}>
-                            <RiCloseCircleLine className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Cancel Listing</span>
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
+          {Boolean(listingData) && (
+            <>
+              {isCanceling ? (
+                <div className="w-full md:w-1/3 p-2">
+                  <button
+                      className="flex gap-2 justify-center pointer-events-none bg-slate-500 hover:bg-slate-600 text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      disabled>
+                        <IconLoading dark="inbutton" /><span className="inline-block ml-1">Cancelling</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full md:w-1/3 p-2">
+                  <button
+                      className="bg-slate-500 hover:bg-slate-600 w-full text-center w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      onClick={() => setCancelModal(true)}>
+                          <RiCloseCircleLine className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Cancel Listing</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
             {(String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) && (
               <>
                 {isTransfer ? (

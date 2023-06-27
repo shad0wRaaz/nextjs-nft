@@ -22,15 +22,40 @@ try {
   console.error(e);
 }
 
+//this is for extensive search page
+export const getListedNfts = async(filters, chain, limit, categoryCollections) => {
+  const { minPrice, maxPrice, direct, auction, category, image, video, audio, name} = filters;
+  const lim = parseInt(limit);
+
+  const listedNFTs = await mangodb.collection(`activelistings-${chain}`);
+  let query = {};
+  let result;
+
+  //querybuilder
+  if(categoryCollections != 'all'){
+    query = {...query, assetContractAddress: {$in: categoryCollections}}
+  }
+
+  if(name) { 
+    query = { ...query, 'asset.name': {'$regex' : name, '$options' : 'i'} };
+  }
+
+    result = await listedNFTs.find( query ).limit(lim).toArray();
+
+  
+  return result;
+
+}
+
 export const findListedNFTs = async(name) => {
   const unresolvedCollections = [
     await mangodb.collection('activelistings-goerli'),
-    await mangodb.collection('activelistings-goerli'),
+    await mangodb.collection('activelistings-mainnet'),
     await mangodb.collection('activelistings-binance-testnet'),
     await mangodb.collection('activelistings-binance'),
     await mangodb.collection('activelistings-mumbai'),
     await mangodb.collection('activelistings-polygon'),
-    await mangodb.collection('activelistings-polygon'),
+    await mangodb.collection('activelistings-avalanche'),
   ];
   
   const allCollections = await Promise.all(unresolvedCollections);
@@ -39,26 +64,7 @@ export const findListedNFTs = async(name) => {
 
   const unresolvedResult = allCollections.map(async coll => { const newres = await coll.find( query ).toArray();  return newres; });
   const resolved = await Promise.all(unresolvedResult);
-  // let allResults = [];
-  // resolved.map(chainResult => {
-  //   chainResult.map(nft => allResults.push(nft));
-  // })
   return resolved.flat();
-
-
-
-  const goerliCollection = await mangodb.collection('activelistings-goerli');
-  const ethereumCollection = await mangodb.collection('activelistings-mainnet');
-  const binancetestnetCollection = await mangodb.collection('activelistings-binance-testnet');
-  const binanceCollection = await mangodb.collection('activelistings-binance');
-  const mumbaiCollection = await mangodb.collection('activelistings-mumbai');
-  const polygonollection = await mangodb.collection('activelistings-polygon');
-  const avalancheCollection = await mangodb.collection('activelistings-polygon');
-
-  const result = await goerliCollection.find( query ).toArray();
-
-  return result;
-
 }
 
 export const getMarketData = async(contractAddress, tokenId, chain) => {

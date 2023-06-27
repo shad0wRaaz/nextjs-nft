@@ -128,7 +128,7 @@ const ExploreNFTs = () => {
       )}
 
       <div className="mt-8 flex justify-center pt-8">
-        <Link href="/search?n=&i=true&v=true&a=true&d=true&ac=true&h=true&_r=0&r_=10000">
+        <Link href="/search?c=all&n=&i=true&v=true&a=true&d=true&ac=true&h=true&_r=0&r_=10000">
           <div className={style.button}>Browse All NFTs</div>
         </Link>
       </div>

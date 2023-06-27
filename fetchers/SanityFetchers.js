@@ -148,8 +148,9 @@ export const getCollectionReferralSettings =
 export const getMyCollections =
   () =>
   async ({ queryKey }) => {
-    const [_, address] = queryKey
-    const query = `*[_type == "nftCollection" && createdBy->walletAddress match "${address}" ] {
+    const [_, address, chainId] = queryKey;
+
+    const query = `*[_type == "nftCollection" && createdBy->walletAddress match "${address}" && chainId == "${chainId}"] {
         _id,
         web3imageprofile,
         web3imagebanner,

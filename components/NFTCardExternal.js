@@ -35,7 +35,6 @@ const style = {
 const NFTCardExternal = ({
   chain,
   nftItem,
-  listings,
   showUnlisted,
   collectionAddress,
   creator,
@@ -117,14 +116,16 @@ const NFTCardExternal = ({
             <div className="relative flex-shrink-0 cursor-pointer">
               <div>
                 <div className={`aspect-w-11 aspect-h-12 relative z-0 flex ${compact ?  'h-[250px]' : 'h-[415px]'} w-full overflow-hidden rounded-2xl`}>
-                  <Image
-                    src={getImagefromWeb3(nftItem.metadata?.image)}
-                    className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
-                    alt={nftItem.metadata?.name}
-                    objectFit="cover"
-                    layout="fill"
-                    loading='lazy'
-                  />
+                  {Boolean(nftItem?.metadata?.image) ? (
+                    <Image
+                      src={getImagefromWeb3(nftItem.metadata.image)}
+                      className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                      alt={nftItem?.metadata?.name}
+                      objectFit="cover"
+                      layout="fill"
+                      loading='lazy'
+                    />
+                  ) : ''}
                 </div>
                 {Boolean(nftItem?.listingData?.type == 1) && (
                   <div className="absolute left-2 top-2 bg-slate-800/90 rounded-full p-2">

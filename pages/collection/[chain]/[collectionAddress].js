@@ -305,91 +305,91 @@ const CollectionDetails = (props) => {
     const cursor = pageParam;    
     const { data } = await axios.get(`${HOST}/api/infura/getCollectionOwners/${blockchainIdFromName[chain]}/${collectionAddress}`, {params: {cursor}}, {headers: {'Content-Type': 'application/json'}});
     return data;
-}
+  }
 
-const { data: infiniteData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: statusNFT } = useInfiniteQuery(
-    ['infinitenfts'],
-    getInfiniteNfts,
-    { 
-      staleTime: Infinity,
-      refetchOnWindowFocus: false,
-      onSuccess:(res) => { 
-        // console.log(res); 
-        setIsLoading(true)
+  const { data: infiniteData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: statusNFT } = useInfiniteQuery(
+      ['infinitenfts'],
+      getInfiniteNfts,
+      { 
+        staleTime: Infinity,
+        refetchOnWindowFocus: false,
+        onSuccess:(res) => { 
+          // console.log(res); 
+          setIsLoading(true)
+        },
+        getNextPageParam: (page) => {
+          return page.cursor
+        },
       },
-      getNextPageParam: (page) => {
-        return page.cursor
-      },
-    },
-)
+  )
 
-const loadMoreRef = useRef();
+  const loadMoreRef = useRef();
 
-useIntersectionObserver({
-  target: loadMoreRef,
-  onIntersect: fetchNextPage,
-  enabled: hasNextPage,
-});
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
+  });
 
-useEffect(() => {
-  if(!infiniteData) return
-  //nft metadata are in string, so need to parse it
-  let parsedData = []
-  infiniteData.pages.map(page => {
-    page.owners.map(item => {
-      const newData = {
-        ...item,
-        metadata: JSON.parse(item.metadata),
-      };
+  useEffect(() => {
+    if(!infiniteData) return
+    //nft metadata are in string, so need to parse it
+    let parsedData = []
+    infiniteData.pages.map(page => {
+      page.owners.map(item => {
+        const newData = {
+          ...item,
+          metadata: JSON.parse(item.metadata),
+        };
       parsedData.push(newData);
     });
   });
 
 
-    const unresolved = parsedData.map(async nft => {
-      const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
-      const newObject= {
-        ...nft,
-        listingData: data[0]
-      }
-      return newObject;
-    });
+  const unresolved = parsedData.map(async nft => {
+    const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
+    const newObject= {
+      ...nft,
+      listingData: data[0]
+    }
+    return newObject;
+  });
 
-    ;(async() => {
-      const resolved = await Promise.all(unresolved);
-      setNfts(resolved); //these are all nfts, for displaying nft cards
-      setFilteredNftData(resolved);
-    })();
+  ;(async() => {
+    const resolved = await Promise.all(unresolved);
+    setNfts(resolved); //these are all nfts, for displaying nft cards
+    setFilteredNftData(resolved);
+  })();
 
 
     //this is for showing owners details
-    const ownerArray = parsedData.map(o => o.ownerOf);
-    const ownerset = new Set(ownerArray);
-    setNftHolders(Array.from(ownerset));
+  const ownerArray = parsedData.map(o => o.ownerOf);
+  const ownerset = new Set(ownerArray);
+  setNftHolders(Array.from(ownerset));
 
-    let propObj = [];
+  let propObj = [];
 
-    parsedData?.map(nft => {
-      //this will be for  nfts minted in house and opensea
-      if(Boolean(nft?.metadata?.properties?.traits)){
-        nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
-          if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
-            propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
-          }
-        });
-      }
-      //this will be for any other nfts
-      else if(Boolean(nft?.metadata?.attributes)){
-        nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
-          if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
-            propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
-          }
-        });
-      }
+  parsedData?.map(nft => {
+    //this will be for  nfts minted in house and opensea
+    if(Boolean(nft?.metadata?.properties?.traits)){
+      nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
+        if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
+          propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
+        }
+      });
+    }
+    //this will be for any other nfts
+    else if(Boolean(nft?.metadata?.attributes)){
+      nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
+        if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
+          propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
+        }
+      });
+    }
 
-    })
-    setProperties(propObj);
-    setIsLoading(false);
+  })
+  setProperties(propObj);
+  setIsLoading(false);
 }, [infiniteData])
 
 

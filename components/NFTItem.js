@@ -1,12 +1,13 @@
 import Link from 'next/link'
+import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { config } from '../lib/sanityClient'
 import { MdAudiotrack } from 'react-icons/md'
+import { RiAuctionLine } from 'react-icons/ri'
+import { getImagefromWeb3 } from '../fetchers/s3'
 // import { useAddress } from '@thirdweb-dev/react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
-import { getImagefromWeb3 } from '../fetchers/s3'
-import { RiAuctionLine } from 'react-icons/ri'
 
 const NFTItem = ({ nftItem, chain, compact }) => {
   if(!nftItem.asset) return
@@ -173,7 +174,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
                       Price
                     </span>
                     <span className=" !leading-none text-green-500">
-                      {parseInt(nftItem?.buyoutPrice.hex, 16) / Math.pow(10, 18)}{' '}
+                      {ethers.utils.formatUnits(nftItem?.buyoutPrice.hex, 18)}{' '}
                       <span className="text-xs">{nftItem.buyoutCurrencyValuePerToken.symbol}</span>
                     </span>
                   </div>

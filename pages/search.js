@@ -1,55 +1,34 @@
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import NFTItem from '../components/NFTItem'
-import { config } from '../lib/sanityClient'
-import { HiChevronDown, HiOutlineViewGrid } from 'react-icons/hi'
-import { BsChevronDown } from 'react-icons/bs'
-import { FiArrowRight } from 'react-icons/fi'
-import { useThemeContext } from '../contexts/ThemeContext'
+import axios from 'axios'
+import { ethers } from 'ethers'
+import { BigNumber } from 'ethers'
+import 'rc-slider/assets/index.css'
+import SEO from '../components/SEO'
 import { useRouter } from 'next/router'
-import {
-  IconBulb,
-  IconExchange,
-  IconFilter,
-  IconImage,
-  IconSearch,
-  IconWallet,
-} from '../components/icons/CustomIcons'
-import { useEffect, useState, Fragment } from 'react'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import Header from '../components/Header'
 import Loader from '../components/Loader'
 import Slider, { Range } from 'rc-slider'
-import 'rc-slider/assets/index.css'
-import { Menu, Transition, Switch } from '@headlessui/react'
-import { BigNumber } from 'ethers'
+import Footer from '../components/Footer'
 import ReactPaginate from 'react-paginate'
+import NFTItem from '../components/NFTItem'
+import { config } from '../lib/sanityClient'
+import { FiArrowRight } from 'react-icons/fi'
+import { RiRefreshLine } from 'react-icons/ri'
 import SearchItem from '../components/SearchItem'
-import SEO from '../components/SEO'
-
-const style = {
-  wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
-  pageBanner: 'py-[4rem] mb-[2rem] gradSky',
-  pageTitle: 'text-4xl text-center text-black font-bold my-4 textGradBlue',
-  contractsWrapper: 'flex flex-wrap justify-center gap-[40px] pt-4',
-  contractItem:
-    'flex justify-center flex-col text-center hover:opacity-80 cursor-pointer py-[2rem] px-[1rem] md:w-1/3 sm:w-full flex justify-start rounded-xl border',
-  contractItemIcon: 'mb-[1rem] text-5xl mx-auto',
-  contractTitle: 'font-bold text-xl mb-2',
-  contractDescription: 'text-sm',
-  canvasMenu: 'bg-[#0f172a] h-[100vh] shadow-xl px-[2rem] overflow-y-scroll',
-  blur: 'filter: blur(1px)',
-  smallText: 'text-sm text-center mb-[2rem]',
-  noPointer: ' pointer-events-none',
-  nftwrapper: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8`,
-  closeButton:
-    'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70',
-}
+import { useEffect, useState, Fragment } from 'react'
+import { useThemeContext } from '../contexts/ThemeContext'
+import { Menu, Transition, Switch } from '@headlessui/react'
+import { useSettingsContext } from '../contexts/SettingsContext'
+import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { HiChevronDown, HiOutlineRefresh, HiOutlineViewGrid } from 'react-icons/hi'
+import { IconBulb, IconExchange, IconFilter, IconImage, IconSearch, IconWallet} from '../components/icons/CustomIcons'
 
 const search = ({category}) => {
   const { dark } = useThemeContext()
   const [showFilter, setShowFilter] = useState(true)
   const { activeListings, selectedBlockchain } = useMarketplaceContext()
-  const router = useRouter()
+  const router = useRouter();
+  const { HOST } = useSettingsContext();
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [itemName, setItemName] = useState('')
@@ -62,28 +41,48 @@ const search = ({category}) => {
   const [priceRange, setPriceRange] = useState([0, 10000])
   const [sortAsc, setSortAsc] = useState(true)
   const [filteredListings, setFilteredListings] = useState()
-
+  const [loading, setLoading] = useState(false);
   //variables for pagination
-  const [itemsPerPage, setItemsPerPage] = useState(4)
+  // const [itemsPerPage, setItemsPerPage] = useState(4)
   const [currentItems, setCurrentItems] = useState(null)
-  const [pageCount, setPageCount] = useState(0)
-  const [itemOffset, setItemOffset] = useState(0)
+  // const [pageCount, setPageCount] = useState(0)
+  // const [itemOffset, setItemOffset] = useState(0)
+  const [compact, setCompact] = useState(true);
 
-  useEffect(() => {
-    if (!filteredListings) return
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItems(filteredListings.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(filteredListings.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage, filteredListings])
-
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % filteredListings.length;
-    setItemOffset(newOffset);
-
-    return() => {
-      //nothing, just clean up codes
-    }
+  const style = {
+    wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
+    pageBanner: 'py-[4rem] mb-[2rem] gradSky',
+    pageTitle: 'text-4xl text-center text-black font-bold my-4 textGradBlue',
+    contractsWrapper: 'flex flex-wrap justify-center gap-[40px] pt-4',
+    contractItem:
+      'flex justify-center flex-col text-center hover:opacity-80 cursor-pointer py-[2rem] px-[1rem] md:w-1/3 sm:w-full flex justify-start rounded-xl border',
+    contractItemIcon: 'mb-[1rem] text-5xl mx-auto',
+    contractTitle: 'font-bold text-xl mb-2',
+    contractDescription: 'text-sm',
+    canvasMenu: 'bg-[#0f172a] h-[100vh] shadow-xl px-[2rem] overflow-y-scroll',
+    blur: 'filter: blur(1px)',
+    smallText: 'text-sm text-center mb-[2rem]',
+    noPointer: ' pointer-events-none',
+    nftwrapper: `mb-8 grid ${compact ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'}`,
+    closeButton:
+      'sticky top-3 transition duration-[300] top-[20px] left-[100%] z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70',
   }
+
+  // useEffect(() => {
+  //   if (!filteredListings) return
+  //   const endOffset = itemOffset + itemsPerPage;
+  //   setCurrentItems(filteredListings.slice(itemOffset, endOffset));
+  //   setPageCount(Math.ceil(filteredListings.length / itemsPerPage));
+  // }, [itemOffset, itemsPerPage, filteredListings])
+
+  // const handlePageClick = (event) => {
+  //   const newOffset = (event.selected * itemsPerPage) % filteredListings.length;
+  //   setItemOffset(newOffset);
+
+  //   return() => {
+  //     //nothing, just clean up codes
+  //   }
+  // }
   
   useEffect(() => {
     ;(async() => {
@@ -96,6 +95,33 @@ const search = ({category}) => {
       //nothing, just clean up codes
     }
   }, [])
+
+  const searchNFTs = async() => {
+    try{
+      setLoading(true);
+      setCurrentItems([])
+      const {data} = await axios.get(`${HOST}/api/mango/${selectedBlockchain}/search/`, {
+        params: {
+          minPrice: priceRange[0], 
+          maxPrice: priceRange[1], 
+          direct: includeDirect, 
+          auction: includeAuction,
+          category: selectedCategory,
+          image: includeImage,
+          video: includeVideo,
+          audio: includeAudio,
+          name: itemName,
+          limit: 100,
+        }
+      });
+      setFilteredListings(data); //this will be base search data //without filter
+      setCurrentItems(data); //this will be current data with / without filter
+      setLoading(false);
+    }catch(err){
+      setLoading(false);
+    }
+  }
+
 
   useEffect(() => {
     const data = router.query
@@ -110,66 +136,37 @@ const search = ({category}) => {
     setIncludeHasOffers(curval => data?.h === 'true' ? true : curval);
     setPriceRange([data?._r ? data._r : 0, data?.r_ ? data.r_ : 10000]);
 
+    searchNFTs();
     return() => {
       //nothing, just clean up codes
     }
   }, [router.query])
 
-  const DIVIDER = BigNumber.from(10).pow(18)
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
+  useEffect(() => {
+    searchNFTs();
+  }, [selectedBlockchain, selectedCategory])
 
   useEffect(() => {
-    if (!activeListings) return
-    if (!router.query._r) return
-    
-
-    let minPrice = parseInt(activeListings[0]?.buyoutPrice.hex,16) / DIVIDER
-    let maxPrice = minPrice
-    
-
-    for (let i = 0; i < activeListings.length; i++) {
-      let currentPrice = parseInt(activeListings[i]?.buyoutPrice.hex, 16)
-
-      let buyPrice = currentPrice / DIVIDER
-
-      if (minPrice > buyPrice) {
-        minPrice = buyPrice
-      }
-      if (maxPrice < buyPrice) {
-        maxPrice = buyPrice
-      }
-    }
-    setPriceRange([minPrice, maxPrice])
-
-    return() => {
-      //nothing, just clean up codes
-    }
-  }, [activeListings])
-
-  useEffect(() => {
-    if (!activeListings) return;
-    let data = []
+    if(!filteredListings) return
+    let data = [];
 
     //sort item according to their price in selected order
     if (sortAsc) {
-      data = activeListings.sort(function (a, b) {
-        return (parseInt(a.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(b.buyoutPrice.hex, 16) / DIVIDER);
+      data = filteredListings.sort(function (a, b) {
+        return (ethers.utils.formatUnits(a.buyoutPrice.hex, 18) - ethers.utils.formatUnits(b.buyoutPrice.hex, 18));
       })
     } else {
-      data = activeListings.sort(function (a, b) {
-        return (parseInt(b.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(a.buyoutPrice.hex, 16) / DIVIDER);
+      data = filteredListings.sort(function (a, b) {
+        return (ethers.utils.formatUnits(b.buyoutPrice.hex, 18) - ethers.utils.formatUnits(a.buyoutPrice.hex, 18));
       })
     }
 
     //filter according to category selected
-    if (selectedCategory != 'all') {
-      data = data.filter((item) => {
-        return (item.asset?.properties?.category == selectedCategory);
-      })
-    }
+    // if (selectedCategory != 'all') {
+    //   data = data.filter((item) => {
+    //     return (item.asset?.properties?.category == selectedCategory);
+    //   })
+    // }
     
     //filter for price range
     data = data.filter((item) => {
@@ -180,24 +177,28 @@ const search = ({category}) => {
         parseFloat(priceRange[1]) >= itemPrice
         )
       })
+
     //filter for auction and direct listings
     if(!(includeAuction && includeDirect)){
       if(!includeAuction){
-        data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+        data = data.filter(item => !(item.type == 1));
       }else {
-        data = data.filter(item => item.hasOwnProperty('reservePrice'));
+        data = data.filter(item => item.type == 1);
       }
       if(!includeDirect){
-        data = data.filter(item => !(!item.hasOwnProperty('reservePrice')));
+        data = data.filter(item => !(item.type == 0));
       }else {
-        data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+        data = data.filter(item => item.type == 0);
       }
     }
 
     //filter according to chosen file type audio, video or image
-    const audioNFTs = data.filter((item) => item.asset.properties?.itemtype == "audio");
-    const videoNFTs = data.filter((item) => item.asset.properties?.itemtype == "video");
-    const imageNFTs = data.filter((item) => item.asset.properties?.itemtype != "audio" && item.asset.properties?.itemtype != "video");
+    const supportedImgExt = ['jpg', 'png','webp', 'gif', 'bmp', 'jpeg', 'svg', 'jfif', 'glb', '3mf'];
+    const supportedAudioExt = ['wav', 'mp3', 'webm', 'ogg', 'wav'];
+    const supportedVideoExt = ['mp4', 'webm', 'flv', '3gp', 'mkv']
+    const audioNFTs = data.filter((item) => Boolean(item?.asset?.animation_url) && supportedAudioExt.includes(item?.asset?.animation_url.slice(-3)));
+    const videoNFTs = data.filter((item) => Boolean(item?.asset?.animation_url) && supportedVideoExt.includes(item?.asset?.animation_url.slice(-3)));
+    const imageNFTs = data.filter((item) => !Boolean(item?.asset?.animation_url) && supportedImgExt.includes(item.asset.image.slice(-3)));
 
     let newFiltered = [];
 
@@ -211,28 +212,130 @@ const search = ({category}) => {
       newFiltered = [...newFiltered, ...imageNFTs];
     }
 
-    // console.log(newFiltered)
-    //This filter will filter out all nfts that does not have tokenid. Only Old NFTs do not have tokenid.
-    newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null);
 
-    setFilteredListings(newFiltered);
+    setCurrentItems(newFiltered);
 
     return() => {
       //nothing, just clean up codes
     }
-  }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage, includeAuction, includeDirect])
+  }, [itemName, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage, includeAuction, includeDirect])
+
+  const DIVIDER = BigNumber.from(10).pow(18)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+  }
+
+
+  //below two useeffect are based on previous activelisting redis data, now not in use
+  // useEffect(() => {
+  //   return
+  //   if (!activeListings) return
+  //   if (!router.query._r) return
+    
+
+  //   let minPrice = parseInt(activeListings[0]?.buyoutPrice.hex,16) / DIVIDER
+  //   let maxPrice = minPrice
+    
+
+  //   for (let i = 0; i < activeListings.length; i++) {
+  //     let currentPrice = parseInt(activeListings[i]?.buyoutPrice.hex, 16)
+
+  //     let buyPrice = currentPrice / DIVIDER
+
+  //     if (minPrice > buyPrice) {
+  //       minPrice = buyPrice
+  //     }
+  //     if (maxPrice < buyPrice) {
+  //       maxPrice = buyPrice
+  //     }
+  //   }
+  //   setPriceRange([minPrice, maxPrice])
+
+  //   return() => {
+  //     //nothing, just clean up codes
+  //   }
+  // }, [activeListings])
+
+  // useEffect(() => {
+  //   return
+  //   if (!activeListings) return;
+  //   let data = []
+
+  //   //sort item according to their price in selected order
+  //   if (sortAsc) {
+  //     data = activeListings.sort(function (a, b) {
+  //       return (parseInt(a.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(b.buyoutPrice.hex, 16) / DIVIDER);
+  //     })
+  //   } else {
+  //     data = activeListings.sort(function (a, b) {
+  //       return (parseInt(b.buyoutPrice.hex, 16) / DIVIDER) - (parseInt(a.buyoutPrice.hex, 16) / DIVIDER);
+  //     })
+  //   }
+
+  //   //filter according to category selected
+  //   if (selectedCategory != 'all') {
+  //     data = data.filter((item) => {
+  //       return (item.asset?.properties?.category == selectedCategory);
+  //     })
+  //   }
+    
+  //   //filter for price range
+  //   data = data.filter((item) => {
+  //     let itemPrice = parseInt(item.buyoutPrice.hex, 16) / DIVIDER;
+  //     return (
+  //       item.asset.name.toLowerCase().includes(itemName?.toLowerCase()) &&
+  //       parseFloat(priceRange[0]) <= itemPrice &&
+  //       parseFloat(priceRange[1]) >= itemPrice
+  //       )
+  //     })
+  //   //filter for auction and direct listings
+  //   if(!(includeAuction && includeDirect)){
+  //     if(!includeAuction){
+  //       data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+  //     }else {
+  //       data = data.filter(item => item.hasOwnProperty('reservePrice'));
+  //     }
+  //     if(!includeDirect){
+  //       data = data.filter(item => !(!item.hasOwnProperty('reservePrice')));
+  //     }else {
+  //       data = data.filter(item => !item.hasOwnProperty('reservePrice'));
+  //     }
+  //   }
+
+  //   //filter according to chosen file type audio, video or image
+  //   const audioNFTs = data.filter((item) => item.asset.properties?.itemtype == "audio");
+  //   const videoNFTs = data.filter((item) => item.asset.properties?.itemtype == "video");
+  //   const imageNFTs = data.filter((item) => item.asset.properties?.itemtype != "audio" && item.asset.properties?.itemtype != "video");
+
+  //   let newFiltered = [];
+
+  //   if(includeAudio){
+  //     newFiltered = [...newFiltered, ...audioNFTs];
+  //   }
+  //   if(includeVideo){
+  //     newFiltered = [...newFiltered, ...videoNFTs];
+  //   }
+  //   if(includeImage){
+  //     newFiltered = [...newFiltered, ...imageNFTs];
+  //   }
+
+  //   // console.log(newFiltered)
+  //   //This filter will filter out all nfts that does not have tokenid. Only Old NFTs do not have tokenid.
+  //   newFiltered = newFiltered.filter((item) => item.asset.properties?.tokenid != null);
+
+  //   setFilteredListings(newFiltered);
+
+  //   return() => {
+  //     //nothing, just clean up codes
+  //   }
+  // }, [itemName, activeListings, priceRange, sortAsc, selectedCategory, includeAudio, includeVideo, includeImage, includeAuction, includeDirect])
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
       <SEO />
       <Header />
-      <div
-        className={
-          dark
-            ? style.pageBanner + ' darkGray'
-            : style.pageBanner + ' bg-sky-100'
-        }
-      >
+      <div className={ dark ? style.pageBanner + ' darkGray' : style.pageBanner + ' bg-sky-100'}>
         <div className="container relative -bottom-[110px] mx-auto p-4">
           <header className="mx-auto -mt-10 flex max-w-2xl flex-col lg:-mt-7">
             <form
@@ -251,16 +354,16 @@ const search = ({category}) => {
                     dark
                       ? 'border-slate-600 bg-slate-700 text-slate-200'
                       : 'border-neutral-200 bg-white text-slate-900'
-                  } md:pl-16`}
+                  } md:pl-16 focus:ring-0 focus-visible:ring-0 focus:outline-0`}
                   id="search-input"
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                   placeholder="Type your keywords"
                 />
-                <button
-                  className="absolute right-2.5 top-1/2 flex h-11 w-11 -translate-y-1/2 transform items-center justify-center rounded-full bg-sky-600 !leading-none text-neutral-50  hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2  dark:focus:ring-offset-0"
+                <button 
+                  className="absolute transition right-2.5 top-1/2 flex h-11 w-11 -translate-y-1/2 transform items-center justify-center rounded-full bg-sky-600 !leading-none text-neutral-50  hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2  dark:focus:ring-offset-0"
                   type="submit"
-                >
+                  onClick={searchNFTs}>
                   <FiArrowRight />
                 </button>
                 <span className={`absolute left-5 top-1/2 -translate-y-1/2 transform text-2xl md:left-6 ${dark ? 'text-slate-200' : ' text-slate-700'} `}>
@@ -283,7 +386,7 @@ const search = ({category}) => {
                       dark
                         ? selectedCategory === 'all'
                           ? 'bg-slate-600 text-slate-200'
-                          : 'text-slate-500 hover:bg-slate-600 hover:text-slate-200'
+                          : 'text-slate-500 hover:bg-slate-600/20 hover:text-slate-200'
                         : selectedCategory === 'all'
                         ? 'bg-sky-100 text-neutral-800'
                         : 'text-neutral-500 hover:bg-sky-100'
@@ -297,11 +400,11 @@ const search = ({category}) => {
                   categories.map((item, index) => (
                     <li key={index} className="relative" data-nc-id="NavItem">
                       <button
-                        className={`block whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
+                        className={`block transition whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium capitalize !leading-none ${
                           dark
                             ? selectedCategory === item.name
                               ? 'bg-slate-600 text-slate-200'
-                              : 'text-slate-500 hover:bg-slate-600 hover:text-slate-200'
+                              : 'text-slate-500 hover:bg-slate-600/20 hover:text-slate-200'
                             : selectedCategory === item.name
                             ? 'bg-sky-100 text-neutral-800'
                             : 'text-neutral-500 hover:bg-sky-100'
@@ -316,7 +419,7 @@ const search = ({category}) => {
             </nav>
             <span className="block flex-shrink-0 text-right">
               <button
-                className="relative inline-flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 py-2.5 pl-4 !pr-16 text-sm  font-medium text-neutral-50 transition-colors hover:bg-sky-700  disabled:bg-opacity-70 ring-0 outline-0 sm:pl-6 sm:text-base"
+                className="transition relative inline-flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 py-2.5 pl-4 !pr-16 text-sm  font-medium text-neutral-50 hover:bg-sky-700  disabled:bg-opacity-70 ring-0 outline-0 sm:pl-6 sm:text-base"
                 onClick={() => setShowFilter(!showFilter)}
               >
                 <IconFilter />
@@ -334,16 +437,13 @@ const search = ({category}) => {
             <div
               className={`my-4 w-full border-b ${
                 dark ? 'border-sky-700/30' : 'border-neutral-200/70'
-              }`}
-            ></div>
-            <div
-              className={`flex lg:space-x-4 ${showFilter ? 'block' : 'hidden'}`}
-            >
+              }`}></div>
+            <div className={`flex flex-wrap items-center justify-center lg:justify-between lg:space-x-4 ${showFilter ? 'flex' : 'hidden'}`}>
               <div className="searchfields relative mb-3 flex flex-wrap justify-center gap-2">
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className={`border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
+                      className={`transition border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
                         dark
                           ? 'border-sky-700/30 hover:border-sky-700/60'
                           : 'border-neutral-200 hover:border-neutral-400'
@@ -442,7 +542,7 @@ const search = ({category}) => {
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className={`border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
+                      className={`transition border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
                         dark
                           ? 'border-sky-700/30 hover:border-sky-700/60'
                           : 'border-neutral-200 hover:border-neutral-400'
@@ -582,7 +682,7 @@ const search = ({category}) => {
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className={`border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
+                      className={`transition border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
                         dark
                           ? 'border-sky-700/30 hover:border-sky-700/60'
                           : 'border-neutral-200 hover:border-neutral-400'
@@ -718,7 +818,7 @@ const search = ({category}) => {
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className={`border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
+                      className={`transition border-primary-500 bg-primary-50 text-primary-900 flex items-center justify-center rounded-full border ${
                         dark
                           ? 'border-sky-700/30 hover:border-sky-700/60'
                           : 'border-neutral-200 hover:border-neutral-400'
@@ -802,13 +902,32 @@ const search = ({category}) => {
                   </Transition>
                 </Menu>
               </div>
+              <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
+                <div 
+                  className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+                  onClick={() => setCompact(false)}>
+                  <BsGrid/>
+                </div>
+                <div 
+                  className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+                  onClick={() => setCompact(true)}>
+                  <BsGrid3X3Gap/>
+                </div>
+              </div>
+              {/* <div className={`transition border-primary-500 w-full lg:w-fit cursor-pointer bg-primary-50 text-primary-900 flex gap-1 mb-3 mx-3 md:mx-0 items-center justify-center rounded-full border ${
+                        dark
+                          ? 'border-sky-700/30 hover:border-sky-700/60 bg-sky-700/20'
+                          : 'border-neutral-200 hover:border-neutral-400'
+                      } px-4 py-2 text-sm focus:outline-none`}>
+                <HiOutlineRefresh fontSize={18} /> Update Filter
+              </div> */}
             </div>
           </div>
         </div>
       </div>
       <div className="container mx-auto p-4 lg:px-[8rem] sm:px-[2rem]">
-        {!filteredListings && <Loader />}
-        {filteredListings?.length == 0 && (
+        {loading && <Loader />}
+        {currentItems?.length == 0 && loading == false && (
           <div className="flex justify-center">
             <span>No NFTs are available.</span>
           </div>
@@ -817,21 +936,9 @@ const search = ({category}) => {
         {currentItems?.length > 0 && (
           <>
             <div className={style.nftwrapper}>
-              {currentItems?.map((nftItem, id) => {
-                if (itemName) {
-                  if (
-                    nftItem.asset.name
-                      .toLowerCase()
-                      .includes(itemName.toLowerCase())
-                  ) {
-                    return <SearchItem key={id} nftItem={nftItem} selectedBlockchain={selectedBlockchain}/>
-                  }
-                } else {
-                  return <SearchItem key={id} nftItem={nftItem} selectedBlockchain={selectedBlockchain}/>
-                }
-              })}
+              {currentItems?.map((nftItem, id) => <SearchItem key={id} nftItem={nftItem} compact={compact}/> )}
             </div>
-            <ReactPaginate
+            {/* <ReactPaginate
               breakLabel="..."
               nextLabel="Next"
               onPageChange={handlePageClick}
@@ -845,10 +952,10 @@ const search = ({category}) => {
               activeClassName="bg-sky-600 p-3 text-sky-100 hover:bg-sky-600 border"
               pageLinkClassName=""
               pageClassName={`flex items-center justify-center rounded-full border w-[50px] h-[50px]  ${dark ? 'text-white-500 hover:bg-slate-600 hover:border-slate-700 hover:text-slate-200 border-sky-700/30' : 'hover:bg-neutral-100 hover:border-neutral-200'} cursor-pointer`}
-            />
+            /> */}
 
             {/* Selection of items per page */}
-            <Menu
+            {/* <Menu
               as="div"
               className="relative mt-4 flex justify-center text-left">
               {({ open }) => (
@@ -941,7 +1048,7 @@ const search = ({category}) => {
                   </Transition>
                 </>
               )}
-            </Menu>
+            </Menu> */}
           </>
         )}
       </div>

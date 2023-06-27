@@ -58,6 +58,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
         toast.error('Error in getting Owner info.', errorToastStyle);
       },
       onSuccess: (res) => {
+
         //check if the item is in auction, if in auction, owner will be marketplace
         // if the item is auctioned, then res will be undefined
         const marketArray = [
@@ -68,7 +69,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
           process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE.toLowerCase(), 
           process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE.toLowerCase(), 
           process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE.toLowerCase(), 
-          process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE.toLowerCase()
+          process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE.toLowerCase(),
           ];
         if (!res && (marketArray.includes(owner?.owners[0]?.ownerOf))) {
           setAuctionedItem(true);
@@ -156,17 +157,18 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
 
           <div className="flex items-center">
             {ownerStatus == 'Loading' && <Loader />}
+            {owner?.owners[0]?.ownerOf == '' && (
+              <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">
+                <AiFillFire /> Burnt NFT
+              </div>
+            )}
             {ownerStatus == 'success' ? (
               !ownerData ? (
                 auctionedItem ? (
                   <div className="flex items-center justify-center gap-2 rounded-lg bg-pink-500 p-2 px-4 text-white">
                     <RiAuctionLine className="text-xl" /> <span>In Auction</span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">
-                    <AiFillFire /> Burnt NFT
-                  </div>
-                )
+                ) : ''
               ) : (
                 <Link href={`/user/${ownerData?.walletAddress}`}>
                   <div className="flex">
@@ -177,7 +179,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                           src={getImagefromWeb3(ownerData?.web3imageprofile)}
                           alt={ownerData?.userName}
                         />
-                      ) :(
+                      ) : (
                         <img src="https://api.dicebear.com/6.x/bottts/svg?seed=Charlie" alt="Avatar"/>
                       )}
                     </div>

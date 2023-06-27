@@ -66,6 +66,7 @@ const User = () => {
       'py-1 px-4 rounded-full gradBlue text-white text-sm mt-1 cursor-pointer',
     button:
       'rounded-xl flex items-center gap-1 cursor-pointer py-2 px-4 m-3 text-md text-white',
+    errorBox: 'text-center',
   }
 
   useEffect(() => {
@@ -98,7 +99,7 @@ const User = () => {
   
   
   const { data: collectionData, status: collectionStatus } = useQuery(
-    ['mycollections', address],
+    ['mycollections', address,blockchainIdFromName[selectedBlockchain]],
     getMyCollections(),
     {
       enabled: Boolean(address), //only run this query if address is provided
@@ -116,8 +117,8 @@ const User = () => {
 
   //this gives all the collections from INFURA but does not gives images, so have to be imported by the user manually and then update images manually
   const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
-    ['allcollections', address, selectedBlockchain, activeChain?.chainId],
-    INFURA_getMyCollections(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain], address),
+    ['allcollections', address, selectedBlockchain],
+    INFURA_getMyCollections(blockchainIdFromName[selectedBlockchain], address),
     {
       enabled: Boolean(address) ,
       onSuccess: (res) => {
@@ -125,8 +126,10 @@ const User = () => {
       }
     }
   );
-//filter out only those collections deployed in third party websites
+
+  //filter out only those collections deployed in third party websites
   useEffect(() => {
+    setCollectionsFromInfura('');
     if(collectionStatus == 'success' && outsideCollectionStatus == 'success' ){
       const allCollections = [...outsideCollection.collections];
       
@@ -140,17 +143,18 @@ const User = () => {
     return () => {
       //do nothing, just clean up function
     }
-  }, [collectionStatus, outsideCollectionStatus]);
+  }, [collectionData, outsideCollection]);
 
   const { data, status: mynftstatus } = useQuery(
     ['mynfts', address, cursor, selectedBlockchain, activeChain?.chainId],
     INFURA_getMyAllNFTs(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain]),
     {
+      refetchOnWindowFocus: false,
       enabled: Boolean(address) && (Boolean(activeChain) || Boolean(selectedBlockchain)),
       onError:() => {},
       onSuccess:(res) => 
       {
-        console.log(res);
+        // console.log(res);
         // console.log(res.cursor)
         const selectedChain = Boolean(activeChain?.chainId) ? blockchainName[activeChain.chainId] : selectedBlockchain 
         const unresovled = res?.assets.map(async nft => {
@@ -537,8 +541,18 @@ const User = () => {
         {showCollection ? (
           <>
           {/* Displaying in house collections */}
-            <div className={style.collectionWrapper}>
               {collectionStatus == 'loading' && <Loader />}
+              <div className="text-center text-sm relative mb-8">
+                Showing Collections from <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
+              </div>
+              {collectionData?.length == 0 && (
+                <div className="text-center">
+                  <h2 className={style.errorTitle}>No Collection created yet.</h2>
+                </div>
+              )}
+
+            <div className={style.collectionWrapper}>
+              
               {collectionData?.length > 0 &&
                 collectionData?.map((coll, id) => (
                   <CollectionCard
@@ -557,11 +571,7 @@ const User = () => {
                     creatorAddress={coll.creatorAddress}
                   />
                 ))}
-              {collectionData?.length == 0 && (
-                <div className={style.errorBox}>
-                  <h2 className={style.errorTitle}>No Collection created yet.</h2>
-                </div>
-              )}
+              
             </div>
             {/* Displaying outside Collections */}
             {Boolean(collectionsFromInfura) && collectionsFromInfura.length > 0 && (

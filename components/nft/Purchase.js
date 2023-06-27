@@ -194,7 +194,7 @@ const MakeOffer = ({
       ;(async() => {
         const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
         const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
-        const minBid = await contract.englishAuctions.getMinimumNextBid(listingData?.id);
+        const minBid = await contract?.englishAuctions?.getMinimumNextBid(listingData?.id);
         setMinNextBig(minBid);
         // console.log(minBid);
   
@@ -233,7 +233,7 @@ const MakeOffer = ({
   const updateRoyaltyReceiver = async () => {
     if(!referralAllowedCollections) return;
     const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
-    if(listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' && allowedContracts.includes(nftCollection._id)) 
+    if((listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' || listingData.sellerAddress == '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e') && allowedContracts.includes(nftCollection._id)) 
     {
       // console.log('processing change of royalty receiver')
       await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
@@ -241,6 +241,7 @@ const MakeOffer = ({
         contractAddress: listingData.assetContractAddress, 
         walletAddress: address, 
         tokenId: listingData.asset.id,
+        chain: thisNFTblockchain,
       });
     }
   }
@@ -248,9 +249,9 @@ const MakeOffer = ({
   const payToMySponsors = async() => {
 
      // checking amount of tokens to send
-     const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
-     const divider = BigNumber.from(10).pow(18);
-     let buyOutPrice = bigNumberPrice / divider;
+    //  const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 16);
+    //  const divider = BigNumber.from(10).pow(18);
+     let buyOutPrice = ethers.utils.formatUnits(listingData?.buyoutPrice?.hex, 18);
 
     if(!referralCommission) {
       toast.error("Referral commission could not be found", errorToastStyle);
@@ -358,7 +359,7 @@ const MakeOffer = ({
         let sponsor_L5_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_five : referralCommission.referralrate_five;
         sponsors.push({ receiver: sponsor_L5, token: buyOutPrice  * sponsor_L5_rate / 100 });
       }
-
+      console.log(sponsors)
     // return;
 
     //send the tokens and get list of transaction hash to save in database
@@ -511,6 +512,7 @@ const MakeOffer = ({
       setOfferLoading(false)
     }
   }
+
   const bidItem = async ( 
     listingId = listingData.id.toString(),
     toastHandler = toast,
@@ -590,8 +592,8 @@ const MakeOffer = ({
     ) => {
 
       //payout to network
-        await payToMySponsors();
-        return;
+        // await payToMySponsors();
+        // return;
 
         //update pay info-> list of all bought NFTs from the selected Collections
         // const payObj =  {
@@ -693,26 +695,26 @@ const MakeOffer = ({
                 });
 
                 //update pay info-> list of all bought NFTs from the selected Collections
-                // const payObj =  {
-                //   walletAddress: address,
-                //   chainId: nftCollection.chainId,
-                //   contractAddress: listingData.assetContractAddress,
-                //   tokenId: listingData.asset.id,
-                //   payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
-                //   type: 'buy'
-                // }
-                // changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+                const payObj =  {
+                  walletAddress: address,
+                  chainId: nftCollection.chainId,
+                  contractAddress: listingData.assetContractAddress,
+                  tokenId: listingData.asset.id,
+                  payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
+                  type: 'buy'
+                }
+                changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
                 
                 // //also update the bought NFTs from seller address
                 // //no need to do this if the seller is company
-                // if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
-                //   const sellObj = {
-                //     ...payObj,
-                //     walletAddress: listingData?.sellerAddress,
-                //     type: 'sell',
-                //   }
-                //   changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
-                // }
+                if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
+                  const sellObj = {
+                    ...payObj,
+                    walletAddress: listingData?.sellerAddress,
+                    type: 'sell',
+                  }
+                  changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
+                }
                 
                 //no need to do updateLevel, as this will now be handled using boughtnfts field
                 //check payable commission level, only update if new nft collection has higher level the user's current payable level
@@ -728,14 +730,14 @@ const MakeOffer = ({
                 //   );
                 // }
           
-                //payout to network
-                // await payToMySponsors();
+                // payout to network
+                await payToMySponsors();
 
                 //change the unilevel of seller, if it applies
 
 
                 //update the royalty receiver of the nft, only if this is first purchase and it is from the company
-                // await updateRoyaltyReceiver();
+                await updateRoyaltyReceiver();
               }
         
               //update Owner in Database

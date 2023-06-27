@@ -1,13 +1,12 @@
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useDebounce } from "use-debounce";
-import { config } from '../lib/sanityClient'
 import { RiSearchLine } from 'react-icons/ri'
+import { Fragment, useEffect, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useSettingsContext } from '../contexts/SettingsContext'
-import { Fragment, useEffect, useState } from 'react'
 import { getSearchValue } from '../fetchers/SanityFetchers'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   comboMenu: `absolute max-h-[300px] md:max-h-[500px] lg:left-[-22px] lg:top-[40px] overflow-hidden mt-1 rounded-xl p-4 text-base shadow-lg ring-0 focus:outline-none sm:text-sm w-[360px] md:w-[500px] lg:w-[550px] searchOutputBox`,

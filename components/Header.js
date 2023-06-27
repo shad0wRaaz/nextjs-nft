@@ -34,7 +34,7 @@ const Header = () => {
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-  const { setCoinPrices, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections } = useSettingsContext();
+  const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
   const { setMyUser, setMyCollections } = useUserContext()
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
@@ -67,7 +67,7 @@ const Header = () => {
   }
 
   const { data: collectionData, status: collectionStatus } = useQuery(
-    ['mycollections', address],
+    ['mycollections', address, blockchainIdFromName[selectedBlockchain]],
     getMyCollections(),
     {
       enabled: Boolean(address), //only run this query if address is provided

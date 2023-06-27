@@ -1,3 +1,4 @@
+import axios from 'axios'
 import moment from 'moment'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -25,11 +26,12 @@ import { MdOutlineCollections, MdVerified } from 'react-icons/md'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { RiFacebookFill, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import CollectionCardExternal from '../../components/CollectionCardExternal'
 import { useAddress, useChain, useChainId, useSigner } from '@thirdweb-dev/react'
-import { getFullListings, INFURA_getMyAllNFTs } from '../../fetchers/Web3Fetchers'
 import { IconCopy, IconLoading, IconVerified } from '../../components/icons/CustomIcons'
 import { getMintedNFTs, getCollectedNFTs, getFavouriteNFTs } from '../../fetchers/SanityFetchers'
-import axios from 'axios'
+import { getFullListings, INFURA_getMyAllNFTs, INFURA_getMyCollections } from '../../fetchers/Web3Fetchers'
 
 const Collection = () => {
   const router = useRouter();
@@ -37,7 +39,8 @@ const Collection = () => {
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-  const { blockchainName, HOST } = useSettingsContext();
+  const { blockchainName, blockchainIdFromName, chainIcon, HOST } = useSettingsContext();
+  const { selectedBlockchain } = useMarketplaceContext();
   const bannerRef = useRef();
   const activechain = useChain();
   const [listStyle, setListStyle] = useState('grid');
@@ -46,7 +49,8 @@ const Collection = () => {
   const qc = useQueryClient();
   const [compact, setcompact] = useState(true);
   const [cursor, setCursor] = useState();
-  const [cursorHistory, setCursorHistory] = useState([])
+  const [cursorHistory, setCursorHistory] = useState([]);
+  const [ collectionsFromInfura, setCollectionsFromInfura] = useState([]);
   const [mynfts, setMynfts] = useState();
   const style = {
     nftwrapper:
@@ -58,15 +62,48 @@ const Collection = () => {
   }
 
   //get all active listings from all blockchain
-  const { data: fullListingData } = useQuery(
-    ['fulllistings', blockchainName[chainid]], 
-    getFullListings(),
+  // const { data: fullListingData } = useQuery(
+  //   ['fulllistings', blockchainName[chainid]], 
+  //   getFullListings(),
+  //   {
+  //     enabled: Boolean(chainid) && false,
+  //     onSuccess: (res) => {
+  //       console.log(res);
+  //     }
+  //   });
+
+  //this gives all the collections from INFURA but does not gives images, so have to be imported by the user manually and then update images manually
+  
+  const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
+    ['allcollections', address, selectedBlockchain],
+    INFURA_getMyCollections(chainid ? chainid : blockchainIdFromName[selectedBlockchain], address),
     {
-      enabled: Boolean(chainid) && false,
+      refetchOnWindowFocus: false,
+      enabled: Boolean(address) ,
       onSuccess: (res) => {
-        console.log(res);
+        // console.log('res', res);
       }
-    });
+    }
+  );
+
+  //filter out only those collections deployed in third party websites
+  useEffect(() => {
+    if(myCollections && outsideCollectionStatus == 'success' ){
+      const allCollections = [...outsideCollection.collections];
+      
+      const inhouseCollections = myCollections.map(coll => coll.contractAddress.toLowerCase());
+      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.contract));
+      // console.log('all',outsideCollections)
+      if(outsideCollections.length > 0){
+        setCollectionsFromInfura([...outsideCollections]);
+      }
+    }
+    return () => {
+      //do nothing, just clean up function
+    }
+  }, [myCollections, outsideCollectionStatus]);
+
+  // console.log(collectionsFromInfura)
 
   // const { data: nftData, status: nftStatus } = useQuery(
   //   ['createdItems', address],
@@ -296,7 +333,7 @@ const Collection = () => {
                   <MdOutlineCollections fontSize="30px" className="mb-2" />
                   <span className="text-sm">Collections</span>
                   <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                    {myCollections?.length}
+                    {outsideCollection?.total}
                   </span>
                 </div>
 
@@ -350,7 +387,7 @@ const Collection = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-[5rem] flex justify-center px-5">
+      <div className="container mx-auto mt-[5rem] flex justify-center px-5 mb-8">
         <div
           className={`border ${
             dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
@@ -423,7 +460,11 @@ const Collection = () => {
           </div> */}
         </div>
       </div>
-      
+      <div className="text-center text-sm relative">
+        Showing {showType == 'collection' ? 'Collections' : 'NFTs'} from 
+        <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> 
+        {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
+      </div>
       <div className="container mx-auto lg:p-[8rem] lg:pt-8 lg:pb-0 p-[2rem] flex justify-between items-center">
         <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
           <div 
@@ -473,6 +514,21 @@ const Collection = () => {
                 ))}
               </div>
             )}
+            {Boolean(collectionsFromInfura) && collectionsFromInfura.length > 0 && (
+              <div className={style.collectionWrapper + ' mt-8'}>
+                {collectionsFromInfura?.map((coll, id) => (
+                  <CollectionCardExternal
+                    key={id}
+                    name={coll.name}
+                    id={coll.contract}
+                    contractAddress={coll.contract}
+                    chainId={activechain?.chainId}
+                    creator="Unnamed"
+                    creatorAddress={address}
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
 
@@ -501,7 +557,6 @@ const Collection = () => {
                       chain={blockchainName[chainid]}
                       nftItem={nftItem}
                       metadata={nftItem.metadata}
-                      listings={fullListingData}
                       creator={{ _ref: address }}
                       compact={compact}
                     />

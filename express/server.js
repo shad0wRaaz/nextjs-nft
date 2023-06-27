@@ -15,7 +15,7 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { INFURA_AUTH } from './infura/config.js'
 import { emailBody } from './emails/templates.js'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
-import { deleteMarketData, findListedNFTs, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
+import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
 
 const app = express()
 app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
@@ -175,6 +175,26 @@ app.get('/api/mango/deleteSingle/:chain/:contractAddress/:tokenId', async(req, r
   const { contractAddress, tokenId, chain } = req.params;
   return res.status(200).send(await deleteMarketData(contractAddress, tokenId, chain));
 })
+
+app.get('/api/mango/:chain/search', async(req, res) => {
+  const { chain } = req.params;
+  const { minPrice, maxPrice, direct, auction, audio, video, image, name, limit, category } = req.query;
+
+  //get all Collection from that category from sanity
+  let categoryCollections;
+  if(category == 'all'){
+    categoryCollections = 'all';
+  }else{
+    const contractAddresses = await config.fetch(`*[_type == "nftCollection" && category == "${category}"]{contractAddress}`);
+    const addressArray = contractAddresses?.map(address => String(address.contractAddress).toLowerCase());
+    categoryCollections = [...addressArray]
+  }
+
+  const result = await getListedNfts(req.query, chain, limit, categoryCollections);
+
+  return res.status(200).json(result);
+})
+
 // app.get("/api/updateCoinPrices", async(req,res) => {
 //   console.log('i am called')
 //   let response = null;
@@ -1531,14 +1551,14 @@ app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req
 })
 
 app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
-  const { contractAddress, walletAddress, tokenId } = req.body;
+  const { contractAddress, walletAddress, tokenId, chain } = req.body;
 
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB, "binance-testnet"); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB, chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
   const contract = await sdk.getContract(contractAddress);
 
   // only change royalty info if the seller is company. once it is set, should not be changed
   const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
-  if(royalty.fee_recipient == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf'){
+  if(royalty.fee_recipient == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' || royalty.fee_recipient == '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e'){
     try{
       const tx = await contract.royalties.setTokenRoyaltyInfo(
         tokenId, 
