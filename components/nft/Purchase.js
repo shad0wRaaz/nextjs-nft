@@ -231,9 +231,15 @@ const MakeOffer = ({
   }
 
   const updateRoyaltyReceiver = async () => {
-    if(!referralAllowedCollections) return;
+    if(!referralAllowedCollections || !listingData) return;
     const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
-    if((listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' || listingData.sellerAddress == '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e') && allowedContracts.includes(nftCollection._id)) 
+    const companyWallets = [
+      String(process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS).toLowerCase(),
+      String(process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS).toLowerCase(),
+      String(process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS).toLowerCase(),
+      String(process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS).toLowerCase(),
+    ]
+    if((listingData.sellerAddress == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' || companyWallets.includes(String(listingData.sellerAddress).toLowerCase())) && allowedContracts.includes(nftCollection._id)) 
     {
       // console.log('processing change of royalty receiver')
       await axios.post(`${HOST}/api/nft/setroyaltybytoken`,

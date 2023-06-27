@@ -1552,8 +1552,15 @@ app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req
 
 app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   const { contractAddress, walletAddress, tokenId, chain } = req.body;
-
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB, chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+  const chainWallets = { 
+    "binance" : process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY,
+    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY,
+    "mainnet" : process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY,
+    "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
+    "binance-testnet" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
+    "mumbai" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
+  }
+  const sdk = ThirdwebSDK.fromPrivateKey(chainWallets[chain], chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
   const contract = await sdk.getContract(contractAddress);
 
   // only change royalty info if the seller is company. once it is set, should not be changed
