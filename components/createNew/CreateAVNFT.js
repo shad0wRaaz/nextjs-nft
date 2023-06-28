@@ -401,7 +401,7 @@ const CreateAVNFT = () => {
                   })
                 }
               />
-              <div className="flex justify-between gap-2">
+              <div className="flex justify-between gap-2 px-8">
               <div className="w-[1/2]">
                   <p className={style.label}>Audio/Video*</p>
                   <div
@@ -680,7 +680,7 @@ const CreateAVNFT = () => {
               <p className={style.label}>Properties</p>
               {state.properties.traits.map((x, i) => {
                 return (
-                  <div className="ml-[2rem] flex gap-[10px]" key={i}>
+                  <div className=" flex gap-[10px]" key={i}>
                     <input
                       name="propertyKey"
                       placeholder="Property Name"
@@ -724,7 +724,7 @@ const CreateAVNFT = () => {
                   {connectedChain?.name}
               </div>
 
-              <div className="flex">
+              <div className="flex justify-center mt-4">
                 {isMinting ? (
                   <button type="button" className={style.button} disabled>
                     <IconLoading dark="inbutton" />
