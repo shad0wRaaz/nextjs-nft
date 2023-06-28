@@ -1,20 +1,18 @@
+import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import FileBase from 'react-file-base64'
 import { BiError } from 'react-icons/bi'
 import { GoPackage } from 'react-icons/go'
 import { RadioGroup } from '@headlessui/react'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { config } from '../../lib/sanityClient'
-import toast, { Toaster } from 'react-hot-toast'
 import { IconLoading } from '../icons/CustomIcons'
 import { getImagefromWeb3 } from '../../fetchers/s3'
 import { useUserContext } from '../../contexts/UserContext'
-import noProfileImage from '../../assets/noProfileImage.png'
+import { useThemeContext } from '../../contexts/ThemeContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import { BsFillCheckCircleFill, BsUpload } from 'react-icons/bs'
 import React, { useState, useEffect, useReducer, useRef } from 'react'
-import { useAddress, useMetamask, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
-import { useSettingsContext } from '../../contexts/SettingsContext'
+import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
+import { useAddress, useSigner, ConnectWallet, useChain } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -48,14 +46,6 @@ function reducer(state, action) {
       return { ...state, description: action.payload.description }
     case 'CHANGE_AV':
       return { ...state, animation_url: action.payload.animation_url }
-    case 'CHANGE_ITEMTYPE':
-      return { 
-        ...state, 
-        properties: {
-          ...state.properties, 
-          itemtype: action.payload.itemtype
-        }
-      }
     case 'CHANGE_EXTERNAL_LINK':
       return {
         ...state,
@@ -74,11 +64,6 @@ function reducer(state, action) {
         ...state,
         properties: { ...state.properties, category: action.payload.category },
       }
-    case 'ADD_TOKENID':
-    return {
-      ...state,
-      properties: { ...state.properties, tokenid: action.payload.tokenid }
-    }
     case 'CLEAR_OUT_ALL':
       return {
         name: '',
@@ -103,7 +88,7 @@ function reducer(state, action) {
   }
 }
 
-const CreateAVNFT = ({uuid}) => {
+const CreateAVNFT = () => {
 
   const [state, dispatch] = useReducer(reducer, {
     name: '',
@@ -123,9 +108,10 @@ const CreateAVNFT = ({uuid}) => {
       tokenid: '',
     },
   })
-  const {dark, errorToastStyle, successToastStyle } = useSettingsContext()
+  const {dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const { selectedBlockchain } = useMarketplaceContext();
   const signer = useSigner();
-  const chainid = useChainId();
+  const connectedChain = useChain();
   const router = useRouter();
   const address = useAddress();
   const [fileType, setFileType] = useState();
@@ -138,6 +124,7 @@ const CreateAVNFT = ({uuid}) => {
   const [animatedFile, setAnimatedFile] = useState();
   const fileInputRef = useRef();
   const animatedFileInputRef = useRef();
+
 
   useEffect(() => {
     if(!file) return
@@ -167,36 +154,14 @@ const CreateAVNFT = ({uuid}) => {
 
   useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
-    if(!myCollections) return
-    if(!chainid) return
-    let tempCollection = myCollections.filter((collection) => collection.chainId == chainid)
-    setThisChainCollection(tempCollection)
+    if(!myCollections || !connectedChain) return
+    let tempCollection = myCollections.filter((collection) => collection.chainId == connectedChain.chainId)
+    setThisChainCollection([...tempCollection])
 
     return() => {
       //clean up function
     }
-  }, [myCollections, chainid])
-
-  const [
-    {
-      data: { chain, chains },
-      loading,
-      error,
-    },
-    switchNetwork,
-  ] = useNetwork();
-
-  useEffect(() => {
-    if(!uuid) return
-    dispatch({
-      type: 'ADD_TOKENID',
-      payload: { tokenid: uuid}
-    })
-
-    return() => {
-      //cleanup function
-    }
-  }, [uuid])
+  }, [myCollections, connectedChain])
 
   // useEffect(() => {
   //   ;async(() => {
@@ -218,7 +183,7 @@ const CreateAVNFT = ({uuid}) => {
   }
 
   //handling Create NFT button
-  const handleSubmit = (e, toastHandler = toast) => {
+  const handleSubmit = async(e, toastHandler = toast) => {
     e.preventDefault()
 
     if (state.name == '' || file == undefined || animatedFile == undefined) {
@@ -254,7 +219,6 @@ const CreateAVNFT = ({uuid}) => {
     }
 
     else {
-      ;(async (sanityClient = config) => {
         try {
           setIsMinting(true)
           const sdk = new ThirdwebSDK(signer);
@@ -262,73 +226,69 @@ const CreateAVNFT = ({uuid}) => {
 
           const tx = await nftCollection.erc721.mintTo(address, {...state, image: file, animation_url: animatedFile});
 
-          const receipt = tx.receipt
-          const tokenId = tx.id
-
           //save NFT data into Sanity
-          const nftItem = {
-            _type: 'nftItem',
-            _id: uuid,
-            id: tx.id.toString(),
-            collection: {
-              _ref: selectedCollection._id,
-              _type: 'reference'
-            },
-            listed: false,
-            chainId: chainid,
-            createdBy: { _ref: address, _type: 'reference' },
-            ownedBy: { _ref: address, _type: 'reference' },
-            featured: false,
-            name: state.name,
-          }
-          await sanityClient
-            .createIfNotExists(nftItem)
-            .then()
-            .catch((err) => {
-              toastHandler.error(
-                'Error saving NFT data. Please contact administrator.',
-                errorToastStyle
-              )
-            })
+          // const nftItem = {
+          //   _type: 'nftItem',
+          //   _id: uuid,
+          //   id: tx.id.toString(),
+          //   collection: {
+          //     _ref: selectedCollection._id,
+          //     _type: 'reference'
+          //   },
+          //   listed: false,
+          //   chainId: chainid,
+          //   createdBy: { _ref: address, _type: 'reference' },
+          //   ownedBy: { _ref: address, _type: 'reference' },
+          //   featured: false,
+          //   name: state.name,
+          // }
+          // await sanityClient
+          //   .createIfNotExists(nftItem)
+          //   .then()
+          //   .catch((err) => {
+          //     toastHandler.error(
+          //       'Error saving NFT data. Please contact administrator.',
+          //       errorToastStyle
+          //     )
+          //   })
 
           //save Transaction Data into Sanity
-          const transactionData = {
-            _type: 'activities',
-            _id: receipt.transactionHash,
-            nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
-            transactionHash: receipt.transactionHash,
-            from: receipt.from,
-            to: receipt.to,
-            tokenid: tx.id.toString(),
-            event: 'Mint',
-            price: '-',
-            chainId: chainid,
-            dateStamp: new Date(),
-          }
-          await sanityClient
-            .createIfNotExists(transactionData)
-            .then()
-            .catch((err) => {
-              toastHandler.error(
-                'Error saving NFT Transaction data. Please contact administrator.',
-                errorToastStyle
-              )
-            })
+          // const transactionData = {
+          //   _type: 'activities',
+          //   _id: receipt.transactionHash,
+          //   nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
+          //   transactionHash: receipt.transactionHash,
+          //   from: receipt.from,
+          //   to: receipt.to,
+          //   tokenid: tx.id.toString(),
+          //   event: 'Mint',
+          //   price: '-',
+          //   chainId: chainid,
+          //   dateStamp: new Date(),
+          // }
+          // await sanityClient
+          //   .createIfNotExists(transactionData)
+          //   .then()
+          //   .catch((err) => {
+          //     toastHandler.error(
+          //       'Error saving NFT Transaction data. Please contact administrator.',
+          //       errorToastStyle
+          //     )
+          //   })
 
           setIsMinting(false)
 
           toastHandler.success('NFT minted successfully.', successToastStyle)
-          dispatch({ type: 'CLEAR_OUT_ALL' })
+          dispatch({ type: 'CLEAR_OUT_ALL' });
 
           router.push(
-            `/nfts/${uuid}`
+            `/nft/${selectedBlockchain}/${selectedCollection.contractAddress}/${tx.id}`
           )
         } catch (error) {
           toastHandler.error("Error in minting NFT.", errorToastStyle)
           // console.log(error.message)
           setIsMinting(false)
         }
-      })()
     }
   }
 
@@ -388,44 +348,31 @@ const CreateAVNFT = ({uuid}) => {
     }),
   }
 
-  const updateCategory = async (collectionName) => {
-    const query = `*[_type == "nftCollection" && name == "${collectionName}"]{category}`
-    const res = await config.fetch(query)
-    if (res) {
-      dispatch({
-        type: 'CHANGE_CATEGORY',
-        payload: { category: res[0].category },
-      })
-    }
-  }
+  // const updateCategory = async (collectionName) => {
+  //   const query = `*[_type == "nftCollection" && name == "${collectionName}"]{category}`
+  //   const res = await config.fetch(query)
+  //   if (res) {
+  //     dispatch({
+  //       type: 'CHANGE_CATEGORY',
+  //       payload: { category: res[0].category },
+  //     })
+  //   }
+  // }
 
-  const checkFileType = (base64) => {
+  // const checkFileType = (base64) => {
    
-    let start = base64.indexOf(':') + 1
-    let end = base64.indexOf('/') - start
-    const currentFileType = base64.substr(start,end)
-    // console.log(currentFileType)
+  //   let start = base64.indexOf(':') + 1
+  //   let end = base64.indexOf('/') - start
+  //   const currentFileType = base64.substr(start,end)
+  //   // console.log(currentFileType)
 
-    if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
-      toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
-      setFileType(undefined)
-      return
-    }
-    setFileType(currentFileType)
-  }
-
-  useEffect(() => {
-    // console.log(fileType)
-    if(!fileType) return
-    // console.log(fileType)
-    dispatch({
-      type: 'CHANGE_ITEMTYPE',
-      payload: { itemtype: fileType }
-    })
-    return() => {
-
-    }
-  }, [fileType])
+  //   if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
+  //     toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
+  //     setFileType(undefined)
+  //     return
+  //   }
+  //   setFileType(currentFileType)
+  // }
 
   // useEffect(() => {
   // console.log(state)
@@ -433,7 +380,6 @@ const CreateAVNFT = ({uuid}) => {
 
   return (
     <div className={style.wrapper}>
-      <Toaster position="bottom-center" reverseOrder={false} />
       {!isNaN(address) ? (
         <div className={style.container}>
           <h1 className={style.pageTitle}>
@@ -483,7 +429,7 @@ const CreateAVNFT = ({uuid}) => {
                         }}><BsUpload fontSize={50} />
                           Drag & Drop Image
                           <p className={style.smallText}>
-                            Supported file types: MP3, MPEG, WAV, MPG, WEBM. Max size: 2MB.
+                            Supported file types: MP3, MPEG, WAV, MPG, WEBM.
                           </p>
                       </div>
                     )}
@@ -566,7 +512,7 @@ const CreateAVNFT = ({uuid}) => {
                         }}><BsUpload fontSize={50} />
                           Drag & Drop Image
                           <p className={style.smallText}>
-                            Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP. Max size: 2MB.
+                            Supported file types: JPG, PNG, GIF, SVG, WEBP, JFIF, BMP.
                           </p>
                       </div>
                     )}
@@ -635,7 +581,6 @@ const CreateAVNFT = ({uuid}) => {
                     <RadioGroup
                       value={selectedCollection}
                       onChange={(e) => {
-                        updateCategory(e.name);
                         setSelectedCollection(e);
                         setNftCollection(e.contractAddress);
                       }}
@@ -643,7 +588,7 @@ const CreateAVNFT = ({uuid}) => {
                       <RadioGroup.Label className="sr-only">
                         Server size
                       </RadioGroup.Label>
-                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 md:max-h-[300px] overflow-y-scroll p-4">
+                      <div className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-3 md:max-h-[300px] overflow-y-auto">
                         {thisChainCollection?.map((collection, index) => (
                           <RadioGroup.Option
                             key={collection.name + index}
@@ -666,7 +611,7 @@ const CreateAVNFT = ({uuid}) => {
                                         <img
                                           src={getImagefromWeb3(collection.web3imageprofile)}
                                           alt={collection.name}
-                                          className="aspect-video h-[50px] w-[50px] rounded-full ring-2 ring-white"
+                                          className="aspect-video h-[45px] w-[45px] rounded-full ring-2 ring-white"
                                         />
                                       </div>
                                       <div className="grow">
@@ -686,18 +631,7 @@ const CreateAVNFT = ({uuid}) => {
                                         >
                                           <p>
                                             Contract Address:{' '}
-                                            {collection.contractAddress.slice(
-                                              0,
-                                              4
-                                            )}
-                                            ...
-                                            {collection.contractAddress.slice(
-                                              -4
-                                            )}
-                                          </p>
-                                          <p>
-                                            Volume Traded: $
-                                            {parseFloat(collection.volumeTraded).toFixed(4)}
+                                            {collection.contractAddress.slice(0,5)}...{collection.contractAddress.slice(-5)}
                                           </p>
                                         </RadioGroup.Description>
                                       </div>
@@ -784,15 +718,11 @@ const CreateAVNFT = ({uuid}) => {
                   </div>
                 )
               })}
-
-              <p className={style.label}>Network*</p>
-              <input
-                type="text"
-                className={style.input}
-                name="itemBlockchain"
-                disabled
-                value={chain?.name}
-              />
+              <div className={`text-small mx-auto !mt-6 text-center border ${dark ? 'border-slate-700': 'border-neutral-100'} rounded-lg p-3 w-fit`}>
+                  This NFT will be minted on 
+                  <img src={getImagefromWeb3(connectedChain.icon.url)} height="20px" width="20px" className="inline-block ml-4 mr-2" />
+                  {connectedChain?.name}
+              </div>
 
               <div className="flex">
                 {isMinting ? (
