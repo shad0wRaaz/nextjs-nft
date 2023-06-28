@@ -1552,20 +1552,31 @@ app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req
 
 app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   const { contractAddress, walletAddress, tokenId, chain } = req.body;
-  const chainWallets = { 
+  const chainWalletKeys = { 
     "binance" : process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY,
     "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY,
     "mainnet" : process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY,
     "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
-    "binance-testnet" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
+    "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB,
     "mumbai" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
+    "goerli" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
   }
-  const sdk = ThirdwebSDK.fromPrivateKey(chainWallets[chain], chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+  const sdk = ThirdwebSDK.fromPrivateKey(chainWalletKeys[chain], chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
   const contract = await sdk.getContract(contractAddress);
-
+  
+  
   // only change royalty info if the seller is company. once it is set, should not be changed
   const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
-  if(royalty.fee_recipient == '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' || royalty.fee_recipient == '0x4313Ab900db3AddC8063ce105524e5DC1f95b52e'){
+  const chainWallet = {
+    "binance" : process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS,
+    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS,
+    "mainnet" : process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS,
+    "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS,
+    "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
+    "mumbai" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
+    "goerli" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
+  } 
+  if(String(royalty.fee_recipient).toLowerCase() == String(chainWallet[chain]).toLowerCase()){
     try{
       const tx = await contract.royalties.setTokenRoyaltyInfo(
         tokenId, 

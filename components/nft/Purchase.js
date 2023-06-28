@@ -246,7 +246,7 @@ const MakeOffer = ({
       {
         contractAddress: listingData.assetContractAddress, 
         walletAddress: address, 
-        tokenId: listingData.asset.id,
+        tokenId: parseInt(listingData.tokenId.hex, 16),
         chain: thisNFTblockchain,
       });
     }
