@@ -44,7 +44,7 @@ import { useCollectionFilterContext } from '../../../contexts/CollectionFilterCo
 import { changeShowUnlisted, importMyCollection } from '../../../mutators/SanityMutators'
 import { ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
-import { getAllNFTs, getActiveListings, getContractData, INFURA_getAllNFTs, INFURA_getAllOwners, INFURA_getCollectionMetaData, INFURA_getEverything } from '../../../fetchers/Web3Fetchers'
+
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + process.env.NEXT_PUBLIC_INFURA_SECRET_KEY,).toString('base64');
@@ -255,19 +255,19 @@ const CollectionDetails = (props) => {
   }, [collectionData])
 
 
-  const { data: marketData, status: marketStatus } = useQuery(
-    ['marketplace', chain],
-    getActiveListings(),
-    {
-      enabled: Boolean(chain),
-      onError: () => {
-        toast.error(
-          'Error fetching marketplace data. Refresh and try again.',
-          errorToastStyle
-        )
-      }
-    }
-  )
+  // const { data: marketData, status: marketStatus } = useQuery(
+  //   ['marketplace', chain],
+  //   getActiveListings(),
+  //   {
+  //     enabled: Boolean(chain),
+  //     onError: () => {
+  //       toast.error(
+  //         'Error fetching marketplace data. Refresh and try again.',
+  //         errorToastStyle
+  //       )
+  //     }
+  //   }
+  // )
 
   //this query is just to get the total no of NFTs in the given collection
   
@@ -357,10 +357,11 @@ const CollectionDetails = (props) => {
 
   ;(async() => {
     const resolved = await Promise.all(unresolved);
-    setNfts(resolved); //these are all nfts, for displaying nft cards
-    setFilteredNftData(resolved);
+    //remove nfts without metadata
+    const filternfts = resolved.filter(nft => nft.metadata != null)
+    setNfts(filternfts); //these are all nfts, for displaying nft cards
+    setFilteredNftData(filternfts);
   })();
-
 
     //this is for showing owners details
   const ownerArray = parsedData.map(o => o.ownerOf);
@@ -770,7 +771,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         >
                           <MdClose fontSize="15px" />
                         </button>
-                        <SellAll nfts={nfts} collectionData={collectionData} marketContractAddress={thisCollectionMarketAddress} marketData={marketData} />
+                        <SellAll nfts={nfts} collectionData={collectionData} marketContractAddress={thisCollectionMarketAddress} />
                       </Dialog.Panel>
                     </Transition.Child>
                   </div>
@@ -1109,7 +1110,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     >
                       <span className="text-sm">NFTs</span>
                       <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                        {collectionData?.total}
+                        {nfts?.length}
                       </span>
                     </div>
                     <div className={`${
@@ -1363,7 +1364,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             key={id}
                             nftItem={nftItem}
                             title={collectionData?.name}
-                            listings={marketData}
                             showUnlisted={showUnlisted}
                             creator={collectionData?.createdBy}
                             compact={compact}
@@ -1381,7 +1381,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             nftItem={nftItem}
                             chain={chain}
                             collectionAddress={collectionAddress}
-                            listings={marketData}
                             showUnlisted={showUnlisted}
                             creator={collectionData?.createdBy}
                             hasOwner={true}
@@ -1397,7 +1396,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             nftItem={nftItem}
                             chain={chain}
                             collectionAddress={collectionAddress}
-                            listings={marketData}
                             showUnlisted={showUnlisted}
                             creator={collectionData?.createdBy}
                             hasOwner={true}
