@@ -297,6 +297,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
           sellerAddress: address,
           asset: {...nftContractData.metadata},
           chainId: nftCollection?.chainId,
+          listedTime: new Date(),
           type: 0,
         }
 

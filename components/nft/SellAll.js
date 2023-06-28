@@ -32,7 +32,7 @@ const blockchainCurrency = {
     "43113":{currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
     }
 
-const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
+const SellAll = ({ nfts, collectionData, marketContractAddress }) => {
     const signer = useSigner();
     const router = useRouter();
     const address = useAddress();
@@ -262,6 +262,7 @@ const SellAll = ({nfts, collectionData, marketContractAddress, marketData}) => {
                         sellerAddress: address,
                         asset: {...includedNfts[index].metadata},
                         chainId: collectionData?.chainId,
+                        listedTime: new Date(),
                         type: 0,
                     }
                     return document;

@@ -102,7 +102,7 @@ export const deleteMarketData = async(contractAddress, tokenId, chain) => {
 export const latestMarketData = async(chain, lim) => {
   const collection = await mangodb.collection(`activelistings-${chain}`);
   const query = {};
-  const result = await collection.find().limit(parseInt(lim)).toArray();
+  const result = await collection.find().limit(parseInt(lim)).sort({ listedTime: -1}).toArray();
   return result;
 }
 
