@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 // import { v4 as uuidv4 } from 'uuid'
+import SEO from '../../components/SEO'
 import { useRouter } from 'next/router'
 import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
@@ -363,6 +364,11 @@ const mint = () => {
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>
         <Header />
+        <SEO 
+        title="Mint NFT"
+        description="Mint NFT"
+        image=""
+        currentUrl={`https://nuvanft.io/nfts/mint `} />
         <div className={style.wrapper}>
         <Toaster position="bottom-right" reverseOrder={false} />
         <div className={style.pageBanner}>

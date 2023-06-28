@@ -20,6 +20,7 @@ import { checkCollectionName } from '../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { sendNotificationFrom } from '../../mutators/SanityMutators'
 import { useAddress, useSigner, useChainId } from '@thirdweb-dev/react'
+import SEO from '../../components/SEO'
 
 
 
@@ -288,246 +289,251 @@ const create = () => {
 
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>
-        <Header />
-        <div className={style.wrapper}>
-            <Toaster position="bottom-right" reverseOrder={false} />
-            <div className={style.pageBanner}>
-                <h2 className={style.pageTitle}> Create a Collection</h2>
-            </div>
-            {!isNaN(address) ? (
-                <div className={style.container}>
-                    <form
-                        name="CreateNFTCollectionForm"
-                        onSubmit={handleDeployNFTCollection}
-                    >
-                        <div className={style.formWrapper}>
-                        <div className="flex gap-[40px]">
-                            <div className="grow">
-                            <p className={style.label}>Collection Name*</p>
-                            <input
-                                className={style.input}
-                                style={{ width: '98%' }}
-                                type="text"
-                                name="itemName"
-                            />
+      <Header />
+      <SEO 
+      title="Collection"
+      description="Create new Collection"
+      image=""
+      currentUrl={`https://nuvanft.io/collections/create `} />
+      <div className={style.wrapper}>
+          <Toaster position="bottom-right" reverseOrder={false} />
+          <div className={style.pageBanner}>
+              <h2 className={style.pageTitle}> Create a Collection</h2>
+          </div>
+          {!isNaN(address) ? (
+              <div className={style.container}>
+                  <form
+                      name="CreateNFTCollectionForm"
+                      onSubmit={handleDeployNFTCollection}
+                  >
+                      <div className={style.formWrapper}>
+                      <div className="flex gap-[40px]">
+                          <div className="grow">
+                          <p className={style.label}>Collection Name*</p>
+                          <input
+                              className={style.input}
+                              style={{ width: '98%' }}
+                              type="text"
+                              name="itemName"
+                          />
 
-                            <p className={style.label}>Description</p>
-                            <textarea
-                                rows={7}
-                                className={style.input}
-                                style={{ width: '98%' }}
-                                name="itemDescription"
-                            ></textarea>
+                          <p className={style.label}>Description</p>
+                          <textarea
+                              rows={7}
+                              className={style.input}
+                              style={{ width: '98%' }}
+                              name="itemDescription"
+                          ></textarea>
 
-                            <p className={style.label}>External Link</p>
-                            <input
-                                type="text"
-                                style={{ width: '98%' }}
-                                className={style.input}
-                                name="external_link"
-                                placeholder="https://yourlink.to"
-                            />
+                          <p className={style.label}>External Link</p>
+                          <input
+                              type="text"
+                              style={{ width: '98%' }}
+                              className={style.input}
+                              name="external_link"
+                              placeholder="https://yourlink.to"
+                          />
 
-                            <p className={style.label}>Symbol</p>
-                            <input
-                                type="text"
-                                style={{ width: '98%' }}
-                                className={style.input}
-                                name="symbol"
-                            />
+                          <p className={style.label}>Symbol</p>
+                          <input
+                              type="text"
+                              style={{ width: '98%' }}
+                              className={style.input}
+                              name="symbol"
+                          />
 
-                            <p className={style.label}>Category*</p>
-                            <p className={style.smallText}>
-                                Give this Collection a category. Useful when people browse
-                                by category.
-                            </p>
-                            <Select
-                                options={categories}
-                                styles={customSelectStyles}
-                                onChange={(selectedOption) => {
-                                setSelectedCategory(selectedOption.value)
-                                }}
-                            />
-                            </div>
-                            <div>
-                            <p className={style.label}>Profile Image</p>
-                            
-                            <div
-                                className={style.previewImage}
-                                style={{ height: '250px', width: '325px' }}
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={(e) => {
-                                e.preventDefault();
-                                setProfile(e.dataTransfer.files[0]);
-                                }}>
-                                {profile ? (
-                                <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
-                                ) : (
-                                <div 
-                                    onClick={() => {profileInputRef.current.click()}} 
-                                    className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
-                                    onDragOver={(e) => e.preventDefault()}
-                                    onDrop={(e) => {
-                                    e.preventDefault();
-                                    setProfile(e.dataTransfer.files[0]);
-                                    }}><BsUpload fontSize={50} />
-                                    Drag & Drop Image
-                                    <p className={style.smallText}>
-                                        Supported file types: JPG, PNG, GIF, WEBP, JFIF.
-                                    </p>
-                                </div>
-                                )}
-                            </div>
-                            <div className="imageUploader mb-4 ml-3">
-                                <input
-                                type="file"
-                                accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
-                                id="profileImg"
-                                ref={profileInputRef}
-                                onChange={e => setProfile(e.target.files[0])}
-                                style={{ display: "none"}}
-                                />
-                            </div>
-                            <p className={style.label} style={{marginTop: '40px'}}>Banner Image</p>
-                            <div
-                                className={style.previewImage}
-                                style={{ height: '250px', width: '325px' }}
-                                onDragOver={(e) => e.preventDefault()}
-                                    onDrop={(e) => {
-                                    e.preventDefault();
-                                    setBanner(e.dataTransfer.files[0]);
-                                    }}>
-                                {banner ? (
-                                <img src={URL.createObjectURL(banner)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setBanner(undefined)}/>
-                                ) : (
-                                <div 
-                                    onClick={() => {bannerInputRef.current.click()}} 
-                                    className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
-                                    onDragOver={(e) => e.preventDefault()}
-                                    onDrop={(e) => {
-                                    e.preventDefault();
-                                    setBanner(e.dataTransfer.files[0]);
-                                    }}><BsUpload fontSize={50} />
-                                    Drag & Drop Image
-                                    <p className={style.smallText}>
-                                        Supported file types: JPG, PNG, GIF, WEBP, JFIF.
-                                    </p>
-                                </div>
-                                )}
-                            </div>
-                            <div className="imageUploader mb-4 ml-3">
-                                <input
-                                type="file"
-                                accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
-                                id="bannerImg"
-                                ref={bannerInputRef}
-                                onChange={e => setBanner(e.target.files[0])}
-                                style={{ display: "none"}}
-                                />
-                            </div>
-                            </div>
-                        </div>
+                          <p className={style.label}>Category*</p>
+                          <p className={style.smallText}>
+                              Give this Collection a category. Useful when people browse
+                              by category.
+                          </p>
+                          <Select
+                              options={categories}
+                              styles={customSelectStyles}
+                              onChange={(selectedOption) => {
+                              setSelectedCategory(selectedOption.value)
+                              }}
+                          />
+                          </div>
+                          <div>
+                          <p className={style.label}>Profile Image</p>
+                          
+                          <div
+                              className={style.previewImage}
+                              style={{ height: '250px', width: '325px' }}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={(e) => {
+                              e.preventDefault();
+                              setProfile(e.dataTransfer.files[0]);
+                              }}>
+                              {profile ? (
+                              <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
+                              ) : (
+                              <div 
+                                  onClick={() => {profileInputRef.current.click()}} 
+                                  className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
+                                  onDragOver={(e) => e.preventDefault()}
+                                  onDrop={(e) => {
+                                  e.preventDefault();
+                                  setProfile(e.dataTransfer.files[0]);
+                                  }}><BsUpload fontSize={50} />
+                                  Drag & Drop Image
+                                  <p className={style.smallText}>
+                                      Supported file types: JPG, PNG, GIF, WEBP, JFIF.
+                                  </p>
+                              </div>
+                              )}
+                          </div>
+                          <div className="imageUploader mb-4 ml-3">
+                              <input
+                              type="file"
+                              accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                              id="profileImg"
+                              ref={profileInputRef}
+                              onChange={e => setProfile(e.target.files[0])}
+                              style={{ display: "none"}}
+                              />
+                          </div>
+                          <p className={style.label} style={{marginTop: '40px'}}>Banner Image</p>
+                          <div
+                              className={style.previewImage}
+                              style={{ height: '250px', width: '325px' }}
+                              onDragOver={(e) => e.preventDefault()}
+                                  onDrop={(e) => {
+                                  e.preventDefault();
+                                  setBanner(e.dataTransfer.files[0]);
+                                  }}>
+                              {banner ? (
+                              <img src={URL.createObjectURL(banner)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setBanner(undefined)}/>
+                              ) : (
+                              <div 
+                                  onClick={() => {bannerInputRef.current.click()}} 
+                                  className="cursor-pointer flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-800 px-4"
+                                  onDragOver={(e) => e.preventDefault()}
+                                  onDrop={(e) => {
+                                  e.preventDefault();
+                                  setBanner(e.dataTransfer.files[0]);
+                                  }}><BsUpload fontSize={50} />
+                                  Drag & Drop Image
+                                  <p className={style.smallText}>
+                                      Supported file types: JPG, PNG, GIF, WEBP, JFIF.
+                                  </p>
+                              </div>
+                              )}
+                          </div>
+                          <div className="imageUploader mb-4 ml-3">
+                              <input
+                              type="file"
+                              accept="image/png, image/gif, image/jpeg, image/webp, image/jfif"
+                              id="bannerImg"
+                              ref={bannerInputRef}
+                              onChange={e => setBanner(e.target.files[0])}
+                              style={{ display: "none"}}
+                              />
+                          </div>
+                          </div>
+                      </div>
 
-                        <p className={style.subHeading}>Payout Settings</p>
-                        <p className={style.smallText} style={{ marginBottom: '1rem' }}>
-                            Where should any funds generated by this contract flow to.
-                        </p>
+                      <p className={style.subHeading}>Payout Settings</p>
+                      <p className={style.smallText} style={{ marginBottom: '1rem' }}>
+                          Where should any funds generated by this contract flow to.
+                      </p>
 
-                        <p className={style.label} style={{ fontSize: '18px' }}>
-                            Primary Sales
-                        </p>
-                        <p className={style.smallText}>
-                            Determine the address that should receive the revenue from
-                            initial sales of the assets.
-                        </p>
+                      <p className={style.label} style={{ fontSize: '18px' }}>
+                          Primary Sales
+                      </p>
+                      <p className={style.smallText}>
+                          Determine the address that should receive the revenue from
+                          initial sales of the assets.
+                      </p>
 
-                        <p className={style.label}>Recipient Address *</p>
-                        <input
-                            className={style.input}
-                            type="text"
-                            name="primary_sale_recipient"
-                            value={address}
-                            onChange={(e) => {}}
-                        />
+                      <p className={style.label}>Recipient Address *</p>
+                      <input
+                          className={style.input}
+                          type="text"
+                          name="primary_sale_recipient"
+                          value={address}
+                          onChange={(e) => {}}
+                      />
 
-                        <p
-                            className={style.label}
-                            style={{ fontSize: '18px', marginTop: '2rem' }}
-                        >
-                            Royalties
-                        </p>
-                        <p className={style.smallText}>
-                            Determine the address that should receive the revenue from
-                            royalties earned from secondary sales of the assets.
-                        </p>
-                        <div className="space-between flex">
-                            <div className="grow">
-                            <p className={style.label}>Recipient Address</p>
-                            <input
-                                className={style.input}
-                                style={{ width: '98%' }}
-                                type="text"
-                                name="fee_recipient"
-                                value={address}
-                                onChange={(e) => {}}
-                            />
-                            </div>
-                            <div>
-                            <p className={style.label}>Percentage (%)</p>
-                            <input
-                                className={style.input}
-                                type="text"
-                                style={{ width: '120px' }}
-                                placeholder="0.00"
-                                name="seller_fee_basis_points"
-                            />
-                            </div>
-                        </div>
+                      <p
+                          className={style.label}
+                          style={{ fontSize: '18px', marginTop: '2rem' }}
+                      >
+                          Royalties
+                      </p>
+                      <p className={style.smallText}>
+                          Determine the address that should receive the revenue from
+                          royalties earned from secondary sales of the assets.
+                      </p>
+                      <div className="space-between flex">
+                          <div className="grow">
+                          <p className={style.label}>Recipient Address</p>
+                          <input
+                              className={style.input}
+                              style={{ width: '98%' }}
+                              type="text"
+                              name="fee_recipient"
+                              value={address}
+                              onChange={(e) => {}}
+                          />
+                          </div>
+                          <div>
+                          <p className={style.label}>Percentage (%)</p>
+                          <input
+                              className={style.input}
+                              type="text"
+                              style={{ width: '120px' }}
+                              placeholder="0.00"
+                              name="seller_fee_basis_points"
+                          />
+                          </div>
+                      </div>
 
-                        <p className={style.subHeading}>Network/Chain</p>
-                        <p className={style.smallText} style={{ marginBottom: '1rem' }}>
-                            The NFT Collection will be deployed on following network/chain.
-                        </p>
-                        
-                        <div className="flex justify-between">
-                            {/* <p className={style.label}>Network/Chain : {network[0].data.chain.name}</p> */}
-                            <input
-                            type="text"
-                            className={style.input + ' grow'}
-                            name="itemBlockchain"
-                            disabled
-                            value={ activeChain.name }
-                            ></input>
-                        </div>
+                      <p className={style.subHeading}>Network/Chain</p>
+                      <p className={style.smallText} style={{ marginBottom: '1rem' }}>
+                          The NFT Collection will be deployed on following network/chain.
+                      </p>
+                      
+                      <div className="flex justify-between">
+                          {/* <p className={style.label}>Network/Chain : {network[0].data.chain.name}</p> */}
+                          <input
+                          type="text"
+                          className={style.input + ' grow'}
+                          name="itemBlockchain"
+                          disabled
+                          value={ activeChain.name }
+                          ></input>
+                      </div>
 
-                        <div className="flex mt-4">
-                            {isLoading ? (
-                            <button
-                                type="button"
-                                className={style.button + ' flex gap-2'}
-                                style={{ pointerEvents: 'none', opacity: '0.8' }}
-                                disabled
-                            >
-                                <IconLoading dark="inbutton" />
-                            Processing...
-                            </button>
-                            ) : (
-                            <input
-                                type="submit"
-                                className={style.button}
-                                value="Create"
-                            />
-                            )}
-                        </div>
-                        </div>
-                    </form>
-                </div>
-            ) : (
-                <div className={style.notConnectedWrapper}>
-                    <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" style={{ borderRadius: '50% !important'}} />
-                </div>
-            )}
-        </div>
+                      <div className="flex mt-4">
+                          {isLoading ? (
+                          <button
+                              type="button"
+                              className={style.button + ' flex gap-2'}
+                              style={{ pointerEvents: 'none', opacity: '0.8' }}
+                              disabled
+                          >
+                              <IconLoading dark="inbutton" />
+                          Processing...
+                          </button>
+                          ) : (
+                          <input
+                              type="submit"
+                              className={style.button}
+                              value="Create"
+                          />
+                          )}
+                      </div>
+                      </div>
+                  </form>
+              </div>
+          ) : (
+              <div className={style.notConnectedWrapper}>
+                  <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" style={{ borderRadius: '50% !important'}} />
+              </div>
+          )}
+      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { ethers } from 'ethers'
 import { v4 as uuidv4 } from 'uuid'
+import SEO from '../../components/SEO'
 import { useRouter } from 'next/router'
 import { BiError } from 'react-icons/bi'
 import { BsUpload } from 'react-icons/bs'
@@ -569,6 +570,11 @@ const batchupload = () => {
   return (
     <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white text-slate-900'}`}>
         <Header />
+        <SEO
+        title="Batch mint NFT"
+        description="Create new NFTs in batch"
+        image=""
+        currentUrl={`https://nuvanft.io/nfts/batchupload`} />
         <div className={style.wrapper}>
             <Toaster position="bottom-right" reverseOrder={false} />
             <div className={style.pageBanner}>

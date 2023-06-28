@@ -19,6 +19,7 @@ import CreateNFTBatch from '../components/createNew/CreateNFTBatch'
 // import { OffCanvas, OffCanvasMenu, OffCanvasBody} from 'react-offcanvas'
 import CreateEditionDrop from '../components/createNew/CreateEditionDrop'
 import CreateNFTCollection from '../components/createNew/CreateNFTCollection'
+import SEO from '../components/SEO'
 
 const style = {
   wrapper: ' max-w-[1000px] mx-auto mt-[4rem] p-[2rem] pb-[4rem] rounded-xl',
@@ -70,6 +71,11 @@ const contracts = () => {
   return (
     <div className={dark ? 'darkBackground text-neutral-200': '' }>
       <Header />
+      <SEO 
+        title="Contracts"
+        description="Create new Contracts"
+        image=""
+        currentUrl={`https://nuvanft.io/contracts `} />
       {/* Modal window*/}
       {showModal && (
         <div className="fixed top-0 flex items-center justify-center p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-10">

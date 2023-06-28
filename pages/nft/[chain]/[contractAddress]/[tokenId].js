@@ -73,7 +73,7 @@ const chainName = {
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
 const Nft = (props) => { //props are from getServerSideProps
-  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, royaltyData, contractAddress } = props;
+  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, contractAddress } = props;
 
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
@@ -89,6 +89,22 @@ const Nft = (props) => { //props are from getServerSideProps
   const router = useRouter();
   const { setSelectedProperties } = useCollectionFilterContext();
   const [isAuctionItem, setIsAuctionItem] = useState(false);
+  const {data: royaltyData, status: royaltyStatus} = useQuery(
+    ['royalty'],
+    async() => {
+      const sdk = new ThirdwebSDK(thisNFTblockchain);
+      const contract = await sdk.getContract(nftContractData.contract);
+      return await contract.royalties.getTokenRoyaltyInfo(
+        nftContractData.tokenId,
+      );
+    },
+    {
+      enabled: Boolean(nftContractData?.contract),
+      onSuccess: (res) => {
+        console.log(res)
+      }
+    }
+  )
 
   const {data, status} = useQuery(
     ['referralRate'],
@@ -547,16 +563,19 @@ const Nft = (props) => { //props are from getServerSideProps
                               {chainName[blockchainIdFromName[thisNFTblockchain]]}
                             </span>
                           </div>
-                          {/* <div className="flex flex-row justify-between py-2">
-                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
-                            <span className="line-clamp-1 text-sm cursor-pointer">
-                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
-                                <a>
-                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
-                                </a>
-                              </Link>
-                            </span>
-                          </div> */}
+                          <div className="flex flex-row items-center justify-between py-2">
+                            <span>Royalty Receiver</span>
+                            <div className="flex gap-2 items-center">
+                              <span className="line-clamp-1 text-sm cursor-pointer">
+                                <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
+                                  <a>
+                                    {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                  </a>
+                                </Link>
+                              </span>
+                              <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''}</span>
+                            </div>
+                          </div>
                       </Tab.Panel>
 
                   </Tab.Panels>
@@ -840,7 +859,6 @@ export async function getServerSideProps(context){
   var sanityData = "";
   var ownerdata = "";
   var marketplace = ""
-  var royaltyData = "";
   var nftdata = "";
   let resolvedJSON = "";
   const supportedChains = ["binance", "binance-testnet", "mainnet", "goerli", "polygon", "mumbai", "avalanche", "avalanche-fuji"];
@@ -898,7 +916,6 @@ export async function getServerSideProps(context){
       thisNFTblockchain: chain,  //currently connected chain
       listedItemsFromThisMarket: allListedFromThisChain,
       ownerData: resolvedJSON[2],
-      royaltyData: {},
     }
   }
 }
