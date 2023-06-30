@@ -6,9 +6,9 @@ import background from '../assets/nftworlds.jpg'
 import { IconLoading } from './icons/CustomIcons'
 import { RiArrowUpDownLine } from 'react-icons/ri'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useSettingsContext } from '../contexts/SettingsContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getTopTradedNFTCollections } from '../fetchers/SanityFetchers'
-import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
   wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-0 relative',

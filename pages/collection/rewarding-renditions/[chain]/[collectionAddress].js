@@ -160,8 +160,8 @@ const CollectionDetails = (props) => {
     }
     ;(async() => {
         const prov = Boolean(signer) ? signer : chain;
-        const sdk = new ThirdwebSDK(prov);
-        const contract = await sdk.getContract(collectionAddress)
+        const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId]);
+        const contract = await sdk.getContract(collectionAddress);
         const totalCirculatingSupply = await contract.erc721.totalCount();
         const unclaimedSupply = await contract.erc721.totalUnclaimedSupply();
         const {price} = await contract.erc721.claimConditions.getActive();
@@ -184,17 +184,17 @@ const CollectionDetails = (props) => {
   }, []);
 
 
-  // useEffect(() => {
-  //   if(!signer) return
-  //   ;(async() => {
-  //     const sdk = new ThirdwebSDK(signer);
-  //     const contract = await sdk.getContract(collectionAddress)
-  //     const tx = await contract.erc721.claim.prepare(1);
-  //     const gasPrice = await tx.estimateGasLimit();
-  //     setGasEstimate(gasPrice * 2);
-  //   })()
+  useEffect(() => {
+    if(!address || !signer) return
+    ;(async() => {
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(collectionAddress)
+      const tx = await contract.erc721.claim.prepare(1);
+      const gasPrice = await tx.estimateGasCost();
+      setGasEstimate(gasPrice);
+    })()
 
-  // }, [signer])
+  }, [address]);
 
 useEffect(() => {
   if(!Boolean(coinPrices)) return;
@@ -359,68 +359,60 @@ const updateRoyaltyReceiver = async (claimedNFTId) => {
   }
 }
 
-  const claimNFT = async(toastHandler = toast) => {
-    if(!signer) {
-        toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
-        return;
-    }
+const claimNFT = async(toastHandler = toast) => {
 
-    try{
-        setIsMinting(true);
-        const sdk = new ThirdwebSDK(signer);
-        const contract = await sdk.getContract(collectionAddress)
-        const txResult = await contract.erc721.claim(1);
-        // const tx = await contract.erc721.claim.prepare(1);
-        // const gasPrice = await tx.estimateGasLimit();
-        // tx.setGasLimit(9000000);
-
-
-
-        // const prep_tx = await tx.execute();
-        // .catch(err => {
-        //                       if (err.reason == 'user rejected transaction'){
-        //                         toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-        //                         setLoadingNewPrice(false);
-        //                         setIsLoading(false);
-        //                         return;
-        //                       }
-        //                     });
-
-        // console.log('tx details', prep_tx);
-        // const id = parseInt(txResult.id.hex, 16);
-
-        console.log('tx details', txResult);
-
-        if(txResult){
-          const claimedNFTId = txResult[0].id.toString()
-  
-          //update pay info-> list of all bought NFTs from the selected Collections
-          const payObj =  {
-            walletAddress: address,
-            chainId: collectionData.chainId,
-            contractAddress: collectionData.contractAddress,
-            tokenId: claimedNFTId,
-            payablelevel: Boolean(collectionData.payablelevel) ? collectionData.payablelevel : 1,
-            type: 'buy'
-          }
-          changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
-
-          await payToMySponsors();
-
-          await updateRoyaltyReceiver(claimedNFTId);
-
-        }
-        setIsMinting(false);
-        toastHandler.success('You have successfully minted a NFT.', successToastStyle);
-        router.push('/collections/myCollection');
-    }catch(err){
-        console.log(err);
-        if (err.reason == 'user rejected transaction'){
-            toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-          }
-        setIsMinting(false);
-    }
+  if(!signer) {
+      toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
+      return;
   }
+  if(activechain.chainId.toString() != collectionData.chainId.toString()){
+    toastHandler.error("Wallet is connect to wrong chain.", errorToastStyle);
+    // console.log(Number(collectionData.chainId))
+    // switchChain(Number(collectionData.chainId)).catch(err => {
+    //   console.log(err)
+    //   toast.error('Error in changing chain.', errorToastStyle);
+    // });
+    return;
+  }
+
+  try{
+      setIsMinting(true);
+      const sdk = new ThirdwebSDK(signer);
+      const contract = await sdk.getContract(collectionAddress)
+      const txResult = await contract.erc721.claim("1");
+
+      console.log('tx details', txResult);
+
+      if(txResult){
+        const claimedNFTId = txResult[0].id.toString()
+
+        //update pay info-> list of all bought NFTs from the selected Collections
+        const payObj =  {
+          walletAddress: address,
+          chainId: collectionData.chainId,
+          contractAddress: collectionData.contractAddress,
+          tokenId: claimedNFTId,
+          payablelevel: Boolean(collectionData.payablelevel) ? collectionData.payablelevel : 1,
+          type: 'buy'
+        }
+        changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+
+        await payToMySponsors();
+
+        await updateRoyaltyReceiver(claimedNFTId);
+
+      }
+      setIsMinting(false);
+      toastHandler.success('You have successfully minted a NFT.', successToastStyle);
+      router.push('/collections/myCollection');
+  }catch(err){
+      console.log(err);
+      if (err.reason == 'user rejected transaction'){
+          toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+        }
+      setIsMinting(false);
+  }
+}
 
   useEffect(() => {
     if(!referralAllowedCollections) return
@@ -1330,7 +1322,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
             </div>
           </div>
         )}
-        {revealed && (
+        {(revealed || true) && (
           <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem] text-center`}>
             <div className={`border ${dark ? 'border-slate-800' : 'border-neutral-200'} p-4 py-8 md:p-[4rem] w-fit rounded-xl m-auto`}>
               <p className="text-2xl font-bold mb-2">Minting Details</p>
@@ -1375,7 +1367,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         {(Number(gasEstimate.ether) + Number(mintPrice)).toFixed(5)} {chainIcon[collectionData?.chainId]}
                       </div>
                         <p className="text-right text-sm text-slate-500 pr-8">(~ ${((Number(gasEstimate.ether) + Number(mintPrice)) * coinMultiplier).toFixed(2)})</p>
-
                       </div>
                     ) : (
                       <>

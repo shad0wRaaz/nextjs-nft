@@ -35,7 +35,6 @@ function MyApp({ Component, pageProps }) {
           }}
       />
       <ThirdwebProvider 
-        activeChain={process.env.NODE_ENV == 'production' ? 'binance': 'binance-testnet'}
         supportedWallets={[
           metamaskWallet(),
           coinbaseWallet(),
