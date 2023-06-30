@@ -22,10 +22,15 @@ import neon8  from '../assets/neondreams/8.png'
 
 
 import Image from 'next/image';
-import celestial1  from '../assets/celestialbeings/celestial1.jpeg'
-import celestial2  from '../assets/celestialbeings/celestial2.jpeg'
-import celestial3  from '../assets/celestialbeings/celestial3.jpeg'
-import celestial4  from '../assets/celestialbeings/celestial4.jpeg'
+import celestial1  from '../assets/celestialbeings/1.png'
+import celestial2  from '../assets/celestialbeings/2.png'
+import celestial3  from '../assets/celestialbeings/3.png'
+import celestial4  from '../assets/celestialbeings/4.png'
+import celestial5  from '../assets/celestialbeings/5.png'
+import celestial6  from '../assets/celestialbeings/6.png'
+import celestial7  from '../assets/celestialbeings/7.png'
+import celestial8  from '../assets/celestialbeings/8.png'
+
 
 import artifacts1  from '../assets/artifacts/1.png'
 import artifacts2  from '../assets/artifacts/2.png'
@@ -114,56 +119,56 @@ const Gallery = ({ setShowMenu }) => {
                     <div className="-mt-2">
                         <Slider {...settings2}>
                             <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
-                                <Image src={neon1}  alt="Crypto Creature"/>
+                                <Image src={neon1}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon2}  alt="Crypto Creature"/>
+                                <Image src={neon2}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon3}  alt="Crypto Creature"/>
+                                <Image src={neon3}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon4}  alt="Crypto Creature"/>
+                                <Image src={neon4}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon5}  alt="Crypto Creature"/>
+                                <Image src={neon5}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon6}  alt="Crypto Creature"/>
+                                <Image src={neon6}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon7}  alt="Crypto Creature"/>
+                                <Image src={neon7}  alt="Neon Dreams"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon8}  alt="Crypto Creature"/>
+                                <Image src={neon8}  alt="Neon Dreams"/>
                             </div>
                         </Slider>
                     </div>
                     <div className="">
                         <Slider {...settings}>
                                 <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial1}  alt="Crypto Creature"/>
+                                    <Image src={celestial1}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial2}  alt="Crypto Creature"/>
+                                    <Image src={celestial2}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial3}  alt="Crypto Creature"/>
+                                    <Image src={celestial3}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial4}  alt="Crypto Creature"/>
+                                    <Image src={celestial4}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial1}  alt="Crypto Creature"/>
+                                    <Image src={celestial5}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial2}  alt="Crypto Creature"/>
+                                    <Image src={celestial6}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial3}  alt="Crypto Creature"/>
+                                    <Image src={celestial7}  alt="Celestial Beings"/>
                                 </div>
                                 <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                    <Image src={celestial4}  alt="Crypto Creature"/>
+                                    <Image src={celestial8}  alt="Celestial Beings"/>
                                 </div>
                                 {/* <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="0">
                                     <Image src={creature1}  alt="Crypto Creature"/>
@@ -174,28 +179,28 @@ const Gallery = ({ setShowMenu }) => {
                     <div className="-mt-2">
                         <Slider {...settings2}>
                             <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts1}  alt="Crypto Creature"/>
+                                <Image src={artifacts1}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts2}  alt="Crypto Creature"/>
+                                <Image src={artifacts2}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts3}  alt="Crypto Creature"/>
+                                <Image src={artifacts3}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts4}  alt="Crypto Creature"/>
+                                <Image src={artifacts4}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts5}  alt="Crypto Creature"/>
+                                <Image src={artifacts5}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts6}  alt="Crypto Creature"/>
+                                <Image src={artifacts6}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts7}  alt="Crypto Creature"/>
+                                <Image src={artifacts7}  alt="Artifacts of the Future"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts8}  alt="Crypto Creature"/>
+                                <Image src={artifacts8}  alt="Artifacts of the Future"/>
                             </div>
                         </Slider>
                     </div>

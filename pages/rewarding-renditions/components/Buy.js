@@ -15,10 +15,14 @@ import neon1  from '../assets/neondreams/1.png'
 import neon2  from '../assets/neondreams/2.png'
 import neon3  from '../assets/neondreams/3.png'
 import neon4  from '../assets/neondreams/4.png'
-import celestial1  from '../assets/celestialbeings/celestial1.jpeg'
-import celestial2  from '../assets/celestialbeings/celestial2.jpeg'
-import celestial3  from '../assets/celestialbeings/celestial3.jpeg'
-import celestial4  from '../assets/celestialbeings/celestial4.jpeg'
+import celestial1  from '../assets/celestialbeings/1.png'
+import celestial2  from '../assets/celestialbeings/2.png'
+import celestial3  from '../assets/celestialbeings/3.png'
+import celestial4  from '../assets/celestialbeings/4.png'
+import celestial5  from '../assets/celestialbeings/5.png'
+import celestial6  from '../assets/celestialbeings/6.png'
+import celestial7  from '../assets/celestialbeings/7.png'
+import celestial8  from '../assets/celestialbeings/8.png'
 import artifacts1  from '../assets/artifacts/1.png'
 import artifacts2  from '../assets/artifacts/2.png'
 import artifacts3  from '../assets/artifacts/3.png'
@@ -158,10 +162,10 @@ const Buy = ({ setShowMenu }) => {
                         <span className="color--gradient-y d-block">1. Crypto Creatures</span></h2>
                         <p className="text-center mt-3">A collection of unique digital creatures that live on the Binance Blockchain.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
-                            <Image src={creature1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={creature2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={creature3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={creature4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={creature1} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={creature2} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={creature3} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={creature4} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
                         <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} className="inline"/></p>
                         <p className="text-center text-lg">Earn from 10% Direct + 8% Indirect</p>
@@ -395,10 +399,10 @@ const Buy = ({ setShowMenu }) => {
                         <span className="color--gradient-y d-block">2. Neon Dreams</span></h2>
                         <p className="text-center mt-3">A series of bright and colourful and NFTs that capture the surreal nature of our dreams.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
-                            <Image src={neon1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={neon2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={neon3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={neon4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={neon1} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={neon2} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={neon3} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={neon4} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
                         <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} className="inline"/></p>
                         <p className="text-center text-lg">Earn from 10% Direct + (8% + 6%) Indirect</p>
@@ -630,10 +634,10 @@ const Buy = ({ setShowMenu }) => {
                         <span className="color--gradient-y d-block">3. Celestial Beings</span></h2>
                         <p className="text-center mt-3">A series of NFTs that feature mythical creatures and dieties from different cultures.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
-                            <Image src={celestial1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={celestial2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={celestial3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={celestial4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={celestial1} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={celestial2} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={celestial3} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={celestial4} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
                         <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} className="inline"/></p>
                         <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
@@ -865,10 +869,10 @@ const Buy = ({ setShowMenu }) => {
                         <span className="color--gradient-y d-block">4. Artifacts of The Future</span></h2>
                         <p className="text-center mt-3">A collection of NFTs that showcase futuristic technology and inventions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
-                            <Image src={artifacts1} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={artifacts2} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={artifacts3} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
-                            <Image src={artifacts4} alt="" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={artifacts1} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={artifacts2} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={artifacts3} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
+                            <Image src={artifacts4} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
                         <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} className="inline"/></p>
                         <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
