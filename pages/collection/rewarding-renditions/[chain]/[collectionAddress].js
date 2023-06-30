@@ -159,7 +159,7 @@ const CollectionDetails = (props) => {
       return
     }
     ;(async() => {
-        const prov = Boolean(signer) ? signer : chain;
+
         const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId]);
         const contract = await sdk.getContract(collectionAddress);
         const totalCirculatingSupply = await contract.erc721.totalCount();

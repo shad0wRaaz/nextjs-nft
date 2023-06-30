@@ -31,6 +31,7 @@ import { getAirDrops } from '../../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
 import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5 } from 'react-icons/tb'
 import axios from 'axios'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 const Buy = ({ setShowMenu }) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
@@ -50,12 +51,32 @@ const Buy = ({ setShowMenu }) => {
     const [selectedFutureAir, setSelectedFutureAir] = useState([]);
     const { chainExplorer, chainIcon } = useSettingsContext();
     const [searchAddress, setSearchAddress] = useState();
-    
+    const sdk = new ThirdwebSDK("binance");
+    const [remainingCrypto, setRemainingCrypto] = useState(5000);
+    const [remainingNeon, setRemainingNeon] = useState(5000);
+    const [remainingCelestial, setRemainingCelestial] = useState(10000);
+    const [remainingArtifacts, setRemainingArtifacts] = useState(20000);
+
     const cryptoContract = "0x9809AbFc4319271259a340775eC03E9746B76068";
     const neonContract = "0x2945db324Ec216a5D5cEcE8B4D76f042553a213f";
     const celestialContract = "0x54265672B480fF8893389F2c68caeF29C95c7BE2";
     const futureContract = "0x9BDa42900556fCce5927C1905084C4b3CffB23b0";
 
+    useEffect(() => {
+        ;(async()=>{
+            const contractCrypto = await sdk.getContract(cryptoContract);
+            const contractNeon = await sdk.getContract(neonContract);
+            const contractCelestial = await sdk.getContract(celestialContract);
+            const contractArtifacts = await sdk.getContract(futureContract);
+
+            setRemainingCrypto(await contractCrypto.erc721.totalUnclaimedSupply());
+            setRemainingNeon(await contractNeon.erc721.totalUnclaimedSupply());
+            setRemainingCelestial(await contractCelestial.erc721.totalUnclaimedSupply());
+            setRemainingArtifacts(await contractArtifacts.erc721.totalUnclaimedSupply());
+
+        })()
+    }, []);
+    
     const {data, status} = useQuery(
         ["airdrops"],
         getAirDrops(),
@@ -363,7 +384,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Remaining</h6>
-                                            <h2 className="mint__numbers">5,000</h2>
+                                            <h2 className="mint__numbers">{remainingCrypto.toString()}</h2>
                                             <h4 className="mint__name text-uppercase">NFTs</h4>
                                         </div>
                                     </div>
@@ -599,7 +620,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Remaining</h6>
-                                        <h2 className="mint__numbers">5,000</h2>
+                                        <h2 className="mint__numbers">{remainingNeon.toString()}</h2>
                                         <h4 className="mint__name text-uppercase">NFTs</h4>
                                     </div>
                                     </div>
@@ -834,7 +855,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="mint__inner">
                                             <h6 className="mint__sub-title">Remaining</h6>
-                                            <h2 className="mint__numbers">10,000</h2>
+                                            <h2 className="mint__numbers">{remainingCelestial.toString()}</h2>
                                             <h4 className="mint__name text-uppercase">NFTs</h4>
                                         </div>
                                     </div>
@@ -1069,7 +1090,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="mint__inner">
                                         <h6 className="mint__sub-title">Remaining</h6>
-                                        <h2 className="mint__numbers">20,000</h2>
+                                        <h2 className="mint__numbers">{remainingArtifacts.toString()}</h2>
                                         <h4 className="mint__name text-uppercase">NFTs</h4>
                                     </div>
                                     </div>

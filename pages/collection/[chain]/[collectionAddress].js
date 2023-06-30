@@ -138,6 +138,22 @@ const CollectionDetails = (props) => {
   }
 
   useEffect(() => {
+    const rewardingCollections = [
+      String('0x9809AbFc4319271259a340775eC03E9746B76068').toLowerCase(),
+      String('0x2945db324Ec216a5D5cEcE8B4D76f042553a213f').toLowerCase(),
+      String('0x54265672B480fF8893389F2c68caeF29C95c7BE2').toLowerCase(),
+      String('0x9BDa42900556fCce5927C1905084C4b3CffB23b0').toLowerCase(),
+      String('0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4').toLowerCase(),
+      String('0xD6Ed05E8EA5cc03D18895F4c01C4C9117c6135b1').toLowerCase(),
+    ];
+
+    if(rewardingCollections.includes(collectionAddress.toLowerCase())) {
+      console.log('fine');
+      router.push(`/collection/rewarding-renditions/${chain}/${collectionAddress}`);
+    }else{
+      
+      console.log('true')
+    }
     //if unsupported chain, redirect to homepage
     const supportedChains = ["mumbai", "polygon", "mainnet", "goerli", "binance", "binance-testnet", "avalanche", "avalanche-fuji"]
     if(!supportedChains.includes(chain) && Boolean(chain)){
