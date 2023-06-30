@@ -15,7 +15,7 @@ export const CountdownTimer = ({ targetDate, align }) => {
    return (
     <div className="mt-4 mb-4">
       <p className="text-4xl mb-3 font-bold textGradGreen animate-bounce">Sale ongoing NOW !!!</p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pb-[1rem] md:pb-0">
+      {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pb-[1rem] md:pb-0">
         <Link href="/majestic-visions">
           <div className={style.button + ' bg-slate-600/50 hover:bg-slate-600/70'}>
             <IconEthereum/>Ethereum
@@ -36,7 +36,7 @@ export const CountdownTimer = ({ targetDate, align }) => {
             <IconAvalanche/>Avalanche
           </div>
         </Link>
-      </div>
+      </div> */}
       <p className="mt-4 flex gap-1">👑 One Wallet - one referral network and earn recurring income on FOUR chains</p>
       <p className="mt-1 gap-1 flex">👑 No purchase necessary to earn from direct referrals.</p>
       <p className="mt-1 gap-1 flex ">👑 Calling all NFT enthusiasts and influencers - connect your wallet, share your link, and let's take the crypto world by storm together!</p>
