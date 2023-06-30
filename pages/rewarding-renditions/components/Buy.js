@@ -7,22 +7,22 @@ import { MdOutlineOpenInNew } from 'react-icons/md'
 import { Dialog, Transition } from '@headlessui/react'
 import bannerbg from '../assets/images/banner-bg.webp'
 import React, { Fragment, useEffect, useState } from 'react'
-import creature1  from '../assets/cryptocreatures/creature01.jpeg'
-import creature2  from '../assets/cryptocreatures/creature02.jpeg'
-import creature3  from '../assets/cryptocreatures/creature03.jpeg'
-import creature4  from '../assets/cryptocreatures/creature04.jpeg'
-import neon1  from '../assets/neondreams/neon1.jpeg'
-import neon2  from '../assets/neondreams/neon2.jpeg'
-import neon3  from '../assets/neondreams/neon3.jpeg'
-import neon4  from '../assets/neondreams/neon4.jpeg'
+import creature1  from '../assets/cryptocreatures/1.png'
+import creature2  from '../assets/cryptocreatures/2.png'
+import creature3  from '../assets/cryptocreatures/3.png'
+import creature4  from '../assets/cryptocreatures/4.png'
+import neon1  from '../assets/neondreams/1.png'
+import neon2  from '../assets/neondreams/2.png'
+import neon3  from '../assets/neondreams/3.png'
+import neon4  from '../assets/neondreams/4.png'
 import celestial1  from '../assets/celestialbeings/celestial1.jpeg'
 import celestial2  from '../assets/celestialbeings/celestial2.jpeg'
 import celestial3  from '../assets/celestialbeings/celestial3.jpeg'
 import celestial4  from '../assets/celestialbeings/celestial4.jpeg'
-import artifacts1  from '../assets/artifacts/artifacts1.jpeg'
-import artifacts2  from '../assets/artifacts/artifacts2.jpeg'
-import artifacts3  from '../assets/artifacts/artifacts3.jpeg'
-import artifacts4  from '../assets/artifacts/artifacts4.jpeg'
+import artifacts1  from '../assets/artifacts/1.png'
+import artifacts2  from '../assets/artifacts/2.png'
+import artifacts3  from '../assets/artifacts/3.png'
+import artifacts4  from '../assets/artifacts/4.png'
 import { getAirDrops } from '../../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
 import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5 } from 'react-icons/tb'
@@ -369,7 +369,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068`} passHref>
+                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x9809AbFc4319271259a340775eC03E9746B76068`} passHref>
                                 <a className="">Buy Now</a>
                             </Link>
                         </div>
@@ -605,7 +605,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f`} passHref>
+                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f`} passHref>
                                 <a className="">Buy Now</a>
                             </Link>
                         </div>
@@ -840,7 +840,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2`} passHref>
+                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2`} passHref>
                                 <a className="">Buy Now</a>
                             </Link>
                         </div>
@@ -1075,7 +1075,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0`} passHref>
+                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0`} passHref>
                                 <a className="">Buy Now</a>
                             </Link>
                         </div>

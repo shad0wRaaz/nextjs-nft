@@ -61,7 +61,7 @@ export const createAwatar = (seed) => {
 export const updateSingleUserDataToFindMaxPayLevel = (user) => {
   
     if(!user.boughtnfts){
-        const newObj = { ...user, paylevel: 5}
+        const newObj = { ...user, paylevel: 1}
         return newObj
     }else{
         const data = JSON.parse(user.boughtnfts);

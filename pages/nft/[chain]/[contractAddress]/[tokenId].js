@@ -101,7 +101,7 @@ const Nft = (props) => { //props are from getServerSideProps
     {
       enabled: Boolean(nftContractData?.contract),
       onSuccess: (res) => {
-        console.log(res)
+        // console.log(res)
       }
     }
   )
@@ -573,7 +573,9 @@ const Nft = (props) => { //props are from getServerSideProps
                                   </a>
                                 </Link>
                               </span>
-                              <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''}</span>
+                              {Boolean(royaltyData?.seller_fee_basis_points) && (
+                                <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{Number(royaltyData.seller_fee_basis_points) / 100 + '%'}</span>
+                              )}
                             </div>
                           </div>
                       </Tab.Panel>

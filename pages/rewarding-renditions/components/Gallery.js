@@ -2,35 +2,40 @@ import React from 'react'
 import Slider from 'react-slick'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import creature1  from '../assets/cryptocreatures/creature01.jpeg'
-import creature2  from '../assets/cryptocreatures/creature02.jpeg'
-import creature3  from '../assets/cryptocreatures/creature03.jpeg'
-import creature4  from '../assets/cryptocreatures/creature04.jpeg'
-import creature5  from '../assets/cryptocreatures/creature05.jpeg'
-import creature6  from '../assets/cryptocreatures/creature06.jpeg'
-import creature7  from '../assets/cryptocreatures/creature07.jpeg'
-import creature8  from '../assets/cryptocreatures/creature08.jpeg'
-import creature9  from '../assets/cryptocreatures/creature09.webp'
-import creature10  from '../assets/cryptocreatures/creature10.webp'
-import creature11  from '../assets/cryptocreatures/creature11.jpeg'
-import creature12  from '../assets/cryptocreatures/creature12.jpeg'
-import creature13  from '../assets/cryptocreatures/creature13.jpeg'
-import creature14  from '../assets/cryptocreatures/creature14.jpeg'
-import creature15  from '../assets/cryptocreatures/creature15.jpeg'
-import creature16  from '../assets/cryptocreatures/creature16.jpeg'
-import neon1  from '../assets/neondreams/neon1.jpeg'
-import neon2  from '../assets/neondreams/neon2.jpeg'
-import neon3  from '../assets/neondreams/neon3.jpeg'
-import neon4  from '../assets/neondreams/neon4.jpeg'
+import creature1  from '../assets/cryptocreatures/1.png'
+import creature2  from '../assets/cryptocreatures/2.png'
+import creature3  from '../assets/cryptocreatures/3.png'
+import creature4  from '../assets/cryptocreatures/4.png'
+import creature5  from '../assets/cryptocreatures/5.png'
+import creature6  from '../assets/cryptocreatures/6.png'
+import creature7  from '../assets/cryptocreatures/7.png'
+import creature8  from '../assets/cryptocreatures/8.png'
+
+import neon1  from '../assets/neondreams/1.png'
+import neon2  from '../assets/neondreams/2.png'
+import neon3  from '../assets/neondreams/3.png'
+import neon4  from '../assets/neondreams/4.png'
+import neon5  from '../assets/neondreams/5.png'
+import neon6  from '../assets/neondreams/6.png'
+import neon7  from '../assets/neondreams/7.png'
+import neon8  from '../assets/neondreams/8.png'
+
+
 import Image from 'next/image';
 import celestial1  from '../assets/celestialbeings/celestial1.jpeg'
 import celestial2  from '../assets/celestialbeings/celestial2.jpeg'
 import celestial3  from '../assets/celestialbeings/celestial3.jpeg'
 import celestial4  from '../assets/celestialbeings/celestial4.jpeg'
-import artifacts1  from '../assets/artifacts/artifacts1.jpeg'
-import artifacts2  from '../assets/artifacts/artifacts2.jpeg'
-import artifacts3  from '../assets/artifacts/artifacts3.jpeg'
-import artifacts4  from '../assets/artifacts/artifacts4.jpeg'
+
+import artifacts1  from '../assets/artifacts/1.png'
+import artifacts2  from '../assets/artifacts/2.png'
+import artifacts3  from '../assets/artifacts/3.png'
+import artifacts4  from '../assets/artifacts/4.png'
+import artifacts5  from '../assets/artifacts/5.png'
+import artifacts6  from '../assets/artifacts/6.png'
+import artifacts7  from '../assets/artifacts/7.png'
+import artifacts8  from '../assets/artifacts/8.png'
+
 import Link from 'next/link';
 
 const Gallery = ({ setShowMenu }) => {
@@ -121,16 +126,16 @@ const Gallery = ({ setShowMenu }) => {
                                 <Image src={neon4}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon1}  alt="Crypto Creature"/>
+                                <Image src={neon5}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon2}  alt="Crypto Creature"/>
+                                <Image src={neon6}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon3}  alt="Crypto Creature"/>
+                                <Image src={neon7}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={neon4}  alt="Crypto Creature"/>
+                                <Image src={neon8}  alt="Crypto Creature"/>
                             </div>
                         </Slider>
                     </div>
@@ -181,16 +186,16 @@ const Gallery = ({ setShowMenu }) => {
                                 <Image src={artifacts4}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts1}  alt="Crypto Creature"/>
+                                <Image src={artifacts5}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts2}  alt="Crypto Creature"/>
+                                <Image src={artifacts6}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts3}  alt="Crypto Creature"/>
+                                <Image src={artifacts7}  alt="Crypto Creature"/>
                             </div>
                             <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
-                                <Image src={artifacts4}  alt="Crypto Creature"/>
+                                <Image src={artifacts8}  alt="Crypto Creature"/>
                             </div>
                         </Slider>
                     </div>

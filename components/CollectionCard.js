@@ -150,7 +150,7 @@ const CollectionCard = ({
               <p className="flex items-center justify-end gap-1">
                 {/* {chainId == '137' || (chainId == '80001' && <IconPolygon />)}
                 {chainId == '1' || (chainId == '4' && <IconEthereum />)} */}
-                ${millify(volumeTraded)}
+                ${millify(Number(volumeTraded))}
               </p>
             </div>
 

@@ -45,7 +45,7 @@ const Collection = () => {
   const activechain = useChain();
   const [listStyle, setListStyle] = useState('grid');
   const { myUser, myCollections} = useUserContext();
-  const [showType, setShowType] = useState('collection');
+  const [showType, setShowType] = useState('myallnfts');
   const qc = useQueryClient();
   const [compact, setcompact] = useState(true);
   const [cursor, setCursor] = useState();
@@ -547,7 +547,7 @@ const Collection = () => {
 
 
         {showType == 'myallnfts' &&
-          (mynfts?.length > 0 ? (
+          ((mynftstatus == 'success' && mynfts?.length > 0) ? (
             <>
               <div className={style.nftwrapper}>
                 {mynfts?.map((nftItem, id) => (
@@ -570,10 +570,18 @@ const Collection = () => {
               </div>
             </>
           ) : (
-            <div className="flex w-full justify-center">
-              {' '}
-              No NFTs yet.
-            </div>
+            <>
+              {mynftstatus == 'loading' ? (
+                <>
+                  {dark ? <IconLoading dark="inbutton"/> : <IconLoading />}
+                </>
+              ) : (
+                <div className="flex w-full justify-center">
+                  {' '}
+                  No NFTs yet.
+                </div>
+              )}
+            </>
           ))}
 
         {/* {showType == 'favourites' &&
@@ -592,11 +600,11 @@ const Collection = () => {
             <div className="flex w-full justify-center">No Liked NFTs yet.</div>
           ))} */}
 
-        {mynftstatus == 'loading' && (
+        {/* {mynftstatus == 'loading' && (
             <div className="flex items-center justify-center">
-              <IconLoading />
+              {dark ? <IconLoading dark="inbutton"/> : <IconLoading/>}
             </div>
-          )}
+          )} */}
       </div>
       <Footer />
     </div>

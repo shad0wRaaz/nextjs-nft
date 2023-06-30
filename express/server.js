@@ -1561,7 +1561,7 @@ app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
     "mumbai" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
     "goerli" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
   }
-  const sdk = ThirdwebSDK.fromPrivateKey(chainWalletKeys[chain], chain); // <-- change chain to binance, and change the allowed Contracts to the one from binance chain
+  const sdk = ThirdwebSDK.fromPrivateKey(chainWalletKeys[chain], chain); 
   const contract = await sdk.getContract(contractAddress);
   
   
