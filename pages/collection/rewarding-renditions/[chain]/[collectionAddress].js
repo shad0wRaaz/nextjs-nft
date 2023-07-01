@@ -1419,8 +1419,8 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         
         <div className={style.nftWrapperContainer}>
           {revealed && (
-            <div className="relative flex justify-between flex-wrap mb-8 gap-2">
-              <div className="flex gap-2">
+            <div className="relative flex justify-center md:justify-between flex-wrap mb-8 gap-3 md:gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {address && (
                   <div className={`mb-[0.125rem] block min-h-[1.5rem] pl-[2rem] border ${dark ? 'border-slate-700' : 'border-neutral-200'} rounded-md p-2`}>
                     <input
@@ -1442,7 +1442,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   // </button>
                 )}
                 <button
-                  className="-z-1 mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
+                  className="-z-1 md:mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
                   onClick={() => setShowFilter(curval => !curval)}
                 >
                   <span className="ml-2.5 block truncate">Filter by Properties</span>
