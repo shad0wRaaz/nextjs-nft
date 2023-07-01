@@ -114,8 +114,8 @@ const CollectionDetails = (props) => {
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
   const [isMinting, setIsMinting] = useState(false);
   const [mintPrice, setMintPrice] = useState();
-  const [gasEstimate, setGasEstimate] = useState();
-  const [coinMultiplier, setCoinMultiplier] = useState(0);
+  // const [gasEstimate, setGasEstimate] = useState();
+  // const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
 
 
@@ -189,41 +189,41 @@ const CollectionDetails = (props) => {
   }, []);
 
 
-  useEffect(() => {
-    if(!address || !signer) return
-    ;(async() => {
-        try{
-        const sdk = new ThirdwebSDK(signer);
-        const contract = await sdk.getContract(collectionAddress)
-        const tx = await contract.erc721.claim.prepare(1);
-        const gasPrice = await tx.estimateGasCost();
-        setGasEstimate(gasPrice);
-      }catch(err){
-        console.log(err)
-      }
-      })()
+  // useEffect(() => {
+  //   if(!address || !signer) return
+  //   ;(async() => {
+  //       try{
+  //       const sdk = new ThirdwebSDK(signer);
+  //       const contract = await sdk.getContract(collectionAddress)
+  //       const tx = await contract.erc721.claim.prepare(1);
+  //       const gasPrice = await tx.estimateGasCost();
+  //       setGasEstimate(gasPrice);
+  //     }catch(err){
+  //       console.log(err)
+  //     }
+  //     })()
 
 
-  }, [address]);
+  // }, [address]);
 
-useEffect(() => {
-  if(!Boolean(coinPrices)) return;
+// useEffect(() => {
+//   if(!Boolean(coinPrices)) return;
 
-    if (chain == "polygon" || chain == "mumbai") {
-      setCoinMultiplier(coinPrices?.maticprice);
-    } else if (chain == "mainnet" || chain == "goerli") {
-      setCoinMultiplier(coinPrices?.ethprice);
-    } else if (chain == "avalanche" || chain == "avalanche-fuji") {
-      setCoinMultiplier(coinPrices?.avaxprice);
-    } else if (chain == "binance" || chain == "binance-testnet") {
-      setCoinMultiplier(coinPrices?.bnbprice);
-    }
+//     if (chain == "polygon" || chain == "mumbai") {
+//       setCoinMultiplier(coinPrices?.maticprice);
+//     } else if (chain == "mainnet" || chain == "goerli") {
+//       setCoinMultiplier(coinPrices?.ethprice);
+//     } else if (chain == "avalanche" || chain == "avalanche-fuji") {
+//       setCoinMultiplier(coinPrices?.avaxprice);
+//     } else if (chain == "binance" || chain == "binance-testnet") {
+//       setCoinMultiplier(coinPrices?.bnbprice);
+//     }
 
-    return() => {
-      //do nothing
-    }
+//     return() => {
+//       //do nothing
+//     }
 
-}, [coinPrices]);
+// }, [coinPrices]);
 
 
 const { mutate: changeBoughtNFTs } = useMutation(
@@ -372,8 +372,8 @@ const updateRoyaltyReceiver = async (claimedNFTId) => {
 }
 
 const claimNFT = async(toastHandler = toast) => {
-  await payToMySponsors();
-  return;
+  // await payToMySponsors();
+  // return;
 
   if(!signer) {
       toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
@@ -1340,7 +1340,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem] text-center`}>
             <div className={`border ${dark ? 'border-slate-800' : 'border-neutral-200'} p-4 py-8 md:p-[4rem] w-fit rounded-xl m-auto`}>
               <p className="text-2xl font-bold mb-2">Minting Details</p>
-              <p className="text-base lg:max-w-[800px] mb-8">Once you mint an NFT, one of the unique NFT from the unclaimed supply of NFTs will be transferred to your wallet. You will be minting one NFT at a time with following estimated costing details.</p>
+              <p className="text-base lg:max-w-[800px] mb-8">Once you mint an NFT, one of the unique NFT from the unclaimed supply of NFTs will be minted into your wallet. You will be minting one NFT at a time.</p>
               <div className="w-full md:w-96 m-auto space-y-3 mt-3 mb-6">
                 <div className="flex gap-[5rem] justify-between text-left">
                   <span>Mint Price</span>
@@ -1354,7 +1354,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     )}
                   </span>
                 </div>
-                <div className="flex gap-1 justify-between text-left flex-wrap">
+                {/* <div className="flex gap-1 justify-between text-left flex-wrap">
                   <span>Estimated Gas Cost</span>
                   <span>
                     {(Boolean(address) && Boolean(gasEstimate)) ? (
@@ -1392,7 +1392,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       </>
                     )}
                   </span>
-                </div>
+                </div> */}
               </div>
               <div className="flex justify-center mt-4 mb-4">
                 {Boolean(address) ? (
