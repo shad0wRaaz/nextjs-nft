@@ -84,7 +84,7 @@ const CollectionDetails = (props) => {
   const [thisCollectionMarketAddress, setThisCollectionMarketAddress] = useState();
   const { selectedBlockchain } = useMarketplaceContext();
   const [properties, setProperties] = useState([]);
-  const { blockchainName, marketplace, chainExplorer, referralCommission, referralAllowedCollections, blockchainIdFromName, blockedCollections, coinPrices} = useSettingsContext();
+  const { blockchainName, marketplace, chainExplorer, referralCommission, referralAllowedCollections, blockchainIdFromName, blockedCollections, coinPrices, refs} = useSettingsContext();
   const { selectedProperties, setSelectedProperties } = useCollectionFilterContext();
   const [filteredNftData, setFilteredNftData] = useState();
   const [isBlocked, setIsBlocked] = useState(false);
@@ -117,6 +117,7 @@ const CollectionDetails = (props) => {
   const [gasEstimate, setGasEstimate] = useState();
   const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
+
 
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -159,18 +160,22 @@ const CollectionDetails = (props) => {
       return
     }
     ;(async() => {
-
-        const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId]);
-        const contract = await sdk.getContract(collectionAddress);
-        const totalCirculatingSupply = await contract.erc721.totalCount();
-        const unclaimedSupply = await contract.erc721.totalUnclaimedSupply();
-        const {price} = await contract.erc721.claimConditions.getActive();
-
-        setMintPrice(ethers.utils.formatUnits(price, 18));
-        setTotalCirculatingSupply(parseInt(totalCirculatingSupply._hex, 16));
-        setTotalUnclaimedSupply(parseInt(unclaimedSupply._hex, 16));
-
-    })();
+      
+      try{
+          const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId]);
+          const contract = await sdk.getContract(collectionAddress);
+          const totalCirculatingSupply = await contract.erc721.totalCount();
+          const unclaimedSupply = await contract.erc721.totalUnclaimedSupply();
+          const {price} = await contract.erc721.claimConditions.getActive();
+  
+          setMintPrice(ethers.utils.formatUnits(price, 18));
+          setTotalCirculatingSupply(parseInt(totalCirculatingSupply._hex, 16));
+          setTotalUnclaimedSupply(parseInt(unclaimedSupply._hex, 16));
+        }catch(err){
+          console.log(err)
+        }
+  
+      })();
 
     if(!blockedCollections || !collectionid) return;
     const blockedCollection = blockedCollections?.filter(coll => coll._id == collectionid);
@@ -187,12 +192,17 @@ const CollectionDetails = (props) => {
   useEffect(() => {
     if(!address || !signer) return
     ;(async() => {
-      const sdk = new ThirdwebSDK(signer);
-      const contract = await sdk.getContract(collectionAddress)
-      const tx = await contract.erc721.claim.prepare(1);
-      const gasPrice = await tx.estimateGasCost();
-      setGasEstimate(gasPrice);
-    })()
+        try{
+        const sdk = new ThirdwebSDK(signer);
+        const contract = await sdk.getContract(collectionAddress)
+        const tx = await contract.erc721.claim.prepare(1);
+        const gasPrice = await tx.estimateGasCost();
+        setGasEstimate(gasPrice);
+      }catch(err){
+        console.log(err)
+      }
+      })()
+
 
   }, [address]);
 
@@ -233,19 +243,20 @@ const payToMySponsors = async() => {
  let sponsors = [];
  const payNetwork = await getMyPayingNetwork(address);
 
- let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0]);
+ let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
  if(Boolean(network?.sponsor)){
+   console.log(network.sponsor)
    network = {
      ...network,
-     sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor)
-   }
+     sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
+    }
 
    if(Boolean(network?.sponsor?.sponsor)){
      network = {
        ...network,
        sponsor: {
          ...network.sponsor,
-         sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor),
+         sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
        }
      }
 
@@ -256,7 +267,7 @@ const payToMySponsors = async() => {
            ...network.sponsor,
            sponsor: {
              ...network.sponsor.sponsor,
-             sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor)
+             sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
            }
          }
        }
@@ -271,7 +282,7 @@ const payToMySponsors = async() => {
              ...network.sponsor.sponsor,
              sponsor:{
                ...network.sponsor.sponsor.sponsor,
-               sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor)
+               sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
              }
            }
          }
@@ -289,7 +300,7 @@ const payToMySponsors = async() => {
                ...network.sponsor.sponsor.sponsor,
                sponsor: {
                  ...network.sponsor.sponsor.sponsor.sponsor,
-                 sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor)
+                 sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
                }
              }
            }
@@ -327,9 +338,10 @@ const payToMySponsors = async() => {
    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
      let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
      let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
+     console.log(sponsor_L5_rate)
      sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
    }
-
+   console.log('sponsors', sponsors)
  //send the tokens and get list of transaction hash to save in database
  const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain);
 
@@ -360,6 +372,8 @@ const updateRoyaltyReceiver = async (claimedNFTId) => {
 }
 
 const claimNFT = async(toastHandler = toast) => {
+  await payToMySponsors();
+  return;
 
   if(!signer) {
       toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);

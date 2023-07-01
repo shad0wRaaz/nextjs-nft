@@ -58,23 +58,28 @@ export const createAwatar = (seed) => {
   return awatar
 }
 
-export const updateSingleUserDataToFindMaxPayLevel = (user) => {
+export const updateSingleUserDataToFindMaxPayLevel = (user, refs) => {
+  if(!refs) return;
+  if(refs.includes(user.walletAddress)){
+    const newObj = { ...user, paylevel: 5 }
+    return newObj;
+  }
   
-    if(!user.boughtnfts){
-        const newObj = { ...user, paylevel: 1}
-        return newObj
-    }else{
-        const data = JSON.parse(user.boughtnfts);
-        const allPayLevels = data?.map(nft => Number(nft.payablelevel));
-        
-        const maxLevel = Math.max(...allPayLevels);
-        const newObj = {
-            ...user,
-            paylevel: Boolean(maxLevel) ? maxLevel : 1
-        }
-        return newObj;
-    }
+  if(!user.boughtnfts){
+      const newObj = { ...user, paylevel: 1}
+      return newObj
+  }else{
 
+      const data = JSON.parse(user.boughtnfts);
+      const allPayLevels = data?.map(nft => Number(nft.payablelevel));
+      
+      const maxLevel = Math.max(...allPayLevels);
+      const newObj = {
+          ...user,
+          paylevel: Boolean(maxLevel) ? maxLevel : 1
+      }
+      return newObj;
+  }
 }
 
 export const updateUserDataToFindMaxPayLevel = (allusers) => {

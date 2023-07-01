@@ -7,23 +7,13 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
 import { Dialog, Transition } from '@headlessui/react';
 import { MdOutlineClose } from 'react-icons/md';
+import { useSettingsContext } from '../../../contexts/SettingsContext';
 
 const Header = ({setShowMenu, showMenu}) => {
     const menuRef = useRef();
     const address = useAddress();
     const [showAbout, setShowAbout] = useState(false);
-    const refs = [
-        '0xa80bc68E1Af4201Ea84Dd83b87793D11B42a73e4',
-        '0xB753F953A3D9843902448926db8a2E0Ec6a8273a',
-        '0x8B7c1F7445e8f8fC67c3d880d0FDA07df0faAE9B',
-        '0xC2f870e2Cb3Bda7CC4864aD195394b4A2Ad711E7',
-        '0x792fdC3c8DBE740A3810d8291C3623A85F0dcEC9',
-        '0x0a13a7996870cDD480B68a8c2135C6635f28aA35',
-        '0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6',
-        '0xC3e76653D5A9eE8Ab36FcD51964c2D4522c8e58E',
-        '0xf0D6D62b7292087a229Cb487D081784C63B45194',
-        '0x9C021ef84528b1a5B84577C9327c6C6597Dc3791',
-    ]
+    const { refs } = useSettingsContext();
     
     const getWalletRefForToday = () => {
         const today = new Date();
