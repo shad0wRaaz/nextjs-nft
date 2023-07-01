@@ -1,4 +1,5 @@
 import Slider from 'react-slick'
+import NoSSR from 'react-no-ssr';
 import SaveAlias from './SaveAlias'
 import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
@@ -13,7 +14,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
 import { getFullListings } from '../fetchers/Web3Fetchers';
-import NoSSR from 'react-no-ssr';
 
 const style = {
   wrapper: `relative overflow-hidden`,

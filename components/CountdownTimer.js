@@ -14,7 +14,11 @@ export const CountdownTimer = ({ targetDate, align }) => {
   if (days + hours + minutes + seconds <= 0) {
    return (
     <div className="mt-4 mb-4">
-      <p className="text-4xl mb-3 font-bold textGradGreen animate-bounce">Sale ongoing NOW !!!</p>
+      <p className="text-4xl mb-3 font-bold textGradGreen animate-bounce">
+        <a href="#rewardingrenditions">
+          Sale ongoing NOW !!!
+        </a>
+      </p>
       {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pb-[1rem] md:pb-0">
         <Link href="/majestic-visions">
           <div className={style.button + ' bg-slate-600/50 hover:bg-slate-600/70'}>

@@ -19,7 +19,6 @@ import { addVolumeTraded, saveTransaction } from '../../mutators/SanityMutators'
 
 const OfferSingle = ({
   offer, 
-  isAuctionItem, 
   listingData, 
   coinMultiplier, 
   metaDataFromSanity, 
@@ -36,6 +35,7 @@ const OfferSingle = ({
     const [isAccepting, setIsAccepting] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+    const isAuctionItem = listingData?.type == 1 ? true : false;
 
     const isThisWinningBid = (isAuctionItem && winningBid && offer) ? offer?.buyerAddress == winningBid?.buyerAddress ? true : false : false;
 
@@ -177,71 +177,92 @@ const OfferSingle = ({
 
   return (
     <tr>
-        <td className={`relative p-4 pl-10 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
-            <div className="rounded-full w-[30px] h-[30px] mr-0 border border-1 border-white overflow-hidden">
-              <img src={createAwatar(offer?.buyerAddress)} alt={offer?.buyerAddress} className="object-cover h-full w-full"/>
-            </div>
-            {isThisWinningBid ? (
-              <div className="absolute top-5 left-2">
-                <TbFlag3 className="text-green-500" fontSize={20} />
-              </div>
-            ) : null}
-        </td>
-        <td className={`p-4 border-t pl-0 ${dark ? 'border-slate-700' : 'border-slate-200'}`}>
-            <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
+      <td className={`relative p-4 pl-10 border-t ${dark ? 'border-slate-700' : 'border-slate-200'} w-0`}>
+        {isAuctionItem && winningBid && (
+          <div className="rounded-full w-[30px] h-[30px] mr-0 border border-1 border-white overflow-hidden">
+            <img src={createAwatar(offer?.buyerAddress)} alt={offer?.buyerAddress} className="object-cover h-full w-full"/>
+          </div>
+        )}
+      </td>
+      <td className={`p-4 border-t pl-0 ${dark ? 'border-slate-700' : 'border-slate-200'}`}>
+          <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
+            {isAuctionItem ? (
               <div className="flex items-center w-full flex-grow justify-center">
                 <div className="flex-grow">
                   <p className="text-sm">
-                      <a className="" href={`/user/${offer?.offerorAddress}`}>{offer?.offerorAddress?.slice(0,7)}...{offer?.offerorAddress?.slice(-7)}</a>
+                      <a className="" href={`/user/${winningBid?.bidderAddress}`}>{winningBid?.bidderAddress?.slice(0,7)}...{winningBid?.bidderAddress?.slice(-7)}</a>
                   </p>
                   <p className="text-sm">
-                      <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
+                      <span className="text-xs">Bid Price:</span> <span className="">{winningBid?.bidAmountCurrencyValue?.displayValue} {winningBid?.bidAmountCurrencyValue?.symbol}</span>
                   </p>
                 </div>
+                <p className="text-xs border border-green-700/70 bg-green-800/70 rounded-md py-1 px-2">Winning Bid</p>
                 {/* <div className="flex-grow text-right flex justify-end items-center text-sm gap-1">
                     {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
                     ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
                     {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(2)}%
                 </div> */}
               </div>
-              {!isAuctionItem && (
-                  <div className="flex items-center justify-between gap-2">
-                    {offer.offerorAddress == address && (
-                      <button
-                      onClick={() => cancelOffer(offer?.id)} 
-                      className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isCancelling ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
-                      title='Accept this offer'>
-                          {isCancelling ? (
-                          <>
-                            <IconLoading dark={dark ? 'inbutton' : ''}/> Cancelling
-                          </>
-                          ) : (
-                          <>
-                            <BsPlusCircle fontSize={15} className="rotate-45" />Cancel
-                          </>
-                          )}
-                      </button>
-                    )}
-                  {listingData?.sellerAddress == address ? (
+            ) : (
+              <>
+                {winningBid && (
+                  <div className="flex items-center w-full flex-grow justify-center">
+                    <div className="flex-grow">
+                      <p className="text-sm">
+                          <a className="" href={`/user/${offer?.offerorAddress}`}>{offer?.offerorAddress?.slice(0,7)}...{offer?.offerorAddress?.slice(-7)}</a>
+                      </p>
+                      <p className="text-sm">
+                          <span className="">{offer?.currencyValue?.displayValue} {offer?.currencyValue?.symbol}</span>
+                      </p>
+                    </div>
+                    {/* <div className="flex-grow text-right flex justify-end items-center text-sm gap-1">
+                        {(parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) > 0 
+                        ? <TbTrendingDown color='#f43f5e' fontSize={20}/> : <TbTrendingUp color='#22c55e' fontSize={20}/> }
+                        {parseFloat((parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue) - parseFloat(offer?.currencyValue.displayValue)) / parseFloat(listingData?.buyoutCurrencyValuePerToken.displayValue).toFixed(4) * 100).toFixed(2)}%
+                    </div> */}
+                  </div>
+                )}
+              </>
+
+            )}
+            {!isAuctionItem && (
+                <div className="flex items-center justify-between gap-2">
+                  {offer.offerorAddress == address && (
                     <button
-                    onClick={() => acceptOffer(offer?.id, offer?.offerorAddress, offer?.currencyValue.displayValue)} 
-                    className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
+                    onClick={() => cancelOffer(offer?.id)} 
+                    className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isCancelling ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
                     title='Accept this offer'>
-                        {isAccepting ? (
+                        {isCancelling ? (
                         <>
-                          <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
+                          <IconLoading dark={dark ? 'inbutton' : ''}/> Cancelling
                         </>
                         ) : (
                         <>
-                          <FaRegCheckCircle fontSize={15} /> Accept
+                          <BsPlusCircle fontSize={15} className="rotate-45" />Cancel
                         </>
                         )}
                     </button>
-                  ) : ('')}
-                  </div>
-              )}
-            </div>
-        </td>
+                  )}
+                {listingData?.sellerAddress == address ? (
+                  <button
+                  onClick={() => acceptOffer(offer?.id, offer?.offerorAddress, offer?.currencyValue.displayValue)} 
+                  className={`transition rounded-lg p-2 px-3 gradBlue cursor-pointer md:ml-5 ${isAccepting ? 'pointer-events-none opacity-80' : ''} text-md shadow-sm text-sm flex gap-1 items-center`} 
+                  title='Accept this offer'>
+                      {isAccepting ? (
+                      <>
+                        <IconLoading dark={dark ? 'inbutton' : ''}/> Processing
+                      </>
+                      ) : (
+                      <>
+                        <FaRegCheckCircle fontSize={15} /> Accept
+                      </>
+                      )}
+                  </button>
+                ) : ('')}
+                </div>
+            )}
+          </div>
+      </td>
     </tr>
   )
 }

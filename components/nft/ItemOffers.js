@@ -25,18 +25,19 @@ const style = {
   accent: `text-[#2081e2]`,
   transactionTable: 'ttable max-h-[500px] overflow-y-auto',
 }
-const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, isAuctionItem }) => {
+const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain }) => {
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const [toggle, setToggle] = useState(true);
   const [marketOffer, setMarketOffer] = useState([]);
   const [coinMultiplier, setCoinMultiplier] = useState();
   const { coinPrices } = useSettingsContext();
   const signer = useSigner();
+  const isAuctionItem = listingData?.type == 1 ? true : false;
 
   const [winningBid, setWinningBid] = useState();
-  
+
   useEffect(() => {
-    if(!marketOffer) return
+    // if(!marketOffer) return
     // const marketArray = [
     //   process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE, 
     //   process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE, 
@@ -48,8 +49,8 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     //   process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
     // ];
 
-
-    if(isAuctionItem) {
+console.log('imhere', isAuctionItem)
+    if(listingData.type == 1) {
       //get winning bid and send to offer array
       ;(async() => {
         let sdk = '';
@@ -59,8 +60,10 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
         else {
           sdk = new ThirdwebSDK(thisNFTblockchain);
         }
+
         const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
         const winningBid = await contract.englishAuctions.getWinningBid(listingData?.id);
+
         setWinningBid(winningBid);
       })();
     }
@@ -75,7 +78,7 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     return() => {
       //do nothing, just clean up function
     }
-  }, [marketOffer])
+  }, [listingData])
 
   const { data: eventData, status: eventDataLoading } = useQuery(
     ['eventData', listingData?.id],
@@ -86,7 +89,6 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
         // console.log(err)
       },
       onSuccess: async(res) => {
-
         // console.log('listings', listingData)
         // console.log('bids', res)
         // const unresolved = res?.map(async(offer) => {
@@ -171,21 +173,37 @@ useEffect(() => {
                 </td>
               </tr>
             )}
+            {listingData?.type == 1 ? (
+              <>
+                <OfferSingle 
+                    isAuctionItem={isAuctionItem} 
+                    selectedNft={selectedNft} 
+                    listingData={listingData} 
+                    coinMultiplier={coinMultiplier} 
+                    metaDataFromSanity={metaDataFromSanity}
+                    thisNFTMarketAddress={thisNFTMarketAddress} 
+                    thisNFTblockchain={thisNFTblockchain} 
+                    winningBid={winningBid}/>
+              </>
+            ) : (
+              <>
+                {listingData && eventData?.length > 0 && eventData?.map((offer, id) => (
+                  <OfferSingle 
+                    key={id} 
+                    offer={offer} 
+                    isAuctionItem={isAuctionItem} 
+                    selectedNft={selectedNft} 
+                    listingData={listingData} 
+                    coinMultiplier={coinMultiplier} 
+                    metaDataFromSanity={metaDataFromSanity}
+                    thisNFTMarketAddress={thisNFTMarketAddress} 
+                    thisNFTblockchain={thisNFTblockchain} 
+                    winningBid={winningBid}/>
+                  ))
+                }
+              </>
+            )}
 
-            {listingData && eventData?.length > 0 && eventData?.map((offer, id) => (
-              <OfferSingle 
-                key={id} 
-                offer={offer} 
-                isAuctionItem={isAuctionItem} 
-                selectedNft={selectedNft} 
-                listingData={listingData} 
-                coinMultiplier={coinMultiplier} 
-                metaDataFromSanity={metaDataFromSanity}
-                thisNFTMarketAddress={thisNFTMarketAddress} 
-                thisNFTblockchain={thisNFTblockchain} 
-                winningBid={winningBid}/>
-              ))
-            }
           </tbody>
         </table>
       )}

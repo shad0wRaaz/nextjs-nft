@@ -39,7 +39,7 @@ const RewardingRendition = () => {
       }
 
   return (
-    <div className={style.wrapperContainer} style={{ backgroundImage: `url(${bannerbg.src})`}}>
+    <div className={style.wrapperContainer} style={{ backgroundImage: `url(${bannerbg.src})`}} id='rewardingrenditions'>
         <div className={style.wrapper}>
             <a name="rewardingrendition">&nbsp;</a>
             <div className="flex-between flex flex-col md:flex-row items-center relative z-10">
