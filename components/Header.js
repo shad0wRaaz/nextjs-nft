@@ -34,7 +34,7 @@ const Header = () => {
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-  const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections } = useSettingsContext();
+  const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections, setReferralCommission } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
   const { setMyUser, setMyCollections } = useUserContext()
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
@@ -60,8 +60,17 @@ const Header = () => {
   }
 
   const getAllAdminUsers = async () => {
-    const query = '*[_type == "settings"]{adminusers, referralcollections}';
+    const query = '*[_type == "settings"]{adminusers, referralcollections, referralrate_one, referralrate_two, referralrate_three, referralrate_four, referralrate_five}';
     const res = await config.fetch(query);
+    //this object will hold commission values for non company collections i.e for sharing of platform fee
+    const referralCommission = {
+      referralrate_one: res[0].referralrate_one,
+      referralrate_two: res[0].referralrate_two,
+      referralrate_three: res[0].referralrate_three,
+      referralrate_four: res[0].referralrate_four,
+      referralrate_five: res[0].referralrate_five,
+    }
+    setReferralCommission(referralCommission);
     setReferralAllowedCollections(res[0].referralcollections); //save all collections that are allowed to have referral commission settings
     return res[0].adminusers;
   }
