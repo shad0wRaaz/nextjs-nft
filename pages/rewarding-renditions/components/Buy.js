@@ -394,8 +394,8 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x9809AbFc4319271259a340775eC03E9746B76068`} passHref>
-                                <a className="">Buy Now</a>
+                            <Link href={`${HOST}/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068`} passHref>
+                                <a className="">Mint Now</a>
                             </Link>
                         </div>
                         <div
@@ -630,8 +630,8 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f`} passHref>
-                                <a className="">Buy Now</a>
+                            <Link href={`${HOST}/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f`} passHref>
+                                <a className="">Mint Now</a>
                             </Link>
                         </div>
                         <div 
@@ -865,8 +865,8 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2`} passHref>
-                                <a className="">Buy Now</a>
+                            <Link href={`${HOST}/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2`} passHref>
+                                <a className="">Mint Now</a>
                             </Link>
                         </div>
                         <div 
@@ -1100,8 +1100,8 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/rewarding-renditions/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0`} passHref>
-                                <a className="">Buy Now</a>
+                            <Link href={`${HOST}/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0`} passHref>
+                                <a className="">Mint Now</a>
                             </Link>
                         </div>
                         <div 

@@ -54,7 +54,7 @@ const RewardingRendition = () => {
             <div className="">Nuva NFT's exclusive 4 sets of NFT Collections which allows the holders to earn from the Unilevel network, get shared Royalty Fee on every sale, get shared Platform fees and occasional BNB Airdrops.</div>
 
             <div className={style.collectionWrapper}>
-                <Link href="/collection/rewarding-renditions/binance/0x9809AbFc4319271259a340775eC03E9746B76068">
+                <Link href="/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068">
                     <div className={style.collection}>
                             <div className={style.productImage}>
                                 <Image src={fierymonkey.src} height="200px" width="200px" objectFit='fit'/>
@@ -75,7 +75,7 @@ const RewardingRendition = () => {
                         </div>
                     </div>
                 </Link>
-                <Link href="/collection/rewarding-renditions/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f">
+                <Link href="/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f">
                     <div className={style.collection}>
                             <div className={style.productImage}>
                                 <Image src={neon.src} height="200px" width="200px" objectFit='fit'/>
@@ -96,7 +96,7 @@ const RewardingRendition = () => {
                         </div>
                     </div>
                 </Link>
-                <Link href="/collection/rewarding-renditions/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2">
+                <Link href="/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2">
                     <div className={style.collection}>
                             <div className={style.productImage}>
                                 <Image src={rockycelestial.src} height="200px" width="200px" objectFit='fit'/>
@@ -117,7 +117,7 @@ const RewardingRendition = () => {
                         </div>
                     </div>
                 </Link>
-                <Link href="/collection/rewarding-renditions/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0">
+                <Link href="/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0">
                     <div className={style.collection}>
                             <div className={style.productImage}>
                                 <Image src={artifacts.src} height="200px" width="200px" objectFit='fit'/>

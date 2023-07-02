@@ -30,7 +30,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
         <div className="herocarousel bg-top md:bg-center md:pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`}}>
           <Header/>
-          {/* <HeroDesigner /> */}
+          <HeroDesigner />
           {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>
             {/* <HeroSearch /> */}
