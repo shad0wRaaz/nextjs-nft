@@ -1257,6 +1257,17 @@
     "@ethersproject/providers" "^5.7.2"
     "@paperxyz/sdk-common-utilities" "^0.0.5"
 
+"@paperxyz/embedded-wallet-service-sdk@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@paperxyz/embedded-wallet-service-sdk/-/embedded-wallet-service-sdk-1.1.0.tgz#30200d0139ab62758a227929675b43694956efff"
+  integrity sha512-Zvdbx8JksICMh71743jj4Kf0Vg2c81B/pSVp5k0As8Yaq5bwVtsETwxd3d8vNFTFvDOyMHTkKzFycb8VNJ+DJw==
+  dependencies:
+    "@ethersproject/abstract-signer" "^5.7.0"
+    "@ethersproject/bytes" "^5.7.0"
+    "@ethersproject/properties" "^5.7.0"
+    "@ethersproject/providers" "^5.7.2"
+    "@paperxyz/sdk-common-utilities" "^0.0.5"
+
 "@paperxyz/sdk-common-utilities@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@paperxyz/sdk-common-utilities/-/sdk-common-utilities-0.0.5.tgz#c94688fc82e7b78c64925d0c3f0622df62cbce06"
@@ -1980,6 +1991,11 @@
   resolved "https://registry.yarnpkg.com/@thirdweb-dev/chains/-/chains-0.1.25.tgz#a9b67083369397e6b765d2ae41dd87979001967e"
   integrity sha512-srtH0L6FpwY44SclrUbRlkjiLfRBnVIvnAGA+/jh3rGzOjdXVpSftABd/ROxLGtEDvoTD4bhPKCWus9x8EzgIw==
 
+"@thirdweb-dev/chains@0.1.26":
+  version "0.1.26"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/chains/-/chains-0.1.26.tgz#2a59ef267b641c7cdac46017eb03778b67ec0639"
+  integrity sha512-+PjKn5bmg8Ua8OR+RwqnrGrQrYDvshv85EKvttnTqJmCdsvWMsPY2XXuDSpqg5ovKqgSYXgdw+dMEpyZKiZrXw==
+
 "@thirdweb-dev/contracts-js@1.3.7":
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts-js/-/contracts-js-1.3.7.tgz#9a1aeafe89a92b82e11da4bdea6a827041607d7a"
@@ -2061,6 +2077,29 @@
     yaml "^2.1.1"
     zod "^3.20.2"
 
+"@thirdweb-dev/sdk@3.10.27":
+  version "3.10.27"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-3.10.27.tgz#bd7404a4ea0c5c4716c894976edd69792c25de20"
+  integrity sha512-VvB/fhwnjvQvcbnK8i/U1bHnNkksHUCFjfSZ9xumTzrjEcHPCrx25speCndTsnghoPHElwW1ldiAZoYCdEEKYw==
+  dependencies:
+    "@thirdweb-dev/chains" "0.1.26"
+    "@thirdweb-dev/contracts-js" "1.3.7"
+    "@thirdweb-dev/generated-abis" "0.0.1"
+    "@thirdweb-dev/storage" "1.1.5"
+    abitype "^0.2.5"
+    bn.js "^5.2.1"
+    bs58 "^5.0.0"
+    buffer "^6.0.3"
+    cross-fetch "^3.1.5"
+    eventemitter3 "^5.0.0"
+    fast-deep-equal "^3.1.3"
+    merkletreejs "^0.2.24"
+    tiny-invariant "^1.2.0"
+    tweetnacl "^1.0.3"
+    uuid "^9.0.0"
+    yaml "^2.1.1"
+    zod "^3.20.2"
+
 "@thirdweb-dev/storage@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@thirdweb-dev/storage/-/storage-1.1.5.tgz#aa127adbd0ff23b7acc5221ceb5fde63ebebc4d0"
@@ -2089,6 +2128,39 @@
     "@safe-global/safe-ethers-lib" "^1.9.2"
     "@thirdweb-dev/chains" "0.1.25"
     "@thirdweb-dev/sdk" "3.10.26"
+    "@walletconnect/core" "^2.8.4"
+    "@walletconnect/ethereum-provider" "^2.8.4"
+    "@walletconnect/jsonrpc-utils" "^1.0.3"
+    "@walletconnect/modal" "^2.5.4"
+    "@walletconnect/types" "^2.8.4"
+    "@walletconnect/utils" "^2.8.4"
+    "@walletconnect/web3wallet" "^1.8.1"
+    buffer "^6.0.3"
+    cross-fetch "^3.1.5"
+    crypto-js "^4.1.1"
+    eth-provider "^0.13.6"
+    eventemitter3 "^5.0.0"
+    magic-sdk "^13.6.2"
+    web3-core "1.5.2"
+
+"@thirdweb-dev/wallets@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/wallets/-/wallets-1.0.3.tgz#94c8a583f00e1ba59e915fed8214dfec24266d38"
+  integrity sha512-rbyBFZtUQEYOgEyLNqT3KftKxcFIfsymE0648U0RG26wWasL1Z1NTY3xUmtut2OPIBWi1DN6/q7GXW7xSZVWjQ==
+  dependencies:
+    "@account-abstraction/contracts" "^0.5.0"
+    "@account-abstraction/sdk" "^0.5.0"
+    "@account-abstraction/utils" "^0.5.0"
+    "@coinbase/wallet-sdk" "^3.6.3"
+    "@magic-ext/connect" "^6.7.0"
+    "@magic-ext/oauth" "^7.6.2"
+    "@magic-sdk/provider" "^13.6.2"
+    "@paperxyz/embedded-wallet-service-sdk" "^1.1.0"
+    "@safe-global/safe-core-sdk" "^3.3.2"
+    "@safe-global/safe-ethers-adapters" "^0.1.0-alpha.16"
+    "@safe-global/safe-ethers-lib" "^1.9.2"
+    "@thirdweb-dev/chains" "0.1.26"
+    "@thirdweb-dev/sdk" "3.10.27"
     "@walletconnect/core" "^2.8.4"
     "@walletconnect/ethereum-provider" "^2.8.4"
     "@walletconnect/jsonrpc-utils" "^1.0.3"

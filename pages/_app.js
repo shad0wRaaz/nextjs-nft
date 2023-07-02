@@ -38,6 +38,7 @@ function MyApp({ Component, pageProps }) {
         supportedWallets={[
           metamaskWallet(),
           coinbaseWallet(),
+          walletConnect(),
           safeWallet(),
         ]}
         dAppMeta={{

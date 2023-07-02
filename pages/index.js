@@ -8,6 +8,7 @@ import HeroSearch from '../components/HeroSearch'
 import ExploreNFTs from '../components/ExploreNFTs'
 import bgimage from '../public/assets/bg-image.jpg'
 import HeroCarousel from '../components/HeroCarousel'
+import HeroDesigner from '../components/HeroDesigner'
 import TopCollections from '../components/TopCollections'
 import { useThemeContext } from '../contexts/ThemeContext'
 import herobackground from '../assets/herobackground.jpeg'
@@ -29,6 +30,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
         <div className="herocarousel bg-top md:bg-center md:pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`}}>
           <Header/>
+          {/* <HeroDesigner /> */}
           {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>
             {/* <HeroSearch /> */}

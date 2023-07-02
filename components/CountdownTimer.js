@@ -41,7 +41,7 @@ export const CountdownTimer = ({ targetDate, align }) => {
           </div>
         </Link>
       </div> */}
-      <p className="mt-4 flex gap-1">👑 One Wallet - one referral network and earn recurring income on FOUR chains</p>
+      <p className="mt-4 flex gap-1">👑 One Wallet - one referral network and earn recurring income from FOUR different chains</p>
       <p className="mt-1 gap-1 flex">👑 No purchase necessary to earn from direct referrals.</p>
       <p className="mt-1 gap-1 flex ">👑 Calling all NFT enthusiasts and influencers - connect your wallet, share your link, and let's take the crypto world by storm together!</p>
     </div>

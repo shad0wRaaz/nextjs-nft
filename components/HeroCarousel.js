@@ -6,11 +6,11 @@ import { useRouter } from 'next/router'
 import "slick-carousel/slick/slick.css";
 import { useQuery } from 'react-query';
 import FeaturedItems from './FeaturedItems'
-import {CountdownTimer} from './CountdownTimer'
 import { RiCloseFill } from 'react-icons/ri';
 import { config } from '../lib/sanityClient';
 import { useEffect, useState } from 'react';
 import "slick-carousel/slick/slick-theme.css";
+import {CountdownTimer} from './CountdownTimer';
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
 import { getFullListings } from '../fetchers/Web3Fetchers';
