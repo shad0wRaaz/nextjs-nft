@@ -1354,7 +1354,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
             </div>
           </div>
         )}
-        {(revealed || collectionData.type === 'drop') && (
+        {(revealed && collectionData.type === 'drop') && (
           <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem] text-center`}>
             <div className={`border ${dark ? 'border-slate-800' : 'border-neutral-200'} p-4 py-8 md:p-[4rem] w-fit rounded-xl m-auto`}>
               <p className="text-2xl font-bold mb-2">Minting Details</p>
