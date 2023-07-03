@@ -365,7 +365,7 @@ const MakeOffer = ({
         let sponsor_L5_rate = isAllowedSeperateCommission ? nftCollection?.referralrate_five : referralCommission.referralrate_five;
         sponsors.push({ receiver: sponsor_L5, token: buyOutPrice  * sponsor_L5_rate / 100 });
       }
-      console.log(sponsors)
+      // console.log(sponsors)
     // return;
 
     //send the tokens and get list of transaction hash to save in database

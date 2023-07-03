@@ -38,6 +38,7 @@ import { TbStar } from 'react-icons/tb';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { IconBNB } from './icons/CustomIcons';
+import { HiArrowNarrowDown } from 'react-icons/hi';
 
 const HeroDesigner = () => {
   const [showCollection, setShowCollection] = useState(false);
@@ -251,6 +252,11 @@ const HeroDesigner = () => {
         <div className={style.contentWrapper}>
           <div className={style.title}>
             Discover, Collect, Mint, Sell and Buy NFTs
+            <p className="animate-bounce textGradGreen text-lg lg:text-3xl">
+              <HiArrowNarrowDown className="inline"/>
+              <HiArrowNarrowDown className="inline"/> Latest Collections out Now
+              <HiArrowNarrowDown className="inline"/>
+              <HiArrowNarrowDown className="inline"/></p>
           </div>
           <div className={style.grid}>
             {/* cypto */}
