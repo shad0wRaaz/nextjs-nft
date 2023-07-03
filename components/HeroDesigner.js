@@ -423,11 +423,11 @@ const HeroDesigner = () => {
             </div>
           </div>
           {showCollection ? (
-            <div className="mt-[3rem]">
+            <div className="mt-[3rem] px-4">
               <p>Select Collection</p>
               <div className={style.ctaContainer}>
                 <Link href={links.creatures} passHref>
-                  <a>
+                  <a className="w-full md:w-fit">
                     <div className={style.collectionSelection}>
                       <Image src={creature1.src} height="60px" width="60px" objectFit='cover' className="rounded-full" alt="Crypto Creatures"/>
                       <div className="text-left">
@@ -438,7 +438,7 @@ const HeroDesigner = () => {
                   </a>
                 </Link>
                 <Link href={links.neon} passHref>
-                  <a>
+                  <a className="w-full md:w-fit">
                     <div className={style.collectionSelection}>
                       <Image src={neon2.src} height="60px" width="60px" objectFit='cover' className="rounded-full" alt="Crypto Creatures"/>
                       <div className="text-left">
@@ -449,7 +449,7 @@ const HeroDesigner = () => {
                   </a>
                 </Link>
                 <Link href={links.celestial} passHref>
-                  <a>
+                  <a className="w-full md:w-fit">
                     <div className={style.collectionSelection}>
                       <Image src={celestial3.src} height="60px" width="60px" objectFit='cover' className="rounded-full" alt="Crypto Creatures"/>
                       <div className="text-left">
@@ -460,7 +460,7 @@ const HeroDesigner = () => {
                   </a>
                 </Link>
                 <Link href={links.artifacts} passHref>
-                  <a>
+                  <a className="w-full md:w-fit">
                     <div className={style.collectionSelection}>
                       <Image src={artifacts4.src} height="60px" width="60px" objectFit='cover' className="rounded-full" alt="Crypto Creatures"/>
                       <div className="text-left">
