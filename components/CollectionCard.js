@@ -50,16 +50,29 @@ const CollectionCard = ({
 }) => {
   const { dark } = useThemeContext();
   const { currencyByChainId, blockchainName } = useSettingsContext();
-  const rr = [
-    '0x9809AbFc4319271259a340775eC03E9746B76068',
-    '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
-    '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
-    '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
-    '0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4',
-    '0xD6Ed05E8EA5cc03D18895F4c01C4C9117c6135b1'
-  ]
-  const isDrop = rr.includes(contractAddress) ? true : false
-  const link = isDrop ? `/collection/rewarding-renditions/${blockchainName[chainId]}/${contractAddress}` : `/collection/${blockchainName[chainId]}/${contractAddress}`
+  // const link ={
+  //   crypto_creatures: '0x9809AbFc4319271259a340775eC03E9746B76068',
+  //   neon_dreams: '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
+  //   celestial_beings: '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
+  //   artifacts_of_the_future: '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
+  // }
+  // const rr = [
+  //   '0x9809AbFc4319271259a340775eC03E9746B76068',
+  //   '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
+  //   '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
+  //   '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
+  //   '0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4',
+  //   '0xD6Ed05E8EA5cc03D18895F4c01C4C9117c6135b1'
+  // ]
+
+  let collectionAddress = '';
+  if(String(contractAddress).toLowerCase() == String('0x9809AbFc4319271259a340775eC03E9746B76068').toLowerCase()) {collectionAddress = 'crypto_creatures'}
+  else if(String(contractAddress).toLowerCase() == String('0x2945db324Ec216a5D5cEcE8B4D76f042553a213f').toLowerCase()) {collectionAddress = 'neon_dreams'}
+  else if(String(contractAddress).toLowerCase() == String('0x54265672B480fF8893389F2c68caeF29C95c7BE2').toLowerCase()) {collectionAddress = 'celestial_beings'}
+  else if(String(contractAddress).toLowerCase() == String('0x9BDa42900556fCce5927C1905084C4b3CffB23b0').toLowerCase()) {collectionAddress = 'artifacts_of_the_future'}
+  else { collectionAddress = contractAddress }
+
+  const link = `/collection/${blockchainName[chainId]}/${collectionAddress}`
 
   return (
     <Link href={link}>
