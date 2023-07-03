@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import HowToInfo from '../components/HowToInfo'
 import HeroSearch from '../components/HeroSearch'
 import ExploreNFTs from '../components/ExploreNFTs'
-import bgimage from '../public/assets/bg-image.jpg'
+import bgimage from '../public/assets/pink.jpeg'
 import HeroCarousel from '../components/HeroCarousel'
 import HeroDesigner from '../components/HeroDesigner'
 import TopCollections from '../components/TopCollections'
@@ -28,14 +28,14 @@ const Home = ({ featuredNfts, backendAvailable }) => {
     <>
       <SEO />
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
-        <div className="herocarousel bg-top md:bg-center md:pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`}}>
+        <div className="herocarousel bg-top md:bg-center md:pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`, backgroundSize: 'cover'}}>
           <Header/>
-          {/* <HeroDesigner /> */}
-          {backendAvailable ? (<>
+          <HeroDesigner />
+          {/* {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>
-            {/* <HeroSearch /> */}
+            <HeroSearch />
           </>
-             ) : ('')}
+             ) : ('')} */}
         </div>
         <RewardingRendition />
         {backendAvailable ? <TopCollections/> : ''}
