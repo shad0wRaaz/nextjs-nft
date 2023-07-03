@@ -39,7 +39,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
              ) : ('')} */}
         </div>
         <RewardingRendition />
-        <FeaturedCollection/>
+        {/* <FeaturedCollection/> */}
         {backendAvailable ? <TopCollections/> : ''}
         {backendAvailable ? 
         <>
