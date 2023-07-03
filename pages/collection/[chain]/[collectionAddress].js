@@ -1685,14 +1685,27 @@ export async function getServerSideProps(context){
     'arbitrum-goerli': '421563',
     'arbitrum': '421564',
   }
-  const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${collectionAddress}`;
+  let contractAddress = '';
+  const link ={
+    crypto_creatures: '0x9809AbFc4319271259a340775eC03E9746B76068',
+    neon_dreams: '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
+    celestial_beings: '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
+    artifacts_of_the_future: '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
+  }
+  if(String(collectionAddress).toLowerCase() == 'crypto_creatures') {contractAddress = link.crypto_creatures}
+  else if(String(collectionAddress).toLowerCase() == 'neon_dreams') {contractAddress = link.neon_dreams}
+  else if(String(collectionAddress).toLowerCase() == 'celestial_beings') {contractAddress = link.celestial_beings}
+  else if(String(collectionAddress).toLowerCase() == 'artifacts_of_the_future') {contractAddress = link.artifacts_of_the_future}
+  else { contractAddress = collectionAddress}
+
+  const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}`;
 
   const collectionData = await axios.get(fetchPoint);
 
   return {
     props : {
       chain,
-      collectionAddress,
+      collectionAddress: contractAddress,
       collectionData: collectionData?.data,
     }
   }

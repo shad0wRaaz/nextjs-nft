@@ -43,10 +43,10 @@ const HeroDesigner = () => {
   const [showCollection, setShowCollection] = useState(false);
   const router = useRouter();
   const links = {
-    creatures: '/collection/binance/0x9809AbFc4319271259a340775eC03E9746B76068',
-    neon: '/collection/binance/0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
-    celestial: '/collection/binance/0x54265672B480fF8893389F2c68caeF29C95c7BE2',
-    artifacts: '/collection/binance/0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
+    creatures: '/collection/binance/crypto_creatures',
+    neon: '/collection/binance/neon_dreams',
+    celestial: '/collection/binance/celestial_beings',
+    artifacts: '/collection/binance/artifacts_of_the_future',
   }
   const style = {
     wrapper: `relative overflow-hidden`,
