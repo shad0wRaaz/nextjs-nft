@@ -85,6 +85,10 @@ const EditCollection = ({collection, setShowModal}) => {
               web3imageprofile: profileLink?.data,
               category: newCollectionData.category,
               description: newCollectionData.description,
+              facebookHandle: newCollectionData.facebookHandle,
+              twitterHandle: newCollectionData.twitterHandle,
+              instagramHandle: newCollectionData.instagramHandle,
+              discordHandle: newCollectionData.discordHandle,
               external_link: Boolean(newCollectionData.external_link) ? newCollectionData.external_link : '',
             })
             .commit()
@@ -124,6 +128,22 @@ const EditCollection = ({collection, setShowModal}) => {
       ) {
         toastHandler.error('External link is not valid.', errorToastStyle);
         return
+      }
+      if(!newCollectionData?.facebookHandle.startsWith('https://facebook.com/') && newCollectionData?.facebookHandle !== ''){
+        toastHandler.error('Invalid Facebook link', errorToastStyle);
+        return;
+      }
+      if(!newCollectionData?.twitterHandle.startsWith('https://twitter.com/') && newCollectionData?.twitterHandle !== ''){
+        toastHandler.error('Invalid Twitter link', errorToastStyle);
+        return;
+      }
+      if(!newCollectionData?.instagramHandle.startsWith('https://instagram.com/') && newCollectionData?.instagramHandle !== ''){
+        toastHandler.error('Invalid Instagram link', errorToastStyle);
+        return;
+      }
+      if(!newCollectionData?.discordHandle.startsWith('https://discord.com/') && newCollectionData?.discordHandle !== ''){
+        toastHandler.error('Invalid Discord link', errorToastStyle);
+        return;
       }
       setUpdateStatus('loading');
       updateMetadata() //Mutation function for updating collection metadata
@@ -236,6 +256,18 @@ const EditCollection = ({collection, setShowModal}) => {
               />
             </div>
             <div className={style.formRow}>
+              <p className={style.label}>Category</p>
+              <Select
+                defaultValue={selectedCategory}
+                options={categories}
+                styles={customSelectStyles}
+                onChange={(selectedOption) => {
+                  setSelectedCategory(selectedOption.value);
+                  setNewCollectionData({ ...newCollectionData, category: selectedOption.value })
+                }}
+              />
+            </div>
+            <div className={style.formRow}>
               <p className={style.label}>External Link</p>
               <input
                 type="text"
@@ -253,15 +285,71 @@ const EditCollection = ({collection, setShowModal}) => {
               />
             </div>
             <div className={style.formRow}>
-              <p className={style.label}>Category</p>
-              <Select
-                defaultValue={selectedCategory}
-                options={categories}
-                styles={customSelectStyles}
-                onChange={(selectedOption) => {
-                  setSelectedCategory(selectedOption.value);
-                  setNewCollectionData({ ...newCollectionData, category: selectedOption.value })
-                }}
+              <p className={style.label}>Facebook Link</p>
+              <input
+                type="text"
+                className={
+                  dark
+                    ? style.input +
+                      ' border-slate-600 bg-slate-700 hover:bg-slate-600 flex-grow'
+                    : style.input +
+                      ' border-neutral-200 hover:bg-neutral-100 flex-grow'
+                }
+                value={newCollectionData.facebookHandle ? newCollectionData.facebookHandle : ''}
+                onChange={(e) =>
+                  setNewCollectionData({ ...newCollectionData, facebookHandle: e.target.value })
+                }
+              />
+            </div>
+            <div className={style.formRow}>
+              <p className={style.label}>Twitter Link</p>
+              <input
+                type="text"
+                className={
+                  dark
+                    ? style.input +
+                      ' border-slate-600 bg-slate-700 hover:bg-slate-600 flex-grow'
+                    : style.input +
+                      ' border-neutral-200 hover:bg-neutral-100 flex-grow'
+                }
+                value={newCollectionData.twitterHandle ? newCollectionData.twitterHandle : ''}
+                onChange={(e) =>
+                  setNewCollectionData({ ...newCollectionData, twitterHandle: e.target.value })
+                }
+              />
+            </div>
+            <div className={style.formRow}>
+              <p className={style.label}>Instagram Link</p>
+              <input
+                type="text"
+                className={
+                  dark
+                    ? style.input +
+                      ' border-slate-600 bg-slate-700 hover:bg-slate-600 flex-grow'
+                    : style.input +
+                      ' border-neutral-200 hover:bg-neutral-100 flex-grow'
+                }
+                value={newCollectionData.instagramHandle ? newCollectionData.instagramHandle : ''}
+                onChange={(e) =>
+                  setNewCollectionData({ ...newCollectionData, instagramHandle: e.target.value })
+                }
+              />
+            </div>
+            <div className={style.formRow}>
+              <p className={style.label}>Discord Link</p>
+              <input
+                type="text"
+                className={
+                  dark
+                    ? style.input +
+                      ' border-slate-600 bg-slate-700 hover:bg-slate-600 flex-grow'
+                    : style.input +
+                      ' border-neutral-200 hover:bg-neutral-100 flex-grow'
+                }
+                value={newCollectionData.discordHandle ? newCollectionData.discordHandle : ''}
+                onChange={(e) =>
+                  setNewCollectionData({ ...newCollectionData, discordHandle: e.target.value })
+                }
               />
             </div>
             <div className={style.formRow}>

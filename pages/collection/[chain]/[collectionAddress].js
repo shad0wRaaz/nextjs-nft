@@ -13,7 +13,6 @@ import { Fragment, useEffect } from 'react'
 import { FiSettings } from 'react-icons/fi'
 import SEO from '../../../components/SEO'
 import { RiCloseFill } from 'react-icons/ri'
-import { CgSandClock } from 'react-icons/cg'
 import { HiChevronRight } from 'react-icons/hi'
 import Loader from '../../../components/Loader'
 import Header from '../../../components/Header'
@@ -24,6 +23,7 @@ import NFTCard from '../../../components/NFTCard'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
+import { CgFacebook, CgSandClock } from 'react-icons/cg'
 import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
 import { useInfiniteQuery, useQueryClient } from 'react-query'
 import noBannerImage from '../../../assets/noBannerImage.png'
@@ -48,6 +48,7 @@ import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter,
 import { ethers } from 'ethers'
 import { getMyPayingNetwork } from '../../../fetchers/SanityFetchers'
 import { useMarketplaceContext } from '../../../contexts/MarketPlaceContext'
+import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa'
 
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
@@ -139,6 +140,11 @@ const CollectionDetails = (props) => {
     bannerImage: `h-full object-cover`,
     closeButton:
         'absolute transition duration-[300] top-[20px] right-[20px] rounded-md bg-[#ef4444] text-white p-1 hover:opacity-70 z-30',
+    socialicon: `my-2 transition flex h-8 w-8 cursor-pointer items-center justify-center rounded-full hover:-translate-y-0.5 ${
+      dark
+        ? ' bg-slate-700 hover:bg-slate-600'
+        : ' bg-neutral-100 hover:bg-neutral-200'
+    } md:h-10 md:w-10 `,
     infoContainer: `w-full px-4 pb-10`,
     midRow: `w-full flex justify-center text-white mb-2`,
     endRow: `w-full flex justify-end text-white`,
@@ -146,7 +152,6 @@ const CollectionDetails = (props) => {
     socialIconsContainer: `flex text-3xl mb-[-2rem] mr-2`,
     socialIconsWrapper: `w-44`,
     socialIconsContent: `flex container justify-between text-[1.4rem] border border-white border-slate-700 rounded-lg px-2`,
-    socialIcon: `my-2`,
     divider: `border border-white border-slate-700 border-r-1`,
     title: `text-5xl font-bold mb-4`,
     createdBy: `text-lg`,
@@ -166,7 +171,7 @@ const CollectionDetails = (props) => {
     previewImage : 'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
   }
 
-
+console.log(collectionData)
   useEffect(() => {
     //if unsupported chain, redirect to homepage
     const supportedChains = ["mumbai", "polygon", "mainnet", "goerli", "binance", "binance-testnet", "avalanche", "avalanche-fuji"]
@@ -944,30 +949,75 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       />
                     </div>
 
-                    <div className="mt-4 flex items-center space-x-3 sm:justify-center">
-                    <div className="flex flex-col justify-center space-x-1.5">
-                      {externalLink && externalLink != '' && (
+                    <div className="mt-4 flex items-center space-x-3 justify-center">
+                      <div className="flex justify-center space-x-1.5">
+                        {Boolean(collectionData?.facebookHandle) && (
                           <div className="relative text-center justify-center flex">
                             <a
-                              href={externalLink}
-                              className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full ${
-                                dark
-                                  ? ' bg-slate-700 hover:bg-slate-600'
-                                  : ' bg-neutral-100 hover:bg-neutral-200'
-                              } md:h-10 md:w-10 `}
-                              title="External Link"
-                              id="headlessui-menu-button-:r3e:"
-                              type="button"
+                              href={collectionData?.facebookHandle}
+                              className={style.socialicon}
+                              title="Facebook Link"
                               target="_blank"
-                              aria-haspopup="true"
-                              aria-expanded="false"
                             >
-                              <BiGlobe fontSize={20}/>
+                              <CgFacebook fontSize={22}/>
                             </a>
-                          </div>                      
-                      )}
+                          </div>
+
+                        )}
+                        {Boolean(collectionData?.twitterHandle) && (
+                          <div className="relative text-center justify-center flex">
+                            <a
+                              href={collectionData?.twitterHandle}
+                              className={style.socialicon}
+                              title="Twitter Link"
+                              target="_blank"
+                            >
+                              <FaTwitter fontSize={20}/>
+                            </a>
+                          </div>
+                        )}
+                        {Boolean(collectionData?.instagramHandle) && (
+                          <div className="relative text-center justify-center flex">
+                            <a
+                              href={collectionData?.instagramHandle}
+                              className={style.socialicon}
+                              title="Instagram Link"
+                              target="_blank"
+                            >
+                              <FaInstagram fontSize={20}/>
+                            </a>
+                          </div>
+                        )}
+                        {Boolean(collectionData?.discordHandle) && (
+                          <div className="relative text-center justify-center flex">
+                            <a
+                              href={collectionData?.discordHandle}
+                              className={style.socialicon}
+                              title="Discord Link"
+                              target="_blank"
+                            >
+                              <FaDiscord fontSize={20}/>
+                            </a>
+                          </div>                        
+                        )}
+                        {externalLink && externalLink != '' && (
+                            <div className="relative text-center justify-center flex">
+                              <a
+                                href={externalLink}
+                                className={style.socialicon}
+                                title="External Link"
+                                id="headlessui-menu-button-:r3e:"
+                                type="button"
+                                target="_blank"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                              >
+                                <BiGlobe fontSize={20}/>
+                              </a>
+                            </div>                      
+                        )}
+                      </div>
                     </div>
-                  </div>
 
                   {Boolean(collectionData?.creator?.walletAddress) && (
                     <div className={`${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
@@ -1212,7 +1262,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Floor Price</span>
-                      <span className="mt-2 text-base font-bold sm:text-xl">
+                      <span className="mt-2 text-base font-bold md:text-xl">
                         
                         {collectionData && chainIcon[collectionData?.chainId]}{collectionData?.floorPrice}
                       </span>
@@ -1226,7 +1276,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       } flex text-center flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Volume Traded</span>
-                      <span className="mt-2 break-all text-base font-bold sm:text-xl">
+                      <span className="mt-2 break-all text-base font-bold md:text-xl">
                         ${!isNaN(collectionData?.volumeTraded) ? millify(collectionData?.volumeTraded) : 0}
                       </span>
                     </div>
@@ -1240,7 +1290,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               : ' border border-neutral-50'
                           } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
                           <span className="text-sm text-center">Total NFTs</span>
-                          <span className="mt-2 text-base font-bold sm:text-xl">
+                          <span className="mt-2 text-base font-bold md:text-xl">
                             {totalCirculatingSupply ? totalCirculatingSupply : <IconLoading dark="inbutton"/>}
                           </span>
                         </div>
@@ -1251,7 +1301,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               : ' border border-neutral-50'
                           } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
                           <span className="text-sm text-center">Unclaimed NFTs</span>
-                          <span className="mt-2 text-base font-bold sm:text-xl">
+                          <span className="mt-2 text-base font-bold md:text-xl">
                             {totalUnclaimedSupply ? totalUnclaimedSupply : <IconLoading dark="inbutton" />}
                           </span>
                         </div>
