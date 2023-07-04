@@ -38,8 +38,8 @@ export const getImagefromWeb3 = (ipfsuri) => {
   {
     return ipfsuri;
   }else if(ipfsuri?.startsWith("ipfs://")){
-    // const image = "https://ipfs.io/ipfs/" + String(ipfsuri).slice(7);
-    const image = "https://ipfs.thirdwebcdn.com/ipfs/" + String(ipfsuri).slice(7);
+    const image = "https://ipfs.io/ipfs/" + String(ipfsuri).slice(7);
+    // const image = "https://ipfs.thirdwebcdn.com/ipfs/" + String(ipfsuri).slice(7);
     return image;
   }else{
     return ipfsuri;
