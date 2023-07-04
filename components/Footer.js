@@ -11,7 +11,7 @@ import { HiOutlineNewspaper } from 'react-icons/hi'
 import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
-import { FaFacebookF, FaTelegramPlane, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa'
+import { FaFacebookF, FaTelegramPlane, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube, FaTiktok } from 'react-icons/fa'
 
 
 
@@ -155,6 +155,13 @@ const Footer = () => {
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' youtube'}>
                     <FaYoutube color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.tiktok.com/@nuvanft">
+                <a target="_blank" rel="noopener noreferrer">
+                  <div className={style.socialItem + ' tiktok'}>
+                    <FaTiktok color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>

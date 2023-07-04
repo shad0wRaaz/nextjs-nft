@@ -5,6 +5,7 @@ import discord from '../assets/images/discord.png'
 import twitter from '../assets/images/twitter.png'
 import facebook from '../assets/images/facebook.png'
 import instagram from '../assets/images/instagram.png'
+import tiktok from '../assets/images/tiktok.png'
 import youtube from '../assets/images/youtube.png'
 import madmonkey1 from '../assets/images/madmonkey1.png'
 import madmonkey2 from '../assets/images/madmonkey2.png'
@@ -60,6 +61,13 @@ const Hero = ({setShowMenu}) => {
                                     <Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link cursor-pointer">
                                         <a target="_blank">
                                             <img src={youtube.src} className="cursor-pointer" alt="Social Thumb"/>
+                                        </a>
+                                    </Link>
+                                </li>
+                                <li className="social__item">
+                                    <Link href="https://www.tiktok.com/@nuvanft" className="social__link cursor-pointer">
+                                        <a target="_blank">
+                                            <img src={tiktok.src} className="cursor-pointer" alt="Social Thumb"/>
                                         </a>
                                     </Link>
                                 </li>
