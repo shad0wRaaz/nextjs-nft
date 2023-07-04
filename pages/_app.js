@@ -40,10 +40,6 @@ function MyApp({ Component, pageProps }) {
           coinbaseWallet(),
           walletConnect(),
           safeWallet(),
-          magicLink({
-            apiKey: process.env.NEXT_PUBLIC_MAGIC_CONNECT_API_KEY,
-            type: 'connect',
-          }),
         ]}
         dAppMeta={{
           name: 'Nuva NFT',
