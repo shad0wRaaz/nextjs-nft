@@ -55,14 +55,14 @@ const INFURA_AUTH = Buffer.from(process.env.NEXT_PUBLIC_INFURA_API_KEY + ':' + p
 
 const chainIcon = {
   '80001': <IconPolygon className="mr-0" width="22px" height="22px" />,
-  '137': <IconPolygon width="30px" height="30px"/>,
-  '43113': <IconAvalanche width="40px" height="40px" />,
-  '43114': <IconAvalanche/>,
+  '137': <IconPolygon width="20px" height="20px"/>,
+  '43113': <IconAvalanche width="20px" height="20px" />,
+  '43114': <IconAvalanche width="20px" height="20px" />,
   '421563': <IconAvalanche/>,
-  '5': <IconEthereum width="30px" height="30px"/>,
-  '1': <IconEthereum width="30px" height="30px"/>,
+  '5': <IconEthereum width="20px" height="20px"/>,
+  '1': <IconEthereum width="20px" height="20px"/>,
   '97': <IconBNB width="20px" height="20px"/>,
-  '56': <IconBNB width="30px" height="30px"/>,
+  '56': <IconBNB width="20px" height="20px"/>,
 }
 
 const CollectionDetails = (props) => {
@@ -1034,7 +1034,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                                       ac: 'true',
                                       h: 'true',
                                       _r: 0,
-                                      r_: 100,
+                                      r_: 10000,
                                     },
                                   })
                                   }}>
@@ -1212,7 +1212,8 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Floor Price</span>
-                      <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                      <span className="mt-2 text-base font-bold sm:text-xl">
+                        
                         {collectionData && chainIcon[collectionData?.chainId]}{collectionData?.floorPrice}
                       </span>
                     </div>
@@ -1225,42 +1226,57 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       } flex text-center flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Volume Traded</span>
-                      <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
+                      <span className="mt-2 break-all text-base font-bold sm:text-xl">
                         ${!isNaN(collectionData?.volumeTraded) ? millify(collectionData?.volumeTraded) : 0}
                       </span>
                     </div>
                     
-                    <div
+                    {collectionData?.type == 'drop' ? (
+                      <>
+                        <div
+                          className={`${
+                            dark
+                              ? ' border border-sky-400/20'
+                              : ' border border-neutral-50'
+                          } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                          <span className="text-sm text-center">Total NFTs</span>
+                          <span className="mt-2 text-base font-bold sm:text-xl">
+                            {totalCirculatingSupply ? totalCirculatingSupply : <IconLoading dark="inbutton"/>}
+                          </span>
+                        </div>
+                        <div
+                          className={`${
+                            dark
+                              ? ' border border-sky-400/20'
+                              : ' border border-neutral-50'
+                          } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                          <span className="text-sm text-center">Unclaimed NFTs</span>
+                          <span className="mt-2 text-base font-bold sm:text-xl">
+                            {totalUnclaimedSupply ? totalUnclaimedSupply : <IconLoading dark="inbutton" />}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div
                       className={`${
                         dark
                           ? ' border border-sky-400/20'
                           : ' border border-neutral-50'
-                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                    >
-                      <span className="text-sm text-center">Total NFTs</span>
-                      <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                        {totalCirculatingSupply}
+                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                      <span className="text-sm">Total NFTs</span>
+                      <span className="mt-2 text-base font-bold sm:text-xl">
+                        {nfts?.length}
                       </span>
                     </div>
-                    <div
-                      className={`${
-                        dark
-                          ? ' border border-sky-400/20'
-                          : ' border border-neutral-50'
-                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                    >
-                      <span className="text-sm text-center">Unclaimed NFTs</span>
-                      <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
-                        {totalUnclaimedSupply}
-                      </span>
-                    </div>
+                    )}
+
                     <div className={`${
                             dark
                             ? ' border border-sky-400/20'
                             : ' border border-neutral-50'
                           } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-6 outline-none ring-0 focus:ring-0 focus:outline-none`}>
                             <span className="text-sm block">Owners</span>
-                            <p className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                            <p className="mt-2 text-base font-bold sm:text-xl">
                               {nftHolders.length}
                             </p>
                             <Popover className={`absolute bottom-2  text-xs py-0.5 px-2 z-50 rounded-2xl shadow-md outline-none ring-0 focus:ring-0 focus:outline-0`}>
@@ -1314,7 +1330,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                       >
                       <span className="text-sm">Owners</span>
-                      <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                      <span className="mt-4 text-base font-bold sm:text-xl">
                         {ownersStatus == 'success' && ownersData.length}
                       </span>
                     </div> */}

@@ -415,7 +415,7 @@ const User = () => {
                   >
                     Collections
                   </span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-2 text-base font-bold sm:text-xl">
                     {Boolean(outsideCollection?.total) ? outsideCollection?.total : 0}
                   </span>
                 </div>
@@ -440,7 +440,7 @@ const User = () => {
                   >
                     Nfts
                   </span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-2 text-base font-bold sm:text-xl">
                     {Boolean(mynfts?.total) ? mynfts?.total : 0}
                   </span>
                 </div>
@@ -465,7 +465,7 @@ const User = () => {
                   >
                     Followers
                   </span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-2 text-base font-bold sm:text-xl">
                     {followerCount ? followerCount : 0}
                   </span>
                 </div>
@@ -490,7 +490,7 @@ const User = () => {
                   >
                     Volume Traded
                   </span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-2 text-base font-bold sm:text-xl">
                     ${userData?.volumeTraded
                       ? millify(userData?.volumeTraded)
                       : 0}

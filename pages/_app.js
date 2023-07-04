@@ -10,7 +10,7 @@ import { SearchProvider } from '../contexts/SearchContext'
 import { AdminUserProvider } from '../contexts/AdminContext'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
-import { ThirdwebProvider, ChainId, metamaskWallet, coinbaseWallet, walletConnect, safeWallet } from '@thirdweb-dev/react'
+import { ThirdwebProvider, ChainId, metamaskWallet, coinbaseWallet, walletConnect, safeWallet, magicLink } from '@thirdweb-dev/react'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
 
@@ -40,6 +40,10 @@ function MyApp({ Component, pageProps }) {
           coinbaseWallet(),
           walletConnect(),
           safeWallet(),
+          magicLink({
+            apiKey: process.env.NEXT_PUBLIC_MAGIC_CONNECT_API_KEY,
+            type: 'connect',
+          }),
         ]}
         dAppMeta={{
           name: 'Nuva NFT',
