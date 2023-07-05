@@ -1,13 +1,13 @@
 import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useThemeContext } from '../contexts/ThemeContext'
+import neon from '../pages/rewarding-renditions/assets/images/neon.png'
+import artifacts from '../pages/rewarding-renditions/assets/images/artifacts.png'
 import bannerbg from '../pages/rewarding-renditions/assets/images/banner-bg.webp'
 import fierymonkey from '../pages/rewarding-renditions/assets/images/fierymonkey.png'
 import rockycelestial from '../pages/rewarding-renditions/assets/images/rockycelestial.png'
-import artifacts from '../pages/rewarding-renditions/assets/images/artifacts.png'
-import neon from '../pages/rewarding-renditions/assets/images/neon.png'
-import Image from 'next/image'
-import { useThemeContext } from '../contexts/ThemeContext'
 import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5 } from 'react-icons/tb'
-import Link from 'next/link'
 
 const RewardingRendition = () => {
     const { dark } = useThemeContext();
@@ -35,7 +35,7 @@ const RewardingRendition = () => {
         nftCount : 'text-xs text-left rounded-md bg-white w-fit py-1 px-2 mt-2',
         unilevelInfo: 'text-left mt-2 text-sm flex gap-2 items-center',
         buyButton: 'rounded-lg p-2 px-3 text-sm font-bold mt-4 animate-pulse',
-        readMore: 'rounded-lg gradBlue p-2 px-4 font-bold',
+        readMore: 'rounded-full gradBlue py-4 px-8 font-bold',
       }
 
   return (
@@ -142,7 +142,7 @@ const RewardingRendition = () => {
 
             <div className="flex justify-center mt-[3rem] z-100">
                 <Link href="/rewarding-renditions">
-                    <button className={style.readMore}>More on Rewarding Renditions</button>
+                    <button className={style.readMore}>Learn about Rewarding Renditions</button>
                 </Link>
             </div>
 

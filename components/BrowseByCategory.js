@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Link from 'next/link'
-import { Rerousel } from 'rerousel';
-import { config } from '../lib/sanityClient'
+import 'keen-slider/keen-slider.min.css'
+import { useKeenSlider } from 'keen-slider/react'
 import {sortCategory} from '../utils/utilities';
 import { getImagefromWeb3 } from '../fetchers/s3'
 import React, { useEffect, useRef, useState } from 'react'
@@ -18,14 +18,39 @@ const style = {
     'bg-white p-[30px] rounded-xl flex justify-center flex-col items-center',
   contentTitle: 'text-lg font-bold mb-2',
   contentDescription: 'text-md px-[25px]',
-  collectionCard: 'm-[20px]  hover:opacity-90',
+  collectionCard: 'hover:opacity-90 rounded-2xl overflow-hidden',
   collectionCardName: 'font-bold cursor-pointer p-4 pl-0 flex gap-3',
   imageContainer: 'h-[160px] w-[215px] rounded-3xl overflow-hidden relative',
   controls: 'flex gap-4 text-slate-500 cursor-pointer transition',
 }
 
 const BrowseByCategory = () => {
-  const sliderRef = useRef(null);
+  const animation = { duration: 15000, easing: (t) => t }
+  const [sliderRef, instanceRef] = useKeenSlider({
+    loop: true,
+    renderMode: "performance",
+    breakpoints: {
+      "(min-width: 300px)": {
+        slides: { perView: 1, spacing: 20 },
+      },
+      "(min-width: 768px)": {
+        slides: { perView: 3, spacing: 20 },
+      },
+      "(min-width: 1000px)": {
+        slides: { perView: 5, spacing: 20 },
+      },
+    },
+    created(s) {
+      s.moveToIdx(5, true, animation)
+    },
+    updated(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation)
+    },
+    animationEnded(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation)
+    },
+    mode: 'free-snap',
+  });
   const [categoryData, setCategoryData] = useState([]);
   const { dark } = useThemeContext();
   const { HOST } = useSettingsContext();
@@ -60,20 +85,17 @@ const BrowseByCategory = () => {
             Browse <span className="textGradBlue">Collections</span> by Category
           </span>
         </h2>
-        <div ref={sliderRef}>
           {categoryData.length > 0 && (
-            <Rerousel className="browsebycategory" itemRef={sliderRef}>
+            <div ref={sliderRef} className="keen-slider">
               {categoryData.map((category, id) => (
 
-                <div key={id} className="relative">
+                <div className="keen-slider__slide">
                   <Link href={`/browse/?c=${category?.name}`}>
                     <div className={style.collectionCard}>
-                      <div className={style.imageContainer}>
                         <img
                           src={getImagefromWeb3(category.profileImage)}
-                          className="h-[160px] w-[100%] cursor-pointer object-cover transition hover:scale-125"
+                          className="m-0 rounded-2xl h-[160px] w-[300px] md:w-[220px] cursor-pointer object-cover transition"
                         />
-                      </div>
                       <div className={style.collectionCardName}>
                         <div className={`h-[40px] w-[40px] rounded-full ${randomCircle[id]}`}></div>
                         <div>
@@ -89,9 +111,8 @@ const BrowseByCategory = () => {
                   </Link>
                 </div>
               ))}
-            </Rerousel>
+            </div>
           )}
-        </div>
       </div>
     </div>
   )

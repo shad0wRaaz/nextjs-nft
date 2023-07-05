@@ -1,15 +1,13 @@
-import Slider from 'react-slick'
+
 import NoSSR from 'react-no-ssr';
 import SaveAlias from './SaveAlias'
 import Tilt from 'react-parallax-tilt'
 import { useRouter } from 'next/router'
-import "slick-carousel/slick/slick.css";
 import { useQuery } from 'react-query';
 import FeaturedItems from './FeaturedItems'
 import { RiCloseFill } from 'react-icons/ri';
 import { config } from '../lib/sanityClient';
 import { useEffect, useState } from 'react';
-import "slick-carousel/slick/slick-theme.css";
 import {CountdownTimer} from './CountdownTimer';
 import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -148,12 +146,12 @@ const HeroCarousel = (props) => {
                   transitionSpeed={1500}
                   className="parallax-effect justify-center items-center rounded-2xl p-2 md:left-0 sm:left-[2rem] cursor-pointer">
                     <div className="inner-element featured relative w-full lg:w-[50vh] transition ">
-                      <Slider {...settings}>
+                      {/* <Slider {...settings}>
                           {featuredListedNFTs?.map((nft, index) => (
                               <FeaturedItems item={nft} id={index} key={index} allFeatured={props.featuredNfts}/>
                               ))
                           }
-                      </Slider>
+                      </Slider> */}
                     </div>
                   </Tilt>
 

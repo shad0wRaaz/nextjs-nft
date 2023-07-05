@@ -1,7 +1,8 @@
 import React from 'react'
-import Slider from 'react-slick'
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import Image from 'next/image';
+
+import 'keen-slider/keen-slider.min.css'
+import { useKeenSlider } from 'keen-slider/react'
 import creature1  from '../assets/cryptocreatures/1.png'
 import creature2  from '../assets/cryptocreatures/2.png'
 import creature3  from '../assets/cryptocreatures/3.png'
@@ -21,7 +22,6 @@ import neon7  from '../assets/neondreams/7.png'
 import neon8  from '../assets/neondreams/8.png'
 
 
-import Image from 'next/image';
 import celestial1  from '../assets/celestialbeings/1.png'
 import celestial2  from '../assets/celestialbeings/2.png'
 import celestial3  from '../assets/celestialbeings/3.png'
@@ -44,31 +44,110 @@ import artifacts8  from '../assets/artifacts/8.png'
 import Link from 'next/link';
 
 const Gallery = ({ setShowMenu }) => {
-    const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
-    const settings = {
-        dots: false,
-        infinite: true,
-        fade: false,
-        speed: 1000,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: false,
-        arrows: false,
-      };
-    const settings2 = {
-        dots: false,
-        infinite: true,
-        fade: false,
-        speed: 1000,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3127,
-        pauseOnHover: false,
-        arrows: false,
-      };
+    const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000';
+    const animation = { duration: 30000, easing: (t) => t }
+    const [cryptoSliderRef, instanceRef_crypto] = useKeenSlider({
+        loop: true,
+        renderMode: "performance",
+        breakpoints: {
+          "(min-width: 300px)": {
+            slides: { perView: 1, spacing: 10 },
+          },
+          "(min-width: 768px)": {
+            slides: { perView: 3, spacing: 10 },
+          },
+          "(min-width: 1000px)": {
+            slides: { perView: 6, spacing: 10 },
+          },
+        },
+        created(s) {
+          s.moveToIdx(5, true, animation)
+        },
+        updated(s) {
+          s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        animationEnded(s) {
+          s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        mode: 'free-snap',
+      });
+      const [neonSliderRef, instanceRef_neon] = useKeenSlider({
+        loop: true,
+        rtl: true,
+        renderMode: "performance",
+        breakpoints: {
+          "(min-width: 300px)": {
+            slides: { perView: 1, spacing: 10 },
+          },
+          "(min-width: 768px)": {
+            slides: { perView: 3, spacing: 10 },
+          },
+          "(min-width: 1000px)": {
+            slides: { perView: 6, spacing: 10 },
+          },
+        },
+        created(s) {
+          s.moveToIdx(5, true, animation)
+        },
+        updated(s) {
+          s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        animationEnded(s) {
+          s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        mode: 'free-snap',
+      });
+    const [celestialSliderRef, instanceRef_celestial] = useKeenSlider({
+        loop: true,
+        renderMode: "performance",
+        breakpoints: {
+        "(min-width: 300px)": {
+            slides: { perView: 1, spacing: 10 },
+        },
+        "(min-width: 768px)": {
+            slides: { perView: 3, spacing: 10 },
+        },
+        "(min-width: 1000px)": {
+            slides: { perView: 6, spacing: 10 },
+        },
+        },
+        created(s) {
+        s.moveToIdx(5, true, animation)
+        },
+        updated(s) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        animationEnded(s) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        mode: 'free-snap',
+    });
+    const [artifactsSliderRef, instanceRef_artifacts] = useKeenSlider({
+        loop: true,
+        rtl: true,
+        renderMode: "performance",
+        breakpoints: {
+        "(min-width: 300px)": {
+            slides: { perView: 1, spacing: 10 },
+        },
+        "(min-width: 768px)": {
+            slides: { perView: 3, spacing: 10 },
+        },
+        "(min-width: 1000px)": {
+            slides: { perView: 6, spacing: 10 },
+        },
+        },
+        created(s) {
+        s.moveToIdx(5, true, animation)
+        },
+        updated(s) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        animationEnded(s) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation)
+        },
+        mode: 'free-snap',
+    });
   return (
     <section 
         onClick={() => setShowMenu(false)}
@@ -85,232 +164,117 @@ const Gallery = ({ setShowMenu }) => {
 		    <div className="collection__wrapper mt-10">
 			    <div className="collection__thumb">
                     <div className="">
-                        <Slider {...settings}>
-                                <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
+                        <div ref={cryptoSliderRef} className="keen-slider">
+                                <div className="keen-slider__slide3" data-swiper-slide-index="0">
                                     <Image src={creature1}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature2}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature3}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature4}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature5}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature6}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature7}  alt="Crypto Creature"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={creature8}  alt="Crypto Creature"/>
                                 </div>
-                                {/* <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="0">
-                                    <Image src={creature1}  alt="Crypto Creature"/>
-                                </div> */}
-                                
-                        </Slider>
+                        </div>
                     </div>
-                    <div className="-mt-2">
-                        <Slider {...settings2}>
-                            <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
+                    <div className="mt-2">
+                        <div ref={neonSliderRef} className="keen-slider">
+                            <div className="keen-slider__slide3" data-swiper-slide-index="0">
                                 <Image src={neon1}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon2}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon3}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon4}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon5}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon6}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon7}  alt="Neon Dreams"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={neon8}  alt="Neon Dreams"/>
                             </div>
-                        </Slider>
+                        </div>
                     </div>
-                    <div className="">
-                        <Slider {...settings}>
-                                <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
+                    <div className="mt-2">
+                        <div ref={celestialSliderRef} className="keen-slider">
+                                <div className="keen-slider__slide3" data-swiper-slide-index="0">
                                     <Image src={celestial1}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial2}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial3}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial4}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial5}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial6}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial7}  alt="Celestial Beings"/>
                                 </div>
-                                <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                                <div className="keen-slider__slide" data-swiper-slide-index="0">
                                     <Image src={celestial8}  alt="Celestial Beings"/>
                                 </div>
-                                {/* <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="0">
-                                    <Image src={creature1}  alt="Crypto Creature"/>
-                                </div> */}
-                                
-                        </Slider>
+                        </div>
                     </div>
-                    <div className="-mt-2">
-                        <Slider {...settings2}>
-                            <div className="swiper-slide swiper-slide-duplicate rounded-md p-3" data-swiper-slide-index="0">
+                    <div className="mt-2">
+                        <div ref={artifactsSliderRef} className="keen-slider">
+                            <div className="keen-slider__slide3" data-swiper-slide-index="0">
                                 <Image src={artifacts1}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts2}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts3}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts4}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts5}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts6}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts7}  alt="Artifacts of the Future"/>
                             </div>
-                            <div className="swiper-slide swiper-slide-duplicate p-3" data-swiper-slide-index="0">
+                            <div className="keen-slider__slide" data-swiper-slide-index="0">
                                 <Image src={artifacts8}  alt="Artifacts of the Future"/>
                             </div>
-                        </Slider>
-                    </div>
-				    {/* <div className="swiper collection__thumb-slider-1 mb-3">
-					<div className="swiper swiper-initialized swiper-horizontal swiper-pointer-events">
-						<div className="swiper-wrapper">
-						</div>
                         </div>
                     </div>
-                    <div className="swiper collection__thumb-slider-2">
-                        <div className="swiper swiper-initialized swiper-horizontal swiper-pointer-events">
-                            <div className="swiper-wrapper">
-                                <div className="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-next" data-swiper-slide-index="0">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/07.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="1">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/08.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="2">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/09.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="3">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/10.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate swiper-slide-prev" data-swiper-slide-index="4">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/11.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate swiper-slide-active" data-swiper-slide-index="5">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/12.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-next" data-swiper-slide-index="0">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/07.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide" data-swiper-slide-index="1">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/08.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide" data-swiper-slide-index="2">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/09.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide" data-swiper-slide-index="3">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/10.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate-prev" data-swiper-slide-index="4">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/11.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate-active" data-swiper-slide-index="5">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/12.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-next" data-swiper-slide-index="0">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/07.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="1">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/08.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="2">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/09.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="3">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/10.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="4">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/11.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                                <div className="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="5">
-                                    <div className="collection__thumb-item">
-                                        <img src="http://bored.labartisan.net/assets/images/collection/12.jpg" alt="Crypto Creature" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-                    {/* <div className="text-center mt-[3rem]">
-                        <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
-                            <a className="default-btn">View On Nuva NFT</a>
-                        </Link>
-                    </div> */}
                 </div>
             </div>
         </div>

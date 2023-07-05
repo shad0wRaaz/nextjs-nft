@@ -1,5 +1,5 @@
 
-import { Rerousel } from 'rerousel';
+
 import VideoNFTCard from './VideoNFTCard'
 import React, {useState, useEffect, useRef} from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -37,13 +37,13 @@ const PopularVideoNFTs = () => {
               <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl">Click play and enjoy Video NFTs </span>
           </div>
       </div>
-      <div className="sliderContainer" ref={sliderRef}>
+      {/* <div className="sliderContainer" ref={sliderRef}>
         {topVideoItems.length > 0 && (
             <Rerousel itemRef={sliderRef}>
               {topVideoItems?.map((nft, index) => <VideoNFTCard key={index} nft={nft} />)}
             </Rerousel>
         )}
-      </div>
+      </div> */}
     </div>
   )
 }
