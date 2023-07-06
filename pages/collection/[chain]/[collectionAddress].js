@@ -1429,7 +1429,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         {showAirdrop && hasReferralSetting && Boolean(collectionData) && (
           <div className="fixed top-0 flex items-center justify-center p-4 md:p-10 left-0 right-0 bottom-0 bg-opacity-60 bg-black z-20">
             <div className={`${dark ? 'bg-slate-800' : 'bg-white'} p-4 md:p-10 md:mt-12 rounded-3xl w-[55.5rem] overflow-y-auto z-50 relative`}>
-              <AirdropSettings nftHolders={nftHolders} chain={chain} contractAddress={collectionData?.contractAddress} setShowAirdrop={setShowAirdrop} />
+              <AirdropSettings nftHolders={nftHolders} chain={chain} totalnfts={totalCirculatingSupply} totalremaining={totalUnclaimedSupply} contractAddress={collectionData?.contractAddress} setShowAirdrop={setShowAirdrop} />
             </div>
           </div>
         )}

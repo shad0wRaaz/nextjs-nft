@@ -10,12 +10,13 @@ import { useMutation } from 'react-query';
 import { IconLoading } from '../icons/CustomIcons';
 import { useAddress } from '@thirdweb-dev/react';
 import { RiCloseFill } from 'react-icons/ri';
+import millify from 'millify';
 
-const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop }) => {
+const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop, totalnfts, totalremaining }) => {
     const address = useAddress();
     const [airdropAmount, setAirdropAmount] = useState(0);
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-    const { chainIcon, blockchainIdFromName } = useSettingsContext();
+    const { chainIcon, blockchainIdFromName, currencyByChainId } = useSettingsContext();
     const [phase, setPhase] = useState();
 
 
@@ -26,7 +27,7 @@ const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop })
         smallText: 'text-sm m-2 text-slate-400 mt-0',
         button: 'accentBackground flex gap-1 justify-center items-center rounded-xl gradBlue text-center text-white cursor-pointer p-4 m-3 font-bold w-[9rem] ease-linear transition ',
         cancel: `${dark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-neutral-300 text-slate-700 hover:bg-neutral-400'}  flex gap-1 justify-center items-center rounded-xl  text-center cursor-pointer p-4 m-3 font-bold w-[9rem] ease-linear transition `,
-        phaseButton : `rounded-md cursor-pointer p-2 px-3 ${dark ? 'bg-slate-700' : 'bg-neutral-200'}`,
+        phaseButton : `rounded-md cursor-pointer p-2 px-3 transition ${dark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-neutral-200 hover:bg-neutral-300'}`,
     }
 
     const { mutate: sendBNBAirdrop, status: airdropStatus} = useMutation(
@@ -84,11 +85,11 @@ const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop })
         <div className={`grid grid-cols-3 mb-5 gap-3 text-sm md:text-md border border-dashed ${dark ? 'border-slate-700' : 'border-neutral-200'} rounded-xl py-4`}>
             <div>
                 <p className="text-center">Total NFTs</p>
-                <p className="text-xl md:text-3xl text-center font-bold">5000</p>
+                <p className="text-xl md:text-3xl text-center font-bold">{totalnfts}</p>
             </div>
             <div>
                 <p className="text-center">Total Sold</p>
-                <p className="text-xl md:text-3xl text-center font-bold">{nftHolders.length}</p>
+                <p className="text-xl md:text-3xl text-center font-bold">{parseInt(totalnfts) - parseInt(totalremaining)}</p>
             </div>
             <div>
                 <p className="text-center">Total Owners</p>
@@ -112,7 +113,7 @@ const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop })
             ))}
         </div>
         <div className={`mt-8 rounded-xl p-8 ${dark ? 'bg-slate-700/30' : 'bg-neutral-100'}`}>
-            <h2 className="text-center font-bold text-xl mb-3 mt-16 md:mt-0">Airdrop Setting</h2>
+            <h2 className="text-center font-bold text-xl mb-3 mt-0">Airdrop Setting</h2>
             <div className="flex gap-3 justify-center items-center">
                 <p className="text-center text-sm">Choose Phase: </p>
                 <div className="flex my-3 flex-wrap gap-2 items-center justify-center">
@@ -125,7 +126,7 @@ const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop })
             <form name="FormAirdrop" onSubmit={handleSendBNB}>
                 <div className="flex justify-center mt-0 flex-wrap">
                     <div className={style.formRow}>
-                        <p className={style.label}>Enter BNB to Airdrop</p>
+                        <p className={style.label}>Enter {currencyByChainId[blockchainIdFromName[chain]]} to Airdrop</p>
                         <div className="relative w-max-content">
                             <input
                                 type="number"
@@ -145,7 +146,11 @@ const AirdropSettings = ({ chain, nftHolders, contractAddress, setShowAirdrop })
 
                         </div>
                     </div>
-                    <p className="text-xs w-full text-center">*Entered BNB will be distributed among all the owners. Each owner will receive <span className="text-md font-bold">{airdropAmount / Number(nftHolders.length)}</span> {chainIcon[blockchainIdFromName[chain]]}</p>
+                    <p className="text-xs w-full text-center">
+                        *Entered {currencyByChainId[blockchainIdFromName[chain]]} will be distributed among all the owners. Each owner will receive 
+                        <span className="text-md font-bold pl-1">
+                            {millify(airdropAmount / Number(nftHolders.length), { precision: 5 })}</span> {chainIcon[blockchainIdFromName[chain]]}
+                    </p>
                     <div className="flex items-center justify-center mt-4">
                         {airdropStatus == 'loading' ? (
                             <button className={style.button + ' disabled pointer-events-none opacity-80 !w-fit'}>

@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useSettingsContext } from '../contexts/SettingsContext';
 import { updateCollectionMetaData } from '../mutators/Web3Mutators';
+import Router from 'next/router';
 
 const style = {
     formRow: 'flex flex-wrap w-full md:w-auto flex-row md:gap-3 items-center mt-3',
@@ -98,6 +99,7 @@ const EditCollection = ({collection, setShowModal}) => {
               });
               setUpdateStatus('success');
               setShowModal(false); 
+              Router.reload(window.location.pathname);
             }).catch(err => console.log(err));
 
             
@@ -123,25 +125,26 @@ const EditCollection = ({collection, setShowModal}) => {
       e.preventDefault();
       
       if (
-        Boolean(newCollectionData.external_link) && newCollectionData.external_link !== '' &&
+        Boolean(newCollectionData?.external_link) && newCollectionData?.external_link !== '' &&
         !urlPatternValidation(newCollectionData.external_link)
       ) {
         toastHandler.error('External link is not valid.', errorToastStyle);
         return
       }
-      if(!newCollectionData?.facebookHandle.startsWith('https://facebook.com/') && newCollectionData?.facebookHandle !== ''){
+      console.log(newCollectionData?.facebookHandle )
+      if(!newCollectionData?.facebookHandle?.startsWith('https://facebook.com/') && newCollectionData?.facebookHandle !== '' && newCollectionData?.facebookHandle != undefined){
         toastHandler.error('Invalid Facebook link', errorToastStyle);
         return;
       }
-      if(!newCollectionData?.twitterHandle.startsWith('https://twitter.com/') && newCollectionData?.twitterHandle !== ''){
+      if(!newCollectionData?.twitterHandle?.startsWith('https://twitter.com/') && newCollectionData?.twitterHandle !== '' && newCollectionData?.twitterHandle != undefined){
         toastHandler.error('Invalid Twitter link', errorToastStyle);
         return;
       }
-      if(!newCollectionData?.instagramHandle.startsWith('https://instagram.com/') && newCollectionData?.instagramHandle !== ''){
+      if(!newCollectionData?.instagramHandle?.startsWith('https://instagram.com/') && newCollectionData?.instagramHandle !== '' && newCollectionData?.instagramHandle != undefined){
         toastHandler.error('Invalid Instagram link', errorToastStyle);
         return;
       }
-      if(!newCollectionData?.discordHandle.startsWith('https://discord.com/') && newCollectionData?.discordHandle !== ''){
+      if(!newCollectionData?.discordHandle?.startsWith('https://discord.com/') && newCollectionData?.discordHandle !== '' && newCollectionData?.discordHandle != undefined){
         toastHandler.error('Invalid Discord link', errorToastStyle);
         return;
       }
