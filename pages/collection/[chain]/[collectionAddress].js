@@ -252,7 +252,9 @@ const { mutate: changeBoughtNFTs } = useMutation(
   ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
   {
     onError: (err) => { console.log(err); },
-    onSuccess: (res) => { console.log(res)}
+    onSuccess: (res) => { 
+      // console.log(res)
+    }
   }
 )
 
@@ -267,7 +269,6 @@ const payToMySponsors = async() => {
 
  let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
  if(Boolean(network?.sponsor)){
-   console.log(network.sponsor)
    network = {
      ...network,
      sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
@@ -360,7 +361,6 @@ const payToMySponsors = async() => {
    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
      let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
      let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
-     console.log(sponsor_L5_rate)
      sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
    }
 
