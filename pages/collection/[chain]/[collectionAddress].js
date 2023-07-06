@@ -2,24 +2,22 @@ import axios from 'axios'
 import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
+import { ethers } from 'ethers'
 import NoSSR from 'react-no-ssr'
 import toast from 'react-hot-toast'
 import { v4 as uuidv4 } from 'uuid'
 import Countdown from 'react-countdown'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import SEO from '../../../components/SEO'
 import { WalletCards } from 'lucide-react';
 import { Fragment, useEffect } from 'react'
 import { FiSettings } from 'react-icons/fi'
-import SEO from '../../../components/SEO'
 import { RiCloseFill } from 'react-icons/ri'
-import { HiChevronRight } from 'react-icons/hi'
-import Loader from '../../../components/Loader'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import { BiGlobe, BiImport } from 'react-icons/bi'
 import { useQuery, useMutation } from 'react-query'
-import NFTCard from '../../../components/NFTCard'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
@@ -32,23 +30,22 @@ import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
 import { useThemeContext } from '../../../contexts/ThemeContext'
 import NFTCardExternal from '../../../components/NFTCardExternal'
+import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa'
 import { BsChevronDown, BsGrid, BsGrid3X3Gap } from 'react-icons/bs'
-import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
+import { getMyPayingNetwork } from '../../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
+import { MdAdd, MdBlock, MdClose, MdOutlineClose } from 'react-icons/md'
 import CollectionReferral from '../../../components/CollectionReferral'
+import { useMarketplaceContext } from '../../../contexts/MarketPlaceContext'
 import { Menu, Transition, Switch, Dialog, Popover } from '@headlessui/react'
 import AirdropSettings from '../../../components/collection/AirdropSettings'
 import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
-import { changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { createAwatar, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { ConnectWallet, ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
-import { ethers } from 'ethers'
-import { getMyPayingNetwork } from '../../../fetchers/SanityFetchers'
-import { useMarketplaceContext } from '../../../contexts/MarketPlaceContext'
-import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa'
 
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
@@ -116,14 +113,8 @@ const CollectionDetails = (props) => {
   const [isMinting, setIsMinting] = useState(false);
   const [mintPrice, setMintPrice] = useState();
   // const [gasEstimate, setGasEstimate] = useState();
-  // const [coinMultiplier, setCoinMultiplier] = useState(0);
+  const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
-  // const companyWallets = [
-  //   String(process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS).toLowerCase(),
-  //   String(process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS).toLowerCase(),
-  //   String(process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS).toLowerCase(),
-  //   String(process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS).toLowerCase(),
-  // ];
 
   const rewardingCollections = [
     String('0x9809AbFc4319271259a340775eC03E9746B76068').toLowerCase(),
@@ -171,7 +162,16 @@ const CollectionDetails = (props) => {
     previewImage : 'previewImage relative mb-[10px] flex justify-center items-center text-center overflow-hidden rounded-lg border-dashed border border-slate-400',
   }
 
-console.log(collectionData)
+  const { mutate: addVolume } = useMutation(
+    ({ id, volume }) =>
+      addVolumeTraded({ id, volume }),
+    {
+      onError: () => {
+        toast.error('Error in adding Volume Traded.', errorToastStyle)
+      },
+    }
+  );
+
   useEffect(() => {
     //if unsupported chain, redirect to homepage
     const supportedChains = ["mumbai", "polygon", "mainnet", "goerli", "binance", "binance-testnet", "avalanche", "avalanche-fuji"]
@@ -228,24 +228,24 @@ console.log(collectionData)
 
   // }, [address]);
 
-// useEffect(() => {
-//   if(!Boolean(coinPrices)) return;
+useEffect(() => {
+  if(!Boolean(coinPrices)) return;
 
-//     if (chain == "polygon" || chain == "mumbai") {
-//       setCoinMultiplier(coinPrices?.maticprice);
-//     } else if (chain == "mainnet" || chain == "goerli") {
-//       setCoinMultiplier(coinPrices?.ethprice);
-//     } else if (chain == "avalanche" || chain == "avalanche-fuji") {
-//       setCoinMultiplier(coinPrices?.avaxprice);
-//     } else if (chain == "binance" || chain == "binance-testnet") {
-//       setCoinMultiplier(coinPrices?.bnbprice);
-//     }
+    if (chain == "polygon" || chain == "mumbai") {
+      setCoinMultiplier(coinPrices?.maticprice);
+    } else if (chain == "mainnet" || chain == "goerli") {
+      setCoinMultiplier(coinPrices?.ethprice);
+    } else if (chain == "avalanche" || chain == "avalanche-fuji") {
+      setCoinMultiplier(coinPrices?.avaxprice);
+    } else if (chain == "binance" || chain == "binance-testnet") {
+      setCoinMultiplier(coinPrices?.bnbprice);
+    }
 
-//     return() => {
-//       //do nothing
-//     }
+    return() => {
+      //do nothing
+    }
 
-// }, [coinPrices]);
+}, [coinPrices]);
 
 
 const { mutate: changeBoughtNFTs } = useMutation(
@@ -431,6 +431,19 @@ const claimNFT = async(toastHandler = toast) => {
           type: 'buy'
         }
         changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+        const volume2Add = parseFloat(mintPrice * coinMultiplier);
+                
+        //adding volume to Collection
+        addVolume({
+          id: collectionData?._id,
+          volume: volume2Add,
+        });
+        
+        //adding volume to the user
+        addVolume({
+          id: String(address).toLowerCase(),
+          volume: volume2Add
+        });
 
         if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())){
           await payToMySponsors();
@@ -1277,7 +1290,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     >
                       <span className="text-sm text-center">Volume Traded</span>
                       <span className="mt-2 break-all text-base font-bold md:text-xl">
-                        ${!isNaN(collectionData?.volumeTraded) ? millify(collectionData?.volumeTraded) : 0}
+                        ${!isNaN(collectionData?.volumeTraded) ? millify(collectionData?.volumeTraded, { precision: 3 }) : 0}
                       </span>
                     </div>
                     
@@ -1430,7 +1443,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   <span>Mint Price</span>
                   <span>
                     {Boolean(mintPrice) ? (
-                      <div className="flex gap-2 items-center">
+                      <div className="flex gap-2 items-center text-xl font-bold">
                         {mintPrice} {chainIcon[collectionData?.chainId]}
                       </div>
                     ) : (
@@ -1478,23 +1491,22 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   </span>
                 </div> */}
               </div>
-              <div className="flex justify-center mt-4 mb-4">
-                {Boolean(address) ? (
-                <>
-                  {isMinting ? (
-                      <button className="flex cursor-pointer w-fit text-base font-bold justify-center transition p-4 px-6 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
-                          <IconLoading dark="inbutton"/> Minting
-                      </button>
-                  ):(
-                      <button className="flex cursor-pointer w-fit text-base justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
-                      onClick={() => claimNFT()}>
-                              <WalletCards strokeWidth={1.5} /> <span className="">Mint an NFT</span>
-                      </button>
-                  )}
-                </>
-                ) : (
-                          <ConnectWallet/>
+              <div className="flex justify-center mt-4 mb-4 gap-2 flex-wrap">
+                
+                {isMinting ? (
+                    <button className="flex cursor-pointer w-fit text-base font-bold justify-center transition p-4 px-6 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
+                        <IconLoading dark="inbutton"/> Minting
+                    </button>
+                ):(
+                    <button className="flex cursor-pointer w-fit text-base justify-center transition p-4 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
+                    onClick={() => claimNFT()}>
+                            <WalletCards strokeWidth={1.5} /> <span className="">Mint an NFT</span>
+                    </button>
                 )}
+                {!Boolean(address) && (
+                  <ConnectWallet />
+                )}
+                
               </div>
               <p className="text-sm">There is no limit in number of NFTs you can mint in this collection.</p>
             </div>

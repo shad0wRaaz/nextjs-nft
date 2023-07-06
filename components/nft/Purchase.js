@@ -696,7 +696,7 @@ const MakeOffer = ({
           
                 //adding volume to the user
                 addVolume({
-                  id: address,
+                  id: String(address).toLowerCase(),
                   volume: volume2Add
                 });
 

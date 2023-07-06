@@ -537,7 +537,8 @@ export const addVolumeTraded = async ({
     const caseSensitiveId = documents[0]?._id;
     return await config
       .patch(caseSensitiveId)
-      .inc({ volumeTraded: volume })
+      .setIfMissing({ volumeTraded : 0 })
+      .inc({ volumeTraded: parseFloat(volume) })
       .commit();
   }
 }
