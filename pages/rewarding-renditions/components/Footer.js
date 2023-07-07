@@ -22,7 +22,7 @@ const Footer = ({ setShowMenu }) => {
                         <li className="social__item"><Link href="https://www.facebook.com/RewardRenditions" className="social__link"><a target="_blank"><img src={facebook.src} alt="twitter" style={{ height: '60px', width: '60px'}} /></a></Link></li>
                         <li className="social__item"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={instagram.src} alt="instagram"/></a></Link></li>
                         <li className="social__item"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={youtube.src} alt="youtube"/></a></Link></li>
-                        <li className="social__item"><Link href="https://www.tiktok.com/@nuvanft" className="social__link"><a target="_blank"><img src={tiktok.src} alt="tiktok"/></a></Link></li>
+                        <li className="social__item"><Link href="https://www.tiktok.com/@nuvacommunity" className="social__link"><a target="_blank"><img src={tiktok.src} alt="tiktok"/></a></Link></li>
                     </ul>
                 </div>
                 <div className="footer__copyright">

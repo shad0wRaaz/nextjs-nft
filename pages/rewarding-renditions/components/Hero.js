@@ -65,7 +65,7 @@ const Hero = ({setShowMenu}) => {
                                     </Link>
                                 </li>
                                 <li className="social__item">
-                                    <Link href="https://www.tiktok.com/@nuvanft" className="social__link cursor-pointer">
+                                    <Link href="https://www.tiktok.com/@nuvacommunity" className="social__link cursor-pointer">
                                         <a target="_blank">
                                             <img src={tiktok.src} className="cursor-pointer" alt="Social Thumb"/>
                                         </a>
