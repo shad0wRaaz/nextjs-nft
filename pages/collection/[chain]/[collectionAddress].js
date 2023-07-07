@@ -1727,13 +1727,13 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           }
         </div>
 
-        {!revealed && Boolean(collectionData) && (
+        {/* {!revealed && Boolean(collectionData) && (
           <div className="mx-auto flex justify-center">
             <NoSSR>
               <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />
             </NoSSR>
           </div>
-        )}
+        )} */}
         {isBlocked && (
           <div className="p-[4rem] text-center">
             <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>

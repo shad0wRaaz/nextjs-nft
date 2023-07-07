@@ -26,7 +26,7 @@ const CollectionByCategory = ({ categoryName }) => {
         )
       },
       onSuccess:(res) => {
-console.log(res)
+
       }
     }
   )

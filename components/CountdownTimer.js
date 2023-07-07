@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { FaAngellist } from 'react-icons/fa';
 
 export const CountdownTimer = ({ targetDate, align }) => {
+  if(!targetDate) return
   const style = { 
     button : `rounded-full p-2 px-3 text-sm text-center cursor-pointer hover:ring-0 transition hover:ring-white/40 hover:shadow-md outline-0 hover:scale-105`
   }

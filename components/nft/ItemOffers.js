@@ -49,7 +49,7 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
     //   process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
     // ];
 
-console.log('imhere', isAuctionItem)
+
     if(listingData.type == 1) {
       //get winning bid and send to offer array
       ;(async() => {

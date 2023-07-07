@@ -89,7 +89,7 @@ const BrowseByCategory = () => {
             <div ref={sliderRef} className="keen-slider">
               {categoryData.map((category, id) => (
 
-                <div className="keen-slider__slide">
+                <div className="keen-slider__slide" key={id}>
                   <Link href={`/browse/?c=${category?.name}`}>
                     <div className={style.collectionCard}>
                         <img
