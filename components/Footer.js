@@ -158,7 +158,7 @@ const Footer = () => {
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.tiktok.com/@nuvanft">
+              <Link href="https://www.tiktok.com/@nuvacommunity">
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' tiktok'}>
                     <FaTiktok color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />

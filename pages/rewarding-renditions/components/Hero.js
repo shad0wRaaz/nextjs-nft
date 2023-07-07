@@ -30,7 +30,7 @@ const Hero = ({setShowMenu}) => {
                             <p className="font-normal leading-[2rem] md:leading-[4rem]">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Shared Royalty for Life<br/>Shared Platform Fee<br/>Starting from 30th of June, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10">
                                 <li className="social__item">
-                                    <Link href="https://discord.gg/kgm7s3hn" className="social__link cursor-pointer">
+                                    <Link href="https://discord.gg/PvuruVjgpz" className="social__link cursor-pointer">
                                         <a target="_blank">
                                             <img src={discord.src} className="cursor-pointer" alt="Social Thumb"/>
                                         </a>
