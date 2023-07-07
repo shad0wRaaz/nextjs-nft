@@ -1,4 +1,5 @@
 import axios from 'axios'
+import SEO from '../components/SEO'
 import { useRouter } from 'next/router'
 import { Tab } from '@headlessui/react'
 import Header from '../components/Header'
@@ -23,10 +24,17 @@ const style = {
 
 const browse = () => {
   const router = useRouter();
+  const { c } = router.query;
   const { dark } = useThemeContext()
   const [categoryData, setCategoryData] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const { HOST } = useSettingsContext();
+
+  useEffect(() => {
+    if(!c || !categoryData) return
+    const index = categoryData.findIndex(category => category.name == c)
+    setSelectedTab(index);
+  }, [c, categoryData]);
 
 
 
@@ -48,6 +56,7 @@ const browse = () => {
 
   return (
     <div className={`overflow-hidden ${dark && 'darkBackground'}`}>
+      <SEO title="Browse NFT Collections"/>
       <Header />
       <div
         className={
@@ -59,7 +68,7 @@ const browse = () => {
         <h2 className={style.pageTitle}>Browse NFT Collections</h2>
       </div>
       <div className={style.wrapper}>
-        <Tab.Group defaultIndex={0} onChange={setSelectedTab}>
+        <Tab.Group defaultIndex={0} selectedIndex={selectedTab} onChange={setSelectedTab} manual>
           <div className="mx-[20px] mb-[2rem] ">
             <Tab.List
               className={`mx-auto -mt-[65px] flex max-w-fit md:justify-center space-x-1 overflow-x-auto rounded-full border ${

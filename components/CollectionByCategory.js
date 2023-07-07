@@ -5,11 +5,16 @@ import { toast } from 'react-hot-toast'
 import CollectionCard from './CollectionCard'
 import { getUnsignedImagePath } from '../fetchers/s3'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useSettingsContext } from '../contexts/SettingsContext'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { getNFTCollectionsByCategory } from '../fetchers/SanityFetchers'
 
 
 const CollectionByCategory = ({ categoryName }) => {
-  const { dark, errorToastStyle } = useThemeContext()
+  const { dark, errorToastStyle } = useThemeContext();
+  const { blockchainIdFromName } = useSettingsContext();
+  const { selectedBlockchain } = useMarketplaceContext();
+
   const { data, status } = useQuery(
     ['collection', categoryName],
     getNFTCollectionsByCategory(),
@@ -20,6 +25,9 @@ const CollectionByCategory = ({ categoryName }) => {
           errorToastStyle
         )
       },
+      onSuccess:(res) => {
+console.log(res)
+      }
     }
   )
   // const { data: updatedData, status: updatedStatus } = useQuery(
@@ -61,8 +69,9 @@ const CollectionByCategory = ({ categoryName }) => {
       }`}
     >
       {status === 'success' &&
-        data.length > 0 &&
-        data.map((coll, id) => (
+        data.length > 0 && data
+        .filter(coll => coll.chainId == blockchainIdFromName[selectedBlockchain])
+        .map((coll, id) => (
           <CollectionCard
             key={id}
             id={coll._id}

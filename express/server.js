@@ -836,7 +836,7 @@ app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
       "allOwners" : owners[]->,
     }`;
     const result = await config.fetch(query);
-    redis.set("collection-by-category-" + category, JSON.stringify(result));
+    redis.set("collection-by-category-" + category, JSON.stringify(result), 'EX', 86400);
     return res.status(200).json(result);
   }else {
     return res.status(200).json(JSON.parse(getCategories));
@@ -1470,7 +1470,7 @@ app.get("/api/getcategories", async(req, res) => {
   const result = await config.fetch(query);
 
   if(result.length > 0){
-    await redis.set("categories", JSON.stringify(result)); //update every day
+    await redis.set("categories", JSON.stringify(result), 'EX', 86400); //update every day
     return res.status(200).json(result);
   }
   else {
