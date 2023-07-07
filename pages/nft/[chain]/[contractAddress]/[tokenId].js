@@ -460,7 +460,7 @@ const Nft = (props) => { //props are from getServerSideProps
                               <div key={id}>
                                 {props.propertyKey != "" ? (
                                   <div
-                                    className={`w-[130px] cursor-pointer rounded-xl border border-solid ${
+                                    className={`w-[130px] cursor-pointer rounded-xl border border-solid h-full ${
                                       dark
                                         ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
                                         : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
@@ -489,7 +489,7 @@ const Nft = (props) => { //props are from getServerSideProps
                                 {props.propertyKey != "" ? (
 
                                 <div
-                                  className={`w-[130px] rounded-xl border border-solid ${
+                                  className={`w-[130px] rounded-xl border border-solid h-full ${
                                     dark
                                       ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
                                       : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
@@ -665,7 +665,7 @@ const Nft = (props) => { //props are from getServerSideProps
                             <div key={id}>
                               {props.propertyKey != "" ? (
                                 <div
-                                  className={`w-[130px] cursor-pointer rounded-xl border border-solid ${
+                                  className={`w-[130px] cursor-pointer rounded-xl border border-solid h-full ${
                                     dark
                                       ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
                                       : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
@@ -694,7 +694,7 @@ const Nft = (props) => { //props are from getServerSideProps
                               {props.propertyKey != "" ? (
 
                               <div
-                                className={`w-[130px] rounded-xl border border-solid ${
+                                className={`w-[130px] rounded-xl border border-solid h-full ${
                                   dark
                                     ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
                                     : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
