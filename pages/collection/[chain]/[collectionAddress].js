@@ -22,9 +22,9 @@ import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
 import { CgFacebook, CgSandClock } from 'react-icons/cg'
-import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
-import { useInfiniteQuery, useQueryClient } from 'react-query'
 import noBannerImage from '../../../assets/noBannerImage.png'
+import { useInfiniteQuery, useQueryClient } from 'react-query'
+import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
 import { useUserContext } from '../../../contexts/UserContext'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
@@ -152,7 +152,7 @@ const CollectionDetails = (props) => {
     ethLogo: `h-6 mr-2`,
     statName: `text-sm w-full text-center mt-1`,
     description: `text-white text-md w-max-1/4 flex-wrap my-2`,
-    nftWrapperContainer: `container mx-auto lg:p-[8rem] lg:pt-[8rem] lg:pb-0 p-[2rem]`,
+    nftWrapperContainer: `container mx-auto p-[2rem] lg:p-[8rem] lg:pt-0 lg:mt-12`,
     nftwrapper:
     `grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${compact ? 'grid-cols-6' : 'xl:grid-cols-4'} place-items-center relative`,
     nftwrapper_old: `flex flex-wrap justify-center mb-[4rem] gap-[40px] sm:p-[2rem] md:p-[4rem] pt-[6rem] nftWrapper`,
@@ -930,7 +930,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
         {!isBlocked && Boolean(collectionData) && (
           <div className="w-full">
-            <div className="relative h-96 w-full md:h-60 2xl:h-96">
+            <div className="relative h-96 w-full md:h-60 lg:h-[45rem]">
               <div className="absolute inset-0" ref={bannerRef}>
                 <img
                   src={
@@ -942,10 +942,10 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
               </div>
             </div>
 
-            <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+            <div className="container relative mx-auto -mt-14 lg:-mt-[31rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
               <div
                 className={`flex flex-col rounded-3xl ${
-                  dark ? 'darkGray/30' : 'bg-white/30'
+                  dark ? 'bg-slate-900/80' : 'bg-white/30'
                 } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
@@ -1031,39 +1031,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         )}
                       </div>
                     </div>
-
-                  {Boolean(collectionData?.creator?.walletAddress) && (
-                    <div className={`${dark ? 'border-sky-700/30' : 'border-neutral-200'} pr-8 mt-4 mb:mb-0 lg:mb-4`}>
-                      <a href={`/user/${collectionData?.creator?.walletAddress}`}>
-                        <div className="flex my-4">
-                          <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
-                          {Boolean(collectionData?.creator?.web3imageprofile) ? (
-                              <img 
-                                src={getImagefromWeb3(collectionData?.creator?.web3imageprofile)} 
-                                className="absolute inset-0 h-full w-full rounded-full object-cover" 
-                                alt={collectionData?.creator?.name}/>    
-                          ): (
-                              <img src="https://api.dicebear.com/6.x/bottts/svg?seed=Charlie" alt="Avatar"/>
-                          )}
-                          </div>
-
-                          <span className="ml-2.5 w-max flex cursor-pointer flex-col">
-                            <span className="text-sm">Creator</span>
-                            
-                            <span className="flex items-center font-medium">
-                            {collectionData?.creator.userName == "Unnamed" ? (
-                              <span>{collectionData?.creator.walletAddress?.slice(0,5)}...{collectionData?.creator.walletAddress?.slice(-5)}</span>
-                            ) : (
-                              <span>{collectionData?.creator.userName}</span>
-                            )}
-                              {collectionData?.creator.verified ? <IconVerified/> : '' }
-                            </span>
-                          </span>
-                        </div>
-                      </a>
-                    </div>
-                  )}
-
                   </div>
 
                   
@@ -1076,34 +1043,86 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         <div className="flex-grow">
                           <div className="flex justify-between">
                             <div>
-                              
                               <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-start">
                                 {!collectionData && 'Unknown NFT Collection'}
                                 {collectionData && collectionData?.name}
                               </h2>
-                              {Boolean(collectionData?.category) &&(
-                                <span 
-                                  className="relative flex items-center gap-1 w-fit my-1 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+
+                              <div>
+                                <a href={`${chainExplorer[Number(collectionData.chainId)]}address/${collectionData?.contractAddress}`} target="_blank" className="hover:text-sky-600 transition">
+                                  <span className="mt-2 inline-block text-sm break-all">
+                                    {collectionData?.contractAddress}
+                                  </span>
+                                </a>
+                                <span
+                                  className="relative top-1 inline-block cursor-pointer pl-2"
                                   onClick={() => {
-                                  router.push({
-                                    pathname: '/search',
-                                    query: {
-                                      c: collectionData.category,
-                                      n: '',
-                                      i: 'true',
-                                      v: 'true',
-                                      a: 'true',
-                                      d: 'true',
-                                      ac: 'true',
-                                      h: 'true',
-                                      _r: 0,
-                                      r_: 10000,
-                                    },
-                                  })
-                                  }}>
-                                    <TbStack2/> {collectionData?.category}
+                                    navigator.clipboard.writeText(collectionData?.contractAddress)
+                                    toast.success('NFT Collection\'s Contract Address copied !', successToastStyle);
+                                  }}
+                                >
+                                  <IconCopy />
                                 </span>
-                              )}
+                              </div>
+                              
+                              <div className="flex gap-6 items-center justify-between w-full">
+                                <div>
+                                  {Boolean(collectionData?.category) &&(
+                                    <span 
+                                      className="relative flex items-center gap-1 w-fit my-1 rounded-full bg-green-100 cursor-pointer border-green-200 border px-4 py-1 text-xs font-medium text-green-800"
+                                      onClick={() => {
+                                      router.push({
+                                        pathname: '/search',
+                                        query: {
+                                          c: collectionData.category,
+                                          n: '',
+                                          i: 'true',
+                                          v: 'true',
+                                          a: 'true',
+                                          d: 'true',
+                                          ac: 'true',
+                                          h: 'true',
+                                          _r: 0,
+                                          r_: 10000,
+                                        },
+                                      })
+                                      }}>
+                                        <TbStack2/> {collectionData?.category}
+                                    </span>
+                                  )}
+                                </div>
+                                {Boolean(collectionData?.creator?.walletAddress) && (
+                                  <div className={`${dark ? 'border-sky-700/30' : 'border-neutral-200'}`}>
+                                    <a href={`/user/${collectionData?.creator?.walletAddress}`}>
+                                      <div className="flex mt-3">
+                                        <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
+                                        {Boolean(collectionData?.creator?.web3imageprofile) ? (
+                                            <img 
+                                              src={getImagefromWeb3(collectionData?.creator?.web3imageprofile)} 
+                                              className="absolute inset-0 h-full w-full rounded-full object-cover" 
+                                              alt={collectionData?.creator?.name}/>    
+                                        ): (
+                                            <img src="https://api.dicebear.com/6.x/bottts/svg?seed=Charlie" alt="Avatar"/>
+                                        )}
+                                        </div>
+
+                                        <span className="ml-2.5 w-max flex cursor-pointer flex-col">
+                                          <span className="text-sm">Creator</span>
+                                          
+                                          <span className="flex items-center font-medium">
+                                          {collectionData?.creator.userName == "Unnamed" ? (
+                                            <span>{collectionData?.creator.walletAddress?.slice(0,5)}...{collectionData?.creator.walletAddress?.slice(-5)}</span>
+                                          ) : (
+                                            <span>{collectionData?.creator.userName}</span>
+                                          )}
+                                            {collectionData?.creator.verified ? <IconVerified/> : '' }
+                                          </span>
+                                        </span>
+                                      </div>
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             {/* this option is only available if the collection is not in database */}
@@ -1235,24 +1254,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               </div>
                             )} 
                           </div>
-                          
-                          
-                          <div>
-                            <a href={`${chainExplorer[Number(collectionData.chainId)]}address/${collectionData?.contractAddress}`} target="_blank" className="hover:text-sky-600 transition">
-                              <span className="mt-4 inline-block text-sm break-all">
-                                {collectionData?.contractAddress}
-                              </span>
-                            </a>
-                            <span
-                              className="relative top-1 inline-block cursor-pointer pl-2"
-                              onClick={() => {
-                                navigator.clipboard.writeText(collectionData?.contractAddress)
-                                toast.success('NFT Collection\'s Contract Address copied !', successToastStyle);
-                              }}
-                            >
-                              <IconCopy />
-                            </span>
-                          </div>
                         </div>
                       </div>
                       <div className="flex lg:gap-3 flex-wrap md:flex-nowrap ">
@@ -1266,12 +1267,12 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     </div>
                   </div>
 
-                  <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-5 xl:mt-8 xl:gap-6">
+                  <div className="mt-2 grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-5 lg:mt-3 xl:gap-6">
                     <div
                       className={`${
                         dark
                           ? ' border border-sky-400/20'
-                          : ' border border-neutral-50'
+                          : ' border border-neutral-50/30'
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Floor Price</span>
@@ -1285,7 +1286,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       className={`${
                         dark
                           ? ' border border-sky-400/20'
-                          : ' border border-neutral-50'
+                          : ' border border-neutral-50/30'
                       } flex text-center flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
                     >
                       <span className="text-sm text-center">Volume Traded</span>
@@ -1300,7 +1301,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                           className={`${
                             dark
                               ? ' border border-sky-400/20'
-                              : ' border border-neutral-50'
+                              : ' border border-neutral-50/30'
                           } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
                           <span className="text-sm text-center">Total NFTs</span>
                           <span className="mt-2 text-base font-bold md:text-xl">
@@ -1311,7 +1312,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                           className={`${
                             dark
                               ? ' border border-sky-400/20'
-                              : ' border border-neutral-50'
+                              : ' border border-neutral-50/30'
                           } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
                           <span className="text-sm text-center">Unclaimed NFTs</span>
                           <span className="mt-2 text-base font-bold md:text-xl">
@@ -1324,7 +1325,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       className={`${
                         dark
                           ? ' border border-sky-400/20'
-                          : ' border border-neutral-50'
+                          : ' border border-neutral-50/30'
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
                       <span className="text-sm">Total NFTs</span>
                       <span className="mt-2 text-base font-bold sm:text-xl">
@@ -1336,7 +1337,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     <div className={`${
                             dark
                             ? ' border border-sky-400/20'
-                            : ' border border-neutral-50'
+                            : ' border border-neutral-50/30'
                           } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-6 outline-none ring-0 focus:ring-0 focus:outline-none`}>
                             <span className="text-sm block">Owners</span>
                             <p className="mt-2 text-base font-bold sm:text-xl">
@@ -1434,10 +1435,10 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           </div>
         )}
         {(revealed && collectionData.type === 'drop') && (
-          <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem] text-center`}>
-            <div className={`border ${dark ? 'border-slate-800' : 'border-neutral-200'} p-4 py-8 md:p-[4rem] w-fit rounded-xl m-auto`}>
+          <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:py-8 lg:pb-0 p-[2rem] text-center`}>
+            <div className={`border ${dark ? 'border-slate-800 bg-slate-900/80' : 'border-neutral-200 bg-white/80'} p-4 py-8 md:p-[4rem] rounded-[40px] m-auto backdrop-blur-xl `}>
               <p className="text-2xl font-bold mb-2">Minting Details</p>
-              <p className="text-base lg:max-w-[800px] mb-8">Once you mint an NFT, one of the unique NFT from the unclaimed supply of NFTs will be minted into your wallet. You will be minting one NFT at a time.</p>
+              <p className="text-base m-auto lg:max-w-[800px] mb-8">Once you mint an NFT, one of the unique NFT from the unclaimed supply of NFTs will be minted into your wallet. You will be minting one NFT at a time.</p>
               <div className="w-full md:w-96 m-auto space-y-3 mt-3 mb-6">
                 <div className="flex gap-[5rem] justify-between text-left">
                   <span>Mint Price</span>
@@ -1514,217 +1515,219 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         )}
         
         <div className={style.nftWrapperContainer}>
-          {revealed && (
-            <div className="relative flex justify-center md:justify-between flex-wrap mb-8 gap-3 md:gap-2">
-              <div className="flex flex-wrap justify-center gap-2">
-                {address && (
-                  <div className={`mb-[0.125rem] block min-h-[1.5rem] pl-[2rem] border ${dark ? 'border-slate-700' : 'border-neutral-200'} rounded-md p-2`}>
-                    <input
-                      className="relative float-left -ml-[1.5rem] mr-[6px] mt-[0.15rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-primary checked:bg-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:-mt-px checked:after:ml-[0.25rem] checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-l-0 checked:after:border-t-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:-mt-px checked:focus:after:ml-[0.25rem] checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-l-0 checked:focus:after:border-t-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:border-neutral-600 dark:checked:border-primary dark:checked:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
-                      type="checkbox"
-                      value=""
-                      id="checkboxDefault" 
-                      onClick={() => setShowMine(curval => !curval)}/>
-                    <label
-                      className="inline-block pl-[0.15rem] hover:cursor-pointer text-sm"
-                      htmlFor="checkboxDefault">
-                      Show My NFTs only
-                    </label>
-                  </div>
-                  // <button
-                  //   className={`-z-1 relative flex h-auto w-auto items-center justify-center rounded-full bg-blue-700 hover:bg-blue-800 py-2.5 pl-3 pr-6 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none ring-2 ${showMine ? 'ring-2 ring-sky-600 ring-offset-2' : ''} disabled:bg-opacity-70  sm:text-xs`}
-                  //   onClick={() => setShowMine(curval => !curval)}>
-                  //   <span className="ml-2.5 block truncate">Show My NFTs only</span>
-                  // </button>
-                )}
-                <button
-                  className="-z-1 md:mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
-                  onClick={() => setShowFilter(curval => !curval)}
-                >
-                  <span className="ml-2.5 block truncate">Filter by Properties</span>
-                  <span className="absolute top-1/2 right-5 -translate-y-1/2">
-                    <BsChevronDown
-                      className={`${showFilter && 'rotate-180'} transition`}
-                    />
-                  </span>
-                </button>
+          <div className={`relative backdrop-blur-xl pt-8 px-4 rounded-[40px] ${dark ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+            {revealed && (
+              <div className="relative flex justify-center md:justify-between flex-wrap mb-8 gap-3 md:gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
+                  {address && (
+                    <div className={`mb-[0.125rem] block min-h-[1.5rem] pl-[2rem] border ${dark ? 'border-slate-700' : 'border-neutral-200'} rounded-md p-2`}>
+                      <input
+                        className="relative float-left -ml-[1.5rem] mr-[6px] mt-[0.15rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-primary checked:bg-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:-mt-px checked:after:ml-[0.25rem] checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-l-0 checked:after:border-t-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:-mt-px checked:focus:after:ml-[0.25rem] checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-l-0 checked:focus:after:border-t-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:border-neutral-600 dark:checked:border-primary dark:checked:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
+                        type="checkbox"
+                        value=""
+                        id="checkboxDefault" 
+                        onClick={() => setShowMine(curval => !curval)}/>
+                      <label
+                        className="inline-block pl-[0.15rem] hover:cursor-pointer text-sm"
+                        htmlFor="checkboxDefault">
+                        Show My NFTs only
+                      </label>
+                    </div>
+                    // <button
+                    //   className={`-z-1 relative flex h-auto w-auto items-center justify-center rounded-full bg-blue-700 hover:bg-blue-800 py-2.5 pl-3 pr-6 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none ring-2 ${showMine ? 'ring-2 ring-sky-600 ring-offset-2' : ''} disabled:bg-opacity-70  sm:text-xs`}
+                    //   onClick={() => setShowMine(curval => !curval)}>
+                    //   <span className="ml-2.5 block truncate">Show My NFTs only</span>
+                    // </button>
+                  )}
+                  <button
+                    className="-z-1 md:mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
+                    onClick={() => setShowFilter(curval => !curval)}
+                  >
+                    <span className="ml-2.5 block truncate">Filter by Properties</span>
+                    <span className="absolute top-1/2 right-5 -translate-y-1/2">
+                      <BsChevronDown
+                        className={`${showFilter && 'rotate-180'} transition`}
+                      />
+                    </span>
+                  </button>
 
-              </div>
-              
-              <div className="flex gap-2 items-center">
-                <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
-                  <div 
-                    className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
-                    onClick={() => setCompact(false)}>
-                    <BsGrid/>
-                  </div>
-                  <div 
-                    className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
-                    onClick={() => setCompact(true)}>
-                    <BsGrid3X3Gap/>
-                  </div>
                 </div>
-
-                {/* <div>
-                  <button 
-                    className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-                    onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-                </div> */}
-              </div>
-            </div>
-          )}
-
-          {showFilter && (
-            <div className="fixed w-full h-full bg-slate-700 bg-opacity-75 top-0 left-0 z-30 backdrop-blur-sm flex align-items-center justify-center">
-                <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} mx-4 my-auto md:m-auto`}>
-                  <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
-                  <div className="w-full pt-4">
-                    <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto py-4">
-                      {properties && (
-                        <Property traits={properties} nftData={nfts} />
-                      )}
+                
+                <div className="flex gap-2 items-center">
+                  <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
+                    <div 
+                      className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+                      onClick={() => setCompact(false)}>
+                      <BsGrid/>
+                    </div>
+                    <div 
+                      className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+                      onClick={() => setCompact(true)}>
+                      <BsGrid3X3Gap/>
                     </div>
                   </div>
-                  <div 
-                    className="absolute top-3 transition duration-[300] px-2.5 right-3 cursor-pointer z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70"
-                    onClick={() => setShowFilter(false)}>
-                    <MdAdd className="inline-block text-xl -mt-1 rotate-45" />
+
+                  {/* <div>
+                    <button 
+                      className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                      onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+                  </div> */}
+                </div>
+              </div>
+            )}
+
+            {showFilter && (
+              <div className="fixed w-full h-full bg-slate-700 bg-opacity-75 top-0 left-0 z-30 backdrop-blur-sm flex align-items-center justify-center">
+                  <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} mx-4 my-auto md:m-auto`}>
+                    <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
+                    <div className="w-full pt-4">
+                      <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto py-4">
+                        {properties && (
+                          <Property traits={properties} nftData={nfts} />
+                        )}
+                      </div>
+                    </div>
+                    <div 
+                      className="absolute top-3 transition duration-[300] px-2.5 right-3 cursor-pointer z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70"
+                      onClick={() => setShowFilter(false)}>
+                      <MdAdd className="inline-block text-xl -mt-1 rotate-45" />
+                    </div>
+                    <div className="rounded-xl mx-auto text-sm bg-sky-600 hover:bg-sky-700 text-neutral-100 w-max py-2 p-4 mt-4 cursor-pointer"
+                    onClick={() => {
+                      setSelectedProperties([]);
+                      setFilteredNftData([...nfts]); 
+                      setShowFilter(false);
+                        }
+                      }>
+                          Clear Filter
+                    </div>
                   </div>
-                  <div className="rounded-xl mx-auto text-sm bg-sky-600 hover:bg-sky-700 text-neutral-100 w-max py-2 p-4 mt-4 cursor-pointer"
-                  onClick={() => {
-                    setSelectedProperties([]);
-                    setFilteredNftData([...nfts]); 
-                    setShowFilter(false);
+              </div>
+            )}
+            
+            {collectionData && String(collectionData?.createdBy?._ref).toLowerCase() == String(myUser?.walletAddress).toLowerCase() &&  (
+              <button
+                className="relative h-auto w-auto items-center justify-center rounded-lg mb-5 bg-blue-700 hover:bg-blue-800 p-3 font-medium text-neutral-50 transition-colors"
+                onClick={() => setShowListingModal(true)}>
+                List NFTs in Batch
+              </button>
+            )}
+
+            {/* show applied filter keys */}
+            {selectedProperties.length > 0 && (
+              <div className="w-full p-2 overflow-auto mb-4 flex gap-2 items-center">
+                <span className="text-xs">Filters:</span>
+                {Boolean(selectedProperties[0].propertyKey) && (
+                  <>
+                    {selectedProperties.map((traits,index) => (
+                      <div className={`rounded-md flex px-2 py-1 ${dark ? 'bg-sky-700/30' : 'bg-neutral-200'} text-sm items-center w-fit gap-1`} key={index}>
+                        <span className="inline-block">{traits.propertyKey}:</span> <span className="inline-block">{traits.propertyValue}</span>
+                        <div 
+                          className="cursor-pointer transition hover:rotate-90"
+                          onClick={() => removeProperties(index)}>
+                          <MdOutlineClose fontSize={18} />
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+                {Boolean(selectedProperties[0].trait_type) && (
+                  <>
+                    {selectedProperties.map((traits,index) => (
+                      <div className="rounded-md flex px-2 py-1 bg-sky-700/30 text-sm items-center w-fit gap-1" key={index}>
+                        <span className="inline-block">{traits.trait_type}:</span> <span className="inline-block">{traits.value}</span>
+                        <div 
+                          className="cursor-pointer hover:scale-110"
+                          onClick={() => removeProperties(index)}>
+                          <MdOutlineClose fontSize={18} />
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+              </div>
+            )}
+
+            {/* {statusNFT == 'loading' && <div className="m-[5rem]"><Loader /></div>} */}
+
+            {!isBlocked && revealed &&
+              (
+                <>
+                  {showMine && myNfts.length == 0 && (
+                    <p className="text-center">No NFTs owned</p>
+                  )}
+                  {showMine && Boolean(myNfts.length > 0) && (
+                    <div className={style.nftwrapper}> 
+                      {myNfts?.map((nftItem, id) => (
+                            <NFTCardExternal
+                              key={id}
+                              nftItem={nftItem}
+                              title={collectionData?.name}
+                              showUnlisted={showUnlisted}
+                              creator={collectionData?.createdBy}
+                              compact={compact}
+                            />
+                        ))
                       }
-                    }>
-                        Clear Filter
-                  </div>
-                </div>
-            </div>
-          )}
-          
-          {collectionData && String(collectionData?.createdBy?._ref).toLowerCase() == String(myUser?.walletAddress).toLowerCase() &&  (
-            <button
-              className="relative h-auto w-auto items-center justify-center rounded-lg mb-5 bg-blue-700 hover:bg-blue-800 p-3 font-medium text-neutral-50 transition-colors"
-              onClick={() => setShowListingModal(true)}>
-              List NFTs in Batch
-            </button>
-          )}
-
-          {/* show applied filter keys */}
-          {selectedProperties.length > 0 && (
-            <div className="w-full p-2 overflow-auto mb-4 flex gap-2 items-center">
-              <span className="text-xs">Filters:</span>
-              {Boolean(selectedProperties[0].propertyKey) && (
-                <>
-                  {selectedProperties.map((traits,index) => (
-                    <div className={`rounded-md flex px-2 py-1 ${dark ? 'bg-sky-700/30' : 'bg-neutral-200'} text-sm items-center w-fit gap-1`} key={index}>
-                      <span className="inline-block">{traits.propertyKey}:</span> <span className="inline-block">{traits.propertyValue}</span>
-                      <div 
-                        className="cursor-pointer transition hover:rotate-90"
-                        onClick={() => removeProperties(index)}>
-                        <MdOutlineClose fontSize={18} />
-                      </div>
                     </div>
-                  ))}
-                </>
-              )}
-              {Boolean(selectedProperties[0].trait_type) && (
-                <>
-                  {selectedProperties.map((traits,index) => (
-                    <div className="rounded-md flex px-2 py-1 bg-sky-700/30 text-sm items-center w-fit gap-1" key={index}>
-                      <span className="inline-block">{traits.trait_type}:</span> <span className="inline-block">{traits.value}</span>
-                      <div 
-                        className="cursor-pointer hover:scale-110"
-                        onClick={() => removeProperties(index)}>
-                        <MdOutlineClose fontSize={18} />
-                      </div>
+                      )}
+                  {!showMine && (
+                    <div className={style.nftwrapper}>
+                      {
+                        filteredNftData?.map((nftItem, id) => (
+                            <NFTCardExternal
+                              key={id}
+                              nftItem={nftItem}
+                              chain={chain}
+                              collectionAddress={collectionAddress}
+                              showUnlisted={showUnlisted}
+                              creator={collectionData?.createdBy}
+                              hasOwner={true}
+                              compact={compact}
+                            />
+                        )
+                        )
+                      }
+                      {/* {
+                        filteredNftData?.map((nftItem, id) => (
+                            <NFTCardExternal
+                              key={id}
+                              nftItem={nftItem}
+                              chain={chain}
+                              collectionAddress={collectionAddress}
+                              showUnlisted={showUnlisted}
+                              creator={collectionData?.createdBy}
+                              hasOwner={true}
+                              compact={compact}
+                            />
+                        )
+                        )
+                      } */}
                     </div>
-                  ))}
-                </>
-              )}
+                  )}
 
-            </div>
-          )}
-
-          {/* {statusNFT == 'loading' && <div className="m-[5rem]"><Loader /></div>} */}
-
-          {!isBlocked && revealed &&
-            (
-              <>
-                {showMine && myNfts.length == 0 && (
-                  <p className="text-center">No NFTs owned</p>
-                )}
-                {showMine && Boolean(myNfts.length > 0) && (
-                  <div className={style.nftwrapper}> 
-                    {myNfts?.map((nftItem, id) => (
-                          <NFTCardExternal
-                            key={id}
-                            nftItem={nftItem}
-                            title={collectionData?.name}
-                            showUnlisted={showUnlisted}
-                            creator={collectionData?.createdBy}
-                            compact={compact}
-                          />
-                      ))
-                    }
-                  </div>
-                    )}
-                {!showMine && (
-                  <div className={style.nftwrapper}>
-                    {
-                      filteredNftData?.map((nftItem, id) => (
-                          <NFTCardExternal
-                            key={id}
-                            nftItem={nftItem}
-                            chain={chain}
-                            collectionAddress={collectionAddress}
-                            showUnlisted={showUnlisted}
-                            creator={collectionData?.createdBy}
-                            hasOwner={true}
-                            compact={compact}
-                          />
-                      )
-                      )
-                    }
-                    {/* {
-                      filteredNftData?.map((nftItem, id) => (
-                          <NFTCardExternal
-                            key={id}
-                            nftItem={nftItem}
-                            chain={chain}
-                            collectionAddress={collectionAddress}
-                            showUnlisted={showUnlisted}
-                            creator={collectionData?.createdBy}
-                            hasOwner={true}
-                            compact={compact}
-                          />
-                      )
-                      )
-                    } */}
-                  </div>
-                )}
-
-                <div ref={loadMoreRef} className={`${!hasNextPage ? "hidden" : ""} mt-[3rem] text-center`}>
-                  {isFetchingNextPage ? (
-                    <div className="flex justify-center items-center gap-1">
-                      {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Loading..
-                    </div>
-                  ) : ''}
-                </div>
-                {isLoading ? (
-                      <div className="flex justify-center items-center mt-[3rem] gap-1">
-                        {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Parsing Data..
+                  <div ref={loadMoreRef} className={`${!hasNextPage ? "hidden" : ""} mt-[3rem] text-center`}>
+                    {isFetchingNextPage ? (
+                      <div className="flex justify-center items-center gap-1">
+                        {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Loading..
                       </div>
                     ) : ''}
-                {/* <div className="mt-5 flex justify-end">
-                  <button 
-                    className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-                    onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-                </div> */}
-              </>
-            )
-          }
+                  </div>
+                  {isLoading ? (
+                        <div className="flex justify-center items-center mt-[3rem] gap-1">
+                          {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Parsing Data..
+                        </div>
+                      ) : ''}
+                  {/* <div className="mt-5 flex justify-end">
+                    <button 
+                      className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                      onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+                  </div> */}
+                </>
+              )
+            }
+          </div>
         </div>
 
         {/* {!revealed && Boolean(collectionData) && (

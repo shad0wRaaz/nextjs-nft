@@ -349,7 +349,7 @@ const Header = () => {
                                 className="mr-2"
                                 fontSize="20px"
                               />{' '}
-                              Mint
+                              Create
                             </a>
                           </div>
                         )}
@@ -492,7 +492,7 @@ const Header = () => {
               </div>
               <div className={`rounded-lg cursor-pointer px-5 py-4 text-black border-0 bg-white mr-3`}>
                 <Link href="/contracts">
-                  <div className={style.headerItem + " inline-flex gap-1 items-center"}><div className="animate-pulse"><MdOutlineWidgets /></div> Mint</div>
+                  <div className={style.headerItem + " inline-flex gap-1 items-center"}><div className="animate-pulse"><MdOutlineWidgets /></div> Create</div>
                 </Link>
               </div>
             </>
