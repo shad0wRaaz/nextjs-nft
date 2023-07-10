@@ -21,10 +21,10 @@ import { useQuery, useMutation } from 'react-query'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
-import { CgFacebook, CgSandClock } from 'react-icons/cg'
+import { CgClose, CgFacebook, CgSandClock } from 'react-icons/cg'
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useInfiniteQuery, useQueryClient } from 'react-query'
-import { TbEdit, TbParachute, TbStack2 } from 'react-icons/tb'
+import { TbEdit, TbParachute, TbStack2, TbUser } from 'react-icons/tb'
 import { useUserContext } from '../../../contexts/UserContext'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
@@ -46,6 +46,7 @@ import { createAwatar, updateSingleUserDataToFindMaxPayLevel } from '../../../ut
 import { ConnectWallet, ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
+import { HiOutlineUsers } from 'react-icons/hi'
 
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
@@ -107,6 +108,7 @@ const CollectionDetails = (props) => {
   const [showAirdrop, setShowAirdrop] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showOwners, setShowOwners] = useState(false);
 
   const [totalCirculatingSupply, setTotalCirculatingSupply] = useState();
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
@@ -928,6 +930,50 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           </div>
         )}
 
+        {showOwners && (
+          <div className="fixed inset-0 overflow-y-auto z-50 bg-black/30" onClick={() => setShowOwners(false)}>
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <div className="w-full md:w-fit transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
+                <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div className={`relative flex flex-col   ${dark ? 'bg-slate-700 text-neutral-100' : 'bg-white'} p-[2rem]`}>
+                    <div className="flex items-center justify-center font-bold text-lg gap-2">
+                      <HiOutlineUsers className="inline" /> <span>All Owners</span>
+                    </div>
+
+                    <div className={`max-h-[500px] overflow-y-auto flex flex-col mt-3 border ${dark ? 'border-slate-600' : 'border-neutral-200'} rounded-xl`}>
+                      {nftHolders.map((item, index) => (
+                        <a
+                          key={item}
+                          href={`/user/${item}`}
+                          className={` flex items-center p-4 px-6 border-b transition duration-150 ease-in-out ${dark ? 'hover:bg-slate-500 border-slate-600': 'hover:bg-gray-50'} ${index % 2 == 0 ? dark ? 'bg-slate-600/40' :'bg-neutral-100' : ''} focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50`}
+                        >
+                          <div className="flex h-[15px] w-[15px] shrink-0 items-center justify-center overflow-hidden ring-2 ring-neutral-200 text-white sm:h-6 sm:w-6 rounded-full">
+                            <img src={createAwatar(item)} />
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-base">
+                              {item}
+                            </p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        className="absolute top-3 right-3 justify-center rounded-md border border-transparent bg-red-600 px-1 py-1 text-sm font-medium text-neutral-100 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                        onClick={() => setShowOwners(false)}>
+                          <CgClose fontSize={20}/>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {!isBlocked && Boolean(collectionData) && (
           <div className="w-full">
             <div className="relative h-96 w-full md:h-60 lg:h-[45rem]">
@@ -1335,56 +1381,19 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     )}
 
                     <div className={`${
-                            dark
-                            ? ' border border-sky-400/20'
-                            : ' border border-neutral-50/30'
-                          } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-6 outline-none ring-0 focus:ring-0 focus:outline-none`}>
-                            <span className="text-sm block">Owners</span>
-                            <p className="mt-2 text-base font-bold sm:text-xl">
-                              {nftHolders.length}
-                            </p>
-                            <Popover className={`absolute bottom-2  text-xs py-0.5 px-2 z-50 rounded-2xl shadow-md outline-none ring-0 focus:ring-0 focus:outline-0`}>
-                              {({ open }) => (
-                                <>
-                                  <Popover.Button>
-                                    <span>View</span>
-                                  </Popover.Button>
-                                  <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-200"
-                                    enterFrom="opacity-0 translate-y-1"
-                                    enterTo="opacity-100 translate-y-0"
-                                    leave="transition ease-in duration-150"
-                                    leaveFrom="opacity-100 translate-y-0"
-                                    leaveTo="opacity-0 translate-y-1"
-                                  >
-                                    <Popover.Panel className="absolute left-1/2 z-40 top-[2rem] w-screen max-w-xs -translate-x-1/2 transform px-4 sm:px-0">
-                                      <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                        <div className={`relative flex flex-col gap-8 max-h-[200px] overflow-y-auto ${dark ? 'bg-slate-700' : 'bg-white'} p-7`}>
-                                          {nftHolders.map((item) => (
-                                            <a
-                                              key={item}
-                                              href={`/user/${item}`}
-                                              className={`-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out ${dark ? 'hover:bg-slate-500': 'hover:bg-gray-50'} focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50`}
-                                            >
-                                              <div className="flex h-[15px] w-[15px] shrink-0 items-center justify-center overflow-hidden ring-2 ring-neutral-200 text-white sm:h-6 sm:w-6 rounded-full">
-                                                <img src={createAwatar(item)} />
-                                              </div>
-                                              <div className="ml-4">
-                                                <p className="text-sm">
-                                                  {item.slice(0,10)}.....{item.slice(-10)}
-                                                </p>
-                                              </div>
-                                            </a>
-                                          ))}
-                                          
-                                        </div>
-                                      </div>
-                                    </Popover.Panel>
-                                  </Transition>
-                                </>
-                              )}
-                            </Popover>
+                      dark
+                      ? ' border border-sky-400/20'
+                      : ' border border-neutral-50/30'
+                    } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-6 outline-none ring-0 focus:ring-0 focus:outline-none`}>
+                      <span className="text-sm block">Owners</span>
+                      <p className="mt-2 text-base font-bold sm:text-xl">
+                        {nftHolders.length}
+                      </p>
+                      <div 
+                        className="absolute bottom-1 cursor-pointer text-xs py-0.5 px-2 z-50 rounded-2xl shadow-md outline-none ring-0 focus:ring-0 focus:outline-0"
+                        onClick={() => setShowOwners(true)}>
+                        View
+                      </div>
                     </div>
                     {/* <div
                       className={`${

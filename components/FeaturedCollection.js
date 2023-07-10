@@ -98,7 +98,6 @@ const FeaturedCollection = () => {
     ;(async() => {
       const sdk = new ThirdwebSDK("binance");
       const contract = await sdk.getContract(contractAddress);
-      console.log(contract.owner)
       setTotalUnclaimedSupply(await contract.erc721.totalUnclaimedSupply());
       const {price} = await contract.erc721.claimConditions.getActive();
       setMintPrice(ethers.utils.formatUnits(price, 18));
@@ -128,8 +127,8 @@ const FeaturedCollection = () => {
                 <div className="keen-slider__slide"><img  className={style.image} src={panda11.src}/></div>
                 <div className="keen-slider__slide"><img  className={style.image} src={panda12.src}/></div>
               </div>
-              <div className="absolute top-0 left-0 text-slate-900 bg-white/60 backdrop-blur-xl p-8 rounded-xl" style={{ left: '50%', top: '50%', transform: "translate(-50%, -50%)"}}>
-                <div className="flex gap-4 justify-center items-center">
+              <div className="absolute top-0 left-0 text-slate-900 p-2 w-full md:w-fit" style={{ left: '50%', top: '50%', transform: "translate(-50%, -50%)"}}>
+                <div className="flex gap-4 justify-center items-center py-8 md:px-8 bg-white/60 backdrop-blur-xl rounded-xl">
                   <div className="">
                     <div className="flex gap-4 justify-center text-left text-2xl relative">
                       <div className="wil-avatar relative inline-flex h-[40px] bg-white w-[40px] flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-400">
@@ -142,15 +141,16 @@ const FeaturedCollection = () => {
                       <div className="text-center">Total Supply<br/> <span className="font-bold text-xl">15000</span></div>
                       <div className="text-center">Remaining<br/> {totalUnclaimedSupply ? <span className="font-bold text-xl">{totalUnclaimedSupply.toString()}</span> : <IconLoading dark="inbutton" />}</div>
                     </div>
-                  </div>
+                    <div className="gradBlue text-neutral-100 relative w-fit py-4 px-8 m-auto mt-3 rounded-full">
+                      <Link href="/collection/binance/0xbDd60f4d2795f145C09dd4eA6d9565B185F6CBF9" passhref>
+                        <a>
+                          View Collection
+                        </a>
+                      </Link>
 
-                </div>
-                <div className="gradBlue text-neutral-100 relative w-fit py-4 px-8 m-auto mt-3 rounded-full">
-                  <Link href="/collection/binance/0xbDd60f4d2795f145C09dd4eA6d9565B185F6CBF9" passhref>
-                    <a>
-                      View Collection
-                    </a>
-                  </Link>
+                    </div>
+
+                  </div>
 
                 </div>
               </div>

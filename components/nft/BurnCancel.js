@@ -330,7 +330,6 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
       setIsTransfer(false);
     }
 
-
   return (
     <>
     {showBurnModal && (
@@ -402,10 +401,10 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             </div>
         </div>
     )}
-    {/* String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase() */}
-    {Boolean(address) &&  String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
+
+    {Boolean(address) && (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
-          {Boolean(listingData) && (
+          {Boolean(listingData) && String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
             <>
               {isCanceling ? (
                 <div className="w-full md:w-1/3 p-2">
@@ -426,44 +425,44 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
               )}
             </>
           )}
-            {(String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) && (
-              <>
-                {isTransfer ? (
-                  <div className="w-full md:w-1/3 p-2">
-                    <button 
-                          className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                          onClick={() => setBurnModal(true)}>
-                            <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
-                      </button>
-                  </div>
-                ) : (
-                  <div className="w-full md:w-1/3 p-2">
-                    <button 
-                          className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                          onClick={() => setTransferModal(true)}>
-                            <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
-                      </button>
-                  </div>
-                )}
-                {isBurning ? (
-                  <div className="w-full md:w-1/3 p-2">
-                    <button 
-                        className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                        disabled>
-                        <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
-                    </button>
-                  </div>
-                ):(
-                  <div className="w-full md:w-1/3 p-2">
-                    <button 
-                        className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+          {(String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) && (
+            <>
+              {isTransfer ? (
+                <div className="w-full md:w-1/3 p-2">
+                  <button 
+                        className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
                         onClick={() => setBurnModal(true)}>
-                        <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
+                          <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
                     </button>
-                  </div>
-                )}
-              </>
-            )}
+                </div>
+              ) : (
+                <div className="w-full md:w-1/3 p-2">
+                  <button 
+                        className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                        onClick={() => setTransferModal(true)}>
+                          <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
+                    </button>
+                </div>
+              )}
+              {isBurning ? (
+                <div className="w-full md:w-1/3 p-2">
+                  <button 
+                      className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      disabled>
+                      <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
+                  </button>
+                </div>
+              ):(
+                <div className="w-full md:w-1/3 p-2">
+                  <button 
+                      className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                      onClick={() => setBurnModal(true)}>
+                      <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
     </>

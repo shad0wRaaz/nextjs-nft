@@ -8,6 +8,7 @@ import icon16 from '../assets/favicon/favicon-16x16.png'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { SearchProvider } from '../contexts/SearchContext'
 import { AdminUserProvider } from '../contexts/AdminContext'
+import { AirdropProvider } from '../contexts/AirdropContext'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
 import { ThirdwebProvider, ChainId, metamaskWallet, coinbaseWallet, walletConnect, safeWallet, magicLink } from '@thirdweb-dev/react'
@@ -55,7 +56,9 @@ function MyApp({ Component, pageProps }) {
                   <MarketplaceProvider>
                     <SettingsProvider>
                       <CollectionFilterProvider>
-                        <Component {...pageProps} />
+                        <AirdropProvider>
+                          <Component {...pageProps} />
+                        </AirdropProvider>
                       </CollectionFilterProvider>
                     </SettingsProvider>
                     <ReactQueryDevtools />

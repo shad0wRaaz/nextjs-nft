@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
 import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
@@ -39,10 +39,20 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { IconBNB } from './icons/CustomIcons';
 import { HiArrowNarrowDown } from 'react-icons/hi';
+import { useQuery } from 'react-query';
+import Airdrop from './Airdrop';
+import { getAirDrops } from '../fetchers/SanityFetchers';
+import { useSettingsContext } from '../contexts/SettingsContext';
+import { Dialog, Transition } from '@headlessui/react';
+import { CgClose } from 'react-icons/cg';
+import { MdOutlineOpenInNew } from 'react-icons/md';
 
 const HeroDesigner = () => {
   const [showCollection, setShowCollection] = useState(false);
   const router = useRouter();
+  
+  const [showAirdrop, setShowAirdrop] = useState(false);
+
   const links = {
     creatures: '/collection/binance/crypto_creatures',
     neon: '/collection/binance/neon_dreams',
@@ -59,15 +69,15 @@ const HeroDesigner = () => {
     gridContent : 'relative rounded-3xl heroImageContainer overflow-hidden w-full',
     gridImage: 'rounded-3xl w-full object-cover heroImage',
     content: 'absolute -bottom-50 left-0 w-full heroContent text-xl text-center',
-    mintButton: 'mintButton border w-fit m-auto border-neutral-200 py-1 px-2 text-sm rounded-md bg-white text-slate-800 font-bold',
+    mintButton: ' mintButton border w-fit m-auto border-neutral-200 py-1 px-2 text-sm rounded-md bg-white text-slate-800 font-bold',
     nftCount : 'text-xs text-left rounded-md w-fit py-1 px-2 my-1 text-slate-300 bg-slate-700',
-    orange: ' bg-gradient-to-br from-[#FA762F] to-[#F75136] duration-100',
-    neon: ' bg-gradient-to-br from-[#C025D0] to-[#DA2678] duration-150',
-    apple: ' bg-gradient-to-br from-[#1FC25D] to-[#15813E] duration-200',
-    flamingo: ' bg-gradient-to-br from-[#397FF5] to-[#1D4CD4] duration-250',
+    orange: 'transition bg-gradient-to-br from-[#FA762F] to-[#F75136] hover:to-[#FA762F] duration-100',
+    neon: 'transition bg-gradient-to-br from-[#C025D0] to-[#DA2678] hover:to-[#C025D0] duration-150',
+    apple: 'transition bg-gradient-to-br from-[#1FC25D] to-[#15813E] hover:to-[#1FC25D] duration-200',
+    flamingo: 'transition bg-gradient-to-br from-[#397FF5] to-[#1D4CD4] hover:to-[#397FF5] duration-250',
     title: `relative lg:mb-8 p-[20px] pb-0 md:pb-[20px] font-semibold text-3xl md:text-xl xl:text-5xl leading-[3.5rem] md:leading-[5rem] lg:leading-[5rem] xl:leading-[5rem] text-white`,
     subtitle: 'text-sm text-white mb-1 font-bold',
-    collectionSelection: 'relative w-full rounded-3xl gap-2 border border-slate-400/30 p-8 items-center cursor-pointer hover:border-slate-700 hover:shadow-md hover:bg-slate-800 transition',
+    collectionSelection: 'relative w-full rounded-3xl gap-2 border border-slate-400/30 p-8 items-center hover:border-slate-700 hover:shadow-md hover:bg-slate-800 transition',
     description: `container-[400px] mt-[0.8rem] p-[20px] shoutoutDescription max-w-[500px] text-white`,
     ctaContainer: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20px] mt-3 mb-4`,
     accentedButton: `gradBlue hover:bg-200 transition relative text-lg font-semibold px-12 py-4 rounded-full text-white hover:bg-[#42a0ff] cursor-pointer`,
@@ -77,7 +87,7 @@ const HeroDesigner = () => {
     author: `flex flex-col justify-center ml-4`,
     name: ``,
     unilevelInfo: 'text-left mt-2 text-sm flex gap-2 items-center',
-    buyButton: 'rounded-lg p-2 px-3 text-sm w-full',
+    buyButton: 'rounded-lg p-2 px-3 text-sm w-full transition',
     infoIcon: `flex justify-end items-center flex-1 text-[#8a939b] text-3xl font-bold`,
     redBlur: `block bg-[#ef233c] w-72 h-72 absolute lg:ml-[10rem] md:ml-[3rem] sm:ml-[2rem] rounded-full filter blur-3xl opacity-20 lg:w-96 lg:h-96`,
     blueBlur: `block bg-[#04868b] w-72 h-72 absolute lg:ml-[43rem] md:ml-[5rem] sm:ml-[5rem] mt-40 rounded-full filter blur-3xl opacity-20 lg:w-96 lg:h-96 nc-animation-delay-2000`,
@@ -253,6 +263,7 @@ const HeroDesigner = () => {
     autoplaySpeed: 2000
   };
 
+
   return (
     <div className={style.wrapper}>
       <div className={style.container}>
@@ -267,9 +278,6 @@ const HeroDesigner = () => {
             </p>
             <p className="text-center text-5xl my-3 huerotation">
               REWARDING RENDITIONS
-            </p>
-            <p className="text-base font-normal">
-            Nuva NFT's exclusive 4 sets of NFT Collections.
             </p>
           </div>
           <div className={style.grid}>
@@ -288,7 +296,7 @@ const HeroDesigner = () => {
                   slideInterval={2000}/>
                 <div className={style.content}>
                   <p className="title">Crypto Creatures</p>
-                  <p className={style.subtitle}>Mint Price: 0.3 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.creatures} passHref>
                       <a>Mint Now</a>
@@ -314,7 +322,7 @@ const HeroDesigner = () => {
                 {/* <img src={neon2.src} className={style.gridImage + ' max-h-[150px]'} alt="Neon Dreams" /> */}
                 <div className={style.content}>
                   <p className="title">Neon Dream</p>
-                  <p className={style.subtitle}>Mint Price: 0.6 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.neon} passHref>
                       <a>Mint Now</a>
@@ -335,7 +343,7 @@ const HeroDesigner = () => {
                 {/* <img src={neon1.src} className={style.gridImage} alt="Neon Dreams" /> */}
                 <div className={style.content}>
                   <p className="title">Neon Dreams</p>
-                  <p className={style.subtitle}>Mint Price: 0.3 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.neon} passHref>
                       <a>Mint Now</a>
@@ -360,7 +368,7 @@ const HeroDesigner = () => {
               {/* <img src={artifacts3.src} className={style.gridImage + ' h-full'} alt="Artifacts of the Future" /> */}
               <div className={style.content}>
                 <p className="title">Artifacts of the Future</p>
-                <p className={style.subtitle}>Mint Price: 1.4 <IconBNB/></p>
+                <p className={style.subtitle}>Mint Price: 1.49 <IconBNB/></p>
                 <div className={style.mintButton}>
                   <Link href={links.artifacts} passHref>
                     <a>Mint Now</a>
@@ -386,7 +394,7 @@ const HeroDesigner = () => {
                 {/* <img src={celestial2.src} className={style.gridImage} alt="Celestial Beings" /> */}
                 <div className={style.content}>
                   <p className="title">Celestial Beings</p>
-                  <p className={style.subtitle}>Mint Price: 1 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 1.04 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.celestial} passHref>
                       <a>Mint Now</a>
@@ -407,7 +415,7 @@ const HeroDesigner = () => {
                 {/* <img src={celestial1.src} className={style.gridImage + ' max-h-[150px]'} alt="Celestial Beings" /> */}
                 <div className={style.content}>
                   <p className="title">Celestial Beings</p>
-                  <p className={style.subtitle}>Mint Price: 1 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 1.04<IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.celestial} passHref>
                       <a>Mint Now</a>
@@ -431,7 +439,7 @@ const HeroDesigner = () => {
               slideInterval={2300}/>
               <div className={style.content}>
                 <p className="title">Crypto Creatures</p>
-                <p className={style.subtitle}>Mint Price: 0.3 <IconBNB/></p>
+                <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
                 <div className={style.mintButton}>
                   <Link href={links.creatures} passHref>
                     <a>Mint Now</a>
@@ -444,140 +452,154 @@ const HeroDesigner = () => {
           </div>
           {/* {showCollection ? ( */}
             <div className="mt-[5rem] border border-white/20 rounded-3xl bg-slate-900/80 mx-8 md:mx-0 p-8 shadow-md">
-              <p className="text-xl">Four Collections in Rewarding Renditions</p>
+              <p className="text-xl mb-6">Nuva NFT's exclusive 4 sets of NFT Collections</p>
               <div className={style.ctaContainer}>
-                <Link href={links.creatures} passHref>
-                  <a>
-                    <div className={style.collectionSelection}>
-                      <div className="absolute top-2 right-2">
-                        <Image src={creature1.src} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="text-left">
-                          <p className="font-bold text-lg">Crypto Creatures</p>
-                          <p className={style.nftCount}>5,000 NFTs</p>
-                        </div>
-                      </div>
-                      <div className="text-left mt-3">
-                        <p>Mint Price: 0.3 <IconBNB/></p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + 8% Indirect<br/><br/></p>
-
-                        <div className="flex flex-wrap gap-2">
-                          <button className={style.buyButton + style.orange}>
-                                  View Collection
-                          </button>
-                          <button className={style.buyButton + style.orange}>
-                                  Mint
-                          </button>
-                        </div>
-
-                      </div>
+                
+                <div className={style.collectionSelection}>
+                  <div className="absolute top-12 right-2">
+                    <Image src={creature1.src} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="text-left">
+                      <p className="font-bold text-lg">Crypto Creatures</p>
+                      <p className={style.nftCount}>5,000 NFTs</p>
                     </div>
-                  </a>
-                </Link>
-                <Link href={links.neon} passHref>
-                  <a>
-                    <div className={style.collectionSelection}>
-                      <div className="absolute top-2 right-2 animate-pulse">
-                        <Image src={neon2.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Neon Dreams"/>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="text-left">
-                          <p className="font-bold text-lg">Neon Dreams</p>
-                          <p className={style.nftCount}>5,000 NFTs</p>
-                        </div>
-                      </div>
-                      <div className="text-left mt-3">
-                        <p>Mint Price: 0.6 <IconBNB/></p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6%) Indirect<br/><br/></p>
+                  </div>
+                  <div className="text-left mt-3">
+                    <p>Mint Price: 0.32 <IconBNB/></p>
+                    <p className={style.unilevelInfo}>Unlocks Uni Level: <TbSquareRoundedNumber2 fontSize={25} /> </p>
+                    <p className="text-left text-sm mt-2">Earn from 10% Direct + 8% Indirect<br/><br/></p>
+                   
 
-                        <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={links.creatures} passHref>
+                        <a className="w-full">
+                          <button className={style.buyButton + style.orange }>
+                                  View Collection / Mint NFT
+                          </button>
+                        </a>
+                      </Link>
+                      {/* <button 
+                        className={style.buyButton + style.orange}
+                        onClick={() => setShowAirdrop('crypto')}>
+                              View Airdrops
+                      </button> */}
+                    </div>
+
+                  </div>
+                </div>
+                  
+                <div className={style.collectionSelection}>
+                  <div className="absolute top-10 right-2 ">
+                    <Image src={neon2.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Neon Dreams"/>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="text-left">
+                      <p className="font-bold text-lg">Neon Dreams</p>
+                      <p className={style.nftCount}>5,000 NFTs</p>
+                    </div>
+                  </div>
+                  <div className="text-left mt-3">
+                    <p>Mint Price: 0.64 <IconBNB/></p>
+                    <p className={style.unilevelInfo}>Unlocks Uni Level: <TbSquareRoundedNumber3 fontSize={25} /> </p>
+                    <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6%) Indirect<br/><br/></p>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={links.neon} passHref>
+                        <a className="w-full">
                           <button className={style.buyButton + style.neon}>
-                                  View Collection
+                            View Collection / Mint NFT
                           </button>
-                          <button className={style.buyButton + style.neon}>
-                                  Mint
-                          </button>
-                        </div>
-
-                      </div>
+                        </a>
+                      </Link>
+                      {/* <button className={style.buyButton + style.neon}>
+                              View Airdrop
+                      </button> */}
                     </div>
-                  </a>
-                </Link>
-                <Link href={links.celestial} passHref>
-                  <a>
-                    <div className={style.collectionSelection}>
-                      <div className="absolute top-2 right-2 animate-pulse">
-                        <Image src={celestial3.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Celestial Beings"/>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="text-left">
-                          <p className="font-bold text-lg">Celestial Beings</p>
-                          <p className={style.nftCount}>10,000 NFTs</p>
-                        </div>
-                      </div>
-                      <div className="text-left mt-3">
-                        <p>Mint Price: 1 <IconBNB/></p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5%) Indirect<br/><br/></p>
 
-                        <div className="flex flex-wrap gap-2">
+                  </div>
+                </div>
+                  
+                <div className={style.collectionSelection}>
+                  <div className="absolute top-12 right-2 ">
+                    <Image src={celestial3.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Celestial Beings"/>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="text-left">
+                      <p className="font-bold text-lg">Celestial Beings</p>
+                      <p className={style.nftCount}>10,000 NFTs</p>
+                    </div>
+                  </div>
+                  <div className="text-left mt-3">
+                    <p>Mint Price: 1.04 <IconBNB/></p>
+                    <p className={style.unilevelInfo}>Unlocks Uni Level: <TbSquareRoundedNumber4 fontSize={25} /> </p>
+                    <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5%) Indirect<br/><br/></p>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={links.celestial} passHref>
+                        <a className="w-full">
                           <button className={style.buyButton + style.flamingo}>
-                                  View Collection
+                            View Collection / Mint NFT
                           </button>
-                          <button className={style.buyButton + style.flamingo}>
-                                  Mint
-                          </button>
-                        </div>
-
-                      </div>
+                        </a>
+                      </Link>
+                      {/* <button className={style.buyButton + style.flamingo}>
+                        View Airdrop
+                      </button> */}
                     </div>
-                  </a>
-                </Link>
-                <Link href={links.artifacts} passHref>
-                  <a>
-                    <div className={style.collectionSelection}>
-                      <div className="absolute top-2 right-2 z-0 animate-pulse">
-                        <Image src={artifacts4.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Artifacts of the Future"/>
-                      </div>
-                      <div className="flex gap-2 z-10 relative">
-                        <div className="text-left">
-                          <p className="font-bold text-lg">Artifacts of the Future</p>
-                          <p className={style.nftCount}>20,000 NFTs</p>
-                        </div>
-                      </div>
-                      <div className="text-left mt-3">
-                        <p>Mint Price: 1.49 <IconBNB/></p>
-                        <p className={style.unilevelInfo}>Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} /> </p>
-                        <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect<br/><br/></p>
 
-                        <div className="flex flex-wrap gap-2">
-                          <button className={style.buyButton + style.apple}>
-                                  View Collection
-                          </button>
-                          <button className={style.buyButton + style.apple}>
-                                  Mint
-                          </button>
-                        </div>
-
-                      </div>
+                  </div>
+                </div>
+            
+                <div className={style.collectionSelection}>
+                  <div className="absolute top-12 right-2 z-0 ">
+                    <Image src={artifacts4.src} height="80px" width="80px" objectFit='cover' className="rounded-full" alt="Artifacts of the Future"/>
+                  </div>
+                  <div className="flex gap-2 z-10 relative">
+                    <div className="text-left">
+                      <p className="font-bold text-lg">Artifacts of the Future</p>
+                      <p className={style.nftCount}>20,000 NFTs</p>
                     </div>
-                  </a>
-                </Link>
+                  </div>
+                  <div className="text-left mt-3">
+                    <p>Mint Price: 1.49 <IconBNB/></p>
+                    <p className={style.unilevelInfo}>Unlocks Uni Level: <TbSquareRoundedNumber5 fontSize={25} /> </p>
+                    <p className="text-left text-sm mt-2">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect<br/><br/></p>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={links.artifacts} passHref>
+                        <a className="w-full">
+                          <button className={style.buyButton + style.apple}>
+                            View Collection / Mint NFT
+                          </button>
+                        </a>
+                      </Link>
+                      {/* <button className={style.buyButton + style.apple}>
+                        View Airdrop
+                      </button> */}
+                    </div>
+                  </div>
+                </div>
               </div>
+              
+              <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} />
 
-              <div className="flex justify-center items-center gap-4 w-fit mt-6 m-auto">
-                <div className="cursor-pointer text-right rounded-full p-3 bg-white/20 hover:bg-white/10 transition px-6 m-auto  w-fit gradBlue">
+              <div className="flex flex-wrap justify-center items-center gap-4 w-fit mt-6 m-auto">
+                <div 
+                  className="cursor-pointer text-center md:text-right rounded-full p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto w-full md:w-fit"
+                  onClick={() => setShowAirdrop(true)}
+                  >
+                      View Airdrops
+                </div>
+                <div className="cursor-pointer text-center md:text-right rounded-full p-3 bg-white/20 hover:bg-white/10 transition px-6 m-auto  w-fit gradBlue">
                   <Link href="/rewarding-renditions" passHref>
                     <a target="_blank">
                       Learn More about Rewarding Renditions
                     </a>
                   </Link>
                 </div>
-                <div className="cursor-pointer rounded-full p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto border border-white/20  w-fit">
-                  <Link href="/rewardingrenditions/WhitePaper.pdf" passHref>
+                <div className="cursor-pointer rounded-full w-full md:w-fit p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto border border-white/20">
+                  <Link href="https://nuva-nft.gitbook.io/docs/" passHref>
                     <a target="_blank">
                       Read Whitepaper
                     </a>
