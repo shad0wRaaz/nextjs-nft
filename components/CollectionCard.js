@@ -76,7 +76,7 @@ const CollectionCard = ({
 
   return (
     <Link href={link} passHref>
-      <a>
+      <a className="w-full">
         <div
           className={
             dark
