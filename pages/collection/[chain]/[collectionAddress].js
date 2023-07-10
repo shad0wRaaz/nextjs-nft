@@ -1501,22 +1501,28 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   </span>
                 </div> */}
               </div>
-              <div className="flex justify-center mt-4 mb-4 gap-2 flex-wrap">
+              <div className="flex flex-col justify-center mt-4 mb-4 gap-5 flex-wrap md:max-w-[400px] m-auto">
                 
                 {isMinting ? (
-                    <button className="flex cursor-pointer w-fit text-base font-bold justify-center transition p-4 px-6 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
+                    <button className="flex cursor-pointer w-full text-base font-bold justify-center transition p-4 px-6 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
                         <IconLoading dark="inbutton"/> Minting
                     </button>
                 ):(
-                    <button className="flex cursor-pointer w-fit text-base justify-center transition p-4 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
+                    <button className="flex cursor-pointer w-full text-base justify-center transition p-4 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
                     onClick={() => claimNFT()}>
                             <WalletCards strokeWidth={1.5} /> <span className="">Mint an NFT</span>
                     </button>
                 )}
-                {!Boolean(address) && (
-                  <ConnectWallet />
-                )}
-                
+                <div className="flex gap-4">
+                  {!Boolean(address) && (
+                    <ConnectWallet />
+                  )}
+                  <Link href="/rewarding-renditions#videos" passHref>
+                    <a className={`flex flex-grow cursor-pointer w-fit text-base justify-center transition p-4 rounded-lg ${dark ? 'bg-slate-800 hover:bg-slate-700/80' :'bg-neutral-400 hover:bg-neutral-500'} py-3 gap-1 items-center text-white`} target="_blank">
+                      Tutorials
+                    </a>
+                  </Link>
+                </div>
               </div>
               <p className="text-sm">There is no limit in number of NFTs you can mint in this collection.</p>
             </div>
