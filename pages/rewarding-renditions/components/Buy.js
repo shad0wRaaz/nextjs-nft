@@ -365,9 +365,9 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Buy Price</h6>
-                                            <h2 className="mint__numbers">$75<span className="text-xs"> (worth of)</span></h2>
-                                            <h4 className="mint__name text-uppercase">{(75 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
+                                            <h6 className="mint__sub-title">Mint Price</h6>
+                                            <h2 className="mint__numbers">0.32 BNB</h2>
+                                            <h4 className="mint__name text-uppercase"> ${(0.32 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -601,9 +601,9 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Price</h6>
-                                        <h2 className="mint__numbers">$150<span className="text-xs"> (worth of)</span></h2>
-                                        <h4 className="mint__name text-uppercase">{(150 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
+                                        <h6 className="mint__sub-title">Mint Price</h6>
+                                        <h2 className="mint__numbers">0.64 BNB</h2>
+                                        <h4 className="mint__name text-uppercase"> ${(0.64 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -836,9 +836,9 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Buy Price</h6>
-                                            <h2 className="mint__numbers">$250<span className="text-xs"> (worth of)</span></h2>
-                                            <h4 className="mint__name text-uppercase">{(250 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
+                                            <h6 className="mint__sub-title">Mint Price</h6>
+                                            <h2 className="mint__numbers">1.04 BNB</h2>
+                                            <h4 className="mint__name text-uppercase"> ${(1.04 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -1071,9 +1071,9 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Price</h6>
-                                        <h2 className="mint__numbers">$350<span className="text-xs"> (worth of)</span></h2>
-                                        <h4 className="mint__name text-uppercase">{(350 / Number(coins?.bnbprice)).toFixed(5)} BNB</h4>
+                                        <h6 className="mint__sub-title">Mint Price</h6>
+                                        <h2 className="mint__numbers">1.49 BNB</h2>
+                                        <h4 className="mint__name text-uppercase"> ${(1.49 * Number(coins?.bnbprice)).toFixed(5)}</h4>
                                     </div>
                                     </div>
                                 </div>
