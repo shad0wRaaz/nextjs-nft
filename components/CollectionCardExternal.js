@@ -52,83 +52,85 @@ const CollectionCardExternal = ({
   const { blockchainName } = useSettingsContext();
 
   return (
-    <Link href={`/collection/${blockchainName[chainId]}/${contractAddress}`}>
-      <div
-        className={
-          dark
-            ? style.card + '  border-sky-400/20 bg-slate-800/80'
-            : style.card + ' border-slate-200 bg-[#ffffff99]'
-        }
-      >
-        <div className={style.bannerContainer}>
-          {bannerImage ? (
-            <img
-              src={getImagefromWeb3(bannerImage)}
-              className={style.bannerImage}
-              alt={name}
-            />
-          ) : (
-            <Image
-              src={noBannerImage}
-              className={style.bannerImage}
-              layout="fill"
-              objectFit="cover"
-            />
-          )}
-        </div>
+    <Link href={`/collection/${blockchainName[chainId]}/${contractAddress}`} passHref>
+      <a className="w-full">
+        <div
+          className={
+            dark
+              ? style.card + '  border-sky-400/20 bg-slate-800/80'
+              : style.card + ' border-slate-200 bg-[#ffffff99]'
+          }
+        >
+          <div className={style.bannerContainer}>
+            {bannerImage ? (
+              <img
+                src={getImagefromWeb3(bannerImage)}
+                className={style.bannerImage}
+                alt={name}
+              />
+            ) : (
+              <Image
+                src={noBannerImage}
+                className={style.bannerImage}
+                layout="fill"
+                objectFit="cover"
+              />
+            )}
+          </div>
 
-        <div className="relative">
-          <svg
-            className={`mx-auto -mt-[32px] h-14 ${
-              dark ? 'text-darkGray' : 'text-white'
-            }`}
-            width="134"
-            height="54"
-            viewBox="0 0 134 54"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M101.734 19.8581C99.2658 17.4194 96.9737 14.8065 94.5052 12.1935C94.1526 11.671 93.6237 11.3226 93.0947 10.8C92.7421 10.4516 92.5658 10.2774 92.2131 9.92903C85.6895 3.83226 76.6974 0 67 0C57.3026 0 48.3105 3.83226 41.6105 9.92903C41.2579 10.2774 41.0816 10.4516 40.7289 10.8C40.2 11.3226 39.8474 11.671 39.3184 12.1935C36.85 14.8065 34.5579 17.4194 32.0895 19.8581C23.2737 28.7419 11.4605 30.4839 -0.176331 30.8323V54H16.3974H32.0895H101.558H110.197H134V30.6581C122.363 30.3097 110.55 28.7419 101.734 19.8581Z"
-              fill=""
-            ></path>
-          </svg>
+          <div className="relative">
+            <svg
+              className={`mx-auto -mt-[32px] h-14 ${
+                dark ? 'text-darkGray' : 'text-white'
+              }`}
+              width="134"
+              height="54"
+              viewBox="0 0 134 54"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M101.734 19.8581C99.2658 17.4194 96.9737 14.8065 94.5052 12.1935C94.1526 11.671 93.6237 11.3226 93.0947 10.8C92.7421 10.4516 92.5658 10.2774 92.2131 9.92903C85.6895 3.83226 76.6974 0 67 0C57.3026 0 48.3105 3.83226 41.6105 9.92903C41.2579 10.2774 41.0816 10.4516 40.7289 10.8C40.2 11.3226 39.8474 11.671 39.3184 12.1935C36.85 14.8065 34.5579 17.4194 32.0895 19.8581C23.2737 28.7419 11.4605 30.4839 -0.176331 30.8323V54H16.3974H32.0895H101.558H110.197H134V30.6581C122.363 30.3097 110.55 28.7419 101.734 19.8581Z"
+                fill=""
+              ></path>
+            </svg>
 
-          <div className="absolute top-2 left-1/2 -translate-x-1/2">
-            <div className="wil-avatar relative inline-flex h-14 bg-white w-14 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
-              {profileImage ? (
-                <img
-                  className="absolute inset-0 h-full w-full rounded-full object-cover"
-                  src={getImagefromWeb3(profileImage)}
-                  alt={name}
-                />
-              ) : (
-                <Image
-                  className="absolute inset-0 h-full w-full rounded-full object-cover"
-                  src={noProfileImage}
-                  alt={name}
-                  layout="fill"
-                  object-fit="cover"
-                />
-              )}
-              <span className="wil-avatar__name">J</span>
+            <div className="absolute top-2 left-1/2 -translate-x-1/2">
+              <div className="wil-avatar relative inline-flex h-14 bg-white w-14 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
+                {profileImage ? (
+                  <img
+                    className="absolute inset-0 h-full w-full rounded-full object-cover"
+                    src={getImagefromWeb3(profileImage)}
+                    alt={name}
+                  />
+                ) : (
+                  <Image
+                    className="absolute inset-0 h-full w-full rounded-full object-cover"
+                    src={noProfileImage}
+                    alt={name}
+                    layout="fill"
+                    object-fit="cover"
+                  />
+                )}
+                <span className="wil-avatar__name">J</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="relative top-1 mt-2">
-          <p className={style.title}>{name}</p>
-          {/* <p className={style.creator}>
-            by
-            <Link href={`/user/${creatorAddress}`}>
-              <span className=" cursor-pointer hover:text-sky-500">
-                {' '}
-                {creator == 'Unnamed' ? <span className="font-bold">{creatorAddress.slice(0,5) + '...' + creatorAddress.slice(-5)}</span> : creator}
-              </span>
-            </Link>
-          </p> */}
+          <div className="relative top-1 mt-2">
+            <p className={style.title}>{name}</p>
+            {/* <p className={style.creator}>
+              by
+              <Link href={`/user/${creatorAddress}`}>
+                <span className=" cursor-pointer hover:text-sky-500">
+                  {' '}
+                  {creator == 'Unnamed' ? <span className="font-bold">{creatorAddress.slice(0,5) + '...' + creatorAddress.slice(-5)}</span> : creator}
+                </span>
+              </Link>
+            </p> */}
+          </div>
         </div>
-      </div>
+      </a>
     </Link>
   )
 }
