@@ -1525,7 +1525,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                   </Link>)}
                 </div>
               </div>
-              <p className="text-sm">There is no limit in number of NFTs you can mint in this collection.</p>
+              <p className="text-sm lg:max-w-[800px] m-auto">You need to have a wallet connected to this site in order to mint an NFT. We have tutorial videos how to create a wallet and connect. To check them, click on the How To / Tutorial above.<br/>There is no limit in number of NFTs you can mint in this collection.</p>
             </div>
           </div>
         )}
