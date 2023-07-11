@@ -1513,15 +1513,16 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             <WalletCards strokeWidth={1.5} /> <span className="">Mint an NFT</span>
                     </button>
                 )}
-                <div className="flex gap-4">
+                <div className="flex gap-4 justify-center">
                   {!Boolean(address) && (
                     <ConnectWallet />
                   )}
-                  <Link href="/rewarding-renditions#videos" passHref>
+                  {rewardingCollections.includes(collectionAddress?.toLowerCase()) &&
+                  (<Link href="/rewarding-renditions#videos" passHref>
                     <a className={`flex flex-grow cursor-pointer w-fit text-base justify-center transition p-4 rounded-lg ${dark ? 'bg-slate-800 hover:bg-slate-700/80' :'bg-neutral-400 hover:bg-neutral-500'} py-3 gap-1 items-center text-white`} target="_blank">
-                      Tutorials
+                      How To / Tutorials
                     </a>
-                  </Link>
+                  </Link>)}
                 </div>
               </div>
               <p className="text-sm">There is no limit in number of NFTs you can mint in this collection.</p>
