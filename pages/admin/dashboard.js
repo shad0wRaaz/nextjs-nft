@@ -23,6 +23,7 @@ import AddCategory from '../../components/admin/AddCategory'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useAdminContext } from '../../contexts/AdminContext'
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
+import ReferralBonuses from '../../components/admin/ReferralBonuses'
 import { getAllUsers, getTotals } from '../../fetchers/SanityFetchers'
 import ReferralSettings from '../../components/admin/ReferralSettings'
 import BlockedCollections from '../../components/admin/BlockedCollections'
@@ -30,7 +31,6 @@ import { getTotalsforAdmin, updateListings } from '../../fetchers/Web3Fetchers'
 import { BiCategory, BiCollection, BiDollarCircle, BiUser } from 'react-icons/bi'
 import { createAwatar, updateUserDataToFindMaxPayLevel } from '../../utils/utilities'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconLoading, IconPolygon } from '../../components/icons/CustomIcons'
-import ReferralBonuses from '../../components/admin/ReferralBonuses'
 
 const chainnum = {
     "80001": "mumbai",

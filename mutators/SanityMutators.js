@@ -324,7 +324,8 @@ export const sendToken = async(referee, recipient) => {
         // token sent boolean set to true, so that it wont send again and again.
         await config.patch(referee)
                     .set({ tokensent: true })
-                    .commit();
+                    .commit()
+                    .catch(err => console.log(err));
     }
   }catch(error){
     
@@ -339,16 +340,16 @@ export const saveFollower = async ({ creator, admirer }) => {
   return await config
     .patch(creator)
     .insert('before', 'followers[0]', [{ _ref: admirer }])
-    .commit({ autoGenerateArrayKeys: true })
+    .commit({ autoGenerateArrayKeys: true }).catch(err => console.log(err));
 }
 
 export const removeFollower = async ({ creator, admirer }) => {
   const followToRemove = [`followers[_ref == "${admirer}"]`]
-  return await config.patch(creator).unset(followToRemove).commit()
+  return await config.patch(creator).unset(followToRemove).commit().catch(err => console.log(err));
 }
 
 export const changeNotificationReadStatus = async (notificationId) => {
-  const res = config.patch(notificationId).set({ status: true }).commit()
+  const res = config.patch(notificationId).set({ status: true }).commit().catch(err => console.log(err));
   return res
 }
 
@@ -469,6 +470,7 @@ export const changeShowUnlisted = async ({ collectionid, showUnlisted }) => {
     .patch(collectionid)
     .set({ showUnlisted: !showUnlisted })
     .commit()
+    .catch(err => console.log(err));
 }
 
 export const updateBoughtNFTs = async({
@@ -492,7 +494,8 @@ export const updateBoughtNFTs = async({
       await config.patch(walletAddress)
                   .setIfMissing({ boughtnfts: ''})
                   .set({ boughtnfts : newData })
-                  .commit();
+                  .commit()
+                  .catch(err => { console.log(err)});
       return
     }else{
       const existingData = JSON.parse(currentPayInfo);
@@ -507,7 +510,8 @@ export const updateBoughtNFTs = async({
           }];
         await config.patch(walletAddress)
                     .set({ boughtnfts: JSON.stringify(updatedData)})
-                    .commit();
+                    .commit()
+                    .catch(err => { console.log(err)});
       }
     }
 
@@ -520,7 +524,8 @@ export const updateBoughtNFTs = async({
 
     await config.patch(walletAddress)
                 .set({ boughtnfts: dataToSave })
-                .commit();
+                .commit()
+                .catch(err => { console.log(err)});
   }
 }
 export const addVolumeTraded = async ({
@@ -539,7 +544,8 @@ export const addVolumeTraded = async ({
       .patch(caseSensitiveId)
       .setIfMissing({ volumeTraded : 0 })
       .inc({ volumeTraded: parseFloat(volume) })
-      .commit();
+      .commit()
+      .catch(err => console.log(err));
   }
 }
 export const addBlockedNft = async ({id}) => {
@@ -631,7 +637,8 @@ export const saveEmailVerificationCode = async(id, randomCode) => {
     await config
                 .patch(id)
                 .set({verificationcode: randomCode})
-                .commit();
+                .commit()
+                .catch(err => console.log(err));
     return true;
   }catch(err){
     return false;

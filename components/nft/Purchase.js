@@ -64,7 +64,7 @@ const MakeOffer = ({
     listed = false
   }
 
-  const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName } = useSettingsContext();
+  const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName, refs } = useSettingsContext();
 
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const {myUser} = useUserContext();
@@ -266,11 +266,11 @@ const MakeOffer = ({
     let sponsors = [];
     const payNetwork = await getMyPayingNetwork(address);
 
-    let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0]);
+    let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0],refs);
     if(Boolean(network?.sponsor)){
       network = {
         ...network,
-        sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor)
+        sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
       }
 
       if(Boolean(network?.sponsor?.sponsor)){
@@ -278,7 +278,7 @@ const MakeOffer = ({
           ...network,
           sponsor: {
             ...network.sponsor,
-            sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor),
+            sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
           }
         }
 
@@ -289,7 +289,7 @@ const MakeOffer = ({
               ...network.sponsor,
               sponsor: {
                 ...network.sponsor.sponsor,
-                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor)
+                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
               }
             }
           }
@@ -304,7 +304,7 @@ const MakeOffer = ({
                 ...network.sponsor.sponsor,
                 sponsor:{
                   ...network.sponsor.sponsor.sponsor,
-                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor)
+                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
                 }
               }
             }
@@ -322,7 +322,7 @@ const MakeOffer = ({
                   ...network.sponsor.sponsor.sponsor,
                   sponsor: {
                     ...network.sponsor.sponsor.sponsor.sponsor,
-                    sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor)
+                    sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
                   }
                 }
               }
@@ -373,67 +373,6 @@ const MakeOffer = ({
 
 
   }
-
-  //change payable level to highest value of company's collection available
-  // const changeSellerPayableLevel = async () => {
-  //   if(!referralAllowedCollections) return;
-  //   const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
-
-  //   //only change the payable level, when selling is done by non-company address 
-  //   if(listingData.sellerAddress != '0x4A70209B205EE5C060E3065E1c5E88F3e6BA26Bf' && allowedContracts.includes(nftCollection._id)) {
-      
-  //     //check if the seller has any other company's collection, if yes then update to that level, otherwise update level to 1
-  //     const chainId = process.env.NODE_ENV == "production" ? 56 : 97;
-  //     const {data} =  await axios.get(`${HOST}/api/infura/sdk/getCollectionByWalletAddress/${chainId}/${listingData.sellerAddress}`);
-
-  //     const allCollectionsBySeller = data.collections;
-      
-  //     if(Boolean(allCollectionsBySeller) && allCollectionsBySeller.length > 0){
-  //       const allCollectionContracts = allCollectionsBySeller.map(contracts => contracts.contract);
-      
-  //       //check payable level of all those allowed contracts if possible
-  //       const payableLevels = allCollectionContracts.map(async contract => 
-  //         {
-  //           const query = `*[_type == "nftCollection" && chainId == "${process.env.NODE_ENV == 'production' ? 56 : 97}" && lower(contractAddress) == lower("${contract}")]`;
-  //           const result = await config.fetch(query);
-  //           return result[0];
-  //         });
-        
-  //       const allCollection = await Promise.all(payableLevels);
-  //       let filteredCollection = allCollection.filter(collection => collection != null);
-  //       filteredCollection = filteredCollection.filter(collection => allowedContracts.includes(collection._id));
-        
-  //       //get max payable level
-  //       let newPayLevel = 1;
-  //       const levels = filteredCollection.map(collection => Number(collection.payablelevel));
-  //       newPayLevel = Math.max(...levels);
-
-  //       const {payablelevel} = await getUser(listingData.sellerAddress);
-        
-  //       if(Boolean(payablelevel) && Number(newPayLevel) > Number(payablelevel)){
-  //         updateLevel(
-  //           {
-  //             walletAddress: listingData.sellerAddress,
-  //             level: newPayLevel,
-  //           }
-  //         )
-  //       }
-
-
-  //     }
-      
-  //     // console.log(allCollectionsBySeller)
-  //     // if(allCollectionsBySeller.count == 0 || !Boolean(allCollectionsBySeller.count)){
-  //     //   updateLevel({ walletAddress: listingData.sellerAddress, level: 1});
-  //     // }else{
-  //     //   updateLevel(listingData.sellerAddress, 3);
-  //     // }
-  //     return
-  //   }
-  //   console.log('not eligible')
-  // }
-
-
 
   //function to make offer for nfts
   const makeAnOffer = async (

@@ -2,7 +2,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { MdAdd } from 'react-icons/md'
 import { FiCheck } from 'react-icons/fi'
-import { useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { BiTransferAlt } from 'react-icons/bi'
 import { AiOutlineFire } from 'react-icons/ai'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
@@ -15,6 +15,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { updateBoughtNFTs } from '../../mutators/SanityMutators'
 
 
 const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
@@ -23,7 +24,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
     const chainid = useChainId();
     const router = useRouter();
     const { selectedBlockchain } = useMarketplaceContext()
-    const { setLoadingNewPrice, HOST } = useSettingsContext();
+    const { setLoadingNewPrice, HOST, referralAllowedCollections } = useSettingsContext();
     const [showBurnModal, setBurnModal] = useState(false);
     const [showCancelModal, setCancelModal] = useState(false);
     const queryClient = useQueryClient();
@@ -34,6 +35,16 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
     const [transferModal, setTransferModal] = useState(false);
     const [transferAddress, setTransferAddress] = useState('');
     const switchChain = useSwitchChain();
+
+    const { mutate: changeBoughtNFTs } = useMutation(
+      ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
+      {
+        onError: (err) => { console.log(err); },
+        onSuccess: (res) => { 
+          // console.log(res)
+        }
+      }
+    )
 
     const cancelListing = (
         e,
@@ -260,7 +271,8 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
       //   setBurnModal(false);
       //   return
       // }
-      if (!Boolean(listingData?.message == 'NFT data not found')) {
+      
+      if (Boolean(listingData)) {
         toastHandler.error('Cannot transfer a listed NFT. Delist this NFT first.', errorToastStyle);
         setTransferModal(false);
         return
@@ -294,7 +306,38 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
         ;(async() => {
           const sdk = new ThirdwebSDK(signer);
           const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
-          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.tokenId);
+          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.tokenId)
+                                          .catch(err => {
+                                            if(err.reason == 'user rejected transaction'){
+                                              toast.error('The transaction is rejection via wallet', errorToastStyle);
+                                            }
+                                          });
+          
+          if(tx){
+            if(referralAllowedCollections.map(coll => coll._ref).includes(nftCollection._id)){
+              //if the nft is from rewarding collection then change the changebought nft, add in receiver and remove from transferer
+              const payObj =  {
+                walletAddress: transferAddress,
+                chainId: nftCollection.chainId,
+                contractAddress: nftCollection.contractAddress,
+                tokenId: nftContractData.tokenId,
+                payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
+                type: 'buy'
+              }
+              changeBoughtNFTs(payObj);
+    
+              const sellObj = {
+                ...payObj,
+                walletAddress: address,
+                type: 'sell',
+              }
+              changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
+            }
+            toast.success("The NFT has been transferred to the designated wallet", successToastStyle);
+            // window.location.reload(true);
+          }
+          
+          setIsTransfer(false);
           
           // console.log(tx);
             //saving transaction in sanity
@@ -319,15 +362,12 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
           //   toastHandler.error('Error saving Transaction Activity.', errorToastStyle);
           //   return
           // })
-          toast.success("The NFT has been transferred to the designated wallet", successToastStyle);
-          setIsTransfer(false);
+          
         })()
       }catch (error){
         console.log(error)
         setIsTransfer(false);
       }
-      window.location.reload(true);
-      setIsTransfer(false);
     }
 
   return (
@@ -402,7 +442,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
         </div>
     )}
 
-    {Boolean(address) && (
+    {Boolean(address) && (String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) &&  (
         <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
           {Boolean(listingData) && String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
             <>
@@ -425,43 +465,38 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
               )}
             </>
           )}
-          {(String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) && (
-            <>
-              {isTransfer ? (
-                <div className="w-full md:w-1/3 p-2">
-                  <button 
-                        className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                        onClick={() => setBurnModal(true)}>
-                          <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
-                    </button>
-                </div>
-              ) : (
-                <div className="w-full md:w-1/3 p-2">
-                  <button 
-                        className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                        onClick={() => setTransferModal(true)}>
-                          <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
-                    </button>
-                </div>
-              )}
-              {isBurning ? (
-                <div className="w-full md:w-1/3 p-2">
-                  <button 
-                      className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                      disabled>
-                      <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
-                  </button>
-                </div>
-              ):(
-                <div className="w-full md:w-1/3 p-2">
-                  <button 
-                      className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
-                      onClick={() => setBurnModal(true)}>
-                      <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
-                  </button>
-                </div>
-              )}
-            </>
+
+          {isTransfer ? (
+            <div className="w-full md:w-1/3 p-2">
+              <button className="bg-amber-500 w-full flex justify-center items-center pointer-events-none text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors opacity-80">
+                      <IconLoading dark="inbutton" /><span className="inline-block ml-1">Transferring</span>
+                </button>
+            </div>
+          ) : (
+            <div className="w-full md:w-1/3 p-2">
+              <button 
+                    className="bg-amber-500 w-full text-center hover:bg-amber-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                    onClick={() => setTransferModal(true)}>
+                      <BiTransferAlt className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Transfer</span>
+                </button>
+            </div>
+          )}
+          {isBurning ? (
+            <div className="w-full md:w-1/3 p-2">
+              <button 
+                  className="flex gap-2 justify-center bg-red-500 w-full text-center pointer-events-none hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                  disabled>
+                  <IconLoading dark="inbutton" /><span className="inline-block ml-1">Burning</span>
+              </button>
+            </div>
+          ):(
+            <div className="w-full md:w-1/3 p-2">
+              <button 
+                  className="bg-red-500 w-full text-center hover:bg-red-600 w-lg relative h-auto cursor-pointer rounded-lg px-3 py-3 text-sm text-neutral-50 transition-colors"
+                  onClick={() => setBurnModal(true)}>
+                  <AiOutlineFire className="inline-block text-lg -mt-1" /><span className="inline-block ml-1">Burn</span>
+              </button>
+            </div>
           )}
         </div>
       )}
