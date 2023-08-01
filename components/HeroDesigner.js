@@ -4,9 +4,21 @@ import {  allbenefits } from '../constants/benefits';
 import "react-image-gallery/styles/css/image-gallery.css";
 
 import nomin1  from '../pages/mushroom-kingdom/assets/cryptocreatures/1.png'
+import nomin2  from '../pages/mushroom-kingdom/assets/cryptocreatures/2.png'
+import nomin3  from '../pages/mushroom-kingdom/assets/cryptocreatures/3.png'
+import nomin4  from '../pages/mushroom-kingdom/assets/cryptocreatures/4.png'
 import grutzi1  from '../pages/mushroom-kingdom/assets/neondreams/2.png'
+import grutzi2  from '../pages/mushroom-kingdom/assets/neondreams/3.png'
+import grutzi3  from '../pages/mushroom-kingdom/assets/neondreams/4.png'
+import grutzi4  from '../pages/mushroom-kingdom/assets/neondreams/5.png'
 import hidoi1  from '../pages/mushroom-kingdom/assets/celestialbeings/3.png'
+import hidoi2  from '../pages/mushroom-kingdom/assets/celestialbeings/4.png'
+import hidoi3  from '../pages/mushroom-kingdom/assets/celestialbeings/5.png'
+import hidoi4  from '../pages/mushroom-kingdom/assets/celestialbeings/6.png'
 import kaioji1  from '../pages/mushroom-kingdom/assets/artifacts/4.png'
+import kaioji2  from '../pages/mushroom-kingdom/assets/artifacts/5.png'
+import kaioji3  from '../pages/mushroom-kingdom/assets/artifacts/6.png'
+import kaioji4  from '../pages/mushroom-kingdom/assets/artifacts/7.png'
 
 import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
 import creature2  from '../pages/rewarding-renditions/assets/cryptocreatures/2.png'
@@ -67,13 +79,17 @@ const HeroDesigner = () => {
     neon: '/collection/binance/neon_dreams',
     celestial: '/collection/binance/celestial_beings',
     artifacts: '/collection/binance/artifacts_of_the_future',
+    nomin: '/collection/ethereum/nomin',
+    grutzi: '/collection/ethereum/grutzi',
+    hidoi: '/collection/ethereum/hidoi',
+    kaioji: '/collection/ethereum/kaioji',
   }
   const style = {
     wrapper: `relative overflow-hidden`,
     container: `pt-[8rem]`,
     contentWrapper: `container mx-auto relative sm:px-[2rem] lg:px-[8rem] text-center`,
     copyContainer: `lg:w-1/2`,
-    grid: 'text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0 md:gap-6',
+    grid: 'text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 md:gap-6',
     gridCol: 'flex flex-wrap items-center justify-center gap-6 relative cursor-pointer overflow-hidden p-8 lg:p-0',
     gridContent : 'relative rounded-3xl heroImageContainer overflow-hidden w-full',
     gridImage: 'rounded-3xl w-full object-cover heroImage',
@@ -260,6 +276,78 @@ const HeroDesigner = () => {
       height: '100%',
     },
   ];
+  const nominImages = [
+    {
+      original: nomin1.src,
+      thumbnail: nomin1.src,
+    },
+    {
+      original: nomin2.src,
+      thumbnail: nomin2.src,
+    },
+    {
+      original: nomin3.src,
+      thumbnail: nomin3.src,
+    },
+    {
+      original: nomin4.src,
+      thumbnail: nomin4.src,
+    },
+  ];
+  const grutziImages = [
+    {
+      original: grutzi1.src,
+      thumbnail: grutzi1.src,
+    },
+    {
+      original: grutzi2.src,
+      thumbnail: grutzi2.src,
+    },
+    {
+      original: grutzi3.src,
+      thumbnail: grutzi3.src,
+    },
+    {
+      original: grutzi4.src,
+      thumbnail: grutzi4.src,
+    },
+  ];
+  const hidoiImages = [
+    {
+      original: hidoi1.src,
+      thumbnail: hidoi1.src,
+    },
+    {
+      original: hidoi2.src,
+      thumbnail: hidoi2.src,
+    },
+    {
+      original: hidoi3.src,
+      thumbnail: hidoi3.src,
+    },
+    {
+      original: hidoi4.src,
+      thumbnail: hidoi4.src,
+    },
+  ];
+  const kaiojiImages = [
+    {
+      original: kaioji1.src,
+      thumbnail: kaioji1.src,
+    },
+    {
+      original: kaioji2.src,
+      thumbnail: kaioji2.src,
+    },
+    {
+      original: kaioji3.src,
+      thumbnail: kaioji3.src,
+    },
+    {
+      original: kaioji4.src,
+      thumbnail: kaioji4.src,
+    },
+  ];
   const collectionPicture = {
     'crypto1' : creature1.src,
     'neon1' : neon1.src,
@@ -302,7 +390,26 @@ const HeroDesigner = () => {
           <div className={style.grid}>
             {/* cypto */}
             <div className={style.gridCol}>
-              <p className="text-md"><TbStar className="inline"/> First ever NFT Referral on multiple chains</p>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={nominImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  isRTL={true}
+                  slideInterval={1800}/>
+                <div className={style.content}>
+                  <p className="title">Nomin</p>
+                  <p className={style.subtitle}>Mint Price: 0.04 <IconEthereum/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.nomin} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
               <div className={style.gridContent}>
                 <ImageGallery 
                   items={cryptoImages}
@@ -323,13 +430,12 @@ const HeroDesigner = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-md"><TbStar className="inline"/> One Wallet - one referral network and earn recurring income from FIVE different chains.</p>
             </div>
             {/* neon */}
             <div className={style.gridCol + ' pt-0 md:pt-10 pb-10'}>
               <div className={style.gridContent}>
                 <ImageGallery 
-                  items={neonImages}
+                  items={grutziImages}
                   showNav={false}
                   showThumbnails={false}
                   showFullscreenButton={false}
@@ -338,12 +444,11 @@ const HeroDesigner = () => {
                   slideInterval={2200}
                   isRTL={true}
                   />
-                {/* <img src={neon2.src} className={style.gridImage + ' max-h-[150px]'} alt="Neon Dreams" /> */}
                 <div className={style.content}>
-                  <p className="title">Neon Dream</p>
-                  <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
+                  <p className="title">Grutzi</p>
+                  <p className={style.subtitle}>Mint Price: 0.08 <IconEthereum/></p>
                   <div className={style.mintButton}>
-                    <Link href={links.neon} passHref>
+                    <Link href={links.grutzi} passHref>
                       <a>Mint Now</a>
                     </Link>
                   </div>
@@ -359,7 +464,6 @@ const HeroDesigner = () => {
                   autoPlay={true}
                   isRTL={true}
                   slideInterval={2400}/>
-                {/* <img src={neon1.src} className={style.gridImage} alt="Neon Dreams" /> */}
                 <div className={style.content}>
                   <p className="title">Neon Dreams</p>
                   <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
@@ -372,37 +476,37 @@ const HeroDesigner = () => {
               </div>
             </div>
             {/* artifacts */}
-            <div className={style.gridCol}>
-            <p className="text-md"><TbStar className="inline"/> Calling all NFT enthusiasts and influencers - connect your wallet, share your link, and get benefitted.</p>
-            <div className={style.gridContent}>
-              <ImageGallery 
-                  items={artifactsFuture}
-                  showNav={false}
-                  showThumbnails={false}
-                  showFullscreenButton={false}
-                  showPlayButton={false}
-                  autoPlay={true}
-                  slideInterval={2800}
-                  />
-              {/* <img src={artifacts3.src} className={style.gridImage + ' h-full'} alt="Artifacts of the Future" /> */}
-              <div className={style.content}>
-                <p className="title">Artifacts of the Future</p>
-                <p className={style.subtitle}>Mint Price: 1.49 <IconBNB/></p>
-                <div className={style.mintButton}>
-                  <Link href={links.artifacts} passHref>
-                    <a>Mint Now</a>
-                  </Link>
-                </div>
-                </div>
-            </div>
-            <p className="text-md"><TbStar className="inline"/> One time purchase/mint NFT from any chain, get referral and transaction reward forever.  </p>
+            {/* <div className={style.gridCol}>
+              <p className="text-md"><TbStar className="inline"/> Calling all NFT enthusiasts and influencers - connect your wallet, share your link, and get benefitted.</p>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                    items={artifactsFuture}
+                    showNav={false}
+                    showThumbnails={false}
+                    showFullscreenButton={false}
+                    showPlayButton={false}
+                    autoPlay={true}
+                    slideInterval={2800}
+                    />
+
+                <div className={style.content}>
+                  <p className="title">Artifacts of the Future</p>
+                  <p className={style.subtitle}>Mint Price: 1.49 <IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.artifacts} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                  </div>
+              </div>
+              <p className="text-md"><TbStar className="inline"/> One time purchase/mint NFT from any chain, get referral and transaction reward forever.  </p>
               
-            </div>
+            </div> */}
             {/* beings */}
             <div className={style.gridCol + ' py-10'}>
               <div className={style.gridContent}>
                 <ImageGallery 
-                    items={celestialBeings}
+                    items={hidoiImages}
                     showNav={false}
                     showThumbnails={false}
                     showFullscreenButton={false}
@@ -412,10 +516,10 @@ const HeroDesigner = () => {
                     />
                 {/* <img src={celestial2.src} className={style.gridImage} alt="Celestial Beings" /> */}
                 <div className={style.content}>
-                  <p className="title">Celestial Beings</p>
-                  <p className={style.subtitle}>Mint Price: 1.04 <IconBNB/></p>
+                  <p className="title">Hidoi</p>
+                  <p className={style.subtitle}>Mint Price: 0.135 <IconEthereum/></p>
                   <div className={style.mintButton}>
-                    <Link href={links.celestial} passHref>
+                    <Link href={links.hidoi} passHref>
                       <a>Mint Now</a>
                     </Link>
                   </div>
@@ -445,9 +549,196 @@ const HeroDesigner = () => {
             </div>
             {/* cypto */}
             <div className={style.gridCol}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={kaiojiImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2300}/>
+                  <div className={style.content}>
+                    <p className="title">Kaioji</p>
+                    <p className={style.subtitle}>Mint Price: 0.188 <IconEthereum/></p>
+                    <div className={style.mintButton}>
+                      <Link href={links.hidoi} passHref>
+                        <a>Mint Now</a>
+                      </Link>
+                    </div>
+                  </div>
+              </div>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={artifactsFuture}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2400}/>
+                  <div className={style.content}>
+                    <p className="title">Artifacts of the Future</p>
+                    <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
+                    <div className={style.mintButton}>
+                      <Link href={links.artifacts} passHref>
+                        <a>Mint Now</a>
+                      </Link>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={style.grid + ' hidden'}>
+
+            <div className={style.gridCol}>
+              <p className="text-md"><TbStar className="inline"/> First ever NFT Referral on multiple chains</p>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={cryptoImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  isRTL={true}
+                  slideInterval={2000}/>
+                <div className={style.content}>
+                  <p className="title">Crypto Creatures</p>
+                  <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.creatures} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <p className="text-md"><TbStar className="inline"/> One Wallet - one referral network and earn recurring income from FIVE different chains.</p>
+            </div>
+
+            {/* <div className={style.gridCol + ' pt-0 md:pt-10 pb-10'}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={neonImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2200}
+                  isRTL={true}
+                  />
+
+                <div className={style.content}>
+                  <p className="title">Neon Dream</p>
+                  <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.neon} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                  </div>
+              </div>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={neonImages2}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  isRTL={true}
+                  slideInterval={2400}/>
+
+                <div className={style.content}>
+                  <p className="title">Neon Dreams</p>
+                  <p className={style.subtitle}>Mint Price: 0.64 <IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.neon} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                  </div>
+              </div>
+            </div>
+
+            <div className={style.gridCol}>
+            <p className="text-md"><TbStar className="inline"/> Calling all NFT enthusiasts and influencers - connect your wallet, share your link, and get benefitted.</p>
+            <div className={style.gridContent}>
+              <ImageGallery 
+                  items={artifactsFuture}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2800}
+                  />
+
+              <div className={style.content}>
+                <p className="title">Artifacts of the Future</p>
+                <p className={style.subtitle}>Mint Price: 1.49 <IconBNB/></p>
+                <div className={style.mintButton}>
+                  <Link href={links.artifacts} passHref>
+                    <a>Mint Now</a>
+                  </Link>
+                </div>
+                </div>
+            </div>
+            <p className="text-md"><TbStar className="inline"/> One time purchase/mint NFT from any chain, get referral and transaction reward forever.  </p>
+              
+            </div>
+
+            <div className={style.gridCol + ' py-10'}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                    items={celestialBeings}
+                    showNav={false}
+                    showThumbnails={false}
+                    showFullscreenButton={false}
+                    showPlayButton={false}
+                    autoPlay={true}
+                    slideInterval={2600}
+                    />
+
+                <div className={style.content}>
+                  <p className="title">Celestial Beings</p>
+                  <p className={style.subtitle}>Mint Price: 1.04 <IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.celestial} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                    items={celestialBeings2}
+                    showNav={false}
+                    showThumbnails={false}
+                    showFullscreenButton={false}
+                    showPlayButton={false}
+                    autoPlay={true}
+                    slideInterval={2500}
+                    />
+
+                <div className={style.content}>
+                  <p className="title">Celestial Beings</p>
+                  <p className={style.subtitle}>Mint Price: 1.04<IconBNB/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.celestial} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                  </div>
+              </div>
+            </div>
+
+            <div className={style.gridCol}>
             <p className="text-md"><TbStar className="inline"/> Earn 10% straightaway from anyone you refer when they buy.</p>
             <div className={style.gridContent}>
-            {/* <img src={creature3.src} className={style.gridImage} alt="Crypto Creature" /> */}
+
             <ImageGallery 
               items={cryptoImages2}
               showNav={false}
@@ -467,10 +758,10 @@ const HeroDesigner = () => {
               </div>
             </div>
             <p className="text-md"><TbStar className="inline"/> Occasional Airdrops of Native Tokens(respective chain) from each collection.</p>
-            </div>
+            </div> */}
           </div>
           <div className="mt-[2rem]">
-            <p className="text-xl animate-bounce text-white">🌟🌟 Minting Available in Binance Chain 🌟🌟</p>
+            <p className="text-xl animate-bounce text-white">🌟🌟 Minting Available in Ethereum and Binance Chain 🌟🌟</p>
           </div>
           {/* {showCollection ? ( */}
             <div className="text-white mt-[3rem] border border-white/20 rounded-3xl bg-slate-900/80 mx-8 md:mx-0 p-8 shadow-md">
@@ -737,24 +1028,6 @@ const HeroDesigner = () => {
               </Transition>
               
             </div>
-          
-          {/* //   <div className={style.ctaContainer + ' mt-[3rem]'}>
-          //       <button
-          //         className={style.accentedButton}
-          //         onClick={() => setShowCollection(true)}
-          //       >
-          //         Mint Now
-          //       </button>
-          //       <Link
-          //         href="https://nuvanft.io/rewardingrenditions/WhitePaper.pdf"
-          //         passHref
-          //       >
-          //         <a target="_blank" className={style.button}>
-          //           Whitepaper
-          //         </a>
-          //       </Link>
-          //     </div>
-          // )} */}
         </div>
       </div>
     </div>
