@@ -75,7 +75,7 @@ const Header = ({setShowMenu, showMenu}) => {
                         <a className="nav-link text-center" aria-current="page" href="#" onClick={() => {setShowAbout(true); setShowMenu(false)}}>About</a>
                         <a className="nav-link text-center" href="#collection" onClick={() => setShowMenu(false)}>NFT</a>
                         <a className="nav-link text-center" href="#buy" onClick={() => setShowMenu(false)}>Buy</a>
-                        <a className="nav-link text-center" href="/mushroomkingdom/WhitePaper.pdf" target="_blank">Whitepaper</a>
+                        <a className="nav-link text-center" href="/mushroomkingdom/Whitepaper.pdf" target="_blank">Whitepaper</a>
                         <a className="nav-link text-center" href="#roadmap" onClick={() => setShowMenu(false)}>Roadmap</a>
                         <a className="nav-link text-center" href="#videos" onClick={() => setShowMenu(false)}>Videos</a>
                         <a className="nav-link text-center" href="#faq" onClick={() => setShowMenu(false)}>Faq</a>
