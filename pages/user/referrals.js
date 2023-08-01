@@ -15,6 +15,8 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getMyNetwork, getReferralPayment } from '../../fetchers/SanityFetchers'
 import { TbSquareRoundedNumber1Filled, TbSquareRoundedNumber2Filled, TbSquareRoundedNumber3Filled, TbSquareRoundedNumber4Filled, TbSquareRoundedNumber5Filled,  } from 'react-icons/tb'
 import SEO from '../../components/SEO'
+import { BsQuestionCircle } from 'react-icons/bs'
+import Link from 'next/link'
 
 const referrals = () => {
     const address = useAddress();
@@ -315,7 +317,11 @@ const referrals = () => {
                     <p className="text-center text-sm">Commissions from Grayed out networks will get unlocked once high value NFTs are purchased from any of Nuva NFT's collections. <a href="/user/0x9cB0b5Ba3873b4E4860A8469d66998059Af79eA6">Click here to check the collections.</a></p>
                     <div className={style.container}>
                         <div className="relative">
-                            <p className="font-semibold text-center mb-5">Referral Bonuses</p>
+                            <p className="font-semibold text-center mb-5">Loyalty Rewards 
+                                <Link href="/blogs/loyalty-reward" legacyBehavior={false}>
+                                    <BsQuestionCircle className="inline ml-2 hover:text-sky-600 transition" />
+                                </Link>
+                            </p>
                             <div className={style.tablewrapper}>
                                 <table className={style.table}>
                                     <thead className="relative">

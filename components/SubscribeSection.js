@@ -8,6 +8,7 @@ import dropimage from '../assets/pandadrop.png'
 import { RiArrowRightLine } from 'react-icons/ri'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { useSettingsContext } from '../contexts/SettingsContext'
+import { saveSubscriber } from '../mutators/SanityMutators'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[3rem]  pb-0 mt-0',
@@ -23,40 +24,56 @@ const SubscribeSection = () => {
   const SITE_KEY = process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY;
 
   const handleSubscribe = async (e, sanityClient = config, toastHandler = toast) => {
-      e.preventDefault()
+      e.preventDefault();
+
       if (subscriberEmail.length === 0) {
-          toastHandler.error(
-            'Enter your email address to subscribe to our upcoming Drop Lisintgs.',
-            errorToastStyle
-          )
-          return
-        }
-        //check for correct email address format
-        const pattern =
-          /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{3,9}[\.][a-z]{2,5}/g
-        const res = pattern.test(subscriberEmail)
-    
-        if (res === false) {
-          toastHandler.error('Incorrect email address.', errorToastStyle)
-          return
-        }
+        toastHandler.error('Enter your email address to subscribe to our upcoming Drop Lisintgs.', errorToastStyle)
+        return;
+      }
 
-        //recaptcha test
-        // console.log(e)
-        const inputVal = await e.target.form[0].value;
-        const token = captchaRef.current.getValue();
-        captchaRef.current.reset();
+      //check for correct email address format
+      const pattern =
+        /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{3,9}[\.][a-z]{2,5}/g
+      const res = pattern.test(subscriberEmail)
+  
+      if (res === false) {
+        toastHandler.error('Incorrect email address.', errorToastStyle)
+        return
+      }
 
-        await axios.post(`${HOST}/api/captchaverify`, 
-              {inputVal: inputVal, token: token})
-                    .then(res =>  {
-                      if(res?.data != 'Human') {
-                        return
-                      }
-                    })
-                    .catch((error) => {
-                    console.log('You are a BOT.');
-          })
+      //recaptcha test
+      // console.log(e)
+      const inputVal = await e.target.form[0].value;
+      const token = captchaRef.current.getValue();
+      if(!token){
+        toastHandler.error('Verify you are human by clicking on Google reCaptcha box', errorToastStyle);
+        return;
+      }
+
+      captchaRef.current.reset();
+
+      const {data: captchaValue} = await axios.post(`${HOST}/api/captchaverify`, {inputVal: inputVal, token: token});
+
+      if(captchaValue != 'Human'){
+        toastHandler.error('Bot Found.', errorToastStyle);
+        return;
+      }
+
+
+      const savesubs = await saveSubscriber(subscriberEmail);
+      if( savesubs == 'duplicate'){
+        setSubscriberEmail('');
+        toastHandler.error('You are already subscribed to our newsletter.', errorToastStyle);
+        return;
+      }
+      else if(savesubs == 'error'){
+        toastHandler.error('Error in saving subscriber', errorToastStyle);
+        return;
+      }else {
+        setSubscriberEmail('');
+        toastHandler.success('Your email address has been added in our newsletter list.', successToastStyle);
+        return;
+      }
     
         //check if subscriber is already present
         const subsriberExists = await sanityClient.fetch(
@@ -118,7 +135,7 @@ const SubscribeSection = () => {
             <br/><br/><p style="text-align: center"><a href='${HOST}/unsubscribe?email=${subscriberEmail}'>Click here to unsubscribe</a></p>`,
             })
             toastHandler.success(
-              'You will now be notified for any upcoming NFT Drops.',
+              'Your email address has been added in our newsletter list.',
               successToastStyle
             )
             setSubscriberEmail('')
@@ -147,7 +164,7 @@ const SubscribeSection = () => {
                 <form className="mt-10 relative max-w-sm space-y-3">
                     <input 
                         type="email" 
-                        className={`block w-full border ${dark ? ' border-slate-600 focus:ring-slate-500 bg-slate-700' : 'bg-white border-neutral-200 focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 '} rounded-full text-sm font-normal h-11 px-4 py-3`}
+                        className={`block w-full md:max-w-[305px] border ${dark ? ' border-slate-600 focus:ring-slate-500 bg-slate-700' : 'bg-white border-neutral-200 focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 '} rounded-full text-sm font-normal h-11 px-4 py-3`}
                         required=""  
                         placeholder="Enter your email"
                         value={subscriberEmail}
@@ -157,7 +174,7 @@ const SubscribeSection = () => {
                       sitekey={SITE_KEY} 
                       ref={captchaRef}/>
                     <button onClick={handleSubscribe} 
-                      className="w-full flex items-center justify-center rounded-full !leading-none disabled:bg-opacity-70 gradBlue text-neutral-50 p-4" type="button">
+                      className="w-full md:max-w-[305px] flex items-center justify-center rounded-full !leading-none disabled:bg-opacity-70 gradBlue text-neutral-50 p-4" type="button">
                         Subscribe
                     </button>
                 </form>

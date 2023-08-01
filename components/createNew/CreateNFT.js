@@ -16,7 +16,7 @@ import { useThemeContext } from '../../contexts/ThemeContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { useAddress, useChainId, useNetwork, useSigner, ConnectWallet } from '@thirdweb-dev/react'
+import { useAddress, useChainId, useSigner, ConnectWallet } from '@thirdweb-dev/react'
 
 const style = {
   wrapper: 'pr-[2rem]',
@@ -112,8 +112,6 @@ const CreateNFT = ({uuid}) => {
         },
       ],
       category: '',
-      itemtype: 'image',
-      tokenid: '',
     },
   })
   const {dark, HOST} = useSettingsContext();
@@ -139,14 +137,6 @@ const CreateNFT = ({uuid}) => {
     }
   }, [myCollections, chainid])
 
-  const [
-    {
-      data: { chain, chains },
-      loading,
-      error,
-    },
-    switchNetwork,
-  ] = useNetwork()
   const address = useAddress()
   const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
   const [selectedCollection, setSelectedCollection] = useState({contractAddress: ''})
@@ -226,7 +216,9 @@ const CreateNFT = ({uuid}) => {
     
     try {
       setIsMinting(true)
-      const sdk = new ThirdwebSDK(signer)
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      })
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress)
       const tx = await nftCollection.erc721.mintTo(address, {...state, image: file})
 

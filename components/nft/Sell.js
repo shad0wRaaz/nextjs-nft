@@ -1,9 +1,9 @@
 import axios from 'axios'
 import Script from 'next/script'
-import { BigNumber, ethers } from 'ethers'
 import toast from 'react-hot-toast'
 import { useMutation } from 'react-query'
 import DatePicker from 'react-datepicker'
+import { BigNumber, ethers } from 'ethers'
 import { useQueryClient } from 'react-query'
 import { RiAuctionLine } from 'react-icons/ri'
 import { Router, useRouter } from 'next/router'
@@ -207,7 +207,9 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
     }
     
     try {
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      });
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
       const tx = await contract.directListings.createListing(listing).catch(err => {
@@ -380,7 +382,9 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
     }
     // console.log(listing);
     try {
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      });
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
       const tx = await contract?.englishAuctions.createAuction(auction)

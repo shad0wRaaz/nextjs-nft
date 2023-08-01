@@ -1,6 +1,13 @@
-import React, { Fragment, useState } from 'react';
 import ImageGallery from 'react-image-gallery';
+import React, { Fragment, useState } from 'react';
+import {  allbenefits } from '../constants/benefits';
 import "react-image-gallery/styles/css/image-gallery.css";
+
+import nomin1  from '../pages/mushroom-kingdom/assets/cryptocreatures/1.png'
+import grutzi1  from '../pages/mushroom-kingdom/assets/neondreams/2.png'
+import hidoi1  from '../pages/mushroom-kingdom/assets/celestialbeings/3.png'
+import kaioji1  from '../pages/mushroom-kingdom/assets/artifacts/4.png'
+
 import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
 import creature2  from '../pages/rewarding-renditions/assets/cryptocreatures/2.png'
 import creature3  from '../pages/rewarding-renditions/assets/cryptocreatures/3.png'
@@ -32,12 +39,12 @@ import artifacts4  from '../pages/rewarding-renditions/assets/artifacts/4.png'
 import artifacts5  from '../pages/rewarding-renditions/assets/artifacts/5.png'
 import artifacts6  from '../pages/rewarding-renditions/assets/artifacts/6.png'
 import artifacts7  from '../pages/rewarding-renditions/assets/artifacts/7.png'
-import artifacts8  from '../pages/rewarding-renditions/assets/artifacts/8.png'
+import artifacts8  from '../pages/rewarding-renditions/assets/artifacts/8.png';
 import Link from 'next/link';
 import { TbSquareRoundedNumber2, TbSquareRoundedNumber3, TbSquareRoundedNumber4, TbSquareRoundedNumber5, TbStar } from 'react-icons/tb';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { IconBNB } from './icons/CustomIcons';
+import { IconArbitrum, IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons';
 import { HiArrowNarrowDown } from 'react-icons/hi';
 import { useQuery } from 'react-query';
 import Airdrop from './Airdrop';
@@ -50,8 +57,10 @@ import { MdOutlineOpenInNew } from 'react-icons/md';
 const HeroDesigner = () => {
   const [showCollection, setShowCollection] = useState(false);
   const router = useRouter();
-  
+  const [selectedCollection, setSelectedCollection] = useState('mushroom-kingdom');
   const [showAirdrop, setShowAirdrop] = useState(false);
+  const [showAirdropMenu, setShowAirdropMenu] = useState(false);
+  const [airdropChain, setAirdropChain] = useState('binance');
 
   const links = {
     creatures: '/collection/binance/crypto_creatures',
@@ -64,7 +73,7 @@ const HeroDesigner = () => {
     container: `pt-[8rem]`,
     contentWrapper: `container mx-auto relative sm:px-[2rem] lg:px-[8rem] text-center`,
     copyContainer: `lg:w-1/2`,
-    grid: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0 md:gap-6',
+    grid: 'text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0 md:gap-6',
     gridCol: 'flex flex-wrap items-center justify-center gap-6 relative cursor-pointer overflow-hidden p-8 lg:p-0',
     gridContent : 'relative rounded-3xl heroImageContainer overflow-hidden w-full',
     gridImage: 'rounded-3xl w-full object-cover heroImage',
@@ -91,6 +100,7 @@ const HeroDesigner = () => {
     infoIcon: `flex justify-end items-center flex-1 text-[#8a939b] text-3xl font-bold`,
     redBlur: `block bg-[#ef233c] w-72 h-72 absolute lg:ml-[10rem] md:ml-[3rem] sm:ml-[2rem] rounded-full filter blur-3xl opacity-20 lg:w-96 lg:h-96`,
     blueBlur: `block bg-[#04868b] w-72 h-72 absolute lg:ml-[43rem] md:ml-[5rem] sm:ml-[5rem] mt-40 rounded-full filter blur-3xl opacity-20 lg:w-96 lg:h-96 nc-animation-delay-2000`,
+    collectionSelector: `p-2 px-3 rounded-xl transition cursor-pointer text-sm `,
   }
   const cryptoImages = [
     {
@@ -250,6 +260,16 @@ const HeroDesigner = () => {
       height: '100%',
     },
   ];
+  const collectionPicture = {
+    'crypto1' : creature1.src,
+    'neon1' : neon1.src,
+    'celestial1' : celestial1.src,
+    'artifacts1' : artifacts1.src,
+    'nomin1' : nomin1.src,
+    'grutzi1' : grutzi1.src,
+    'hidoi1' : hidoi1.src,
+    'kaioji1' : kaioji1.src,
+  }
   const settings = {
     dots: false,
     speed: 2000,
@@ -262,7 +282,6 @@ const HeroDesigner = () => {
     pauseOnHover: false,
     autoplaySpeed: 2000
   };
-
 
   return (
     <div className={style.wrapper}>
@@ -277,7 +296,7 @@ const HeroDesigner = () => {
               <HiArrowNarrowDown className="inline"/>
             </p>
             <p className="text-center text-5xl my-3 huerotation">
-              REWARDING RENDITIONS
+              in Ethereum and Binance
             </p>
           </div>
           <div className={style.grid}>
@@ -304,7 +323,7 @@ const HeroDesigner = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-md"><TbStar className="inline"/> One Wallet - one referral network and earn recurring income from FOUR different chains.</p>
+              <p className="text-md"><TbStar className="inline"/> One Wallet - one referral network and earn recurring income from FIVE different chains.</p>
             </div>
             {/* neon */}
             <div className={style.gridCol + ' pt-0 md:pt-10 pb-10'}>
@@ -376,7 +395,7 @@ const HeroDesigner = () => {
                 </div>
                 </div>
             </div>
-            <p className="text-xl animate-bounce"><TbStar className="inline"/> Minting Available now in Binance Chain</p>
+            <p className="text-md"><TbStar className="inline"/> One time purchase/mint NFT from any chain, get referral and transaction reward forever.  </p>
               
             </div>
             {/* beings */}
@@ -447,15 +466,66 @@ const HeroDesigner = () => {
                 </div>
               </div>
             </div>
-            <p className="text-md"><TbStar className="inline"/> Occasional BNB Airdrops in each collection.</p>
+            <p className="text-md"><TbStar className="inline"/> Occasional Airdrops of Native Tokens(respective chain) from each collection.</p>
             </div>
           </div>
+          <div className="mt-[2rem]">
+            <p className="text-xl animate-bounce text-white">🌟🌟 Minting Available in Binance Chain 🌟🌟</p>
+          </div>
           {/* {showCollection ? ( */}
-            <div className="mt-[5rem] border border-white/20 rounded-3xl bg-slate-900/80 mx-8 md:mx-0 p-8 shadow-md">
-              <p className="text-xl mb-6">Nuva NFT's exclusive 4 sets of NFT Collections</p>
+            <div className="text-white mt-[3rem] border border-white/20 rounded-3xl bg-slate-900/80 mx-8 md:mx-0 p-8 shadow-md">
+              <p className="text-xl mb-3">Nuva NFT's exclusive NFT Collections</p>
+              <div className="flex justify-center gap-3 mb-6">
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'mushroom-kingdom' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800') }
+                  onClick={() => setSelectedCollection('mushroom-kingdom')}
+                  >
+                    <IconEthereum/> Mushroom Kingdom
+                </div>
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'rewarding-renditions' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800')}
+                  onClick={() => setSelectedCollection('rewarding-renditions')}
+                  >
+                    <IconBNB/> Rewarding Renditions
+                </div>
+              </div>
               <div className={style.ctaContainer}>
-                
-                <div className={style.collectionSelection}>
+                {allbenefits.filter(d => d.collection === selectedCollection).map(c => (
+                  <div className={style.collectionSelection} key={c.contractAddress}>
+                    <div className="absolute top-12 right-2">
+                      <Image src={collectionPicture[c.picture]} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="text-left">
+                        <p className="font-bold text-lg">{c.name}</p>
+                        <p className={style.nftCount}>{c.totalSize} NFTs</p>
+                      </div>
+                    </div>
+                    <div className="text-left mt-3">
+                      <p>Mint Price: {c.mintPrice} {c.chain === 'binance' && <IconBNB/>}{c.chain === 'ethereum' && <IconEthereum/>}</p>
+                      <p className={style.unilevelInfo}>Unlocks Uni Level: 
+                        {
+                        c.unlockLevel == 2 ? <TbSquareRoundedNumber2 fontSize={25} />
+                        : c.unlockLevel == 3 ? <TbSquareRoundedNumber3 fontSize={25} />
+                        : c.unlockLevel == 4 ? <TbSquareRoundedNumber4 fontSize={25} />
+                        : c.unlockLevel == 5 ? <TbSquareRoundedNumber5 fontSize={25} />
+                        : ''
+                        }
+                      </p>
+                      <p className="text-left text-sm mt-2">{c.earnDescription}<br/><br/></p>
+                      <div className="flex flex-wrap gap-2">
+                        <Link href={`/collection/${c.chain}/${c.url}`} passHref>
+                          <a className="w-full">
+                            <button className={style.buyButton + (c.buttonColor === 'orange' ? style.orange : c.buttonColor === 'neon' ? style.neon : c.buttonColor === 'flamingo' ? style.flamingo : style.apple) }>
+                                    View Collection / Mint NFT
+                            </button>
+                          </a>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {/* <div className={style.collectionSelection}>
                   <div className="absolute top-12 right-2">
                     <Image src={creature1.src} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
                   </div>
@@ -479,11 +549,6 @@ const HeroDesigner = () => {
                           </button>
                         </a>
                       </Link>
-                      {/* <button 
-                        className={style.buyButton + style.orange}
-                        onClick={() => setShowAirdrop('crypto')}>
-                              View Airdrops
-                      </button> */}
                     </div>
 
                   </div>
@@ -512,9 +577,6 @@ const HeroDesigner = () => {
                           </button>
                         </a>
                       </Link>
-                      {/* <button className={style.buyButton + style.neon}>
-                              View Airdrop
-                      </button> */}
                     </div>
 
                   </div>
@@ -543,9 +605,6 @@ const HeroDesigner = () => {
                           </button>
                         </a>
                       </Link>
-                      {/* <button className={style.buyButton + style.flamingo}>
-                        View Airdrop
-                      </button> */}
                     </div>
 
                   </div>
@@ -574,27 +633,24 @@ const HeroDesigner = () => {
                           </button>
                         </a>
                       </Link>
-                      {/* <button className={style.buyButton + style.apple}>
-                        View Airdrop
-                      </button> */}
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
               
-              <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} />
+              <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} selectedAirdropChain={airdropChain}/>
 
               <div className="flex flex-wrap justify-center items-center gap-4 w-fit mt-6 m-auto">
                 <div 
                   className="cursor-pointer text-center md:text-right rounded-full p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto w-full md:w-fit"
-                  onClick={() => setShowAirdrop(true)}
+                  onClick={() => setShowAirdropMenu(true)}
                   >
                       View Airdrops
                 </div>
                 <div className="cursor-pointer text-center md:text-right rounded-full p-3 bg-white/20 hover:bg-white/10 transition px-6 m-auto  w-fit gradBlue">
-                  <Link href="/rewarding-renditions" passHref>
+                  <Link href={`/${selectedCollection}`} passHref>
                     <a target="_blank">
-                      Learn More about Rewarding Renditions
+                      Learn More about the Collection
                     </a>
                   </Link>
                 </div>
@@ -606,6 +662,80 @@ const HeroDesigner = () => {
                   </Link>
                 </div>
               </div>
+
+              <Transition appear show={showAirdropMenu} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={() => setShowAirdrop(false)}>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                  </Transition.Child>
+
+                  <div className="fixed inset-0 overflow-y-auto" onClick={() => setShowAirdropMenu(false)}>
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
+                      >
+                        <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                          <Dialog.Title
+                            as="h3"
+                            className="text-lg font-medium leading-6 text-gray-900"
+                          >
+                            Choose Chain to view Airdrops from
+                          </Dialog.Title>
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500">
+                              We have Airdrops on  multiple chains. As the threshold of NFT sale is reached, Airdrop for the Native chain is released to all the current NFT holders of the particular collection.
+                            </p>
+                            <div className="flex flex-col mt-3 gap-2">
+                              <div 
+                                className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
+                                onClick={() => {setShowAirdrop(true); setAirdropChain('ethereum'); setShowAirdropMenu(false)}}>
+                                <IconEthereum className="inline"/> Ethereum
+                              </div>
+                              <div 
+                                className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
+                                onClick={() => {setShowAirdrop(true); setAirdropChain('binance'); setShowAirdropMenu(false)}}>
+                                <IconBNB className="inline"/> Binance
+                              </div>
+                              <div 
+                                className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
+                                onClick={() => {setShowAirdrop(true); setAirdropChain('polygon'); setShowAirdropMenu(false)}}>
+                                <IconPolygon className="inline"/> Polygon
+                              </div>
+                              <div 
+                                className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
+                                onClick={() => {setShowAirdrop(true); setAirdropChain('avalanche'); setShowAirdropMenu(false)}}>
+                                <IconAvalanche className="inline"/> Avalanche
+                              </div>
+                              <div 
+                                className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
+                                onClick={() => {setShowAirdrop(true); setAirdropChain('arbitrum'); setShowAirdropMenu(false)}}>
+                                <IconArbitrum className="inline"/> Arbitrum
+                              </div>
+                            </div>
+                          </div>
+
+                          
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition>
+              
             </div>
           
           {/* //   <div className={style.ctaContainer + ' mt-[3rem]'}>

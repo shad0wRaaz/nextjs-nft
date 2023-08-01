@@ -4,7 +4,9 @@ export const deployCollection = () => async () => {}
 
 export const updateCollectionMetaData = async (newCollectionData, signer, profile) => {
 
-    const sdk = new ThirdwebSDK(signer)
+    const sdk = new ThirdwebSDK(signer, {
+        clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      })
     const contract = await sdk.getContract(newCollectionData.contractAddress, "nft-collection");
 
     await contract.metadata.update({

@@ -56,10 +56,11 @@ const profile = () => {
   const [referrer, setReferrer] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const { myUser, setMyUser } = useUserContext();
+  const [showMore, setShowMore] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [isReferrerAdded, setIsReferrerAdded] = useState(false);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
-  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (!myUser) return
@@ -83,7 +84,7 @@ const profile = () => {
     sanityClient = config
   ) => {
     e.preventDefault();
-    
+
     if (!address) return
     
     //check for duplicate username
@@ -191,18 +192,9 @@ const profile = () => {
         .patch(address)
         .set(obj)
         .commit()
-        .then(() => {
-          
-          //send out referral bonus; all required checking will be done in the same function
-          //send only if token has not been sent previously
-          if(!userDoc.tokensent && referrer){
-            //console.log(userDoc.walletAddress, userDoc.referrer._ref);
-            sendToken(userDoc.walletAddress, userDoc.referrer._ref);
-          }
-          setIsSaving(false)
-        });
+        .catch(err => {});
 
-        if(Boolean(userDoc.referrer) && userDoc?.referrer?._ref != ""){
+        if(Boolean(userDoc.referrer) && userDoc?.referrer?._ref != "" && isReferrerAdded){
           //save this user as direct referrals of the referred by user
           //need to check wallet address before adding in
           
@@ -213,11 +205,13 @@ const profile = () => {
               .insert('after', 'directs[-1]', [{ _type: 'reference', _ref: userDoc.walletAddress }])
               .commit({ autoGenerateArrayKeys: true });
           }catch(err){
-            console.log(err)
+            console.log(err);
             toastHandler.error('Error updating referred by.', errorToastStyle);
           }
   
         }
+        setIsSaving(false);
+        router.reload(window.location.pathname);
         queryClient.invalidateQueries(['user']);
         toastHandler.success('Profile has been updated.', successToastStyle);
 
@@ -343,7 +337,11 @@ const profile = () => {
                             ' border-neutral-200 hover:bg-neutral-100 '
                           }
                           value={userDoc?.referrer ? userDoc?.referrer._ref : ''}
-                          onChange={(e) => setUserDoc({ ...userDoc, referrer: { _type: 'reference', _ref: e.target.value }})}
+                          onChange={(e) => {
+                                      setUserDoc({ ...userDoc, referrer: { _type: 'reference', _ref: e.target.value }}); 
+                                      setIsReferrerAdded(true);
+                                    }
+                                  }
                           />
                       </>
                   )}

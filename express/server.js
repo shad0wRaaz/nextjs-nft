@@ -41,21 +41,25 @@ const chainnum = {
   "43113": "avalanche-fuji",
   "43114": "avalanche",
   "5": "goerli",
-  "1": "mainnet"
+  "1": "ethereum",
+  "421613": "arbitrum-goerli",
+  "42161": "arbitrum",
 }
 const chainEnum = {
   "mumbai" : 80001,
   "polygon": 137,
-  "mainnet": 1,
+  "ethereum": 1,
   "goerli": 5,
   "binance-testnet": 97,
   "binance": 56,
   "avalanche-fuji": 43113,
-  "avalanche": 43114
+  "avalanche": 43114,
+  "arbitrum-goerli": 421613,
+  "arbitrum": 42161,
 }
 
 const marketplace = {
-  'mainnet': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+  'ethereum': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
   'polygon': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
   'avalanche': process.env.NEXT_PUBLIC_AVALANCE_MARKETPLACE,
   'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
@@ -64,6 +68,7 @@ const marketplace = {
   'avalanche-fuji': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
   'binance-testnet': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
   'arbitrum-goerli': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+  'arbitrum': process.env.NEXT_PUBLIC_ARBITRUM_MARKETPLACE,
 
 }
 
@@ -423,7 +428,7 @@ app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req
 //get NFT Metadata, contract address
 const getNFTMetaData = async(chainId, tokenAddress, tokenid) => {
   try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenid}`, {
+    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenid}?resyncMetadata=true `, {
       headers: {
           'Content-Type': 'application/json',
           'Authorization': `Basic ${INFURA_AUTH}`,
@@ -466,7 +471,6 @@ app.get('/api/infura/getCollectionMetadata/:chainId/:tokenAddress', async(req, r
   const {chainId, tokenAddress} = req.params;
   try{
     const collectionData = await getCollectionMetaDataFromInfura(chainId,tokenAddress);
-    console.log(collectionData)
     return res.status(200).send(collectionData);
 
   }catch(error){
@@ -687,9 +691,13 @@ app.get('/api/updateListings/:blockchain', async (req, res) => {
   }
 
   //get data from blockchain
-  const sdk = new ThirdwebSDK(blockchain);
-  const marketContract = await sdk.getContract(marketplace[blockchain], "marketplace");
-  const listedItems = await marketContract.getActiveListings(); 
+  const sdk = new ThirdwebSDK(blockchain, {
+    secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY
+  });
+  const marketContract = await sdk.getContract(marketplace[blockchain], "marketplace-v3");
+  const directItems = await marketContract.directListings.getAllValid(); 
+  const auctionItems = await marketContract.englishAuctions.getAllValid();
+  const listedItems = [...directItems,...auctionItems];
 
   redis.set("activelistings-" + blockchain, JSON.stringify(listedItems));
   globalActiveListings = listedItems;
@@ -701,7 +709,7 @@ app.get('/api/listing/getAll', async(req, res) => {
   const binance_testnetNFT = await redis.get('activelistings-binance-testnet');
   const mumbaiNFT = await redis.get('activelistings-mumbaiNFT');
   const polygonNFT = await redis.get('activelistings-polygon');
-  const mainnetNFT = await redis.get('activelistings-mainnet');
+  const mainnetNFT = await redis.get('activelistings-ethereum');
   const goerliNFT = await redis.get('activelistings-goerli');
   const avalancheNFT = await redis.get('activelistings-avalanche');
   const avalanche_fujiNFT = await redis.get('activelistings-avalanche-fuji');
@@ -846,7 +854,7 @@ app.get('/api/getNFTCollectionsByCategory/:category', async(req,res) => {
 
 app.get('/api/getAllListingsCount', async (req, res) => {
   const testnet = req.query.testnet;
-  const cacheETH = testnet == "true" ? await redis.get("activelistings-goerli"): await redis.get("activelistings-mainnet");
+  const cacheETH = testnet == "true" ? await redis.get("activelistings-goerli"): await redis.get("activelistings-ethereum");
   const cacheMATIC = testnet == "true" ? await redis.get("activelistings-mumbai"): await redis.get("activelistings-polygon");
   const cacheAVAX = testnet == "true" ? await redis.get("activelistings-avalanche-fuji"): await redis.get("activelistings-avalanche");
   const cacheBNB = testnet == "true" ? await redis.get("activelistings-binance-testnet"): await redis.get("activelistings-binance");
@@ -880,7 +888,7 @@ app.get('/api/getLatestNfts/:blockchain', async (req, res) => {
 
   // if(blockchain != undefined){
   //   if (blockchain == 'mumbai' || blockchain == "polygon") { selectedChainCurrency = 'MATIC'; } 
-  //   else if (blockchain == 'goerli' || blockchain == "mainnet") { selectedChainCurrency = 'ETH'; } 
+  //   else if (blockchain == 'goerli' || blockchain == "ethereum") { selectedChainCurrency = 'ETH'; } 
   //   else if (blockchain == 'binance-testnet') { selectedChainCurrency = 'tBNB'; } 
   //   else if (blockchain == "binance") { selectedChainCurrency = 'BNB'; } 
   //   else if (blockchain == 'avalanche-fuji' || blockchain == "avalanche") { selectedChainCurrency = 'AVAX'; } 
@@ -1090,7 +1098,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
   if(blockchain){
     var topCollections;
     const chainid = chainEnum[blockchain];
-
+console.log(chainid)
     redis.del("toptradedcollections"+blockchain)
     topCollections = await redis.get("toptradedcollections-"+blockchain);
   
@@ -1098,7 +1106,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
       return res.status(200).json(topCollections)    
     }
     else{
-      const query = `*[_type == "nftCollection" &&  chainId == "${chainid}"] | order(volumeTraded desc) {
+      const query = `*[_type == "nftCollection" &&  chainId == "${chainid}"] | order(floorPrice asc) {
           "id": _id,
           name, 
           category, 
@@ -1115,8 +1123,8 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
           "creatorAddress" : createdBy->walletAddress,
           "allOwners" : owners[]->
       }`;
-    topCollections = await config.fetch(query)
-    redis.set("toptradedcollections-" + blockchain, JSON.stringify(topCollections), 'ex', 600)
+    topCollections = await config.fetch(query);
+    redis.set("toptradedcollections-" + blockchain, JSON.stringify(topCollections), 'ex', 600);
     return res.status(200).json(JSON.stringify(topCollections))
     }
   }
@@ -1140,6 +1148,7 @@ app.get('/api/nft/marketdata/:chain/:marketplace/:contractAddress/', async (req,
   const {chain, marketplace, contractAddress} = req.params;
   const sdk = new ThirdwebSDK(chain,
     {
+      secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY,
       readonlySettings: {
         rpcUrl: `https://evocative-alien-meadow.bsc-testnet.discover.quiknode.pro/79af2b8cd7807ebf486078b97d9513506f578770/`, // Use this RPC URL for read operations
         chainId: 56, // On this chain ID
@@ -1157,14 +1166,6 @@ app.get('/api/nft/marketdata/:chain/:marketplace/:contractAddress/', async (req,
 //this will return Listing Data of a NFT
 app.get('/api/nft/marketListing/:chain/:contractAddress/:tokenId', async (req, res) => {
   const { chain, contractAddress, tokenId } = req.params;
-
-  // const sdk = new ThirdwebSDK(chain);
-  // const contract = await sdk.getContract("0x0bFc480e8e9D391a0A601ed5B54151D3e526BACd", "marketplace");
-  // const listing = await contract.getActiveListings({
-  //   tokenContract: contractAddress,
-  //   tokenId: tokenId,
-  // });
-  // return res.status(200).json(listing);
 
   const tokenListings = await redis.get("activelistings-" + chain);
 
@@ -1217,7 +1218,7 @@ app.get('/api/nft/listing/:id', async (req, res) => {
     })
   }
   if(!found){
-    await redis.get("activelistings-mainnet").then((res) =>{
+    await redis.get("activelistings-ethereum").then((res) =>{
       result = JSON.parse(res)?.filter(item => item.asset.properties.tokenid == nftId)
       if(result?.length > 0) { found = true;}
     })
@@ -1300,7 +1301,9 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
   const nftid = req.params.nftid;
 
   if(chainid != undefined){
-    const sdk = new ThirdwebSDK(chainname);
+    const sdk = new ThirdwebSDK(chainname, {
+      secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY
+    });
 
     const contract = await sdk.getContract(collectionContractAddress, "nft-collection");
     const nft = await contract.get(nftid);
@@ -1495,7 +1498,9 @@ app.get("/api/hasthiswalletnft", async(req, res) => {
   
   //find nft in all of the filtered collections
   const unresolved = filtered?.map(async collection => {
-    const sdk = new ThirdwebSDK(chainnum[collection?.chainId]);
+    const sdk = new ThirdwebSDK(chainnum[collection?.chainId], {
+      secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY
+    });
     const contract = await sdk.getContract(collection?.contractAddress);
     const balance = await contract.erc721.balanceOf(walletaddress);
     return balance //this returns no.of nfts in hex form
@@ -1534,6 +1539,43 @@ app.get("/api/getusers", async(req, res) => {
   }
 });
 
+const getAdminUsers = async () => {
+  const query = '*[_type == "settings"]{adminusers}';
+  let res = await config.fetch(query);
+  if(res){
+    res = JSON.stringify(res[0]);
+    redis.set("adminusers", res, 'EX', 86400);
+    return res;
+  }
+}
+app.get("/api/getadminusers", async(req, res) => {
+  let data = await redis.get("adminusers");
+  if(!data){
+    const a = await getAdminUsers();
+    return res.status(200).send(JSON.stringify(a));
+  }else{
+    return res.status(200).send(JSON.stringify(data))
+  }
+})
+const getReferralCollections = async () => {
+  const query = '*[_type == "settings"]{ referralcollections, referralrate_one, referralrate_two, referralrate_three, referralrate_four, referralrate_five}';
+  let res = await config.fetch(query);
+  if(res){
+    res = JSON.stringify(res[0]);
+    redis.set("referralCollections", res, 'EX', 86400);
+    return res;
+  }
+}
+app.get("/api/getreferralcollections", async(req, res) => {
+  let data = await redis.get("referralCollections");
+  if(!data){
+    const a = await getReferralCollections();
+    return res.status(200).send(JSON.stringify(a));
+  }else{
+    return res.status(200).send(JSON.stringify(data))
+  }
+})
+
 app.get("api/checkserver", async(req,res) => {
   res.send(true)
 });
@@ -1542,47 +1584,126 @@ app.get("api/checkserver", async(req,res) => {
 app.get('/api/nft/getroyaltybytoken/:chain/:contractAddress/:tokenId', async(req, res) => {
   const { chain, contractAddress, tokenId } = req.params;
 
-  const sdk = ThirdwebSDK.fromPrivateKey(chain);
+  const sdk = ThirdwebSDK.fromPrivateKey(chain, {
+    secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY
+  });
   const contract = await sdk.getContract(contractAddress);
   const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
   
   res.send(royalty);
 
-})
+});
+
+app.post('/api/nft/distributeToken', async(req,res) => {
+  const { splitContract, walletAddress, key, chain} = req.body;
+  try{
+
+      if(!splitContract) {
+        return res.send('contract not found')
+      }
+
+      if(key !== process.env.NEXT_PUBLIC_ENX_KEY){
+        return res.send('invalid key');
+      }
+
+      let privatekey = '';
+      switch(walletAddress){
+        case process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_ARBITRUM_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_ARBITRUM_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_PRIVATE_KEY;
+          break;
+        case process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI;
+          break; 
+      }
+
+      const sdk = ThirdwebSDK.fromPrivateKey(privatekey, chain, {
+        secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY,
+      });
+
+      const contract= await sdk.getContract(splitContract, "split");
+      const txResult = await contract.distribute();
+
+      return res.send(txResult);
+  }catch(err){
+    console.log(err)
+  }
+
+});
 
 app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
-  const { contractAddress, walletAddress, tokenId, chain } = req.body;
+  const { contractAddress, walletAddress, tokenId, chain, collectionname } = req.body;
   const chainWalletKeys = { 
     "binance" : process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY,
-    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY,
-    "mainnet" : process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY,
-    "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
     "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB,
+    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY,
     "mumbai" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
+    "ethereum" : process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY,
     "goerli" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
+    "arbitrum" : process.env.NEXT_PUBLIC_ARBITRUM_PRIVATE_KEY,
+    "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY,
   }
-  const sdk = ThirdwebSDK.fromPrivateKey(chainWalletKeys[chain], chain); 
-  const contract = await sdk.getContract(contractAddress);
-  
-  
-  // only change royalty info if the seller is company. once it is set, should not be changed
-  const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
   const chainWallet = {
     "binance" : process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS,
     "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS,
-    "mainnet" : process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS,
+    "ethereum" : process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS,
     "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS,
     "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
     "mumbai" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
     "goerli" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,
   } 
-  if(String(royalty.fee_recipient).toLowerCase() == String(chainWallet[chain]).toLowerCase()){
+  let chaintoConnect = collectionname == 'mushroom-kingdom' ? 'ethereum' : chain;
+  let privateKey = collectionname == 'mushroom-kingdom' ? process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_PRIVATE_KEY : chainWalletKeys[chain];
+  let currentOwner = collectionname == 'mushroom-kingdom' ? process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_WALLET_ADDRESS : chainWallet[chain];
+  const sdk = ThirdwebSDK.fromPrivateKey(privateKey, chaintoConnect,
+    {
+      secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY,
+    }); 
+
+  
+  const contract = await sdk.getContract(contractAddress);
+  
+  
+  // only change royalty info if the seller is company. once it is set, should not be changed
+  const royalty = await contract.royalties.getTokenRoyaltyInfo(tokenId);
+  
+  if(String(royalty.fee_recipient).toLowerCase() == String(currentOwner).toLowerCase()){
+    const splitContract = await sdk.deployer.deploySplit({
+      name: `NFT Split Contract ${contractAddress.slice(-4)} ${tokenId}`,
+      primary_sale_recipient: currentOwner,
+      recipients: [
+        {
+          address: currentOwner,
+          sharesBps: 50 * 100,
+        },
+        {
+          address: walletAddress,
+          sharesBps: 50 * 100,
+        }
+      ]
+    });
+    console.log(splitContract);
+
     try{
       const tx = await contract.royalties.setTokenRoyaltyInfo(
         tokenId, 
         {
-          seller_fee_basis_points: 500,
-          fee_recipient: walletAddress,
+          seller_fee_basis_points: 10 * 100,
+          fee_recipient: splitContract,
         });
 
       return res.send(tx);
@@ -1834,7 +1955,9 @@ app.listen(8080, () => console.log('listening on 8080'));
 //   // const eventType = req.query.eventType
 //   const eventType = 'NewOffer'
 //   //get data from blockchain
-//   const sdk = new ThirdwebSDK(process.env.NEXT_PUBLIC_POLYGON_RPC_URL)
+//   const sdk = new ThirdwebSDK(process.env.NEXT_PUBLIC_POLYGON_RPC_URL, {
+//   secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY
+// })
 //   const marketplace = sdk.getMarketplace(process.env.NEXT_PUBLIC_MARKETPLACE_ID)
 
 

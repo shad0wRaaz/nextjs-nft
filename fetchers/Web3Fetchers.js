@@ -10,14 +10,18 @@ const chainnum = {
   "43113": "avalanche-fuji",
   "43114": "avalanche",
   "5": "goerli",
-  "1": "mainnet"
+  "1": "mainnet",
+  "42161": "arbitrum",
+  "421613": "arbitrum-goerli",
 }
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
 export const getContractData = async (collectionData) => {
   if(!collectionData) return null
-  const sdk = new ThirdwebSDK("binance");
+  const sdk = new ThirdwebSDK("binance", {
+    clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+  });
 
   const contract = await sdk.getContract(collectionData[0].contractAddress);
   return (await contract.metadata.get())
@@ -27,7 +31,9 @@ export const getMarketOffers = (marketAddress, blockchain, listingData) => async
   const [_, listingId] = queryKey
   if(listingId && marketAddress && blockchain) {
 
-    const sdk = new ThirdwebSDK(blockchain);
+    const sdk = new ThirdwebSDK(blockchain, {
+      clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+    });
     const contract = await sdk.getContract(marketAddress, "marketplace-v3");
 
     if(listingData?.type == 0){
@@ -178,7 +184,9 @@ export const getAllNFTs =
   async ({ queryKey }) => {
     const [_, collectionid] = queryKey
 
-    const sdk = new ThirdwebSDK(blockchain);
+    const sdk = new ThirdwebSDK(blockchain, {
+      clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+    });
     const nftCollection = await sdk.getContract(collectionid, "nft-collection")
     const res = await nftCollection.getAll()
 
@@ -188,7 +196,9 @@ export const getAllNFTs =
   }
 
 // export const getCollectionData = async (chainId, contractAddress) => {
-//   const sdk = new ThirdwebSDK(chainnum[chainId]);
+//   const sdk = new ThirdwebSDK(chainnum[chainId], {
+  //   clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+  // });
 //   const contract = await sdk.getContract(contractAddress, "nft-collection");
 //   const metadata = await contract.metadata.get();
 //   console.log('metadata', metadata);
@@ -269,7 +279,9 @@ export const getAuctionItems =
     const [_, marketplaceId] = queryKey
     try {
       if (!marketplaceId) return
-      const sdk = new ThirdwebSDK(rpcUrl);
+      const sdk = new ThirdwebSDK(rpcUrl, {
+        clientId : process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      });
       const marketplace = await sdk.getContract(marketplaceId, "marketplace");
       const res = await marketplace.getAllListings();
       console.log(res);

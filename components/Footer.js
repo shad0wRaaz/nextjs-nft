@@ -10,7 +10,7 @@ import { BsArrowRightShort } from 'react-icons/bs'
 import { HiOutlineNewspaper } from 'react-icons/hi'
 import { BiGroup, BiHelpCircle } from 'react-icons/bi'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
+import { IconArbitrum, IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
 import { FaFacebookF, FaTelegramPlane, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube, FaTiktok } from 'react-icons/fa'
 
 
@@ -166,6 +166,7 @@ const Footer = () => {
                 </a>
               </Link>
             </div>
+            <p className="mt-4 text-sm">For Support: <a href="mailto:nuvanft@gmail.com" className="text-sky-600 hover:text-sky-400 transition">nuvanft@gmail.com</a></p>
           </div>
           
 
@@ -181,6 +182,9 @@ const Footer = () => {
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/whatarenfts">What are NFTs?</a></div>
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nfttypes">NFT Types</a></div>
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nftterms">NFT Terms</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/loyalty-reward">Loyalty Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/royalty-reward">Royalty Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/shared-platform-fee">Platform Fee Reward</a></div>
             </div>
           </div>
 
@@ -198,9 +202,36 @@ const Footer = () => {
           <div className={style.leftBox}>
             <h2
               className={style.header}>
-              <HiOutlineNewspaper/> Get Latest Updates
+              <HiOutlineNewspaper/> Get Testing Tokens
             </h2>
-            <p className="text-sm pb-2">
+            <div className="flex flex-col gap-3 text-sm">
+              <div className="flex items-center">
+                <BsArrowRightShort fontSize={20}/>
+                <a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition mr-2">Ethereum</a>
+                <IconEthereum/>
+              </div>
+              <div className="flex items-center">
+                <BsArrowRightShort fontSize={20}/>
+                <a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition mr-2">Binance</a>
+                <IconBNB/>
+              </div>
+              <div className="flex items-center">
+                <BsArrowRightShort fontSize={20}/>
+                <a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition mr-2">Polygon</a>
+                <IconPolygon/>
+              </div>
+              <div className="flex items-center">
+                <BsArrowRightShort fontSize={20}/>
+                <a href="https://www.allthatnode.com/faucet/avalanche.dsrv" target="_blank" className="hover:text-blue-500 transition mr-2">Avalanche</a>
+                <IconAvalanche/>
+              </div>
+              <div className="flex items-center">
+                <BsArrowRightShort fontSize={20}/>
+                <a href="https://faucet.quicknode.com/arbitrum/goerli" target="_blank" className="hover:text-blue-500 transition mr-2">Arbitrum</a>
+                <IconArbitrum/>
+              </div>
+            </div>
+            {/* <p className="text-sm pb-2">
               Join our mailing list to stay in the loop with our newest feature
               releases, NFT drops, and tips and tricks for navigating NuvaNFT.
             </p>
@@ -219,7 +250,7 @@ const Footer = () => {
               <button className={style.subscribeButton} onClick={addSubscriber}>
                 Subscribe
               </button>
-            </div>
+            </div> */}
           </div>
           
         </div>

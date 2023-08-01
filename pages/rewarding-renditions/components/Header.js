@@ -61,10 +61,10 @@ const Header = ({setShowMenu, showMenu}) => {
 
   return (
     <header className="header bg-[#23162c00] backdrop-blur-lg alphaslab text-neutral-100 fixed z-50 w-full" style={{ fontFamily: 'Alfa Slab One'}}>
-        <div className="container mx-auto px-8">
-            <nav className="navbar navbar-expand-xl flex !justify-between">
+        <div className="container mx-auto px-4">
+            <nav className="navbar navbar-expand-xl flex !justify-between"  style={{ padding: '0 !important'}}>
                 <a className="navbar-brand w-fit" href="/">
-                    <Image src={nuvanftLogo} alt="Rewarding Renditions" height="80px" width="150px" objectFit='contain'/>
+                    <Image src={nuvanftLogo} alt="Rewarding Renditions" height="80px" width="80px" objectFit='contain'/>
                 </a>
                 <button 
                     className="navbar-toggler md:hidden" 
@@ -72,7 +72,7 @@ const Header = ({setShowMenu, showMenu}) => {
                     onClick={() => setShowMenu(cur => !cur)}>
                    <CgMenu fontSize={25}/>
                 </button>
-                <div ref={menuRef} className={`md:flex ${!showMenu && 'hidden'} justify-end items-center flex-wrap flex-col w-full md:flex-row`} id="">
+                <div ref={menuRef} className={`md:flex ${!showMenu && 'hidden'} justify-end items-center flex-wrap flex-col w-full md:flex-row pb-4`} id="">
                     <div className="navbar-nav">
                         <a className="nav-link text-center" aria-current="page" href="#home" onClick={() => setShowMenu(false)}>Home</a>
                         <a className="nav-link text-center" aria-current="page" href="#" onClick={() => {setShowAbout(true); setShowMenu(false)}}>About</a>

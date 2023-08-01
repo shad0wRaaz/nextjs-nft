@@ -28,18 +28,9 @@ const pillcolor = {
 
 const EventItem = ({ event, thisNFTblockchain }) => {
   const { dark } = useThemeContext()
-  const { chainExplorer, chainIcon, blockchainIdFromName } = useSettingsContext();
+  const { chainExplorer, chainIcon, blockchainIdFromName, marketplaces } = useSettingsContext();
   const [eventName, setEventName] = useState();
-  const marketplaces = [
-    process.env.NEXT_PUBLIC_MUMBAI_MARKETPLACE,
-    process.env.NEXT_PUBLIC_GOERLI_MARKETPLACE,
-    process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
-    process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE,
-    process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
-    process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
-    process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
-    process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
-  ];
+ 
   useEffect(() => {
     if(event.fromAddress === "0x0000000000000000000000000000000000000000"){ setEventName('Mint')}
     else if(event.toAddress === "0x0000000000000000000000000000000000000000"){ setEventName('Burn')}

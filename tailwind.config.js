@@ -4,7 +4,12 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'hennypenny': ['Henny Penny', 'cursive'],
+        'oregano': ['Oregano', 'cursive'],
+      }
+    },
     backgroundSize: {
       'auto': 'auto',
       'cover': 'cover',

@@ -2,7 +2,6 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { MdAdd } from 'react-icons/md'
 import { FiCheck } from 'react-icons/fi'
-import { useMutation, useQueryClient } from 'react-query'
 import { BiTransferAlt } from 'react-icons/bi'
 import { AiOutlineFire } from 'react-icons/ai'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
@@ -10,12 +9,13 @@ import { config } from '../../lib/sanityClient'
 import Router, { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { RiCloseCircleLine } from 'react-icons/ri'
+import { useMutation, useQueryClient } from 'react-query'
 import { IconLoading, IconWallet } from '../icons/CustomIcons'
 import { useThemeContext } from '../../contexts/ThemeContext'
+import { updateBoughtNFTs } from '../../mutators/SanityMutators'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
-import { updateBoughtNFTs } from '../../mutators/SanityMutators'
 
 
 const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
@@ -443,7 +443,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
     )}
 
     {Boolean(address) && (String(address).toLowerCase() == String(ownerData).toLowerCase() || String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase()) &&  (
-        <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-4  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
+        <div className={`flex items-center flex-1 justify-center p-4 flex-wrap lg:flex-nowrap gap-0 rounded-xl mt-3  ${dark ? 'bg-slate-800' : 'bg-neutral-100'}`}>
           {Boolean(listingData) && String(address).toLowerCase() == String(listingData?.sellerAddress).toLowerCase() && (
             <>
               {isCanceling ? (

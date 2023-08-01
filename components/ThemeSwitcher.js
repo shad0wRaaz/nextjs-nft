@@ -13,14 +13,17 @@ const ThemeSwitcher = () => {
   }, [])
   return (
       <div
-        className={
-          dark
-            ? style.background + ' hover:bg-slate-800 '
-            : style.background + ' hover:bg-neutral-100 text-white hover:text-black'
-        }
+        className=""
         onClick={() => setDark(!dark)}
       >
-        {dark ? <IconMoon /> : <IconSun />}
+        {!dark ? 
+        <div className="flex gap-2">
+          <IconMoon className="inline" /> Dark Mode
+        </div> 
+        :
+        <div className="flex gap-2">
+          <IconSun className="inline" /> Light Mode
+      </div>}
       </div>
   )
 }

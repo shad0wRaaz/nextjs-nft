@@ -512,7 +512,7 @@ export const IconPolygon = ({ width, height }) => {
       width={width ? width : '15'}
       height={height ? height : '15'}
       viewBox="0 0 40 40"
-      className="mr-2 inline-block" 
+      className="mr-1 inline-block" 
     >
       <g>
         <path
@@ -529,10 +529,48 @@ export const IconAvalanche = ({ width, height }) => {
       viewBox="0 0 254 254" 
       width={width ? width : '15'}
       height={height ? height : '15'}
-      className="mr-2 inline-block" >
+      className="mr-1 inline-block" >
       <g>
         <circle fillRule="evenodd" clipRule="evenodd" fill="#E84142" cx="127" cy="127" r="127"/>
         <path fill="#ffffff" d="M171.8,130.3c4.4-7.6,11.5-7.6,15.9,0l27.4,48.1c4.4,7.6,0.8,13.8-8,13.8h-55.2c-8.7,0-12.3-6.2-8-13.8   L171.8,130.3z M118.8,37.7c4.4-7.6,11.4-7.6,15.8,0l6.1,11L155.1,74c3.5,7.2,3.5,15.7,0,22.9l-48.3,83.7   c-4.4,6.8-11.7,11.1-19.8,11.6H46.9c-8.8,0-12.4-6.1-8-13.8L118.8,37.7z"/>
+      </g>
+    </svg>
+  )
+}
+export const IconArbitrum = ({ width, height }) => {
+  return (
+    <svg  xmlns="http://www.w3.org/2000/svg"  version="1.1" id="Layer_1" x="0px" y="0px"  
+    viewBox="0 0 2540 2540" 
+    width={width ? width : '17'}
+    height={height ? height : '17'}
+    className="inline-block mr-1">
+      <g id="Layer_x0020_1">
+        <g id="_2405588477232">
+          <rect fill="none"/>
+          <g>
+            <g>
+              <path fill="#213147" d="M226,760v980c0,63,33,120,88,152l849,490c54,31,121,31,175,0l849-490c54-31,88-89,88-152V760      c0-63-33-120-88-152l-849-490c-54-31-121-31-175,0L314,608c-54,31-87,89-87,152H226z"/>
+              <g>
+                <g>
+                  <g>
+                    <path fill="#12AAFF" d="M1435,1440l-121,332c-3,9-3,19,0,29l208,571l241-139l-289-793C1467,1422,1442,1422,1435,1440z"/>
+                  </g>
+                  <g>
+                    <path fill="#12AAFF"d="M1678,882c-7-18-32-18-39,0l-121,332c-3,9-3,19,0,29l341,935l241-139L1678,883V882z"/>
+                  </g>
+                </g>
+              </g>
+              <g>
+                <path fill="#9DCCED" d="M1250,155c6,0,12,2,17,5l918,530c11,6,17,18,17,30v1060c0,12-7,24-17,30l-918,530c-5,3-11,5-17,5       s-12-2-17-5l-918-530c-11-6-17-18-17-30V719c0-12,7-24,17-30l918-530c5-3,11-5,17-5l0,0V155z M1250,0c-33,0-65,8-95,25L237,555       c-59,34-95,96-95,164v1060c0,68,36,130,95,164l918,530c29,17,62,25,95,25s65-8,95-25l918-530c59-34,95-96,95-164V719       c0-68-36-130-95-164L1344,25c-29-17-62-25-95-25l0,0H1250z"/>
+              </g>
+              <polygon fill="#213147" points="642,2179 727,1947 897,2088 738,2234     "/>
+              <g>
+                <path fill="#FFFFFF" d="M1172,644H939c-17,0-33,11-39,27L401,2039l241,139l550-1507c5-14-5-28-19-28L1172,644z"/>
+                <path fill="#FFFFFF" d="M1580,644h-233c-17,0-33,11-39,27L738,2233l241,139l620-1701c5-14-5-28-19-28V644z"/>
+              </g>
+            </g>
+          </g>
+        </g>
       </g>
     </svg>
   )
@@ -543,7 +581,7 @@ export const IconBNB = ({ width, height }) => {
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 2500 2500" 
       focusable="false" 
-      className="mr-2 inline-block" 
+      className="mr-1 inline-block" 
       width={width ? width : '15'} 
       height={height ? height: '15'}
       >
@@ -559,7 +597,7 @@ export const IconBNB = ({ width, height }) => {
 export const IconEthereum = ({ width, height }) => {
   return (
     <svg
-    width={width ? width : '20'}
+    width={width ? width : '15'}
     height={height ? height : '20'}
       shapeRendering="geometricPrecision"
       textRendering="geometricPrecision"
@@ -567,7 +605,7 @@ export const IconEthereum = ({ width, height }) => {
       fillRule="evenodd"
       clipRule="evenodd"
       viewBox="0 0 784.37 1277.39"
-      className="mr-2 inline-block" 
+      className="mr-1 inline-block" 
     >
       <g id="Layer_x0020_1">
         <g id="_1421394342400">
@@ -617,19 +655,19 @@ export const IconLoading = (props) => {
     return <Bars fill="#000000" width="20px" height="20px" />
   }
 }
-export const IconCopy = () => {
+export const IconCopy = (props) => {
   return (
     <svg width="20" height="21" viewBox="0 0 20 21" fill="none">
       <path
         d="M18.05 9.19992L17.2333 12.6833C16.5333 15.6916 15.15 16.9083 12.55 16.6583C12.1333 16.6249 11.6833 16.5499 11.2 16.4333L9.79999 16.0999C6.32499 15.2749 5.24999 13.5583 6.06665 10.0749L6.88332 6.58326C7.04999 5.87492 7.24999 5.25826 7.49999 4.74992C8.47499 2.73326 10.1333 2.19159 12.9167 2.84993L14.3083 3.17493C17.8 3.99159 18.8667 5.71659 18.05 9.19992Z"
-        stroke="#10B981"
+        stroke={props.color || "#10B981"}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
         d="M12.5498 16.6583C12.0331 17.0083 11.3831 17.3 10.5915 17.5583L9.2748 17.9917C5.96646 19.0583 4.2248 18.1667 3.1498 14.8583L2.08313 11.5667C1.01646 8.25833 1.8998 6.50833 5.20813 5.44167L6.5248 5.00833C6.86646 4.9 7.19146 4.80833 7.4998 4.75C7.2498 5.25833 7.0498 5.875 6.88313 6.58333L6.06646 10.075C5.2498 13.5583 6.3248 15.275 9.7998 16.1L11.1998 16.4333C11.6831 16.55 12.1331 16.625 12.5498 16.6583Z"
-        stroke="#10B981"
+        stroke={props.color || "#10B981"}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 import Link from 'next/link'
 import millify from 'millify'
 import { useRef } from 'react'
@@ -14,6 +14,7 @@ import { WalletCards } from 'lucide-react';
 import { Fragment, useEffect } from 'react'
 import { FiSettings } from 'react-icons/fi'
 import { RiCloseFill } from 'react-icons/ri'
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import { BiGlobe, BiImport } from 'react-icons/bi'
@@ -21,6 +22,7 @@ import { useQuery, useMutation } from 'react-query'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
 import { getImagefromWeb3 } from '../../../fetchers/s3'
+import { allbenefits } from '../../../constants/benefits'; 
 import noBannerImage from '../../../assets/noBannerImage.png'
 import { useInfiniteQuery, useQueryClient } from 'react-query'
 import { useUserContext } from '../../../contexts/UserContext'
@@ -43,9 +45,9 @@ import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
 import { createAwatar, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
-import { ConnectWallet, ThirdwebSDK, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { ConnectWallet, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
-import { IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
+import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
 import { HiOutlineUsers } from 'react-icons/hi'
 
 //do not remove HOST, need it for serverside props so cannot use it from context
@@ -57,7 +59,8 @@ const chainIcon = {
   '137': <IconPolygon width="20px" height="20px"/>,
   '43113': <IconAvalanche width="20px" height="20px" />,
   '43114': <IconAvalanche width="20px" height="20px" />,
-  '421563': <IconAvalanche/>,
+  '421613': <IconArbitrum width="20px" height="20px"/>,
+  '42161': <IconArbitrum width="20px" height="20px"/>,
   '5': <IconEthereum width="20px" height="20px"/>,
   '1': <IconEthereum width="20px" height="20px"/>,
   '97': <IconBNB width="20px" height="20px"/>,
@@ -70,7 +73,6 @@ const CollectionDetails = (props) => {
   const bannerRef = useRef();
   const qc = useQueryClient();
   const activeNetwork = useChain();
-  // const { chain, collectionAddress } = router.query;
   const { chain, collectionAddress, collectionData } = props;
   const [owners, setOwners] = useState();
   const [showFilter, setShowFilter] = useState(false);
@@ -117,16 +119,10 @@ const CollectionDetails = (props) => {
   // const [gasEstimate, setGasEstimate] = useState();
   const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
+  const [buttonLabel, setButtonLabel] = useState('Mint an NFT')
 
-  const rewardingCollections = [
-    String('0x9809AbFc4319271259a340775eC03E9746B76068').toLowerCase(),
-    String('0x2945db324Ec216a5D5cEcE8B4D76f042553a213f').toLowerCase(),
-    String('0x54265672B480fF8893389F2c68caeF29C95c7BE2').toLowerCase(),
-    String('0x9BDa42900556fCce5927C1905084C4b3CffB23b0').toLowerCase(),
-    String('0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4').toLowerCase(),
-    String('0xD6Ed05E8EA5cc03D18895F4c01C4C9117c6135b1').toLowerCase(),
-  ];
 
+  const rewardingCollections = allbenefits.map(c => c.contractAddress.toLowerCase());
 
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -176,7 +172,7 @@ const CollectionDetails = (props) => {
 
   useEffect(() => {
     //if unsupported chain, redirect to homepage
-    const supportedChains = ["mumbai", "polygon", "mainnet", "goerli", "binance", "binance-testnet", "avalanche", "avalanche-fuji"]
+    const supportedChains = ["mumbai", "polygon", "ethereum", "goerli", "binance", "binance-testnet", "avalanche", "avalanche-fuji"]
     if(!supportedChains.includes(chain) && Boolean(chain)){
       router.push('/');
       return
@@ -186,7 +182,9 @@ const CollectionDetails = (props) => {
       
       try{
         if(collectionData?.type === 'drop'){
-          const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId]);
+          const sdk = new ThirdwebSDK(blockchainName[collectionData.chainId], {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          } );
           const contract = await sdk.getContract(collectionAddress);
           const totalCirculatingSupply = await contract.erc721.totalCount();
           const unclaimedSupply = await contract.erc721.totalUnclaimedSupply();
@@ -212,24 +210,6 @@ const CollectionDetails = (props) => {
     }
   }, []);
 
-
-  // useEffect(() => {
-  //   if(!address || !signer) return
-  //   ;(async() => {
-  //       try{
-  //       const sdk = new ThirdwebSDK(signer);
-  //       const contract = await sdk.getContract(collectionAddress)
-  //       const tx = await contract.erc721.claim.prepare(1);
-  //       const gasPrice = await tx.estimateGasCost();
-  //       setGasEstimate(gasPrice);
-  //     }catch(err){
-  //       console.log(err)
-  //     }
-  //     })()
-
-
-  // }, [address]);
-
 useEffect(() => {
   if(!Boolean(coinPrices)) return;
 
@@ -241,6 +221,8 @@ useEffect(() => {
       setCoinMultiplier(coinPrices?.avaxprice);
     } else if (chain == "binance" || chain == "binance-testnet") {
       setCoinMultiplier(coinPrices?.bnbprice);
+    } else if(chain == "arbitrum" || chain == "arbitrum-goerli"){
+      setCoinMultiplier(coinPrices?.ethprice);
     }
 
     return() => {
@@ -381,12 +363,20 @@ const updateRoyaltyReceiver = async (claimedNFTId) => {
   if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())) 
   {
     // console.log('processing change of royalty receiver')
+    const mushroomContracts = [
+      '0x05e9d0Fa11eFF24F3c2fB0AcD381B6866CeF2a1C'.toLowerCase(),
+      '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80'.toLowerCase(), 
+      '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7'.toLowerCase(), 
+      '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B'.toLowerCase()
+    ];
+
     await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
     {
       contractAddress: collectionData.contractAddress, 
       walletAddress: address, 
       tokenId: claimedNFTId,
       chain: selectedBlockchain,
+      collectionname: mushroomContracts.includes(collectionData.contractAddress.toLowerCase()) ? 'mushroom-kingdom' : '',
     }).catch(err => {
       console.log(err)
     });
@@ -400,18 +390,17 @@ const claimNFT = async(toastHandler = toast) => {
       return;
   }
   if(activechain.chainId.toString() != collectionData.chainId.toString()){
-    toastHandler.error("Wallet is connect to wrong chain.", errorToastStyle);
-    // console.log(Number(collectionData.chainId))
-    // switchChain(Number(collectionData.chainId)).catch(err => {
-    //   console.log(err)
-    //   toast.error('Error in changing chain.', errorToastStyle);
-    // });
+    toastHandler.error("Wallet is connected to wrong chain.", errorToastStyle);
+    
     return;
   }
 
   try{
       setIsMinting(true);
-      const sdk = new ThirdwebSDK(signer);
+      setButtonLabel('Minting')
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      });
       const contract = await sdk.getContract(collectionAddress)
       const txResult = await contract.erc721.claim("1").catch(err => {
         if(err.reason == 'missing revert data in call exception; Transaction reverted without a reason string'){
@@ -424,6 +413,10 @@ const claimNFT = async(toastHandler = toast) => {
         const claimedNFTId = txResult[0].id.toString()
 
         //update pay info-> list of all bought NFTs from the selected Collections
+        setButtonLabel('Adding to your Collection');
+        setTimeout(() => {
+          // just delay function
+        }, 2000);
         const payObj =  {
           walletAddress: address,
           chainId: collectionData.chainId,
@@ -433,6 +426,8 @@ const claimNFT = async(toastHandler = toast) => {
           type: 'buy'
         }
         changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+
+        
         const volume2Add = parseFloat(mintPrice * coinMultiplier);
                 
         //adding volume to Collection
@@ -449,19 +444,22 @@ const claimNFT = async(toastHandler = toast) => {
 
         if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())){
           await payToMySponsors();
-  
+          setButtonLabel('Creating Split Royalty Contract')
           await updateRoyaltyReceiver(claimedNFTId);
         }
 
         toastHandler.success('You have successfully minted a NFT.', successToastStyle);
+        setButtonLabel('Mint an NFT');
         router.push('/collections/myCollection');
       }
       setIsMinting(false);
-  }catch(err){
+      setButtonLabel('Mint an NFT');
+    }catch(err){
       console.log(err);
       if (err.reason == 'user rejected transaction'){
-          toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-        }
+        toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+      }
+      setButtonLabel('Mint an NFT');
       setIsMinting(false);
   }
 }
@@ -574,7 +572,9 @@ useEffect(() => {
     });
   });
 
+  
 
+  return;
   const unresolved = parsedData.map(async nft => {
     const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
     const newObject= {
@@ -701,7 +701,9 @@ useEffect(() => {
   useEffect(() => {
     if(!address || !collectionData || !filteredNftData) return;
     
-    const sdk = new ThirdwebSDK(signer);
+    const sdk = new ThirdwebSDK(signer, {
+      clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+    });
 
     if(String(activechain.chainId) != collectionData.chainId) return;
 
@@ -715,10 +717,6 @@ useEffect(() => {
         setBasisPoints(Number(royaltyInfo?.seller_fee_basis_points) / 100);
       }
     })();
-
-    
-
-      
 
       return() => {
         //do nothing
@@ -988,11 +986,11 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
               </div>
             </div>
 
-            <div className="container relative mx-auto -mt-14 lg:-mt-[31rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+            <div className="container relative mx-auto -mt-[15rem] lg:-mt-[31rem] lg:p-[8rem] lg:pt-0 lg:pb-0 md:p-[2rem] p-[1rem]">
               <div
                 className={`flex flex-col rounded-3xl ${
                   dark ? 'bg-slate-900/80' : 'bg-white/30'
-                } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
+                } p-3 md:p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
                   <div className="w-full md:w-56 xl:w-60">
@@ -1348,7 +1346,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             dark
                               ? ' border border-sky-400/20'
                               : ' border border-neutral-50/30'
-                          } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                          } flex flex-col items-center justify-center rounded-2xl p-5 text-center shadow-md lg:p-6`}>
                           <span className="text-sm text-center">Total NFTs</span>
                           <span className="mt-2 text-base font-bold md:text-xl">
                             {totalCirculatingSupply ? totalCirculatingSupply : <IconLoading dark="inbutton"/>}
@@ -1373,7 +1371,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                           ? ' border border-sky-400/20'
                           : ' border border-neutral-50/30'
                       } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
-                      <span className="text-sm">Total NFTs</span>
+                      <span className="text-sm text-center">Total NFTs</span>
                       <span className="mt-2 text-base font-bold sm:text-xl">
                         {nfts?.length}
                       </span>
@@ -1444,7 +1442,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           </div>
         )}
         {(revealed && collectionData.type === 'drop') && (
-          <div className={`container relative mx-auto mt-[4rem] lg:p-[8rem] lg:py-8 lg:pb-0 p-[2rem] text-center`}>
+          <div className={`container relative mx-auto mt-[1rem] lg:p-[8rem] lg:py-8 lg:pb-0 p-[2rem] text-center`}>
             <div className={`border ${dark ? 'border-slate-800 bg-slate-900/80' : 'border-neutral-200 bg-white/80'} p-4 py-8 md:p-[4rem] rounded-[40px] m-auto backdrop-blur-xl `}>
               <p className="text-2xl font-bold mb-2">Minting Details</p>
               <p className="text-base m-auto lg:max-w-[800px] mb-8">Once you mint an NFT, one of the unique NFT from the unclaimed supply of NFTs will be minted into your wallet. You will be minting one NFT at a time.</p>
@@ -1504,34 +1502,40 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
               <div className="flex flex-col justify-center mt-4 mb-4 gap-5 flex-wrap md:max-w-[400px] m-auto">
                 
                 {isMinting ? (
-                    <button className="flex cursor-pointer w-full text-base font-bold justify-center transition p-4 px-6 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
-                        <IconLoading dark="inbutton"/> Minting
+                    <button className="flex cursor-pointer w-full text-base justify-center transition p-4 px-6 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white pointer-events-none">
+                        <IconLoading dark="inbutton"/> {buttonLabel}
                     </button>
                 ):(
                     <button className="flex cursor-pointer w-full text-base justify-center transition p-4 rounded-lg bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
                     onClick={() => claimNFT()}>
-                            <WalletCards strokeWidth={1.5} /> <span className="">Mint an NFT</span>
+                            <WalletCards strokeWidth={1.5} /> <span className="">{buttonLabel}</span>
                     </button>
                 )}
-                <div className="flex gap-4 justify-center">
+                <div className="flex gap-4 justify-center flex-wrap">
                   {!Boolean(address) && (
-                    <ConnectWallet />
+                    <ConnectWallet className="!w-full md:!w-fit "/>
                   )}
                   {rewardingCollections.includes(collectionAddress?.toLowerCase()) &&
-                  (<Link href="/rewarding-renditions#videos" passHref>
+                  (<Link href={`/rewarding-renditions#videos`} passHref>
                     <a className={`flex flex-grow cursor-pointer w-fit text-base justify-center transition p-4 rounded-lg ${dark ? 'bg-slate-800 hover:bg-slate-700/80' :'bg-neutral-400 hover:bg-neutral-500'} py-3 gap-1 items-center text-white`} target="_blank">
                       How To / Tutorials
                     </a>
                   </Link>)}
                 </div>
+                  {rewardingCollections.includes(collectionAddress?.toLowerCase()) &&
+                  (<Link href="/blogs/loyalty-reward" passHref>
+                    <a className={`w-full cursor-pointer text-sm md:text-base justify-center transition p-4 rounded-lg ${dark ? 'bg-slate-800 hover:bg-slate-700/80' :'bg-neutral-400 hover:bg-neutral-500'} py-3 gap-1 items-center text-white`}>
+                      Benefits of NFTs from this Collection
+                    </a>
+                  </Link>)}
               </div>
-              <p className="text-sm lg:max-w-[800px] m-auto">You need to have a wallet connected to this site in order to mint an NFT. We have tutorial videos how to create a wallet and connect. To check them, click on the How To / Tutorial above.<br/>There is no limit in number of NFTs you can mint in this collection.</p>
+              <p className="text-sm lg:max-w-[800px] m-auto">You need to have a wallet connected to this site in order to mint an NFT. We have tutorial videos on how to create a wallet and connect. To check them, click on the How To / Tutorial above.<br/>There is no limit in number of NFTs you can mint in this collection.</p>
             </div>
           </div>
         )}
         
         <div className={style.nftWrapperContainer}>
-          <div className={`relative backdrop-blur-xl pt-8 px-4 rounded-[40px] ${dark ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+          <div className={`relative backdrop-blur-xl pt-8 md:px-4 rounded-[40px] ${dark ? 'bg-slate-900/80' : 'bg-white/80'}`}>
             {revealed && (
               <div className="relative flex justify-center md:justify-between flex-wrap mb-8 gap-3 md:gap-2">
                 <div className="flex flex-wrap justify-center gap-2">
@@ -1772,6 +1776,7 @@ export async function getServerSideProps(context){
   const {chain, collectionAddress } = context.params;
   const blockchainIdFromName = { 
     'mainnet' : '1',
+    'ethereum' : '1',
     'goerli': '5',
     'avalanche': '43114',
     'avalanche-fuji': '43113',
@@ -1779,20 +1784,30 @@ export async function getServerSideProps(context){
     'mumbai': '80001',
     'binance': '56',
     'binance-testnet': '97',
-    'arbitrum-goerli': '421563',
-    'arbitrum': '421564',
+    'arbitrum-goerli': '421613',
+    'arbitrum': '42161',
   }
   let contractAddress = '';
-  const link ={
+  const link = {
     crypto_creatures: '0x9809AbFc4319271259a340775eC03E9746B76068',
     neon_dreams: '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
     celestial_beings: '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
     artifacts_of_the_future: '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
+    pandagram_v2: '0xbDd60f4d2795f145C09dd4eA6d9565B185F6CBF9',
+    nomin: '0x05e9d0Fa11eFF24F3c2fB0AcD381B6866CeF2a1C',
+    kaioji: '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B',
+    grutzi: '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80',
+    hidoi: '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7',
   }
   if(String(collectionAddress).toLowerCase() == 'crypto_creatures') {contractAddress = link.crypto_creatures}
   else if(String(collectionAddress).toLowerCase() == 'neon_dreams') {contractAddress = link.neon_dreams}
   else if(String(collectionAddress).toLowerCase() == 'celestial_beings') {contractAddress = link.celestial_beings}
   else if(String(collectionAddress).toLowerCase() == 'artifacts_of_the_future') {contractAddress = link.artifacts_of_the_future}
+  else if(String(collectionAddress).toLowerCase() == 'pandagram_v2') {contractAddress = link.pandagram_v2}
+  else if(String(collectionAddress).toLowerCase() == 'nomin') {contractAddress = link.nomin}
+  else if(String(collectionAddress).toLowerCase() == 'kaioji') {contractAddress = link.kaioji}
+  else if(String(collectionAddress).toLowerCase() == 'grutzi') {contractAddress = link.grutzi}
+  else if(String(collectionAddress).toLowerCase() == 'hidoi') {contractAddress = link.hidoi}
   else { contractAddress = collectionAddress}
 
   const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}`;

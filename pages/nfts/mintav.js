@@ -1,10 +1,10 @@
 import React from 'react'
-import Header from '../../components/Header';
 import SEO from '../../components/SEO';
-import { useAddress } from '@thirdweb-dev/react';
 import { Toaster } from 'react-hot-toast';
-import CreateAVNFT from '../../components/createNew/CreateAVNFT';
+import Header from '../../components/Header';
+import { useAddress } from '@thirdweb-dev/react';
 import { useThemeContext } from '../../contexts/ThemeContext';
+import CreateAVNFT from '../../components/createNew/CreateAVNFT';
 
 const mintav = () => {
     const { dark } = useThemeContext();

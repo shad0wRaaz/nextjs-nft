@@ -161,7 +161,7 @@ const Gallery = ({ setShowMenu }) => {
                     <p className="m-auto text-[1.125rem]">40,000 Unique NFTs Trying to Blend With The Norites On The Binance Smart Blockchain.</p>
                 </div>
             </div>
-		    <div className="collection__wrapper mt-10">
+		    <div className="collection__wrapper mt-10 hidden md:block">
 			    <div className="collection__thumb">
                     <div className="">
                         <div ref={cryptoSliderRef} className="keen-slider">

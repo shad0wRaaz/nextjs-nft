@@ -9,9 +9,10 @@ const marketplace = {
   'avalanche-fuji': process.env.NEXT_PUBLIC_AVALANCE_FUJI_MARKETPLACE,
   'binance-testnet': process.env.NEXT_PUBLIC_BINANCE_TESTNET_MARKETPLACE_V3,
   'arbitrum-goerli': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
+  'arbitrum': process.env.NEXT_PUBLIC_ARBITRUM_GOERLI_MARKETPLACE,
   'avalanche': process.env.NEXT_PUBLIC_AVALANCE_MARKETPLACE,
   'binance': process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE,
-  'mainnet': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
+  'ethereum': process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE,
   'polygon': process.env.NEXT_PUBLIC_POLYGON_MARKETPLACE,
 }
 
@@ -20,9 +21,9 @@ export function MarketplaceProvider({ children }) {
   const [marketContract, setMarketContract] = useState();
   const [activeListings, setActiveListings] = useState();
   const [auctionListings, setAuctionListings] = useState();
-  const [selectedBlockchain, setSelectedBlockchain] = useState('binance');
+  const [selectedBlockchain, setSelectedBlockchain] = useState('ethereum');
   const [topTradedCollections, setTopTradedCollections] = useState();
-  const [marketAddress, setMarketAddress] = useState(marketplace['binance']); //this is mumbai marketplace contract address
+  const [marketAddress, setMarketAddress] = useState(marketplace['ethereum']); //this is mumbai marketplace contract address
 
   useEffect(() => {
     if(!selectedBlockchain) return

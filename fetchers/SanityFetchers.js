@@ -162,7 +162,7 @@ export const getMyCollections =
         "creatorAddress" : createdBy->walletAddress,
         name, 
         floorPrice,
-      }`
+      } | order(floorPrice asc)`
     const res = await config.fetch(query)
     return res
   }

@@ -1,158 +1,83 @@
-import { Menu, Transition } from '@headlessui/react'
-import React, { Fragment } from 'react'
 import toast from 'react-hot-toast'
+import React, { Fragment } from 'react'
 import { BiChevronDown } from 'react-icons/bi'
-import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { Menu, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons'
+import { useSettingsContext } from '../contexts/SettingsContext'
+import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 const ChainSelection = () => {
     const { selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
+    const { chainIconByName, chainName, liveNetworks, testNetworks } = useSettingsContext();
     const { successToastStyle } = useThemeContext();
+    
     const changeBlockchain = (selectedChainName) => {
         setSelectedBlockchain(selectedChainName);
         toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
     }
-    const chainName = {
-        'mainnet' : 'Ethereum',
-        'polygon': 'Polygon',
-        'binance': 'Binance Smart Chain',
-        'avalanche': 'Avalanche',
-        'goerli': 'Ethereum Goerli',
-        'mumbai': 'Polygon Mumbai',
-        'binance-testnet': 'Binance Smart Chain Testnet',
-        'avalanche-fuji': 'Avalanche Fuji'
-    }
-    const chainIcon = {
-        'mainnet' : <IconEthereum/>,
-        'polygon': <IconPolygon/>,
-        'binance': <IconBNB/>,
-        'avalanche': <IconAvalanche/>,
-        'goerli': <IconEthereum/>,
-        'mumbai': <IconPolygon/>,
-        'binance-testnet': <IconBNB/>,
-        'avalanche-fuji': <IconAvalanche/>
-    }
-
+    
   return (
-    <div className="mr-3">
+    <div className="md:mr-3">
       <Menu as="div" className="relative inline-block text-left z-30 w-full">
-        <div>
-          <Menu.Button className="inline-flex w-full justify-center items-center rounded-lg bg-black bg-opacity-20 border-slate-600/70 border px-4 py-2.5 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            {chainIcon[selectedBlockchain]}
-            {chainName[selectedBlockchain]}
-            <BiChevronDown
-              className="ml-2 -mr-1 h-5 w-5 text-violet-200 hover:text-violet-100"
-              aria-hidden="true"
-            />
-          </Menu.Button>
-        </div>
-        <Transition 
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="absolute right-0 mt-2 w-60 origin-top-right border border-slate-600 divide-y p-4 divide-slate-600 rounded-lg bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="px-1 py-1 pb-3">
-                <p className="w-full px-2 text-xs mb-2 text-neutral-100">MAINNETS</p>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active || selectedBlockchain == "mainnet" ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('mainnet')}> <IconEthereum/>
-                        Ethereum
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('polygon')}> <IconPolygon/>
-                        Polygon
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('binance')}> <IconBNB/>
-                        Binance Smart Chain
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('avalanche')}> <IconAvalanche/>
-                        Avalanche
-                    </button>
-                )}
-              </Menu.Item>
+        {({open}) => (
+          <>
+            <div>
+              <Menu.Button className="inline-flex w-full md:w-max justify-between items-center rounded-[10px] bg-black bg-opacity-20 shadow-md transition px-4 py-2.5 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                <div>
+                  {chainIconByName[selectedBlockchain]}
+                  {chainName[selectedBlockchain]}
+                </div>
+                <BiChevronDown className={`ml-2 -mr-1 transition duration-800 h-5 w-5 ${open && 'rotate-180'}`}/>
+              </Menu.Button>
             </div>
-            <div className="px-1 py-5 pb-0">
-                <p className="w-full px-2 text-xs mb-2 text-neutral-100">TESTNETS</p>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('goerli')}> <IconEthereum/>
-                        Goerli
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('mumbai')}> <IconPolygon/>
-                        Mumbai
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('binance-testnet')}> <IconBNB/>
-                        Binance Testnet
-                    </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                    <button
-                        className={`${
-                        active ? 'bg-slate-500 text-white' : 'text-slate-200'
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => changeBlockchain('avalanche-fuji')}> <IconAvalanche/>
-                        Avalanche Fuji
-                    </button>
-                )}
-              </Menu.Item>
-            </div>
-          </Menu.Items>
-        </Transition>
+            <Transition 
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 mt-2 w-72 origin-top-right border border-slate-800 divide-y p-4 divide-slate-700 rounded-lg bg-slate-800  backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="px-1 py-1 pb-3">
+                    <p className="w-full px-2 text-xs mb-2 text-neutral-100">MAINNETS</p>
+                    {liveNetworks.map(chain => (
+                      <Menu.Item key={chain.name}>
+                        {({ active }) => (
+                            <button
+                                className={`${
+                                active || selectedBlockchain == chain.key ? 'bg-slate-500/60 text-white' : 'text-slate-200'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm transition`}
+                                onClick={() => changeBlockchain(chain.key)}> {chain.icon}
+                                {chain.name}
+                            </button>
+                        )}
+                      </Menu.Item>
+
+                    ))}
+                </div>
+                <div className="px-1 py-5 pb-0">
+                    <p className="w-full px-2 text-xs mb-2 text-neutral-100">TESTNETS</p>
+                    {testNetworks.map(chain => (
+                      <Menu.Item key={chain.name}>
+                        {({ active }) => (
+                            <button
+                                className={`${
+                                active || selectedBlockchain == chain.key ? 'bg-slate-500/60 text-white' : 'text-slate-200'
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm transition`}
+                                onClick={() => changeBlockchain(chain.key)}> {chain.icon}
+                                {chain.name}
+                            </button>
+                        )}
+                      </Menu.Item>
+
+                    ))}
+                </div>
+              </Menu.Items>
+            </Transition>
+          </>
+        )}
       </Menu>
     </div>
   )

@@ -27,7 +27,7 @@ const Hero = ({setShowMenu}) => {
                             <h1 className="text--3d text-uppercase leading-[1.2]"> 
                                 <span className="color--gradient-y">Rewarding<br/>Renditions</span> 
                             </h1>
-                            <p className="font-normal leading-[2rem] md:leading-[4rem]">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Shared Royalty for Life<br/>Shared Platform Fee<br/>Starting from 30th of June, 2023</p>
+                            <p className="text-normal md:text-2xl leading-[2rem] md:leading-[4rem]">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 30th of June, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10">
                                 <li className="social__item">
                                     <Link href="https://discord.gg/PvuruVjgpz" className="social__link cursor-pointer">
@@ -46,7 +46,7 @@ const Hero = ({setShowMenu}) => {
                                 <li className="social__item">
                                     <Link href="https://www.facebook.com/RewardRenditions" className="social__link cursor-pointer">
                                         <a target="_blank">
-                                            <img src={facebook.src} className="cursor-pointer" alt="Social Thumb " style={{ height: '60px', width: '60px'}} />
+                                            <img src={facebook.src} className="cursor-pointer" alt="Social Thumb "/>
                                         </a>
                                     </Link>
                                 </li>
@@ -100,7 +100,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
-        {/* <OtherReferralCommissions currentChain={'binance'}/> */}
+        <OtherReferralCommissions currentChain={'binance'}/>
     </section>
   )
 }

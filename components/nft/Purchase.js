@@ -56,7 +56,9 @@ const MakeOffer = ({
   auctionItem,
   thisNFTMarketAddress,
   thisNFTblockchain,
-  ownerData
+  ownerData,
+  splitContract,
+  royaltySplitData
 }) => {
 
   var listed = true
@@ -65,7 +67,6 @@ const MakeOffer = ({
   }
 
   const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName, refs } = useSettingsContext();
-
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const {myUser} = useUserContext();
   const chainId = useChainId();
@@ -192,7 +193,9 @@ const MakeOffer = ({
     if(auctionItem){
       //get minimum next bid
       ;(async() => {
-        const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain);
+        const sdk = signer ? new ThirdwebSDK(signer) : new ThirdwebSDK(thisNFTblockchain, {
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+        });
         const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
         const minBid = await contract?.englishAuctions?.getMinimumNextBid(listingData?.id);
         setMinNextBig(minBid);
@@ -410,7 +413,9 @@ const MakeOffer = ({
 
     try {
       setOfferLoading(true); 
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      });
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
       const tx = await contract?.offers.makeOffer(
@@ -493,7 +498,9 @@ const MakeOffer = ({
 
       setBidLoading(true)
       // await module.setBidBufferBps(500) //bid buffer, next bid must be at least 5% higher than the current bid
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      });
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
       const tx = await contract.englishAuctions.makeBid(listingId, bidAmount)
@@ -535,47 +542,7 @@ const MakeOffer = ({
     qc = queryClient,
     sanityClient = config
     ) => {
-
-      //payout to network
-        // await payToMySponsors();
-        // return;
-
-        //update pay info-> list of all bought NFTs from the selected Collections
-        // const payObj =  {
-        //   walletAddress: address,
-        //   chainId: nftCollection.chainId,
-        //   contractAddress: listingData.assetContractAddress,
-        //   tokenId: listingData.asset.id,
-        //   payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
-        //   type: 'buy'
-        // }
-        // changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
-        
-        // //also update the bought NFTs from seller address
-        // //no need to do this if the seller is company
-        // if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
-        //   const sellObj = {
-        //     ...payObj,
-        //     walletAddress: listingData?.sellerAddress,
-        //     type: 'sell',
-        //   }
-        //   changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
-        // }
-
-        // return
      
-      // await updateRoyaltyReceiver();
-      
-
-      // //check payable commission level, only update if new nft collection has higher level the user's current payable level
-      // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
-      // const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
-
-      // if(collectionlevel > userlevel) {
-      //   updateLevel();
-      // }
-      // return;
-
       if(!listingData) {
         toastHandler.error('NFT listing not found', errorToastStyle);
         return;
@@ -599,22 +566,37 @@ const MakeOffer = ({
           setBuyLoading(true);
           setLoadingNewPrice(true);
 
-          const sdk = new ThirdwebSDK(signer);
+          const sdk = new ThirdwebSDK(signer, {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          });
           const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
 
           // const bigNumberPrice = parseInt(listingData.buyoutPrice?.hex, 18);
           // const divider = BigNumber.from(10).pow(18);
           // const buyOutPrice = bigNumberPrice / divider;
           const buyOutPrice = ethers.utils.formatUnits(listingData.buyoutPrice.hex, 18);
+
           const tx = await contract.directListings
                           .buyFromListing(listingId, quantityDesired, address)
                           .catch(err => 
                               {
+                                console.log(err)
                                 setBuyLoading(false);
                                 setLoadingNewPrice(false); 
                                 toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
                               });
           if(tx){
+            console.log(splitContract, royaltySplitData[0].address, process.env.NEXT_PUBLIC_ENX_KEY);
+            const result = await axios.post(`${HOST}/api/nft/distributeToken`, {
+              splitContract,
+              walletAddress: royaltySplitData[0].address,
+              key: process.env.NEXT_PUBLIC_ENX_KEY,
+              chain: thisNFTblockchain,
+            }).catch(err => {
+              console.log(err)
+            });
+            console.log(result);
+      
               // mutateSaveTransaction({
               //   transaction: tx,
               //   id: nftContractData.tokenId,
@@ -770,7 +752,9 @@ const MakeOffer = ({
     }
     try{
       setCloseBidLoading(true);
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      });
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
       
       const tx = await contract.auction.executeSale(listingId);
@@ -807,11 +791,11 @@ const MakeOffer = ({
 
   }
 
-  // console.log(nftContractData)
+
   return (
     <div className="">
       {testnet && (
-        <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 mb-5">
+        <span className="inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-700 mb-5">
           <TiWarningOutline fontSize={18}/> Testnet NFT
         </span>
       )}

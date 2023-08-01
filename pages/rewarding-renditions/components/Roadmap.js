@@ -26,7 +26,7 @@ const Roadmap = ({ setShowMenu }) => {
                             </div>
                             <div className="roadmap__content">
                                 <h4>Launch</h4>
-                                <p>5K in Crypto Creatures and Neon Dream, 10K in Celestial Beings and 20K in Artifacts of the Future will be ready to bought.</p>
+                                <p>5K NFTs in Crypto Creatures and Neon Dreams, 10K in Celestial Beings and 20K in Artifacts of the Future is ready to mint/buy.</p>
                             </div>
                         </div>
                     </div>
@@ -53,8 +53,8 @@ const Roadmap = ({ setShowMenu }) => {
                                 <BiNetworkChart fontSize={50} color='#000' className="mb-5 rotate-45"/>
                             </div>
                             <div className="roadmap__content">
-                                <h4>Unilevel</h4>
-                                <p>All the NFTs will help you unlock level in Uni level network from where you can earn further from your directs and indirects.</p>
+                                <h4>Loyalty Reward</h4>
+                                <p>The NFTs will help you unlock levels in Loyalty network and you can earn further from your direct and indirect referrals.</p>
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ const Roadmap = ({ setShowMenu }) => {
                                 <TbPigMoney fontSize={50} color='#000' className="mb-5"/>
                             </div>
                             <div className="roadmap__content">
-                                <h4>Shared Platform Fee</h4>
+                                <h4>Platform Reward</h4>
                                 <p>The generated Platform Fee will be distributed among the NFT Hodlers based on the Uni level placement.</p>
                             </div>
                         </div>
@@ -81,8 +81,8 @@ const Roadmap = ({ setShowMenu }) => {
                                 <TbMoneybag fontSize={50} color='#000' className="mb-5"/>
                             </div>
                             <div className="roadmap__content">
-                                <h4>Shared Royalty Fee</h4>
-                                <p>The first buyer of any NFT will get shared Royalty Fee for every resale of that NFT for ever.</p>
+                                <h4>Royalty Reward</h4>
+                                <p>The first buyer of any NFT will get 5% Royalty Reward for every resale of that NFT for ever.</p>
                             </div>
                         </div>
                     </div>

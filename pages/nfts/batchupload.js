@@ -54,8 +54,6 @@ function reducer(state, action) {
             },
           ],
           category: '',
-          itemtype: 'image',
-          tokenid: '',
         },
       }
     default:
@@ -77,8 +75,6 @@ const batchupload = () => {
         },
       ],
       category: '',
-      itemtype: 'image',
-      tokenid: '',
     },
   });
   const fileInputRef = useRef(null);
@@ -231,39 +227,12 @@ const batchupload = () => {
     
     try {
       setIsMinting(true);
-      const sdk = new ThirdwebSDK(signer);
+      const sdk = new ThirdwebSDK(signer,
+        {
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+        });
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
 
-      // console.log(itemArray)
-      //this is used with signature batch minting
-      // const batchData = itemArray.map(item => {
-      //   const doc = {
-      //     to: address,
-      //     metadata : { ...item },
-      //     currencyAddress: NATIVE_TOKEN_ADDRESS,
-      //     mintStartTime: new Date(),
-      //     primarySaleRecipient: address,
-      //     quantity: 1,
-      //   }
-      //   return doc;
-      // })
-      // const batchData = itemArray.map(item => {
-      //   const doc = {
-      //     to: address,
-      //     metadata : { ...item },
-      //     currencyAddress: NATIVE_TOKEN_ADDRESS,
-      //     mintStartTime: new Date(),
-      //     primarySaleRecipient: address,
-      //     quantity: 1,
-      //   }
-      //   return doc;
-      // })
-
-      console.log(itemArray)
-      // const signedpayload = await nftCollection.erc721.signature.generateBatch(batchData);
-      // console.log(signedpayload)
-      // const tx = await nftCollection.erc721.signature.mintBatch(signedpayload);
-      // console.log(tx)
       const tx = await nftCollection.erc721.mintBatch(itemArray)
 
       // const docs = tx?.map((tr, index) => {
@@ -469,11 +438,6 @@ const batchupload = () => {
     let tempProps = [...propertyKey];
     tempProps[index] = e.target.value
     setPropertyKey(tempProps);
-    // const { name, value } = e.target;
-    // const list = [...state.properties.traits];
-    // list[index][name] = value;
-    // dispatch({ type: 'CHANGE_TRAITS', payload: { traits: list } });
-    // setPropertyTraits(list);
   }
 
   //handling remove button of remove button
@@ -484,24 +448,11 @@ const batchupload = () => {
     }else{
       setPropertyKey(tempProps);
     }
-    // const list = [...state.properties.traits]
-    // list.splice(index, 1)
-    // dispatch({ type: 'CHANGE_TRAITS', payload: { traits: list } });
-    // setPropertyTraits(list);
   }
 
   //handle add button of add button
   const handleAddProperty = () => {
     setPropertyKey(current => [...current, ''])
-    // dispatch({
-    //   type: 'CHANGE_TRAITS',
-    //   payload: {
-    //     traits: [
-    //       ...state.properties.traits,
-    //       { propertyKey: '' },
-    //     ],
-    //   },
-    // })
   }
 
   const customSelectStyles = {
@@ -602,7 +553,7 @@ const batchupload = () => {
                                     <RadioGroup.Label className="sr-only">
                                         Server size
                                     </RadioGroup.Label>
-                                    <div className="grid grid-cols-2 place-items-center gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:max-h-[320px] overflow-y-scroll p-4">
+                                    <div className="grid grid-cols-2 place-items-center gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:max-h-[320px] overflow-y-auto p-4">
                                         {thisChainCollection?.map((collection, index) => (
                                         <RadioGroup.Option
                                             key={collection.name + index}
@@ -613,7 +564,7 @@ const batchupload = () => {
                                                 ? (dark ? 'bg-sky-900 bg-opacity-75 ring-2 ring-sky-600': 'ring-sky-600 ring-2 bg-sky-100')
                                                 : (dark ? 'bg-[#1e293b] hover:bg-slate-700' : ' border border-neutral-100')
                                             }
-                                                linear relative flex w-full grow cursor-pointer rounded-lg px-5 py-4 shadow-md transition duration-300 focus:outline-none`
+                                                linear relative flex h-full w-full grow cursor-pointer rounded-lg px-5 py-4 shadow-md transition duration-300 focus:outline-none`
                                             }
                                         >
                                             {({ active, checked }) => (
@@ -731,7 +682,7 @@ const batchupload = () => {
                                           : ''}
                                           </div>
                                         {fileArray.length > 0 ? (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-scroll p-2 mt-4 border-dashed rounded-lg">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-auto p-2 mt-4 border-dashed rounded-lg">
                                                 {fileArray?.map((image,index) => 
                                                   <div className={`flex flex-col gap-2 p-4 rounded-md border ${dark ? 'border-slate-800' : ' border-neutral-100 shadow-md'}`} key={image.name}>
                                                     <div className="flex flex-row">

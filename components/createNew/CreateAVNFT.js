@@ -79,8 +79,6 @@ function reducer(state, action) {
             },
           ],
           category: '',
-          itemtype: '',
-          tokenid: '',
         },
       }
     default:
@@ -104,8 +102,6 @@ const CreateAVNFT = () => {
         },
       ],
       category: '',
-      itemtype: '',
-      tokenid: '',
     },
   })
   const {dark, errorToastStyle, successToastStyle } = useThemeContext();
@@ -161,19 +157,7 @@ const CreateAVNFT = () => {
     return() => {
       //clean up function
     }
-  }, [myCollections, connectedChain])
-
-  // useEffect(() => {
-  //   ;async(() => {
-  //     const sdk = new ThirdwebSDK(signer);
-  //     const contract = await sdk.getContract(selectedCollection.contractAddress, "nft-collection");
-  //     setNftCollection(contract);
-  //   })()
-
-  //   return() => {
-  //     //cleanup function
-  //   }
-  // }, [selectedCollection])
+  }, [myCollections, connectedChain]);
 
   const urlPatternValidation = (URL) => {
     const regex = new RegExp(
@@ -226,57 +210,7 @@ const CreateAVNFT = () => {
 
           const tx = await nftCollection.erc721.mintTo(address, {...state, image: file, animation_url: animatedFile});
 
-          //save NFT data into Sanity
-          // const nftItem = {
-          //   _type: 'nftItem',
-          //   _id: uuid,
-          //   id: tx.id.toString(),
-          //   collection: {
-          //     _ref: selectedCollection._id,
-          //     _type: 'reference'
-          //   },
-          //   listed: false,
-          //   chainId: chainid,
-          //   createdBy: { _ref: address, _type: 'reference' },
-          //   ownedBy: { _ref: address, _type: 'reference' },
-          //   featured: false,
-          //   name: state.name,
-          // }
-          // await sanityClient
-          //   .createIfNotExists(nftItem)
-          //   .then()
-          //   .catch((err) => {
-          //     toastHandler.error(
-          //       'Error saving NFT data. Please contact administrator.',
-          //       errorToastStyle
-          //     )
-          //   })
-
-          //save Transaction Data into Sanity
-          // const transactionData = {
-          //   _type: 'activities',
-          //   _id: receipt.transactionHash,
-          //   nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
-          //   transactionHash: receipt.transactionHash,
-          //   from: receipt.from,
-          //   to: receipt.to,
-          //   tokenid: tx.id.toString(),
-          //   event: 'Mint',
-          //   price: '-',
-          //   chainId: chainid,
-          //   dateStamp: new Date(),
-          // }
-          // await sanityClient
-          //   .createIfNotExists(transactionData)
-          //   .then()
-          //   .catch((err) => {
-          //     toastHandler.error(
-          //       'Error saving NFT Transaction data. Please contact administrator.',
-          //       errorToastStyle
-          //     )
-          //   })
-
-          setIsMinting(false)
+          setIsMinting(false);
 
           toastHandler.success('NFT minted successfully.', successToastStyle)
           dispatch({ type: 'CLEAR_OUT_ALL' });
@@ -348,35 +282,6 @@ const CreateAVNFT = () => {
     }),
   }
 
-  // const updateCategory = async (collectionName) => {
-  //   const query = `*[_type == "nftCollection" && name == "${collectionName}"]{category}`
-  //   const res = await config.fetch(query)
-  //   if (res) {
-  //     dispatch({
-  //       type: 'CHANGE_CATEGORY',
-  //       payload: { category: res[0].category },
-  //     })
-  //   }
-  // }
-
-  // const checkFileType = (base64) => {
-   
-  //   let start = base64.indexOf(':') + 1
-  //   let end = base64.indexOf('/') - start
-  //   const currentFileType = base64.substr(start,end)
-  //   // console.log(currentFileType)
-
-  //   if(currentFileType != "audio" && currentFileType != "video" && currentFileType != "image"){
-  //     toast.error('Only Image, Audio and Video are currently supported.', errorToastStyle)
-  //     setFileType(undefined)
-  //     return
-  //   }
-  //   setFileType(currentFileType)
-  // }
-
-  // useEffect(() => {
-  // console.log(state)
-  // }, [state])
 
   return (
     <div className={style.wrapper}>

@@ -61,17 +61,6 @@ const Collection = () => {
       'py-1 px-4 rounded-full gradBlue text-white text-sm mt-1 cursor-pointer',
   }
 
-  //get all active listings from all blockchain
-  // const { data: fullListingData } = useQuery(
-  //   ['fulllistings', blockchainName[chainid]], 
-  //   getFullListings(),
-  //   {
-  //     enabled: Boolean(chainid) && false,
-  //     onSuccess: (res) => {
-  //       console.log(res);
-  //     }
-  //   });
-
   //this gives all the collections from INFURA but does not gives images, so have to be imported by the user manually and then update images manually
   
   const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
@@ -103,25 +92,6 @@ const Collection = () => {
     }
   }, [myCollections, outsideCollectionStatus]);
 
-  // console.log(collectionsFromInfura)
-
-  // const { data: nftData, status: nftStatus } = useQuery(
-  //   ['createdItems', address],
-  //   getMintedNFTs(),
-  //   {
-  //     enabled: Boolean(address) && false,
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching minted NFTs. Refresh and try again.',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: (res) => {
-  //       // console.log(res)
-  //     },
-  //   }
-  // )
-
   const { data, status: mynftstatus } = useQuery(
     ['mynfts', address, cursor, activechain],
     INFURA_getMyAllNFTs(activechain?.chainId),
@@ -146,24 +116,6 @@ const Collection = () => {
       }
     }
   )
-  // console.log(cursorHistory)
-
-  // const { data: ownedNftData, status: ownedNftStatus } = useQuery(
-  //   ['collectedItems', address],
-  //   getCollectedNFTs(),
-  //   {
-  //     enabled: Boolean(address) && false,
-  //     onError: () => {
-  //       toast.error(
-  //         'Error fetching minted NFTs. Refresh and try again.',
-  //         errorToastStyle
-  //       )
-  //     },
-  //     onSuccess: (res) => {
-  //       // console.log(res)
-  //     },
-  //   }
-  // )
 
   const { data: favouriteNftData, status: favouriteNftStatus } = useQuery(
     ['favouriteItems', address],
@@ -213,7 +165,7 @@ const Collection = () => {
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
-          <div className="nc-NcImage absolute inset-0">
+          <div className="absolute inset-0">
             <img
               src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : `https://picsum.photos/1500/500/?blur=10`}
               className="h-full w-full object-cover"
@@ -222,22 +174,21 @@ const Collection = () => {
           </div>
         </div>
 
-        <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+        <div className="container relative  mx-auto -mt-14 lg:-mt-64 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
           <div
               className={`flex flex-col rounded-3xl ${
                 dark ? 'darkGray/30' : 'bg-white/30'
-              } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
+              } md:p-8 p-4 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
             >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
-              <div className="sm:w-full md:w-56 xl:w-60">
+              <div className="sm:w-full md:w-20 xl:w-20">
                 <div
-                  className="nc-NcImage aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl"
-                  data-nc-id="NcImage"
+                  className="aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl"
                 >
                   <img
                     src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : createAwatar(address) }
                     className="h-full w-full object-cover"
-                    alt="userprofile"
+                    alt={myUser?.userName}
                   />
                 </div>
               </div>
@@ -295,7 +246,7 @@ const Collection = () => {
               </div>
             </div>
 
-            <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
+            <div className="mt-5 flex flex-wrap flex-grow md:mt-0 md:ml-8 xl:ml-5 items-center justify-between gap-5">
               <div className="max-w-screen-sm ">
                 <div className="flex flex-start gap-2 items-center">
                   <h2 className="block text-2xl font-semibold sm:text-3xl lg:text-4xl">
@@ -314,25 +265,26 @@ const Collection = () => {
                     toast.success('User address copied !', successToastStyle)
                   }}
                 >
-                  <IconCopy />
+                  {!dark ? <IconCopy color="#3d3d3d"/> : <IconCopy color="#ffffff" />}
+                  
                 </span>
-                <span className="ml-[50px] inline-block text-sm">
+                <span className={`block text-xs ${dark ? 'text-white/50' : 'text-black/80'}`}>
                   Joined from {moment(myUser?._createdAt).format('YYYY MMM')}
                 </span>
                 <span className="mt-4 block text-sm">{myUser?.biography}</span>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 xl:mt-8 xl:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 items-center justify-start gap-5">
                 <div
                   className={`${
                     dark
-                      ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      ? 'border  border-sky-400/20'
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <MdOutlineCollections fontSize="30px" className="mb-2" />
-                  <span className="text-sm">Collections</span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <MdOutlineCollections fontSize="20px" className="mb-2 inlineblock" />
+                  <span className="text-sm inline-block">Collections</span>
+                  <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
                     {outsideCollection?.total}
                   </span>
                 </div>
@@ -340,13 +292,13 @@ const Collection = () => {
                 <div
                   className={`${
                     dark
-                      ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      ? 'border  border-sky-400/20'
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <FiImage fontSize="30px" className="mb-2" />
+                  <FiImage fontSize="20px" className="mb-2" />
                   <span className="text-sm">NFTs</span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
                   {Boolean(mynfts?.length) ? mynfts?.length : 0}
                   </span>
                 </div>
@@ -354,13 +306,13 @@ const Collection = () => {
                 <div
                   className={`${
                     dark
-                      ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      ? 'border  border-sky-400/20'
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <RiMoneyDollarCircleLine fontSize="30px" className="mb-2" />
+                  <RiMoneyDollarCircleLine fontSize="20px" className="mb-2" />
                   <span className="text-sm text-center">Volume Traded</span>
-                  <span className="mt-4 break-all text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-1 break-all text-base font-bold sm:mt-2 sm:text-xl">
                     {/* {myCollections?.volumeTraded
                       ? parseFloat(myCollections?.volumeTraded).toFixed(4)
                       : 0} */}
@@ -370,13 +322,13 @@ const Collection = () => {
                 <div
                   className={`${
                     dark
-                      ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      ? 'border  border-sky-400/20'
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <CgUserList fontSize="30px" className="mb-2" />
+                  <CgUserList fontSize="20px" className="mb-2" />
                   <span className="text-sm">Followers</span>
-                  <span className="mt-4 text-base font-bold sm:mt-6 sm:text-xl">
+                  <span className="mt-1 text-base font-bold sm:mt- sm:text-xl">
                     {myUser?.followers?.length ? myUser.followers.length : '0'}
                   </span>
                 </div>
@@ -387,106 +339,111 @@ const Collection = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-[5rem] flex justify-center px-5 mb-8">
-        <div
-          className={`border ${
-            dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-          } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow`}
-        >
-          <div
-            className={`transition cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showType == 'collection' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowType('collection')}
-          >
-            <span className="inline-block pl-2 w-max">My Collections</span>
+      <div className=" relative z-10  container mx-auto lg:mt-[4rem] lg:p-[8rem] lg:pt-12 pt-0 pb-0 lg:pb-0 p-[2rem]">
+        <div className={`${dark ? 'md:bg-[#111827]' : 'md:bg-white'} rounded-3xl md:rounded-[40px] pt-[2rem]`}>
+          <div className="container mx-auto flex justify-center mb-8">
+            <div
+              className={`border ${
+                dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
+              } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow`}
+            >
+              <div
+                className={`transition cursor-pointer rounded-full md:p-4 md:px-8 p-2 px-4 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showType == 'collection' &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowType('collection')}
+              >
+                <span className="inline-block pl-2 w-max">My Collections</span>
+              </div>
+              <div
+                className={` transition cursor-pointer rounded-full md:p-4 md:px-8 p-2 px-4 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showType == 'myallnfts' &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowType('myallnfts')}
+              >
+                <span className="inline-block pl-2 w-max">My NFTs</span>
+              </div>
+              {/* <div
+                className={`cursor-pointer rounded-full p-4 px-8 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showType == 'createdItems' &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowType('createdItems')}
+              >
+                <span className="inline-block pl-2 w-max">Minted NFTs</span>
+              </div>
+              <div
+                className={`cursor-pointer rounded-full p-4 px-8 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showType == 'collectedItems' &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowType('collectedItems')}
+              >
+                <span className="inline-block pl-2 w-max">Collected NFTs</span>
+              </div> */}
+              {/* <div
+                className={`cursor-pointer rounded-full p-4 px-8 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showType == 'favourites' &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowType('favourites')}
+              >
+                <span className="inline-block pl-1 w-max">Liked NFTs</span>
+              </div> */}
+            </div>
           </div>
-          <div
-            className={` transition cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showType == 'myallnfts' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowType('myallnfts')}
-          >
-            <span className="inline-block pl-2 w-max">My NFTs</span>
+          <div className="text-center text-sm relative">
+            Showing {showType == 'collection' ? 'Collections' : 'NFTs'} from 
+            <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> 
+            {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
           </div>
-          {/* <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showType == 'createdItems' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowType('createdItems')}
-          >
-            <span className="inline-block pl-2 w-max">Minted NFTs</span>
+          <div className=" mx-auto  lg:pt-8 lg:pb-0 pb-0 pt-8 md:pt-0 flex justify-between items-center">
+            <div className={`flex overflow-hidden rounded-md border ${dark ? 'border-slate-700': 'border-neutral-200/80'}`}>
+              <div 
+                className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+                onClick={() => setcompact(false)}>
+                <BsGrid/>
+              </div>
+              <div 
+                className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+                onClick={() => setcompact(true)}>
+                <BsGrid3X3Gap/>
+              </div>
+            </div>
+            
+            {/* {Boolean(mynfts?.cursor) && ( */}
+              <div>
+                <button 
+                  className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                  onClick={() => setCursor(mynfts?.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+              </div>
+            {/* )} */}
           </div>
-          <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showType == 'collectedItems' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowType('collectedItems')}
-          >
-            <span className="inline-block pl-2 w-max">Collected NFTs</span>
-          </div> */}
-          {/* <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showType == 'favourites' &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowType('favourites')}
-          >
-            <span className="inline-block pl-1 w-max">Liked NFTs</span>
-          </div> */}
         </div>
       </div>
-      <div className="text-center text-sm relative">
-        Showing {showType == 'collection' ? 'Collections' : 'NFTs'} from 
-        <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> 
-        {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
-      </div>
-      <div className="container mx-auto lg:p-[8rem] lg:pt-8 lg:pb-0 p-[2rem] flex justify-between items-center">
-        <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
-          <div 
-            className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
-            onClick={() => setcompact(false)}>
-            <BsGrid/>
-          </div>
-          <div 
-            className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
-            onClick={() => setcompact(true)}>
-            <BsGrid3X3Gap/>
-          </div>
-        </div>
-        
-        {/* {Boolean(mynfts?.cursor) && ( */}
-          <div>
-            <button 
-              className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-              onClick={() => setCursor(mynfts?.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-          </div>
-        {/* )} */}
-      </div>
+
 
 
 

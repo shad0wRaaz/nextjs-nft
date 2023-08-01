@@ -4,20 +4,23 @@ import toast from 'react-hot-toast'
 import { Router } from 'react-router'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { BiChevronUp } from 'react-icons/bi'
 import SEO from '../../../../components/SEO'
+import { TbArrowsSplit } from 'react-icons/tb'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import Header from '../../../../components/Header'
 import Footer from '../../../../components/Footer'
-import { Disclosure, Tab } from '@headlessui/react'
 import { MdOutlineOpenInNew } from 'react-icons/md'
+import { Fragment, useEffect, useState } from 'react'
 import { config } from '../../../../lib/sanityClient'
 import { MdAudiotrack, MdBlock } from 'react-icons/md'
+import Benefits from '../../../../components/Benefits'
+import { BiChevronUp, BiInfoCircle } from 'react-icons/bi'
 import { getImagefromWeb3 } from '../../../../fetchers/s3'
 import Purchase from '../../../../components/nft/Purchase'
 import { ThirdwebSDK, getContract } from '@thirdweb-dev/sdk'
+import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 import RelatedNFTs from '../../../../components/RelatedNFTs'
+import { Disclosure, Tab, Transition } from '@headlessui/react'
 import ItemOffers from '../../../../components/nft/ItemOffers'
 import BurnCancel from '../../../../components/nft/BurnCancel'
 import ItemActivity from '../../../../components/nft/ItemActivity'
@@ -30,14 +33,7 @@ import BrowseByCategory from '../../../../components/BrowseByCategory'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
-import { IconAvalanche, IconBNB, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
-import {
-  HiOutlineDocumentText,
-  HiOutlineStar,
-  HiOutlineDotsVertical,
-  HiOutlineQuestionMarkCircle,
-  HiOutlineInformationCircle,
-} from 'react-icons/hi'
+import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -74,7 +70,6 @@ const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': '
 
 const Nft = (props) => { //props are from getServerSideProps
   const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, contractAddress } = props;
-
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
   const signer = useSigner();
@@ -82,17 +77,22 @@ const Nft = (props) => { //props are from getServerSideProps
   const [playItem, setPlayItem] = useState(false);
   const [itemType, setItemType] = useState('image');
   const [thisNFTMarketContract, setThisNFTMarketContract] = useState();
-  const { chainExplorer, blockchainIdFromName, blockedNfts, blockedCollections } = useSettingsContext();
+  const { chainExplorer, blockchainIdFromName, blockedNfts, blockedCollections, referralAllowedCollections } = useSettingsContext();
   const [isBlocked, setIsBlocked] = useState(false);
   const [isZoom, setIsZoom] = useState(false);
   const { setReferralCommission } = useSettingsContext();
   const router = useRouter();
   const { setSelectedProperties } = useCollectionFilterContext();
   const [isAuctionItem, setIsAuctionItem] = useState(false);
+  const [royaltySplitData, setRoyaltySplitData] = useState();
+  const [showSplit, setShowSplit] = useState(false);
   const {data: royaltyData, status: royaltyStatus} = useQuery(
     ['royalty'],
     async() => {
-      const sdk = new ThirdwebSDK(thisNFTblockchain);
+      const sdk = new ThirdwebSDK(thisNFTblockchain,
+        {
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+        });
       const contract = await sdk.getContract(nftContractData.contract);
       return await contract.royalties.getTokenRoyaltyInfo(
         nftContractData.tokenId,
@@ -144,7 +144,28 @@ const Nft = (props) => { //props are from getServerSideProps
     return() => {
       //do nothing, cleanup functions
     }
-  }, [metaDataFromSanity, blockedNfts])
+  }, [metaDataFromSanity, blockedNfts]);
+
+  useEffect(() => {
+    if(!metaDataFromSanity || !referralAllowedCollections || !royaltyData) return;
+    const isAllowed = referralAllowedCollections.filter(coll => coll._ref == metaDataFromSanity._id);
+    
+    if(isAllowed?.length > 0){
+
+      const sdk = new ThirdwebSDK(thisNFTblockchain, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      });
+      ;(async() => {
+        const splitContract = await sdk.getContract(royaltyData.fee_recipient, "split");
+        const allRecipient = await splitContract.getAllRecipients();
+        setRoyaltySplitData(allRecipient);
+      })();
+
+    }
+    return() => {
+      //do nothing
+    }
+  }, [metaDataFromSanity, referralAllowedCollections, royaltyData]);
 
 
   //get Market Contract signed with connected wallet otherwise get generic
@@ -157,10 +178,16 @@ const Nft = (props) => { //props are from getServerSideProps
     ;(async () => {
       let sdk = '';
       if(signer) { 
-        sdk = new ThirdwebSDK(signer); 
+        sdk = new ThirdwebSDK(signer,
+          {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          }); 
       }
       else { 
-        sdk = new ThirdwebSDK(thisNFTblockchain); 
+        sdk = new ThirdwebSDK(thisNFTblockchain,
+          {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          }); 
       }
 
       const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace");
@@ -530,9 +557,9 @@ const Nft = (props) => { //props are from getServerSideProps
                           )}
                         </div>
                       </Tab.Panel>
-                      <Tab.Panel className={'rounded-xl p-3 ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                      <Tab.Panel className={'rounded-xl p-3'}>
                           <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Contract Address</span>
+                            <span className="text-sm md:text-base">Contract Address</span>
                             <div className="flex gap-1 items-center">
                                 <Link href={`/collection/${thisNFTblockchain}/${contractAddress}`} passHref>
                                   <a>
@@ -547,37 +574,81 @@ const Nft = (props) => { //props are from getServerSideProps
                             </div>
                           </div>
                           <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Item ID</span>
+                            <span className="text-sm md:text-base">Item ID</span>
                             <span className="line-clamp-1 text-sm">{nftContractData?.tokenId}</span>
                           </div>
                           <div className="flex flex-row justify-between py-2">
-                            <span>Token Standard</span>
+                            <span className="text-sm md:text-base">Token Standard</span>
                             <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
                               {ownerData?.owners[0]?.contractType}
                             </span>
                           </div>
                           <div className="flex flex-row justify-between py-2">
-                            <span>Blockchain</span>
+                            <span className="text-sm md:text-base">Blockchain</span>
                             <span className="line-clamp-1 text-base">
                               {chainIcon[blockchainIdFromName[thisNFTblockchain]]}
                               {chainName[blockchainIdFromName[thisNFTblockchain]]}
                             </span>
                           </div>
-                          <div className="flex flex-row items-center justify-between py-2">
-                            <span>Royalty Receiver</span>
-                            <div className="flex gap-2 items-center">
-                              <span className="line-clamp-1 text-sm cursor-pointer">
-                                <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
-                                  <a>
-                                    {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
-                                  </a>
-                                </Link>
-                              </span>
-                              {Boolean(royaltyData?.seller_fee_basis_points) && (
-                                <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{Number(royaltyData.seller_fee_basis_points) / 100 + '%'}</span>
-                              )}
+                          <div className="flex flex-row items-start justify-between py-2">
+                            <span className="text-sm md:text-base">Creator Earnings</span>
+                            <div className="flex justify-end flex-col flex-wrap items-end">
+                              <div className="flex gap-2 items-center relative">
+                                <span className="cursor-pointer" onClick={() => {
+                                        navigator.clipboard.writeText(royaltyData?.fee_recipient)
+                                        toast.success('Address copied !', successToastStyle);
+                                      }}>
+                                  <IconCopy />
+                                </span>
+                                <span className="line-clamp-1 text-sm cursor-pointer">
+                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                </span>
+                                {Boolean(royaltyData?.seller_fee_basis_points) && (
+                                  <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{Number(royaltyData.seller_fee_basis_points) / 100 + '%'}</span>
+                                )}
+                                {royaltySplitData && (
+                                  <div 
+                                    className="rounded-lg bg-yellow-400 p-1 hover:bg-yellow-400 transition cursor-pointer"
+                                    onClick={() => {
+                                      setShowSplit(curVal => !curVal);
+                                    }}>
+                                    <TbArrowsSplit className={`text-yellow-700 transition font-bold ${showSplit && 'rotate-90'}`} fontSize={18}/>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          <Transition
+                            as={Fragment}
+                            show={showSplit}
+                            enter="transform transition duration-[300ms]"
+                            enterFrom="opacity-0 scale-50"
+                            enterTo="opacity-100 scale-100"
+                            leave="transform duration-200 transition ease-in-out"
+                            leaveFrom="opacity-100 scale-100 "
+                            leaveTo="opacity-0 scale-95 "
+                          >
+                            <div className={`relative ${dark ? 'bg-slate-700' : 'bg-neutral-200'} p-7 rounded-xl mt-3 overflow-hidden`}>
+                              <BiInfoCircle className={`absolute ${dark ? 'text-slate-500' : 'text-neutral-400'} -top-7 -left-7 z-0 opacity-25`} fontSize={100}/> <span className="text-sm max-w-10 z-10 relative">The royalty is received by the Split contract. When this NFT is sold, the Split contract receives royalty, it will split equally between the given two receivers.</span>
+                                {royaltySplitData?.map((recipient, index) => (
+                                    <div key={recipient.address} className="line-clamp-1 text-sm cursor-pointer mt-2 pl-4">
+                                      <Link href={`/user/${recipient.address}`}>
+                                        <>
+                                          <p className="block md:hidden">{recipient.address.slice(0,10)}...{recipient.address.slice(-10)}</p>
+                                          <p className={`hidden md:block p-1 rounded-lg border text-center ${dark ? 'border-slate-600': 'border-neutral-300'}`}>{recipient.address}</p>
+                                        </>
+                                      </Link>
+                                    </div>
+                                ))}
+                                {Boolean(royaltyData?.fee_recipient) && (
+                                  <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${royaltyData?.fee_recipient}/#internaltx`}>
+                                    <a target="_blank">
+                                      <p className="w-fit text-sm px-3 cursor-pointer gradBlue mt-4 rounded-xl p-2 m-auto text-center">View all Royalty Distribution</p>
+                                    </a>
+                                  </Link>
+                                )}
+                            </div>
+                          </Transition>
                       </Tab.Panel>
 
                   </Tab.Panels>
@@ -611,182 +682,6 @@ const Nft = (props) => { //props are from getServerSideProps
                     </>
                   )}
                 </Disclosure>
-
-                {/* <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                          dark
-                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                      >
-                        <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineDocumentText fontSize={18} />
-                          <span className="text-lg">Description</span>
-                        </div>
-                        <BiChevronUp
-                          className={`${
-                            open ? 'transform transition' : 'rotate-180'
-                          } h-5 w-5 text-neutral-500 transition`}
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                        {nftContractData?.metadata?.description == '' ? <p className={`text-sm ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure> */}
-
-                {/* <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                          dark
-                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                      >
-                        <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineStar fontSize={18} />
-                          <span className="text-lg">Properties</span>
-                        </div>
-                        <BiChevronUp
-                          className={`${
-                            open ? 'transform transition' : 'rotate-180 '
-                          } h-5 w-5 text-neutral-500 transition`}
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="text-md flex flex-wrap justify-start gap-3 px-4 pt-4 pb-2">
-                      {nftContractData?.metadata?.attributes?.map(
-                          (props, id) => (
-                            <div key={id}>
-                              {props.propertyKey != "" ? (
-                                <div
-                                  className={`w-[130px] cursor-pointer rounded-xl border border-solid h-full ${
-                                    dark
-                                      ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
-                                      : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
-                                  } p-2 text-center transition`}
-                                  onClick={() => {
-                                    setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
-                                    router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
-                                  }}>
-                                  <p className={dark ? 'text-sm font-bold text-neutral-200' : 'text-sm font-bold text-sky-400'}>
-                                    {props.trait_type}
-                                  </p>
-                                  <p className={ dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500' }>
-                                    {props.value}
-                                  </p>
-                                </div>
-                                ) : (<p className="text-sm text-center">No properties defined.</p>)}
-                            </div>
-                          )
-                        )}
-                        {nftContractData?.metadata?.properties?.traits?.map(
-                          (props, id) => (
-                            <div key={id} className="cursor-pointer" onClick={() => {
-                              setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
-                              router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
-                            }}>
-                              {props.propertyKey != "" ? (
-
-                              <div
-                                className={`w-[130px] rounded-xl border border-solid h-full ${
-                                  dark
-                                    ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
-                                    : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
-                                } py-2 px-2 text-center transition`}
-                                key={id}
-                              >
-                                <p
-                                  className={
-                                    dark
-                                      ? 'text-sm font-bold text-neutral-200'
-                                      : 'text-sm font-bold text-sky-400'
-                                  }
-                                >
-                                  {props.propertyKey}
-                                </p>
-                                <p
-                                  className={
-                                    dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
-                                  }
-                                >
-                                  {props.propertyValue}
-                                </p>
-                              </div>
-                              ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
-                            </div>
-                          )
-                        )}
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure> */}
-
-                {/* <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                          dark
-                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                        >
-                        <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineInformationCircle fontSize={18} />
-                          <span className="text-lg">Details</span>
-                        </div>
-                        <BiChevronUp
-                          className={`${
-                            open ? 'transform transition' : 'rotate-180 '
-                          } h-5 w-5 text-neutral-500 transition`}
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                        <div>
-                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Contract Address</span>
-                            <a href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}/address/${nftContractData?.contract}`} target="_blank">
-                              <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{nftContractData?.contract}</span>
-                            </a>
-                          </div>
-                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Item ID</span>
-                            <span className="line-clamp-1 text-sm">{nftContractData?.tokenId}</span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Token Standard</span>
-                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
-                              {ownerData?.owners[0]?.contractType}
-                            </span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Blockchain</span>
-                            <span className="line-clamp-1 text-base">
-                              {chainIcon[blockchainIdFromName[thisNFTblockchain]]}
-                              {chainName[blockchainIdFromName[thisNFTblockchain]]}
-                            </span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
-                            <span className="line-clamp-1 text-sm cursor-pointer">
-                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
-                                <a>
-                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
-                                </a>
-                              </Link>
-                            </span>
-                          </div>
-                        </div>
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure> */}
               </div>
             </div>
             <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
@@ -799,7 +694,11 @@ const Nft = (props) => { //props are from getServerSideProps
                 ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
                 thisNFTMarketAddress={thisNFTMarketAddress}
                 thisNFTblockchain={thisNFTblockchain}
+                splitContract={royaltyData?.fee_recipient}
+                royaltySplitData={royaltySplitData}
                 />
+                
+              <Benefits nftCollection={metaDataFromSanity}/>
 
               {/* {listingData && isAuctionItem && (parseInt(listingData?.endTimeInEpochSeconds.hex, 16) != parseInt(listingData?.startTimeInEpochSeconds.hex, 16)) && (
                 <AuctionTimer

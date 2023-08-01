@@ -2,7 +2,6 @@ import SEO from '../components/SEO'
 import { useRouter } from 'next/router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
-import { useEffect, useState } from 'react'
 import HowToInfo from '../components/HowToInfo'
 import HeroSearch from '../components/HeroSearch'
 import ExploreNFTs from '../components/ExploreNFTs'
@@ -14,11 +13,9 @@ import { useThemeContext } from '../contexts/ThemeContext'
 import herobackground from '../assets/herobackground.jpeg'
 import SubscribeSection from '../components/SubscribeSection'
 import BrowseByCategory from '../components/BrowseByCategory'
-import PopularAudioNFTs from '../components/PopularAudioNFTs'
-import PopularVideoNFTs from '../components/PopularVideoNFTs'
 import RewardingRendition from '../components/RewardingRendition'
 import FeaturedCollection from '../components/FeaturedCollection'
-import Script from 'next/script'
+import OtherReferralCommissions from '../components/referralCommissions/OtherReferralCommissions';
 
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080' 
 
@@ -30,9 +27,10 @@ const Home = ({ featuredNfts, backendAvailable }) => {
     <>
       <SEO />
       <div className={ `${dark ? 'darkBackground text-neutral-200': ''} overflow-x-hidden relative` }>
-        <div className="herocarousel bg-top md:bg-center md:pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`, backgroundSize: 'cover'}}>
+        <div className="herocarousel bg-top md:bg-center pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`, backgroundSize: 'cover'}}>
           <Header/>
           <HeroDesigner />
+          <OtherReferralCommissions currentChain="binance"/>
           {/* {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>
             <HeroSearch />
@@ -41,16 +39,12 @@ const Home = ({ featuredNfts, backendAvailable }) => {
         </div>
         {/* <RewardingRendition /> */}
         <FeaturedCollection/>
-        {backendAvailable ? <TopCollections/> : ''}
-        {backendAvailable ? 
-        <>
+        {backendAvailable ? <TopCollections/> : <TopCollections/>}
+        
           <ExploreNFTs/>
           <HowToInfo/>
           <BrowseByCategory/>
-          {/* <PopularVideoNFTs /> */}
-          {/* <PopularAudioNFTs /> */}
-        </>
-        : ''}
+        
         <SubscribeSection />
         <Footer/>
       </div>
@@ -60,31 +54,31 @@ const Home = ({ featuredNfts, backendAvailable }) => {
 
 export default Home
 
-export async function getServerSideProps(){
-  try {
-    let featuredNfts = []
-    // const checkserver = await fetch(`${HOST}/api/checkserver`).catch(err => console.log(err));
+// export async function getServerSideProps(){
+//   try {
+//     let featuredNfts = []
+//     // const checkserver = await fetch(`${HOST}/api/checkserver`).catch(err => console.log(err));
 
-    const response = await fetch(`${HOST}/api/getfeaturednfts`).catch(err => console.error(err));
-    if(response){
-      featuredNfts = await response.json();
-    }
+//     const response = await fetch(`${HOST}/api/getfeaturednfts`).catch(err => console.error(err));
+//     if(response){
+//       featuredNfts = await response.json();
+//     }
     
-      return {
-        props: {
-          featuredNfts: featuredNfts,
-          backendAvailable: true,
-        }
-      }
+//       return {
+//         props: {
+//           featuredNfts: featuredNfts,
+//           backendAvailable: true,
+//         }
+//       }
 
-  } catch(err){
-    return {
-      props : {
-        featuredNfts : 'Server error',
-        backendAvailable: false,
-      }
-    }
-  }
-}
+//   } catch(err){
+//     return {
+//       props : {
+//         featuredNfts : 'Server error',
+//         backendAvailable: false,
+//       }
+//     }
+//   }
+// }
 
 

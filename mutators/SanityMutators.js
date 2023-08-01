@@ -289,46 +289,66 @@ const saveReferralCommissions = async (bonuses, finalReferrals, chainId, source)
 }
 
 //send nuva tokens as referral bonus; not used now
-export const sendToken = async(referee, recipient) => {
-  //check if the recipient is qualified or not;
-  try{
-    const isActivated = await isReferralActivated(recipient);
-    if(isActivated.length > 0 && isActivated.refactivation == true){
+// export const sendToken = async(referee, recipient) => {
+//   //check if the recipient is qualified or not;
+//   try{
+//     const isActivated = await isReferralActivated(recipient);
+//     if(isActivated.length > 0 && isActivated.refactivation == true){
 
-      const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
+//       const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
 
-      const tx = await axios
-            .post(`${FAUCETHOST}/api/nft/sendTokens`, 
-            {
-              address: recipient,
-              secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
-            }, 
-            {
-              headers: 
-              {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              }
-            }).catch(err => console.log(err));
+//       const tx = await axios
+//             .post(`${FAUCETHOST}/api/nft/sendTokens`, 
+//             {
+//               address: recipient,
+//               secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY
+//             }, 
+//             {
+//               headers: 
+//               {
+//                 'Content-Type': 'application/json',
+//                 'Authorization': `Bearer ${token}`,
+//               }
+//             }).catch(err => console.log(err));
 
-        //save transaction in db
-        const doc = {
-          txid: tx.data.transactionHash,
-          to: {_ref: recipient, _type: 'reference'},
-          referee: {_ref: referee, _type: 'reference'},
-          amount: 20,
-          _type: 'referrals'
-        }
+//         //save transaction in db
+//         const doc = {
+//           txid: tx.data.transactionHash,
+//           to: {_ref: recipient, _type: 'reference'},
+//           referee: {_ref: referee, _type: 'reference'},
+//           amount: 20,
+//           _type: 'referrals'
+//         }
 
-        await config.create(doc);
-        // token sent boolean set to true, so that it wont send again and again.
-        await config.patch(referee)
-                    .set({ tokensent: true })
-                    .commit()
-                    .catch(err => console.log(err));
-    }
-  }catch(error){
+//         await config.create(doc);
+//         // token sent boolean set to true, so that it wont send again and again.
+//         await config.patch(referee)
+//                     .set({ tokensent: true })
+//                     .commit()
+//                     .catch(err => console.log(err));
+//     }
+//   }catch(error){
     
+//   }
+// }
+
+export const saveSubscriber = async(newemail) => {
+  const docID = '09f0e4f9-76ca-4ca0-b168-ed1a97cf6958'; //This is id of that document that contains all emails
+
+  const doc = await config.getDocument(docID); 
+  const emails = JSON.parse(doc.email);
+  if(emails.find(emailaddress => emailaddress.e.toLowerCase() == newemail.toLowerCase())){
+    return 'duplicate';
+  }
+  else{
+    const newdoc = [
+      ...emails,
+      {
+        e: newemail,
+      }
+    ];
+    //patch the new doc
+    return await config.patch(docID).set({ email: JSON.stringify(newdoc) }).commit().catch(err => {console.log(err); return 'error'})
   }
 }
 

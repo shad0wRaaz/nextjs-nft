@@ -25,7 +25,7 @@ const FeaturedCollection = () => {
   const [mintPrice, setMintPrice] = useState();
   const style = {
       wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-0 relative',
-      wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]',
+      wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]  pb-[4rem]',
       image: 'rounded-2xl',
       title: 'font-bold mb-[2rem] grow text-center flex flex-col md:flex-row justify-center items-center gap-2 text-white text-[3rem]',
       collectionWrapper:

@@ -1,9 +1,10 @@
+import axios from 'axios'
 import Link from 'next/link'
+import Loyalty from './Loyalty'
 import SearchBar from './SearchBar'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
-import { BiUser } from 'react-icons/bi'
 import { HiMenu } from 'react-icons/hi'
 import Notifications from './Notifications'
 import ThemeSwitcher from './ThemeSwitcher'
@@ -34,7 +35,7 @@ const Header = () => {
   const address = useAddress();
   const chainid = useChainId();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
-  const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections, setReferralCommission } = useSettingsContext();
+  const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections, setReferralCommission, HOST } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false)
   const { setMyUser, setMyCollections } = useUserContext()
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
@@ -57,22 +58,6 @@ const Header = () => {
       'cursor-pointer font-bold text-center text-base flex justify-center items-center text-black mr-4',
     balance:
       'cursor-pointer flex text-center text-white rounded-full hover:bg-opacity-90 justify-center items-center py-2 px-4 fs-14 gradBlue hover:bg-200',
-  }
-
-  const getAllAdminUsers = async () => {
-    const query = '*[_type == "settings"]{adminusers, referralcollections, referralrate_one, referralrate_two, referralrate_three, referralrate_four, referralrate_five}';
-    const res = await config.fetch(query);
-    //this object will hold commission values for non company collections i.e for sharing of platform fee
-    const referralCommission = {
-      referralrate_one: res[0].referralrate_one,
-      referralrate_two: res[0].referralrate_two,
-      referralrate_three: res[0].referralrate_three,
-      referralrate_four: res[0].referralrate_four,
-      referralrate_five: res[0].referralrate_five,
-    }
-    setReferralCommission(referralCommission);
-    setReferralAllowedCollections(res[0].referralcollections); //save all collections that are allowed to have referral commission settings
-    return res[0].adminusers;
   }
 
   const { data: collectionData, status: collectionStatus } = useQuery(
@@ -148,7 +133,27 @@ const Header = () => {
   useEffect(() => {
     if(!w) return
     localStorage.setItem('refWallet', w)
-  }, [w])
+  }, [w]);
+
+  useEffect(() => {
+    ;(async() => {
+      const { data } = await axios.get(`${HOST}/api/getreferralcollections`);
+      const parsedData = JSON.parse(data)
+      setReferralAllowedCollections(parsedData.referralcollections);
+      const referralCommission = {
+            referralrate_one: parsedData.referralrate_one,
+            referralrate_two: parsedData.referralrate_two,
+            referralrate_three: parsedData.referralrate_three,
+            referralrate_four: parsedData.referralrate_four,
+            referralrate_five: parsedData.referralrate_five,
+          }
+      setReferralCommission(referralCommission);
+    })();
+
+    return () => {
+      //do nothing
+    }
+  }, []);
 
   useEffect(() => {
     if (!address) {
@@ -252,7 +257,9 @@ const Header = () => {
     })();
 
     ;(async() => {
-      const adminList = await getAllAdminUsers();
+      const { data } = await axios.get(`${HOST}/api/getadminusers`);
+      const parseddata = JSON.parse(data);
+      const adminList = parseddata.adminusers;
       const isThisUserAdmin = adminList.filter(user => user._ref == address);
       if(isThisUserAdmin.length > 0){
           setIsAdmin(true);
@@ -274,6 +281,7 @@ const Header = () => {
       })
 
   }, [chainid]);
+
 
   return (
     <div className={style.wrapper}>
@@ -318,7 +326,7 @@ const Header = () => {
               leaveTo="transform opacity-0 scale-95"
             >
               <Menu.Items
-                className={`absolute right-0 mt-2 w-72 origin-top-right divide-y ${
+                className={`absolute right-0 mt-2 w-80 origin-top-right divide-y ${
                   dark
                     ? ' divide-slate-600 bg-slate-700 text-neutral-100'
                     : ' divide-gray-100 bg-white'
@@ -327,7 +335,10 @@ const Header = () => {
                 <div className="px-1 py-1 ">
 
                   {!isLogged && (
-                    <div className="p-4">
+                    <div className="py-4 space-y-2">
+                      <Link href="/blogs/loyalty-reward" legacyBehavior={false}>
+                        <Loyalty isLogged={isLogged} />
+                      </Link>
                       <ChainSelection />
                     </div>
                   )}
@@ -378,8 +389,8 @@ const Header = () => {
                               active ? 'bg-blue-500 ' : ''
                             } group rounded-md px-2 py-2 text-sm`}
                           >
-                            <Link href="/user/referrals">
-                              <div className="flex w-full items-center "><AiOutlineUsergroupAdd fontSize={23}/> <span className="pl-2">Referrals</span></div>
+                            <Link href="/user/referrals" legacyBehavior={false}>
+                                <div className="flex w-full items-center "><AiOutlineUsergroupAdd fontSize={23}/> <span className="pl-2">Referrals</span></div>
                             </Link>
                           </div>
                         )}
@@ -401,6 +412,26 @@ const Header = () => {
                           </div>
                         )}
                       </Menu.Item>
+                      <Menu.Item>
+                          <div className={` pt-2 text-left cursor-pointer rounded-md`}>
+                            <div className={`border-t pt-2 ${dark ? 'border-slate-600': 'border-neutral-100'}`}>
+                              <div className={`flex gap-1 rounded-md p-2 items-center hover:bg-${dark ? 'slate-600' : 'neutral-100'}`}>
+                                <ThemeSwitcher />
+                              </div>
+                            </div>
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link href="/user/referrals" legacyBehavior={false}>
+                            <div className={` pt-2 text-left cursor-pointer rounded-md`}>
+                              <div className={`border-t pt-4 ${dark ? 'border-slate-600': 'border-neutral-100'}`}>
+                                <div className={`flex gap-1 rounded-md p-2 items-center `}>
+                                <Loyalty isLogged={isLogged} />
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        </Menu.Item>
                       
                       {isAdmin ? (
                         <Menu.Item>
@@ -413,7 +444,7 @@ const Header = () => {
                        ) : ''}
                     </>
                   )}
-                  <div className="w-64 mx-auto mb-4 mt-4 pt-4 border-t border-slate-600">
+                  <div className="flex justify-center  mb-4 mt-4 pt-4 border-t border-slate-600">
                     <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl" />
                   </div>
                 </div>
@@ -431,7 +462,12 @@ const Header = () => {
               : style.headerItems + ' text-black'
           }>
           {!isLogged && (
-            <ChainSelection />
+            <>
+              <Link href="/blogs/loyalty-reward" legacyBehavior={false}>
+                <Loyalty isLogged={isLogged} />
+              </Link>
+              <ChainSelection />
+            </>
           )}
 
           {address && isLogged && (
@@ -443,10 +479,21 @@ const Header = () => {
                   <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                     <Menu.Items className={` ${
                       dark
-                        ? 'divide-sky-400/20 bg-slate-700 text-white'
+                        ? 'divide-sky-700/20 bg-slate-800 text-white'
                         : ' divide-gray-100 bg-white'
                     } absolute right-0 mt-2 w-72 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-30`}>
                       <div className="px-1 py-1 flex flex-col text-left">
+                        <Menu.Item>
+                          <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
+                            <Link href="/contracts">
+                              <div className="flex gap-2 items-center">
+                                <MdOutlineWidgets fontSize={20}/> Create
+                              </div>
+                            </Link>
+
+                           
+                          </div>
+                        </Menu.Item>
                         <Menu.Item>
                           <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
                             <Link href="/collections/myCollection">
@@ -458,10 +505,10 @@ const Header = () => {
                         </Menu.Item>
                         <Menu.Item>
                           <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
-                            <Link href="/user/referrals" >
-                              <div className="flex gap-1 items-center">
-                                <AiOutlineUsergroupAdd fontSize={23}/> Referrals
-                              </div>
+                            <Link href="/user/referrals" legacyBehavior={false}>
+                                <div className="flex gap-1 items-center">
+                                  <AiOutlineUsergroupAdd fontSize={23}/> Referrals
+                                </div>
                             </Link>
                           </div>
                         </Menu.Item>
@@ -473,6 +520,26 @@ const Header = () => {
                               </div>
                             </Link>
                           </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div className={` pt-2 text-left cursor-pointer rounded-md`}>
+                            <div className={`border-t pt-2 ${dark ? 'border-slate-600': 'border-neutral-100'}`}>
+                              <div className={`flex gap-1 rounded-md p-2 items-center hover:bg-${dark ? 'slate-600' : 'neutral-100'}`}>
+                                <ThemeSwitcher />
+                              </div>
+                            </div>
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link href="/user/referrals" legacyBehavior={false}>
+                            <div className={` pt-2 text-left cursor-pointer rounded-md`}>
+                              <div className={`border-t pt-4 ${dark ? 'border-slate-600': 'border-neutral-100'}`}>
+                                <div className={`flex gap-1 rounded-md p-2 items-center `}>
+                                <Loyalty isLogged={isLogged} />
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
                         </Menu.Item>
                       </div>
                         
@@ -487,13 +554,7 @@ const Header = () => {
                     </div>
                   </a>
                 ) : ''}
-                <ThemeSwitcher />
                 <Notifications />
-              </div>
-              <div className={`rounded-lg cursor-pointer px-5 py-4 text-black border-0 bg-white mr-3`}>
-                <Link href="/contracts">
-                  <div className={style.headerItem + " inline-flex gap-1 items-center"}><div className="animate-pulse"><MdOutlineWidgets /></div> Create</div>
-                </Link>
               </div>
             </>
           )}

@@ -115,8 +115,6 @@ const mint = () => {
             },
         ],
         category: '',
-        itemtype: 'image',
-        tokenid: '',
         },
      })
   const { HOST, blockchainName } = useSettingsContext();
@@ -166,20 +164,7 @@ const mint = () => {
     return() => {
       //clean up function
     }
-  }, [address])
-
-
-  // useEffect(() => {
-  //   if(!uuid) return
-  //   dispatch({
-  //     type: 'ADD_TOKENID',
-  //     payload: { tokenid: uuid}
-  //   })
-
-  //   return() => {
-  //     //clean up function
-  //   }
-  // }, [uuid]);
+  }, [address]);
 
   //handling Create NFT button
   const handleSubmit = async (e, toastHandler = toast, sanityClient = config, contract = nftCollection) => {
@@ -208,65 +193,15 @@ const mint = () => {
       toastHandler.error('Error in minting. Cannot find NFT Collection', errorToastStyle)
       return
     }
-    // if(fileType != "image") {
-    //   toastHandler.error("Image file is required. Supported file extensions are JPG, PNG, GIF, JPEG, WEBP, AVIF, BMP, JFIF", errorToastStyle)
-    //   return
-    // }
-    // const formdata = new FormData();
-    // formdata.append('filetoupload', file)
-    // formdata.append('filename', uuid)
     
     try {
       setIsMinting(true)
-      const sdk = new ThirdwebSDK(signer)
+      const sdk = new ThirdwebSDK(signer,  {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+      })
       const nftCollection = await sdk.getContract(selectedCollection.contractAddress)
       const tx = await nftCollection.erc721.mintTo(address, {...state, image: file})
 
-      // const receipt = tx.receipt
-
-      
-      //save NFT data into Sanity
-      // const nftItem = {
-      //   _type: 'nftItem',
-      //   _id: uuid,
-      //   id: tx.id.toString(),
-      //   collection: { 
-      //     _ref: selectedCollection._id, 
-      //     _type: 'reference'
-      //   },
-      //   listed: false,
-      //   chainId: connectedChain.chainId,
-      //   createdBy: { 
-      //     _ref: address, 
-      //     _type: 'reference' 
-      //   },
-      //   ownedBy: { 
-      //     _ref: address, 
-      //     _type: 'reference' 
-      //   },
-      //   featured: false,
-      //   name: state.name,
-      // }
-      
-      // await sanityClient.createIfNotExists(nftItem)
-        
-
-      //save Transaction Data into Sanity
-      // const transactionData = {
-      //   _type: 'activities',
-      //   _id: receipt.transactionHash,
-      //   nftItems: [{ _ref: uuid, _type: 'reference', _key: uuid }],
-      //   transactionHash: receipt.transactionHash,
-      //   from: receipt.from,
-      //   to: receipt.to,
-      //   tokenid: tx.id.toString(),
-      //   event: 'Mint',
-      //   price: '-',
-      //   chainId: connectedChain.chainId,
-      //   dateStamp: new Date(),
-      // }
-      
-      // await sanityClient.createIfNotExists(transactionData);
 
       setIsMinting(false);
 

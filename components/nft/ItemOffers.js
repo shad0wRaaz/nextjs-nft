@@ -6,7 +6,6 @@ import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { useSigner } from '@thirdweb-dev/react'
 import { IconLoading } from '../icons/CustomIcons'
 import React, { useEffect, useState } from 'react'
-import { getUser } from '../../fetchers/SanityFetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { getMarketOffers } from '../../fetchers/Web3Fetchers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -55,10 +54,14 @@ const ItemOffers = ({ selectedNft, metaDataFromSanity, listingData, thisNFTMarke
       ;(async() => {
         let sdk = '';
         if(signer){
-          sdk = new ThirdwebSDK(signer);
+          sdk = new ThirdwebSDK(signer, {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          });
         }
         else {
-          sdk = new ThirdwebSDK(thisNFTblockchain);
+          sdk = new ThirdwebSDK(thisNFTblockchain, {
+            clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+          });
         }
 
         const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");

@@ -51,7 +51,7 @@ const Buy = ({ setShowMenu }) => {
     const [selectedFutureAir, setSelectedFutureAir] = useState([]);
     const { chainExplorer, chainIcon } = useSettingsContext();
     const [searchAddress, setSearchAddress] = useState();
-    const sdk = new ThirdwebSDK("binance");
+    const sdk = new ThirdwebSDK("binance", { clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY});
     const [remainingCrypto, setRemainingCrypto] = useState(5000);
     const [remainingNeon, setRemainingNeon] = useState(5000);
     const [remainingCelestial, setRemainingCelestial] = useState(10000);
@@ -180,7 +180,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">1. Crypto Creatures</span></h2>
+                        <span className="color--gradient-y d-block">Crypto Creatures</span></h2>
                         <p className="text-center mt-3">A collection of unique digital creatures that live on the Binance Blockchain.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={creature1} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -188,8 +188,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={creature3} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={creature4} alt="Crypto Creatures" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber2 fontSize={25} className="inline"/></p>
-                        <p className="text-center text-lg">Earn from 10% Direct + 8% Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">NFTs from this collection will let you earn from upto <u>Uni Level 2</u> from your referrals network.</p>
+                        <p className="text-center text-lg">Earn 10% from your direct referrals and 8% from your referrals' referral.</p>
                         <Transition appear show={cryptoDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCryptoDrop(false)}>
                             <Transition.Child
@@ -374,7 +374,7 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Buy Date</h6>
+                                            <h6 className="mint__sub-title">Minting starts</h6>
                                             <h2 className="mint__numbers">30th*</h2>
                                             <h4 className="mint__name text-uppercase">June</h4>
                                         </div>
@@ -417,7 +417,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">2. Neon Dreams</span></h2>
+                        <span className="color--gradient-y d-block">Neon Dreams</span></h2>
                         <p className="text-center mt-3">A series of bright and colourful and NFTs that capture the surreal nature of our dreams.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -425,8 +425,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={neon3} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={neon4} alt="Neon Dreams" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber3 fontSize={25} className="inline"/></p>
-                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">NFTs from this collection will let you earn from upto <u>Uni Level 3</u> from your referrals network.</p>
+                        <p className="text-center text-lg">Earn 10% from your direct referrals, 8% from your referrals' referral and 6% from the next subsequent referral level.</p>
                         <Transition appear show={neonDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setNeonDrop(false)}>
                             <Transition.Child
@@ -610,7 +610,7 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Date</h6>
+                                        <h6 className="mint__sub-title">Minting starts</h6>
                                         <h2 className="mint__numbers">30th*</h2>
                                         <h4 className="mint__name text-uppercase">June</h4>
                                     </div>
@@ -652,7 +652,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">3. Celestial Beings</span></h2>
+                        <span className="color--gradient-y d-block">Celestial Beings</span></h2>
                         <p className="text-center mt-3">A series of NFTs that feature mythical creatures and dieties from different cultures.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={celestial1} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -660,8 +660,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={celestial3} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={celestial4} alt="Celestial Beings" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber4 fontSize={25} className="inline"/></p>
-                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">NFTs from this collection will let you earn from upto <u>Uni Level 4</u> from your referrals network.</p>
+                        <p className="text-center text-lg">Earn 10% from your direct referrals, 8% from your referrals' referral, then 6% and 5% from the subsequent referral levels.</p>
                         <Transition appear show={celestialDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setCelestialDrop(false)}>
                             <Transition.Child
@@ -845,7 +845,7 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Buy Date</h6>
+                                            <h6 className="mint__sub-title">Minting starts</h6>
                                             <h2 className="mint__numbers">30th*</h2>
                                             <h4 className="mint__name text-uppercase">June</h4>
                                         </div>
@@ -887,7 +887,7 @@ const Buy = ({ setShowMenu }) => {
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
                         <h2 className="text--3d text-4xl md:text-[4.5rem] leading-normal text-center"> 
-                        <span className="color--gradient-y d-block">4. Artifacts of The Future</span></h2>
+                        <span className="color--gradient-y d-block">Artifacts of The Future</span></h2>
                         <p className="text-center mt-3">A collection of NFTs that showcase futuristic technology and inventions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={artifacts1} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -895,8 +895,8 @@ const Buy = ({ setShowMenu }) => {
                             <Image src={artifacts3} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                             <Image src={artifacts4} alt="Artifacts of the Future" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
                         </div>
-                        <p className="text-center text-lg mt-4 mb-2">Unilevel Access: <TbSquareRoundedNumber5 fontSize={25} className="inline"/></p>
-                        <p className="text-center text-lg">Earn from 10% Direct + (8% + 6% + 5% + 5%) Indirect</p>
+                        <p className="text-center text-lg mt-4 mb-2">NFTs from this collection will let you earn from upto <u>Uni Level 5</u> from your referrals network.</p>
+                        <p className="text-center text-lg">Earn 10% from your direct referrals, 8% from your referrals' referral, then 6%, 5% and another 5% from the subsequent referral levels.</p>
                         <Transition appear show={futureDrop} as={Fragment}>
                             <Dialog as="div" className="relative z-10" onClose={() => setFutureDrop(false)}>
                             <Transition.Child
@@ -1080,7 +1080,7 @@ const Buy = ({ setShowMenu }) => {
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Buy Date</h6>
+                                        <h6 className="mint__sub-title">Minting starts</h6>
                                         <h2 className="mint__numbers">30th*</h2>
                                         <h4 className="mint__name text-uppercase">June</h4>
                                     </div>

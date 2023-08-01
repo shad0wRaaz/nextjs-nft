@@ -248,7 +248,7 @@ const User = () => {
       <Header />
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
-          <div className="nc-NcImage absolute inset-0">
+          <div className="absolute inset-0">
             <img src={userData?.web3imagebanner ? getImagefromWeb3(userData?.web3imagebanner) : `https://picsum.photos/1500/500/?blur=10`}
               className="h-full w-full object-cover"
               alt={userData?.userName}
@@ -256,15 +256,15 @@ const User = () => {
           </div>
         </div>
 
-        <div className="container relative  mx-auto -mt-14 lg:-mt-20 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+        <div className="container relative  mx-auto -mt-14 lg:-mt-64 lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
           <div
               className={`flex flex-col rounded-3xl ${
-                dark ? 'darkGray/30 border border-sky-700/30' : 'bg-white/30'
-              } p-8 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
+                dark ? 'darkGray/30' : 'bg-white/30'
+              } md:p-8 p-4 shadow-xl md:flex-row md:rounded-[40px] backdrop-blur-xl`}
             >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between md:block">
-              <div className="w-40 sm:w-48 md:w-56 xl:w-60">
-                <div className=" aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl">
+              <div className="sm:w-full md:w-20 xl:w-20">
+                <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl">
                   <img
                     src={userData?.web3imageprofile ? getImagefromWeb3(userData?.web3imageprofile) : createAwatar(address)}
                     className="h-full w-full object-cover"
@@ -336,12 +336,13 @@ const User = () => {
               </div>
             </div>
 
-            <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
-              <div className="flex w-full justify-between">
-                <div className="max-w-screen-sm ">
+            <div className="mt-5 flex flex-wrap flex-grow md:mt-0 md:ml-8 xl:ml-5 items-center justify-between gap-5">
+              <div className="max-w-screen-sm">
+                <div className="flex flex-start gap-2 items-center">
                   <h2 className="block text-2xl font-semibold sm:text-3xl lg:text-4xl">
                     {userData?.userName}
                   </h2>
+                </div>
                   <span className="mt-4 inline-block text-sm font-bold">
                     {userData?.walletAddress.slice(0, 7)}...
                     {userData?.walletAddress.slice(-4)}
@@ -353,15 +354,15 @@ const User = () => {
                       toast.success('User address copied !', successToastStyle)
                     }}
                   >
-                    <IconCopy />
+                    {!dark ? <IconCopy color="#3d3d3d"/> : <IconCopy color="#ffffff" />}
                   </span>
-                  <span className="ml-[50px] inline-block text-sm">
-                    Joined from{' '}
-                    {moment(userData?._createdAt).format('YYYY MMM')}
+                  <span className={`block text-xs ${dark ? 'text-white/50' : 'text-black/80'}`}>
+                    Joined from {moment(userData?._createdAt).format('YYYY MMM')}
                   </span>
-                  <span className="mt-4 block">{userData?.biography}</span>
+                  <span className="mt-4 block text-sm">{userData?.biography}</span>
                 </div>
 
+              {/* <div className="grid grid-cols-2 md:grid-cols-4 items-center justify-start gap-5">
                 {myUser && myUser.walletAddress != address && userData && (
                   <div className="">
                     <button
@@ -392,30 +393,18 @@ const User = () => {
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
 
-              <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 xl:mt-8 xl:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 items-center justify-start gap-5">
                 <div
                   className={`${
                     dark
                       ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                >
-                  <MdOutlineCollections
-                    fontSize="30px"
-                    className={`mb-2 ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  >
-                    Collections
-                  </span>
-                  <span className="mt-2 text-base font-bold sm:text-xl">
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}>
+                  <MdOutlineCollections fontSize="30px" className={`mb-2 ${dark ? 'text-neutral-200' : 'text-neutral-800'}`}/>
+                  <span className="text-sm inline-block">Collections</span>
+                  <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
                     {Boolean(outsideCollection?.total) ? outsideCollection?.total : 0}
                   </span>
                 </div>
@@ -424,23 +413,11 @@ const User = () => {
                   className={`${
                     dark
                       ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                >
-                  <FiImage
-                    fontSize="30px"
-                    className={`mb-2 ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  >
-                    Nfts
-                  </span>
-                  <span className="mt-2 text-base font-bold sm:text-xl">
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}>
+                  <FiImage fontSize="30px" className="mb-2"/>
+                  <span className="text-sm">NFTs</span>
+                  <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
                     {Boolean(mynfts?.total) ? mynfts?.total : 0}
                   </span>
                 </div>
@@ -449,23 +426,12 @@ const User = () => {
                   className={`${
                     dark
                       ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <VscHeart
-                    fontSize="30px"
-                    className={`mb-2 ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  >
-                    Followers
-                  </span>
-                  <span className="mt-2 text-base font-bold sm:text-xl">
+                  <VscHeart fontSize="30px" className="mb-2"/>
+                  <span className="text-sm">Followers</span>
+                  <span className="mt-1 text-base font-bold sm:mt- sm:text-xl">
                     {followerCount ? followerCount : 0}
                   </span>
                 </div>
@@ -474,23 +440,12 @@ const User = () => {
                   className={`${
                     dark
                       ? ' border border-sky-400/20'
-                      : ' border border-neutral-50'
-                  } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      : ' border border-neutral-50/20'
+                  } flex flex-col items-center justify-center rounded-2xl p-5 lg:p-2`}
                 >
-                  <RiMoneyDollarCircleLine
-                    fontSize="30px"
-                    className={`mb-2 ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm text-center ${
-                      dark ? 'text-neutral-200' : 'text-neutral-800'
-                    }`}
-                  >
-                    Volume Traded
-                  </span>
-                  <span className="mt-2 text-base font-bold sm:text-xl">
+                  <RiMoneyDollarCircleLine fontSize="30px" className="mb-2"/>
+                  <span className="text-sm text-center">Volume Traded</span>
+                  <span className="mt-1 text-base font-bold sm:mt- sm:text-xl">
                     ${userData?.volumeTraded
                       ? millify(userData?.volumeTraded)
                       : 0}
@@ -501,51 +456,79 @@ const User = () => {
           </div>
         </div>
       </div>
-      
-      <div className="container mx-auto mt-[5rem] flex justify-center px-5">
-        <div
-          className={`border ${
-            dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
-          } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow`}
-        >
-          <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              showCollection &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowCollection(true)}
-          >
-            <span className="inline-block pl-2 w-max">Collections</span>
+
+      <div className=" relative z-10  container mx-auto lg:mt-[4rem] lg:p-[8rem] lg:pt-12 pt-0 pb-0 lg:pb-0 p-[2rem]">
+        <div className={`${dark ? 'md:bg-[#111827]' : 'md:bg-white'} rounded-3xl md:rounded-[40px] pt-[2rem]`}>
+          <div className="container mx-auto flex justify-center mb-8">
+            <div
+              className={`border ${
+                dark ? ' border-slate-600 bg-slate-700' : ' border-neutral-50'
+              } flex justify-between gap-2 overflow-auto rounded-full p-1 shadow`}
+            >
+              <div
+                className={`transition cursor-pointer rounded-full md:p-4 md:px-8 p-2 px-4 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  showCollection &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowCollection(true)}
+              >
+                <span className="inline-block pl-2 w-max">Collections</span>
+              </div>
+              <div
+                className={`transition cursor-pointer rounded-full md:p-4 md:px-8 p-2 px-4 ${
+                  dark
+                    ? ' hover:bg-slate-600 hover:text-neutral-100'
+                    : ' hover:bg-sky-100 hover:text-black'
+                } ${
+                  !showCollection &&
+                  (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
+                }`}
+                onClick={() => setShowCollection(false)}
+              >
+                <span className="inline-block pl-2 w-max">NFTs</span>
+              </div>
+            </div>
           </div>
-          <div
-            className={`cursor-pointer rounded-full p-4 px-8 ${
-              dark
-                ? ' hover:bg-slate-600 hover:text-neutral-100'
-                : ' hover:bg-sky-100 hover:text-black'
-            } ${
-              !showCollection &&
-              (dark ? ' bg-slate-600 text-white' : ' bg-sky-500 text-white')
-            }`}
-            onClick={() => setShowCollection(false)}
-          >
-            <span className="inline-block pl-2 w-max">NFTs</span>
+
+          <div className="text-center text-sm relative">
+            Showing {showCollection ? 'Collections' : 'NFTs'} from 
+            <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> 
+            {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
+          </div>
+          
+          <div className=" mx-auto  lg:pt-8 lg:pb-0 pb-0 pt-8 md:pt-0 flex justify-between items-center">
+            <div className={`flex overflow-hidden rounded-md border ${dark ? 'border-slate-700': 'border-neutral-200/80'}`}>
+              <div 
+                className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
+                onClick={() => setCompact(false)}>
+                <BsGrid/>
+              </div>
+              <div 
+                className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
+                onClick={() => setCompact(true)}>
+                <BsGrid3X3Gap/>
+              </div>
+            </div>
+
+            <div>
+              <button 
+                className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
+                onClick={() => setCursor(mynfts?.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto mt-[2rem] lg:p-[8rem] lg:pt-0 lg:pb-0 p-[2rem]">
+      <div className="container mx-auto lg:p-[8rem] lg:pt-8 lg:pb-0 p-[2rem]">
         {showCollection ? (
           <>
           {/* Displaying in house collections */}
               {collectionStatus == 'loading' && <Loader />}
-              <div className="text-center text-sm relative mb-8">
-                Showing Collections from <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
-              </div>
-              {collectionData?.length == 0 && (
+              {collectionData?.length == 0 && collectionsFromInfura?.length == 0 && (
                 <div className="text-center">
                   <h2 className={style.errorTitle}>No Collection created yet.</h2>
                 </div>
@@ -592,31 +575,6 @@ const User = () => {
           </>
         ) : (
           <div className="flex flex-col gap-6">
-            <div className="text-center text-sm relative">
-              Showing NFTs from <span className={`p-2 pl-3 ml-2 border rounded-lg ${dark ? 'border-slate-800': 'border-neutral-200'}`}> {selectedBlockchain.toUpperCase()} chain {chainIcon[blockchainIdFromName[selectedBlockchain]]}</span>
-            </div>
-              
-            <div className="flex justify-between items-center">
-              <div className={`flex overflow-hidden rounded-md shadow-md border ${dark ? 'border-slate-700': 'border-sky-500'}`}>
-                <div 
-                  className={` ${!compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100  hover:bg-sky-200')} p-2 cursor-pointer`}
-                  onClick={() => setCompact(false)}>
-                  <BsGrid/>
-                </div>
-                <div 
-                  className={` ${compact ? (dark ? 'bg-slate-500 hover:bg-slate-500' : 'bg-sky-600 text-white') : (dark ? 'bg-slate-700' :'bg-neutral-100 hover:bg-sky-200')} p-2 cursor-pointer`}
-                  onClick={() => setCompact(true)}>
-                  <BsGrid3X3Gap/>
-                </div>
-              </div>
-              
-              <div>
-                  <button 
-                    className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-                    onClick={() => setCursor(mynfts.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-              </div>
-
-            </div>
 
             {mynftstatus == 'loading' && <Loader/>}
             
@@ -639,16 +597,9 @@ const User = () => {
               </div>
             )}
 
-            <div className="flex justify-end">
-                <button 
-                  className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-                  onClick={() => setCursor(mynfts.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-            </div>
-
           </div>
         )}
       </div>
-
       <Footer />
     </div>
   )

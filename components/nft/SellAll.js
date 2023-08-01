@@ -199,7 +199,9 @@ const SellAll = ({ nfts, collectionData, marketContractAddress }) => {
         }
 
         try{
-            const sdk = new ThirdwebSDK(signer);
+            const sdk = new ThirdwebSDK(signer, {
+                clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+              });
             const contract = await sdk.getContract(marketContractAddress, "marketplace-v3");
             
             const tx = await contract?.directListings.createListingsBatch(listings)
@@ -371,7 +373,9 @@ const SellAll = ({ nfts, collectionData, marketContractAddress }) => {
         }
 
         try{
-            const sdk = new ThirdwebSDK(signer);
+            const sdk = new ThirdwebSDK(signer, {
+                clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+              });
             const contract = await sdk.getContract(marketContractAddress, "marketplace-v3");
             
             const tx = await contract?.englishAuctions.createAuctionsBatch(auction)

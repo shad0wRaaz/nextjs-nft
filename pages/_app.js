@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import '../styles/globals.css'
 import Script from 'next/script'
 import { UserProvider } from '../contexts/UserContext'
@@ -12,35 +11,42 @@ import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
-import { ThirdwebProvider, ChainId, metamaskWallet, coinbaseWallet, walletConnect, safeWallet, magicLink } from '@thirdweb-dev/react'
+import { ThirdwebProvider, metamaskWallet, coinbaseWallet, walletConnect, safeWallet } from '@thirdweb-dev/react'
+import { Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet, Ethereum, Goerli, Mumbai, Polygon } from '@thirdweb-dev/chains'
 
 
 function MyApp({ Component, pageProps }) {
-  const client = new QueryClient()
+  const client = new QueryClient();
+
   return (
     <>
       <Script strategy='afterInteractive' src="https://www.googletagmanager.com/gtag/js?id=G-BBEXJ0P1FY"/>
-      <Script
+      {process.env.NODE_ENV == 'production' && 
+        <Script
         id='google-analytics'
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-BBEXJ0P1FY', {
-              page_path: window.location.pathname,
-            });
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-BBEXJ0P1FY', {
+            page_path: window.location.pathname,
+          });
           `,
-          }}
-      />
-      <ThirdwebProvider 
+        }}
+        />
+      }
+      <ThirdwebProvider
+        activeChain="ethereum"
+        clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
         supportedWallets={[
           metamaskWallet(),
           coinbaseWallet(),
           walletConnect(),
           safeWallet(),
         ]}
+        supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
         dAppMeta={{
           name: 'Nuva NFT',
           description: 'A Multichain NFT Marketplace',
