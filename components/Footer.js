@@ -92,7 +92,7 @@ const Footer = () => {
       'socialicon cursor-pointer rounded-md p-[7px] flex justify-center items-center',
     copyright: 'text-sm text-center',
     footerLinksWrapper: 'flex gap-3 mt-3 md:mt-0 flex-col md:flex-row justify-center items-center',
-    footerLinks: 'transition linear text-sm hover:text-blue-500 text-xs justify-center md:justify-end',
+    footerLinks: 'transition linear text-sm hover:text-sky-500 text-xs justify-center md:justify-end',
     subscribeWrapper: 'flex m-3 ml-0 gap-3 flex-col md:flex-row flex-wrap',
     subscribe: 'rounded-[10px] p-3 flex-auto focus:ring-0 focus:outline-none',
     subscribeButton:
@@ -173,28 +173,28 @@ const Footer = () => {
           <div>
             <h2 className={style.header}><BiHelpCircle/> Information</h2>
             {/* <div className="flex flex-col gap-3 text-sm">
-              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
-              <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
-              <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
-              <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-blue-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
+              <p><a href="https://goerlifaucet.com/" target="_blank" className="hover:text-sky-500 transition"><IconEthereum/>Ethereum (Goerli)</a></p>
+              <p><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-sky-500 transition"><IconBNB/>Binance Smartchain (Testnet)</a></p>
+              <p><a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-sky-500 transition"><IconPolygon/>Polygon (Mumbai)</a></p>
+              <p><a href="https://faucet.avax.network/" target="_blank" className="hover:text-sky-500 transition"><IconAvalanche/>Avalanche (Avalanche-Fuji)</a></p>
             </div> */}
             <div className="flex flex-col gap-3 text-sm">
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/whatarenfts">What are NFTs?</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nfttypes">NFT Types</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nftterms">NFT Terms</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/loyalty-reward">Loyalty Reward</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/royalty-reward">Royalty Reward</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/shared-platform-fee">Platform Fee Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/whatarenfts" className="hover:text-sky-500 transition">What are NFTs?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nfttypes" className="hover:text-sky-500 transition">NFT Types</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nftterms" className="hover:text-sky-500 transition">NFT Terms</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/loyalty-reward" className="hover:text-sky-500 transition">Loyalty Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/royalty-reward" className="hover:text-sky-500 transition">Royalty Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/shared-platform-fee" className="hover:text-sky-500 transition">Platform Fee Reward</a></div>
             </div>
           </div>
 
           <div className={style.RightBox}>
             <h2 className={style.header}><CgReadme/> Tutorials</h2>
             <div className="flex flex-col gap-3 text-sm">
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">How to get started?</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create a Crypto Wallet</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Mint/Buy Sell NFTs</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-blue-500 transition">Create/Edit Collections</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-sky-500 transition">How to get started?</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-sky-500 transition">Create a Crypto Wallet</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-sky-500 transition">Mint/Buy Sell NFTs</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href={'/tutorials/getstarted'} className="hover:text-sky-500 transition">Create/Edit Collections</a></div>
             </div>
             
           </div>
@@ -207,27 +207,27 @@ const Footer = () => {
             <div className="flex flex-col gap-3 text-sm">
               <div className="flex items-center">
                 <BsArrowRightShort fontSize={20}/>
-                <a href="https://goerlifaucet.com/" target="_blank" className="hover:text-blue-500 transition mr-2">Ethereum</a>
+                <a href="https://goerlifaucet.com/" target="_blank" className="hover:text-sky-500 transition mr-2">Ethereum</a>
                 <IconEthereum/>
               </div>
               <div className="flex items-center">
                 <BsArrowRightShort fontSize={20}/>
-                <a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-blue-500 transition mr-2">Binance</a>
+                <a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" className="hover:text-sky-500 transition mr-2">Binance</a>
                 <IconBNB/>
               </div>
               <div className="flex items-center">
                 <BsArrowRightShort fontSize={20}/>
-                <a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-blue-500 transition mr-2">Polygon</a>
+                <a href="https://mumbaifaucet.com/" target="_blank" className="hover:text-sky-500 transition mr-2">Polygon</a>
                 <IconPolygon/>
               </div>
               <div className="flex items-center">
                 <BsArrowRightShort fontSize={20}/>
-                <a href="https://www.allthatnode.com/faucet/avalanche.dsrv" target="_blank" className="hover:text-blue-500 transition mr-2">Avalanche</a>
+                <a href="https://www.allthatnode.com/faucet/avalanche.dsrv" target="_blank" className="hover:text-sky-500 transition mr-2">Avalanche</a>
                 <IconAvalanche/>
               </div>
               <div className="flex items-center">
                 <BsArrowRightShort fontSize={20}/>
-                <a href="https://faucet.quicknode.com/arbitrum/goerli" target="_blank" className="hover:text-blue-500 transition mr-2">Arbitrum</a>
+                <a href="https://faucet.quicknode.com/arbitrum/goerli" target="_blank" className="hover:text-sky-500 transition mr-2">Arbitrum</a>
                 <IconArbitrum/>
               </div>
             </div>

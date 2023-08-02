@@ -23,7 +23,17 @@ const Property = ({traits, nftData}) => {
         return() => {
             //clean up function, do nothing
         }
-    },[traits])
+    },[traits]);
+
+    const getUniqueObjectsById = (arr) => {
+       let arraySet = [];
+       arr.map(props => {
+            if(!(arraySet.find(obj => obj.propertyKey == props.propertyKey && obj.propertyValue == props.propertyValue))){
+                arraySet.push(props)
+            }
+       })
+       return arraySet;
+    }
 
     const addRemoveFromSelection = (key, value) => {
         if(!selectedProperties.find(tr => (tr.propertyKey == key && tr.propertyValue == value))){
@@ -41,8 +51,8 @@ const Property = ({traits, nftData}) => {
         {propertyKey && propertyKey.map((key, index) => (
             <Disclosure key={index}>
                 {({ open }) => (
-                    <div className="mb-4">
-                        <Disclosure.Button className={`flex w-full justify-between rounded-lg ${dark ? 'bg-slate-600 hover:bg-slate-700' : 'bg-neutral-200 hover:bg-neutral-300'} px-4 py-4 text-left text-sm font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}>
+                    <div className="mb-2">
+                        <Disclosure.Button className={`flex w-full justify-between rounded-lg ${dark ? 'bg-slate-600 hover:bg-slate-500 border-slate-500/50' : 'bg-neutral-200 hover:bg-neutral-300'} border px-4 py-4 text-left text-sm font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}>
                             <span>{ index + 1 }. {key}</span>
                             <HiChevronUp
                             className={`${
@@ -52,12 +62,12 @@ const Property = ({traits, nftData}) => {
                         </Disclosure.Button>
                         <Disclosure.Panel className="p-4 text-sm">
                             <div className="flex flex-wrap text-xs gap-2">
-                                {traits.filter(tr => tr.propertyKey === key).map((filteredtr, index) => (
+                                {getUniqueObjectsById(traits.filter(tr => tr.propertyKey === key)).map((filteredtr, index) => (
                                     <div key={index}
                                         className={`rounded-lg transition p-2 px-3 border text-center break-words cursor-pointer 
                                                     ${selectedProperties.findIndex(
                                                         tr => tr.propertyKey == key && tr.propertyValue == filteredtr.propertyValue
-                                                        ) >= 0? 'bg-sky-500 border-sky-500 text-neutral-100' : ( dark ? 'border-slate-600 hover:bg-slate-600' : 'border-neutral-200 hover:bg-neutral-200')}`}
+                                                        ) >= 0? 'bg-sky-500 border-sky-500 text-neutral-100' : ( dark ? 'border-slate-500/50 bg-slate-600 hover:bg-slate-500' : 'border-neutral-200 hover:bg-neutral-200')}`}
                                         onClick={() => addRemoveFromSelection(key, filteredtr.propertyValue)}>
                                         {filteredtr.propertyValue}
                                     </div>

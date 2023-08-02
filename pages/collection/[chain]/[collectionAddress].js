@@ -17,7 +17,7 @@ import { RiCloseFill } from 'react-icons/ri'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
-import { BiGlobe, BiImport } from 'react-icons/bi'
+import { BiChevronDown, BiGlobe, BiImport } from 'react-icons/bi'
 import { useQuery, useMutation } from 'react-query'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
@@ -1499,17 +1499,54 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       </label>
                     </div>
                   )}
-                  <button
-                    className="-z-1 md:mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
-                    onClick={() => setShowFilter(curval => !curval)}
-                  >
-                    <span className="ml-2.5 block truncate">Filter by Properties</span>
-                    <span className="absolute top-1/2 right-5 -translate-y-1/2">
-                      <BsChevronDown
-                        className={`${showFilter && 'rotate-180'} transition`}
-                      />
-                    </span>
-                  </button>
+
+                  <Popover className="relative z-50">
+                    {({ open }) => (
+                      <>
+                        <Popover.Button
+                          className={`
+                            ${open ? '' : 'text-opacity-90'}
+                            group inline-flex items-center rounded-lg transition bg-sky-700 hover:bg-sky-600 px-3 py-2 text-sm  text-white hover:text-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}
+                        >
+                          <span>Filters by Properties</span>
+                          <BiChevronDown
+                            className={`${open ? 'rotate-180' : 'text-opacity-70'}
+                                h-5 w-5 text-white-300 transition ease-in-out group-hover:text-opacity-80`}
+                            aria-hidden="true"
+                          />
+                        </Popover.Button>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-200"
+                          enterFrom="opacity-0 translate-y-1"
+                          enterTo="opacity-100 translate-y-0"
+                          leave="transition ease-in duration-150"
+                          leaveFrom="opacity-100 translate-y-0"
+                          leaveTo="opacity-0 translate-y-1"
+                        >
+                          <Popover.Panel className="absolute z-10 mt-3 w-screen max-w-sm  transform px-4 sm:px-0">
+                            <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
+                              <div className="bg-slate-700/90 backdrop-blur-lg p-6 ">
+                                {properties && (
+                                  <Property traits={properties} nftData={nfts} />
+                                )}
+                                <div className="rounded-xl mx-auto text-sm bg-sky-600 hover:bg-sky-700 text-neutral-100 w-max py-2 p-4 mt-4 cursor-pointer"
+                                  onClick={() => {
+                                    setSelectedProperties([]);
+                                    setFilteredNftData([...nfts]);
+                                      }
+                                    }>
+                                        Reset Filter
+                                  </div>
+                              </div>
+                            </div>
+                          </Popover.Panel>
+                        </Transition>
+                      </>
+                    )}
+                  </Popover>
+
+
 
                 </div>
                 
@@ -1527,35 +1564,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {showFilter && (
-              <div className="fixed w-full h-full top-0 backdrop-blur-sm left-0 z-30 flex align-items-center justify-center">
-                  <div className={`relative w-[500px] shadow-xl rounded-xl py-[2em] px-[3em] border ${dark ? 'bg-slate-800 border-slate-700/50' : 'bg-slate-50 border-neutral-200'} mx-4 my-auto md:m-auto`}>
-                    <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
-                    <div className="w-full">
-                      <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto">
-                        {properties && (
-                          <Property traits={properties} nftData={nfts} />
-                        )}
-                      </div>
-                    </div>
-                    <div 
-                      className="absolute top-3 transition duration-[300] px-2.5 right-3 cursor-pointer z-20 rounded-[7px] bg-[#ef4444] text-white p-2 hover:opacity-70"
-                      onClick={() => setShowFilter(false)}>
-                      <MdAdd className="inline-block text-xl -mt-1 rotate-45" />
-                    </div>
-                    <div className="rounded-xl mx-auto text-sm bg-sky-600 hover:bg-sky-700 text-neutral-100 w-max py-2 p-4 mt-4 cursor-pointer"
-                    onClick={() => {
-                      setSelectedProperties([]);
-                      setFilteredNftData([...nfts]); 
-                      setShowFilter(false);
-                        }
-                      }>
-                          Clear Filter
-                    </div>
-                  </div>
               </div>
             )}
             
