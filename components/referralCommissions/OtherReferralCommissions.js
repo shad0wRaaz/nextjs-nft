@@ -10,8 +10,8 @@ const OtherReferralCommissions = ({ currentChain }) => {
     const networks = [
         { chainName: 'binance', url: '/rewarding-renditions', icon: <IconBNB/>, name: 'Rewarding Renditions'},
         { chainName: 'mainnet', url: '/mushroom-kingdom', icon: <IconEthereum/>, name: 'Mushroom Kingdom'},
-        { chainName: 'mainnet', url: '/majestic-visions', icon: <IconEthereum/>, name: 'Etherverse'},
         { chainName: 'polygon', url: '/admirable-depictions', icon: <IconPolygon/>, name: 'Claws and Furs'},
+        { chainName: 'mainnet', url: '/majestic-visions', icon: <IconEthereum/>, name: 'Etherverse'},
         { chainName: 'avalanche', url: '/eminent-creations', icon: <IconAvalanche/>, name: 'Eminent Creations'},
         { chainName: 'arbitrum', url: '/eminent-creations', icon: <IconArbitrum/>, name: 'Admirable Depictions'},
     ]
