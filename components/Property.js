@@ -18,7 +18,6 @@ const Property = ({traits, nftData}) => {
         traits.map(tr => {
             propKey.add(tr.propertyKey);
         })
-        console.log(propKey)
         setPropertyKey(Array.from(propKey))
 
         return() => {
