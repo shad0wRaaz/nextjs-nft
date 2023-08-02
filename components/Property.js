@@ -10,7 +10,7 @@ const Property = ({traits, nftData}) => {
     const [propertyKey, setPropertyKey] = useState();
     const [propertyValue, setPropertyValue] = useState(); //this is to show the list of available property
     const { selectedProperties, setSelectedProperties } = useCollectionFilterContext(); //this is to store the user selected property
-    console.log(propertyKey)
+
     useEffect(() => {
         if(!traits) return
 
@@ -18,6 +18,7 @@ const Property = ({traits, nftData}) => {
         traits.map(tr => {
             propKey.add(tr.propertyKey);
         })
+        console.log(propKey)
         setPropertyKey(Array.from(propKey))
 
         return() => {
@@ -46,7 +47,7 @@ const Property = ({traits, nftData}) => {
                             <span>{ index + 1 }. {key}</span>
                             <HiChevronUp
                             className={`${
-                                open ? 'rotate-180 transform' : ''
+                                !open ? 'rotate-180 transform' : ''
                             } transition h-5 w-5`}
                             />
                         </Disclosure.Button>

@@ -46,6 +46,7 @@ const NFTCardExternal = ({
   const { myUser } = useUserContext()
   const [listedItem, setListedItem] = useState()
   const [isAuctionItem, setIsAuctionItem] = useState(null)
+
   // useEffect(() => {
   //   if (!listings || !nftItem) return
   //   let listing = [];

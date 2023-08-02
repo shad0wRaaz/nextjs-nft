@@ -88,6 +88,7 @@ const CollectionDetails = (props) => {
   const { blockchainName, marketplace, chainExplorer, referralCommission, referralAllowedCollections, blockchainIdFromName, blockedCollections, coinPrices, refs} = useSettingsContext();
   const { selectedProperties, setSelectedProperties } = useCollectionFilterContext();
   const [filteredNftData, setFilteredNftData] = useState();
+
   const [isBlocked, setIsBlocked] = useState(false);
   const [showListingModal, setShowListingModal] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
@@ -116,7 +117,6 @@ const CollectionDetails = (props) => {
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
   const [isMinting, setIsMinting] = useState(false);
   const [mintPrice, setMintPrice] = useState();
-  // const [gasEstimate, setGasEstimate] = useState();
   const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('Mint an NFT')
@@ -150,7 +150,7 @@ const CollectionDetails = (props) => {
     ethLogo: `h-6 mr-2`,
     statName: `text-sm w-full text-center mt-1`,
     description: `text-white text-md w-max-1/4 flex-wrap my-2`,
-    nftWrapperContainer: `container mx-auto p-[2rem] lg:p-[8rem] lg:pt-0 lg:mt-12`,
+    nftWrapperContainer: `container mx-auto p-[2rem] lg:p-[8rem] lg:pt-0 lg:pb-0 lg:mt-12`,
     nftwrapper:
     `grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${compact ? 'grid-cols-6' : 'xl:grid-cols-4'} place-items-center relative`,
     nftwrapper_old: `flex flex-wrap justify-center mb-[4rem] gap-[40px] sm:p-[2rem] md:p-[4rem] pt-[6rem] nftWrapper`,
@@ -210,273 +210,273 @@ const CollectionDetails = (props) => {
     }
   }, []);
 
-useEffect(() => {
-  if(!Boolean(coinPrices)) return;
+  useEffect(() => {
+    if(!Boolean(coinPrices)) return;
 
-    if (chain == "polygon" || chain == "mumbai") {
-      setCoinMultiplier(coinPrices?.maticprice);
-    } else if (chain == "mainnet" || chain == "goerli") {
-      setCoinMultiplier(coinPrices?.ethprice);
-    } else if (chain == "avalanche" || chain == "avalanche-fuji") {
-      setCoinMultiplier(coinPrices?.avaxprice);
-    } else if (chain == "binance" || chain == "binance-testnet") {
-      setCoinMultiplier(coinPrices?.bnbprice);
-    } else if(chain == "arbitrum" || chain == "arbitrum-goerli"){
-      setCoinMultiplier(coinPrices?.ethprice);
-    }
+      if (chain == "polygon" || chain == "mumbai") {
+        setCoinMultiplier(coinPrices?.maticprice);
+      } else if (chain == "mainnet" || chain == "goerli") {
+        setCoinMultiplier(coinPrices?.ethprice);
+      } else if (chain == "avalanche" || chain == "avalanche-fuji") {
+        setCoinMultiplier(coinPrices?.avaxprice);
+      } else if (chain == "binance" || chain == "binance-testnet") {
+        setCoinMultiplier(coinPrices?.bnbprice);
+      } else if(chain == "arbitrum" || chain == "arbitrum-goerli"){
+        setCoinMultiplier(coinPrices?.ethprice);
+      }
 
-    return() => {
-      //do nothing
-    }
+      return() => {
+        //do nothing
+      }
 
-}, [coinPrices]);
-
-
-const { mutate: changeBoughtNFTs } = useMutation(
-  ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
-  {
-    onError: (err) => { console.log(err); },
-    onSuccess: (res) => { 
-      // console.log(res)
-    }
-  }
-)
-
-const payToMySponsors = async() => {
-
- if(!Boolean(referralCommission)) {
-   toast.error("Referral commission could not be found", errorToastStyle);
-   return;
- }
- let sponsors = [];
- const payNetwork = await getMyPayingNetwork(address);
-
- let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
- if(Boolean(network?.sponsor)){
-   network = {
-     ...network,
-     sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
-    }
-
-   if(Boolean(network?.sponsor?.sponsor)){
-     network = {
-       ...network,
-       sponsor: {
-         ...network.sponsor,
-         sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
-       }
-     }
-
-     if(Boolean(network?.sponsor?.sponsor?.sponsor)){
-       network = {
-         ...network,
-         sponsor: {
-           ...network.sponsor,
-           sponsor: {
-             ...network.sponsor.sponsor,
-             sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
-           }
-         }
-       }
-     }
-
-     if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor)){
-       network = {
-         ...network,
-         sponsor: {
-           ...network.sponsor,
-           sponsor: {
-             ...network.sponsor.sponsor,
-             sponsor:{
-               ...network.sponsor.sponsor.sponsor,
-               sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
-             }
-           }
-         }
-       }
-     }
-
-     if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor)){
-       network = {
-         ...network,
-         sponsor: {
-           ...network.sponsor,
-           sponsor: {
-             ...network.sponsor.sponsor,
-             sponsor:{
-               ...network.sponsor.sponsor.sponsor,
-               sponsor: {
-                 ...network.sponsor.sponsor.sponsor.sponsor,
-                 sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
-               }
-             }
-           }
-         }
-       }
-     }
-   }
-   // console.log(network);
- }
-
- if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
-
-   let sponsor_L1 = network.sponsor.walletAddress;
-   let sponsor_L1_rate = isAllowedSeperateCommission ? collectionData?.referralrate_one : referralCommission.referralrate_one;
-   sponsors.push({ receiver: sponsor_L1, token: mintPrice * sponsor_L1_rate / 100 });  
- }
-   if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
-     let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
-     let sponsor_L2_rate = isAllowedSeperateCommission ? collectionData?.referralrate_two : referralCommission.referralrate_two;
-     sponsors.push({ receiver: sponsor_L2, token: mintPrice * sponsor_L2_rate / 100 });
-   }
-
-   if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
-     let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
-     let sponsor_L3_rate = isAllowedSeperateCommission ? collectionData?.referralrate_three : referralCommission.referralrate_three;
-     sponsors.push({ receiver: sponsor_L3, token: mintPrice * sponsor_L3_rate / 100 });
-   }
-
-   if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
-     let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
-     let sponsor_L4_rate = isAllowedSeperateCommission ? collectionData?.referralrate_four : referralCommission.referralrate_four;
-     sponsors.push({ receiver: sponsor_L4, token: mintPrice * sponsor_L4_rate / 100 });
-   }
-
-   if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
-     let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
-     let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
-     sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
-   }
-
- //send the tokens and get list of transaction hash to save in database
- const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain);
+  }, [coinPrices]);
 
 
-}
-
-
-const updateRoyaltyReceiver = async (claimedNFTId) => {
-  if(!referralAllowedCollections || !collectionData || !address) return;
-  const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
-  
-  
-  if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())) 
-  {
-    // console.log('processing change of royalty receiver')
-    const mushroomContracts = [
-      '0x05e9d0Fa11eFF24F3c2fB0AcD381B6866CeF2a1C'.toLowerCase(),
-      '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80'.toLowerCase(), 
-      '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7'.toLowerCase(), 
-      '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B'.toLowerCase()
-    ];
-
-    await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
+  const { mutate: changeBoughtNFTs } = useMutation(
+    ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
     {
-      contractAddress: collectionData.contractAddress, 
-      walletAddress: address, 
-      tokenId: claimedNFTId,
-      chain: selectedBlockchain,
-      collectionname: mushroomContracts.includes(collectionData.contractAddress.toLowerCase()) ? 'mushroom-kingdom' : '',
-    }).catch(err => {
-      console.log(err)
-    });
-  }
-}
+      onError: (err) => { console.log(err); },
+      onSuccess: (res) => { 
+        // console.log(res)
+      }
+    }
+  )
 
-const claimNFT = async(toastHandler = toast) => {
+  const payToMySponsors = async() => {
 
-  if(!signer) {
-      toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
-      return;
-  }
-  if(activechain.chainId.toString() != collectionData.chainId.toString()){
-    toastHandler.error("Wallet is connected to wrong chain.", errorToastStyle);
-    
+  if(!Boolean(referralCommission)) {
+    toast.error("Referral commission could not be found", errorToastStyle);
     return;
   }
+  let sponsors = [];
+  const payNetwork = await getMyPayingNetwork(address);
 
-  try{
-      setIsMinting(true);
-      setButtonLabel('Minting')
-      const sdk = new ThirdwebSDK(signer, {
-        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+  let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
+  if(Boolean(network?.sponsor)){
+    network = {
+      ...network,
+      sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
+      }
+
+    if(Boolean(network?.sponsor?.sponsor)){
+      network = {
+        ...network,
+        sponsor: {
+          ...network.sponsor,
+          sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
+        }
+      }
+
+      if(Boolean(network?.sponsor?.sponsor?.sponsor)){
+        network = {
+          ...network,
+          sponsor: {
+            ...network.sponsor,
+            sponsor: {
+              ...network.sponsor.sponsor,
+              sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
+            }
+          }
+        }
+      }
+
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor)){
+        network = {
+          ...network,
+          sponsor: {
+            ...network.sponsor,
+            sponsor: {
+              ...network.sponsor.sponsor,
+              sponsor:{
+                ...network.sponsor.sponsor.sponsor,
+                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
+              }
+            }
+          }
+        }
+      }
+
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor)){
+        network = {
+          ...network,
+          sponsor: {
+            ...network.sponsor,
+            sponsor: {
+              ...network.sponsor.sponsor,
+              sponsor:{
+                ...network.sponsor.sponsor.sponsor,
+                sponsor: {
+                  ...network.sponsor.sponsor.sponsor.sponsor,
+                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    // console.log(network);
+  }
+
+  if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
+
+    let sponsor_L1 = network.sponsor.walletAddress;
+    let sponsor_L1_rate = isAllowedSeperateCommission ? collectionData?.referralrate_one : referralCommission.referralrate_one;
+    sponsors.push({ receiver: sponsor_L1, token: mintPrice * sponsor_L1_rate / 100 });  
+  }
+    if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
+      let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
+      let sponsor_L2_rate = isAllowedSeperateCommission ? collectionData?.referralrate_two : referralCommission.referralrate_two;
+      sponsors.push({ receiver: sponsor_L2, token: mintPrice * sponsor_L2_rate / 100 });
+    }
+
+    if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
+      let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
+      let sponsor_L3_rate = isAllowedSeperateCommission ? collectionData?.referralrate_three : referralCommission.referralrate_three;
+      sponsors.push({ receiver: sponsor_L3, token: mintPrice * sponsor_L3_rate / 100 });
+    }
+
+    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
+      let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
+      let sponsor_L4_rate = isAllowedSeperateCommission ? collectionData?.referralrate_four : referralCommission.referralrate_four;
+      sponsors.push({ receiver: sponsor_L4, token: mintPrice * sponsor_L4_rate / 100 });
+    }
+
+    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
+      let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
+      let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
+      sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
+    }
+
+  //send the tokens and get list of transaction hash to save in database
+  const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain);
+
+
+  }
+
+
+  const updateRoyaltyReceiver = async (claimedNFTId) => {
+    if(!referralAllowedCollections || !collectionData || !address) return;
+    const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
+    
+    
+    if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())) 
+    {
+      // console.log('processing change of royalty receiver')
+      const mushroomContracts = [
+        '0x05e9d0Fa11eFF24F3c2fB0AcD381B6866CeF2a1C'.toLowerCase(),
+        '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80'.toLowerCase(), 
+        '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7'.toLowerCase(), 
+        '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B'.toLowerCase()
+      ];
+
+      await axios.post(`${HOST}/api/nft/setroyaltybytoken`,
+      {
+        contractAddress: collectionData.contractAddress, 
+        walletAddress: address, 
+        tokenId: claimedNFTId,
+        chain: selectedBlockchain,
+        collectionname: mushroomContracts.includes(collectionData.contractAddress.toLowerCase()) ? 'mushroom-kingdom' : '',
+      }).catch(err => {
+        console.log(err)
       });
-      const contract = await sdk.getContract(collectionAddress)
-      const txResult = await contract.erc721.claim("1").catch(err => {
-        if(err.reason == 'missing revert data in call exception; Transaction reverted without a reason string'){
-          toast.error('Error in minting NFT. This may be due to insufficient funds.', errorToastStyle);
-        }
+    }
+  }
 
-      });
+  const claimNFT = async(toastHandler = toast) => {
 
-      if(txResult){
-        const claimedNFTId = txResult[0].id.toString()
+    if(!signer) {
+        toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
+        return;
+    }
+    if(activechain.chainId.toString() != collectionData.chainId.toString()){
+      toastHandler.error("Wallet is connected to wrong chain.", errorToastStyle);
+      
+      return;
+    }
 
-        //update pay info-> list of all bought NFTs from the selected Collections
-        setButtonLabel('Adding to your Collection');
-        setTimeout(() => {
-          // just delay function
-        }, 2000);
-        const payObj =  {
-          walletAddress: address,
-          chainId: collectionData.chainId,
-          contractAddress: collectionData.contractAddress,
-          tokenId: claimedNFTId,
-          payablelevel: Boolean(collectionData.payablelevel) ? collectionData.payablelevel : 1,
-          type: 'buy'
-        }
-        changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
-
-        
-        const volume2Add = parseFloat(mintPrice * coinMultiplier);
-                
-        //adding volume to Collection
-        addVolume({
-          id: collectionData?._id,
-          volume: volume2Add,
+    try{
+        setIsMinting(true);
+        setButtonLabel('Minting')
+        const sdk = new ThirdwebSDK(signer, {
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
         });
-        
-        //adding volume to the user
-        addVolume({
-          id: String(address).toLowerCase(),
-          volume: volume2Add
+        const contract = await sdk.getContract(collectionAddress)
+        const txResult = await contract.erc721.claim("1").catch(err => {
+          if(err.reason == 'missing revert data in call exception; Transaction reverted without a reason string'){
+            toast.error('Error in minting NFT. This may be due to insufficient funds.', errorToastStyle);
+          }
+
         });
 
-        if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())){
-          await payToMySponsors();
-          setButtonLabel('Creating Split Royalty Contract')
-          await updateRoyaltyReceiver(claimedNFTId);
-        }
+        if(txResult){
+          const claimedNFTId = txResult[0].id.toString()
 
-        toastHandler.success('You have successfully minted a NFT.', successToastStyle);
+          //update pay info-> list of all bought NFTs from the selected Collections
+          setButtonLabel('Adding to your Collection');
+          setTimeout(() => {
+            // just delay function
+          }, 2000);
+          const payObj =  {
+            walletAddress: address,
+            chainId: collectionData.chainId,
+            contractAddress: collectionData.contractAddress,
+            tokenId: claimedNFTId,
+            payablelevel: Boolean(collectionData.payablelevel) ? collectionData.payablelevel : 1,
+            type: 'buy'
+          }
+          changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+
+          
+          const volume2Add = parseFloat(mintPrice * coinMultiplier);
+                  
+          //adding volume to Collection
+          addVolume({
+            id: collectionData?._id,
+            volume: volume2Add,
+          });
+          
+          //adding volume to the user
+          addVolume({
+            id: String(address).toLowerCase(),
+            volume: volume2Add
+          });
+
+          if(rewardingCollections.includes(String(collectionData.contractAddress).toLowerCase())){
+            await payToMySponsors();
+            setButtonLabel('Creating Split Royalty Contract')
+            await updateRoyaltyReceiver(claimedNFTId);
+          }
+
+          toastHandler.success('You have successfully minted a NFT.', successToastStyle);
+          setButtonLabel('Mint an NFT');
+          router.push('/collections/myCollection');
+        }
+        setIsMinting(false);
         setButtonLabel('Mint an NFT');
-        router.push('/collections/myCollection');
-      }
-      setIsMinting(false);
-      setButtonLabel('Mint an NFT');
-    }catch(err){
-      console.log(err);
-      if (err.reason == 'user rejected transaction'){
-        toastHandler.error('Transaction rejected via wallet', errorToastStyle);
-      }
-      setButtonLabel('Mint an NFT');
-      setIsMinting(false);
-  }
-}
-
-useEffect(() => {
-  if(!referralAllowedCollections) return
-  //check if this collection id is in allowed list of collection to have referral settings
-  const allcollectionIDs = referralAllowedCollections.map(collection => collection._ref);
-  if(allcollectionIDs.includes(collectionid)){
-    setHasReferralSetting(true);
-    setAllowedSeperateCommission(true);
+      }catch(err){
+        console.log(err);
+        if (err.reason == 'user rejected transaction'){
+          toastHandler.error('Transaction rejected via wallet', errorToastStyle);
+        }
+        setButtonLabel('Mint an NFT');
+        setIsMinting(false);
+    }
   }
 
-  return() =>{
-    //do nothing
-  }
-}, [referralAllowedCollections])
+  useEffect(() => {
+    if(!referralAllowedCollections) return
+    //check if this collection id is in allowed list of collection to have referral settings
+    const allcollectionIDs = referralAllowedCollections.map(collection => collection._ref);
+    if(allcollectionIDs.includes(collectionid)){
+      setHasReferralSetting(true);
+      setAllowedSeperateCommission(true);
+    }
+
+    return() =>{
+      //do nothing
+    }
+  }, [referralAllowedCollections])
 
   
   const importCollection = async(toastHandler = toast) => {
@@ -541,7 +541,6 @@ useEffect(() => {
         staleTime: Infinity,
         refetchOnWindowFocus: false,
         onSuccess:(res) => { 
-          // console.log(res); 
           setIsLoading(true)
         },
         getNextPageParam: (page) => {
@@ -569,12 +568,10 @@ useEffect(() => {
           metadata: JSON.parse(item.metadata),
         };
       parsedData.push(newData);
+      }); 
     });
-  });
+    
 
-  
-
-  return;
   const unresolved = parsedData.map(async nft => {
     const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
     const newObject= {
@@ -620,7 +617,7 @@ useEffect(() => {
   })
   setProperties(propObj);
   setIsLoading(false);
-}, [infiniteData]);
+  }, [infiniteData]);
 
 
   const { mutate: updateShowListed } = useMutation(
@@ -688,7 +685,7 @@ useEffect(() => {
 
   useEffect(() => {
     if(!address || !filteredNftData) return
-    // console.log(filteredNftData)
+
     const mine = filteredNftData.filter(nft => nft.ownerOf.toLowerCase() == address.toLowerCase());
 
     setMyNfts(mine);
@@ -754,7 +751,6 @@ useEffect(() => {
             });
             return res;
         }
-        // console.log('res',res)
         
       });
       setFilteredNftData(n);
@@ -1393,18 +1389,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         View
                       </div>
                     </div>
-                    {/* <div
-                      className={`${
-                        dark
-                        ? ' border border-sky-400/20'
-                        : ' border border-neutral-50'
-                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
-                      >
-                      <span className="text-sm">Owners</span>
-                      <span className="mt-4 text-base font-bold sm:text-xl">
-                        {ownersStatus == 'success' && ownersData.length}
-                      </span>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -1459,45 +1443,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     )}
                   </span>
                 </div>
-                {/* <div className="flex gap-1 justify-between text-left flex-wrap">
-                  <span>Estimated Gas Cost</span>
-                  <span>
-                    {(Boolean(address) && Boolean(gasEstimate)) ? (
-                      <div className="flex gap-2 items-center">
-                        {Number(gasEstimate.ether).toFixed(5)} {chainIcon[collectionData?.chainId]}
-                      </div>
-                    ) : (
-                      <>
-                        {(Boolean(address) && !Boolean(gasEstimate) ) ?  (
-                          <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Calculating..</span>
-                          ) : (
-                            <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Wallet not connected</span>
-                        )}
-                      </>
-                    )}
-                  </span>
-                </div>
-                <div className="flex gap-1 justify-between text-left flex-wrap">
-                  <span>Estimated Total</span>
-                  <span>
-                    {(Boolean(address) && Boolean(gasEstimate)) ? (
-                      <div>
-                      <div className="flex gap-2 items-center">
-                        {(Number(gasEstimate.ether) + Number(mintPrice)).toFixed(5)} {chainIcon[collectionData?.chainId]}
-                      </div>
-                        <p className="text-right text-sm text-slate-500 pr-8">(~ ${((Number(gasEstimate.ether) + Number(mintPrice)) * coinMultiplier).toFixed(2)})</p>
-                      </div>
-                    ) : (
-                      <>
-                        {(Boolean(address) && !Boolean(gasEstimate) ) ?  (
-                          <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Calculating..</span>
-                          ) : (
-                            <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Wallet not connected</span>
-                        )}
-                      </>
-                    )}
-                  </span>
-                </div> */}
               </div>
               <div className="flex flex-col justify-center mt-4 mb-4 gap-5 flex-wrap md:max-w-[400px] m-auto">
                 
@@ -1553,11 +1498,6 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         Show My NFTs only
                       </label>
                     </div>
-                    // <button
-                    //   className={`-z-1 relative flex h-auto w-auto items-center justify-center rounded-full bg-blue-700 hover:bg-blue-800 py-2.5 pl-3 pr-6 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none ring-2 ${showMine ? 'ring-2 ring-sky-600 ring-offset-2' : ''} disabled:bg-opacity-70  sm:text-xs`}
-                    //   onClick={() => setShowMine(curval => !curval)}>
-                    //   <span className="ml-2.5 block truncate">Show My NFTs only</span>
-                    // </button>
                   )}
                   <button
                     className="-z-1 md:mr-[6rem] relative flex h-auto w-auto items-center justify-center rounded-full bg-sky-600 hover:bg-sky-700 py-2.5 pl-3 pr-10 text-sm  font-medium text-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 disabled:bg-opacity-70 dark:focus:ring-offset-0 sm:text-xs"
@@ -1586,22 +1526,16 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       <BsGrid3X3Gap/>
                     </div>
                   </div>
-
-                  {/* <div>
-                    <button 
-                      className={`rounded-md text-sm p-2 px-3 flex gap-1 items-center  ${dark ? 'bg-slate-800 hover:bg-slate-600': 'bg-neutral-200 hover:bg-neutral-200'}`}
-                      onClick={() => setCursor(dataNFT.cursor)}> Next <HiChevronRight fontSize={18}/> </button>
-                  </div> */}
                 </div>
               </div>
             )}
 
             {showFilter && (
-              <div className="fixed w-full h-full bg-slate-700 bg-opacity-75 top-0 left-0 z-30 backdrop-blur-sm flex align-items-center justify-center">
-                  <div className={`relative w-[500px] rounded-xl py-[2em] px-[3em] ${dark ? 'bg-slate-800' : 'bg-slate-50'} mx-4 my-auto md:m-auto`}>
+              <div className="fixed w-full h-full top-0 backdrop-blur-sm left-0 z-30 flex align-items-center justify-center">
+                  <div className={`relative w-[500px] shadow-xl rounded-xl py-[2em] px-[3em] border ${dark ? 'bg-slate-800 border-slate-700/50' : 'bg-slate-50 border-neutral-200'} mx-4 my-auto md:m-auto`}>
                     <p className="fw-700 text-lg mb-4 flex gap-2"><IconFilter/> Properties Filter</p>
-                    <div className="w-full pt-4">
-                      <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto py-4">
+                    <div className="w-full">
+                      <div className="mx-auto w-full max-w-md max-h-96 overflow-y-auto">
                         {properties && (
                           <Property traits={properties} nftData={nfts} />
                         )}
@@ -1735,7 +1669,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     ) : ''}
                   </div>
                   {isLoading ? (
-                        <div className="flex justify-center items-center mt-[3rem] gap-1">
+                        <div className="flex justify-center items-center mt-[3rem] pb-[3rem] gap-1">
                           {dark? <IconLoading dark="inbutton" />: <IconLoading/>} Parsing Data..
                         </div>
                       ) : ''}
@@ -1775,7 +1709,6 @@ export default CollectionDetails
 export async function getServerSideProps(context){
   const {chain, collectionAddress } = context.params;
   const blockchainIdFromName = { 
-    'mainnet' : '1',
     'ethereum' : '1',
     'goerli': '5',
     'avalanche': '43114',
