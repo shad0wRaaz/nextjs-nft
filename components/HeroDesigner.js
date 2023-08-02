@@ -72,7 +72,7 @@ const HeroDesigner = () => {
   const [selectedCollection, setSelectedCollection] = useState('mushroom-kingdom');
   const [showAirdrop, setShowAirdrop] = useState(false);
   const [showAirdropMenu, setShowAirdropMenu] = useState(false);
-  const [airdropChain, setAirdropChain] = useState('binance');
+  const [airdropCollection, setAirdropCollection] = useState('mushroom-kingdom');
 
   const links = {
     creatures: '/collection/binance/crypto_creatures',
@@ -370,6 +370,7 @@ const HeroDesigner = () => {
     pauseOnHover: false,
     autoplaySpeed: 2000
   };
+  
 
   return (
     <div className={style.wrapper}>
@@ -562,7 +563,7 @@ const HeroDesigner = () => {
                     <p className="title">Kaioji</p>
                     <p className={style.subtitle}>Mint Price: 0.188 <IconEthereum/></p>
                     <div className={style.mintButton}>
-                      <Link href={links.hidoi} passHref>
+                      <Link href={links.kaioji  } passHref>
                         <a>Mint Now</a>
                       </Link>
                     </div>
@@ -768,54 +769,84 @@ const HeroDesigner = () => {
               <p className="text-xl mb-3">Nuva NFT's exclusive NFT Collections</p>
               <div className="flex justify-center gap-3 mb-6">
                 <div 
-                  className={style.collectionSelector + (selectedCollection == 'mushroom-kingdom' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800') }
+                  className={style.collectionSelector + (selectedCollection == 'mushroom-kingdom' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700') }
                   onClick={() => setSelectedCollection('mushroom-kingdom')}
                   >
                     <IconEthereum/> Mushroom Kingdom
                 </div>
                 <div 
-                  className={style.collectionSelector + (selectedCollection == 'rewarding-renditions' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800')}
+                  className={style.collectionSelector + (selectedCollection == 'rewarding-renditions' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
                   onClick={() => setSelectedCollection('rewarding-renditions')}
                   >
                     <IconBNB/> Rewarding Renditions
                 </div>
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'claws-and-furs' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
+                  onClick={() => setSelectedCollection('claws-and-furs')}
+                  >
+                    <IconPolygon/> Claws and Furs
+                </div>
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'etherverse' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
+                  onClick={() => setSelectedCollection('etherverse')}
+                  >
+                    <IconEthereum/> Etherverse
+                </div>
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'eminent-creations' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
+                  onClick={() => setSelectedCollection('eminent-creations')}
+                  >
+                    <IconAvalanche/> Eminent Creations
+                </div>
+                <div 
+                  className={style.collectionSelector + (selectedCollection == 'admirable-depictions' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
+                  onClick={() => setSelectedCollection('admirable-depictions')}
+                  >
+                    <IconArbitrum/> Admirable Depictions
+                </div>
               </div>
-              <div className={style.ctaContainer}>
-                {allbenefits.filter(d => d.collection === selectedCollection).map(c => (
-                  <div className={style.collectionSelection} key={c.contractAddress}>
-                    <div className="absolute top-12 right-2">
-                      <Image src={collectionPicture[c.picture]} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="text-left">
-                        <p className="font-bold text-lg">{c.name}</p>
-                        <p className={style.nftCount}>{c.totalSize} NFTs</p>
+
+              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' ? (
+                  <div className={style.ctaContainer}>
+                    {allbenefits.filter(d => d.collection === selectedCollection).map(c => (
+                      <div className={style.collectionSelection} key={c.contractAddress}>
+                        <div className="absolute top-12 right-2">
+                          <Image src={collectionPicture[c.picture]} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="text-left">
+                            <p className="font-bold text-lg">{c.name}</p>
+                            <p className={style.nftCount}>{c.totalSize} NFTs</p>
+                          </div>
+                        </div>
+                        <div className="text-left mt-3">
+                          <p>Mint Price: {c.mintPrice} {c.chain === 'binance' && <IconBNB/>}{c.chain === 'ethereum' && <IconEthereum/>}</p>
+                          <p className={style.unilevelInfo}>Unlocks Uni Level: 
+                            {
+                            c.unlockLevel == 2 ? <TbSquareRoundedNumber2 fontSize={25} />
+                            : c.unlockLevel == 3 ? <TbSquareRoundedNumber3 fontSize={25} />
+                            : c.unlockLevel == 4 ? <TbSquareRoundedNumber4 fontSize={25} />
+                            : c.unlockLevel == 5 ? <TbSquareRoundedNumber5 fontSize={25} />
+                            : ''
+                            }
+                          </p>
+                          <p className="text-left text-sm mt-2">{c.earnDescription}<br/><br/></p>
+                          <div className="flex flex-wrap gap-2">
+                            <Link href={`/collection/${c.chain}/${c.url}`} passHref>
+                              <a className="w-full">
+                                <button className={style.buyButton + (c.buttonColor === 'orange' ? style.orange : c.buttonColor === 'neon' ? style.neon : c.buttonColor === 'flamingo' ? style.flamingo : style.apple) }>
+                                        View Collection / Mint NFT
+                                </button>
+                              </a>
+                            </Link>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-left mt-3">
-                      <p>Mint Price: {c.mintPrice} {c.chain === 'binance' && <IconBNB/>}{c.chain === 'ethereum' && <IconEthereum/>}</p>
-                      <p className={style.unilevelInfo}>Unlocks Uni Level: 
-                        {
-                        c.unlockLevel == 2 ? <TbSquareRoundedNumber2 fontSize={25} />
-                        : c.unlockLevel == 3 ? <TbSquareRoundedNumber3 fontSize={25} />
-                        : c.unlockLevel == 4 ? <TbSquareRoundedNumber4 fontSize={25} />
-                        : c.unlockLevel == 5 ? <TbSquareRoundedNumber5 fontSize={25} />
-                        : ''
-                        }
-                      </p>
-                      <p className="text-left text-sm mt-2">{c.earnDescription}<br/><br/></p>
-                      <div className="flex flex-wrap gap-2">
-                        <Link href={`/collection/${c.chain}/${c.url}`} passHref>
-                          <a className="w-full">
-                            <button className={style.buyButton + (c.buttonColor === 'orange' ? style.orange : c.buttonColor === 'neon' ? style.neon : c.buttonColor === 'flamingo' ? style.flamingo : style.apple) }>
-                                    View Collection / Mint NFT
-                            </button>
-                          </a>
-                        </Link>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                
+                ) : 
+                  <div className="text-center w-full">Collection Coming Soon..</div>}
                 {/* <div className={style.collectionSelection}>
                   <div className="absolute top-12 right-2">
                     <Image src={creature1.src} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
@@ -927,14 +958,15 @@ const HeroDesigner = () => {
                     </div>
                   </div>
                 </div> */}
-              </div>
-              
-              <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} selectedAirdropChain={airdropChain}/>
+              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' ? 
+              <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} selectedAirdropCollection={selectedCollection}/>
+              :
+              ''}
 
               <div className="flex flex-wrap justify-center items-center gap-4 w-fit mt-6 m-auto">
                 <div 
                   className="cursor-pointer text-center md:text-right rounded-full p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto w-full md:w-fit"
-                  onClick={() => setShowAirdropMenu(true)}
+                  onClick={() => setShowAirdrop(true)}
                   >
                       View Airdrops
                 </div>
@@ -946,7 +978,7 @@ const HeroDesigner = () => {
                   </Link>
                 </div>
                 <div className="cursor-pointer rounded-full w-full md:w-fit p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto border border-white/20">
-                  <Link href="https://nuva-nft.gitbook.io/docs/" passHref>
+                  <Link href={selectedCollection == 'mushroom-kingdom' ? '/mushroomkingdom/Whitepaper.pdf' : 'https://nuva-nft.gitbook.io/docs/'} passHref>
                     <a target="_blank">
                       Read Whitepaper
                     </a>
@@ -993,27 +1025,27 @@ const HeroDesigner = () => {
                             <div className="flex flex-col mt-3 gap-2">
                               <div 
                                 className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
-                                onClick={() => {setShowAirdrop(true); setAirdropChain('ethereum'); setShowAirdropMenu(false)}}>
+                                onClick={() => {setShowAirdrop(true); setAirdropCollection('ethereum'); setShowAirdropMenu(false)}}>
                                 <IconEthereum className="inline"/> Ethereum
                               </div>
                               <div 
                                 className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
-                                onClick={() => {setShowAirdrop(true); setAirdropChain('binance'); setShowAirdropMenu(false)}}>
+                                onClick={() => {setShowAirdrop(true); setAirdropCollection('binance'); setShowAirdropMenu(false)}}>
                                 <IconBNB className="inline"/> Binance
                               </div>
                               <div 
                                 className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
-                                onClick={() => {setShowAirdrop(true); setAirdropChain('polygon'); setShowAirdropMenu(false)}}>
+                                onClick={() => {setShowAirdrop(true); setAirdropCollection('polygon'); setShowAirdropMenu(false)}}>
                                 <IconPolygon className="inline"/> Polygon
                               </div>
                               <div 
                                 className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
-                                onClick={() => {setShowAirdrop(true); setAirdropChain('avalanche'); setShowAirdropMenu(false)}}>
+                                onClick={() => {setShowAirdrop(true); setAirdropCollection('avalanche'); setShowAirdropMenu(false)}}>
                                 <IconAvalanche className="inline"/> Avalanche
                               </div>
                               <div 
                                 className="w-full rounded-xl p-2 text-center border border-neutral-200 cursor-pointer hover:bg-neutral-100 transition"
-                                onClick={() => {setShowAirdrop(true); setAirdropChain('arbitrum'); setShowAirdropMenu(false)}}>
+                                onClick={() => {setShowAirdrop(true); setAirdropCollection('arbitrum'); setShowAirdropMenu(false)}}>
                                 <IconArbitrum className="inline"/> Arbitrum
                               </div>
                             </div>

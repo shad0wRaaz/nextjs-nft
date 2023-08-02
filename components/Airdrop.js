@@ -2,160 +2,36 @@ import Image from 'next/image';
 import Moment from 'react-moment'
 import { useQuery } from 'react-query';
 import { CgClose } from 'react-icons/cg';
-import { MdOutlineDownloading, MdOutlineOpenInNew } from 'react-icons/md';
+import { FaInfoCircle } from 'react-icons/fa';
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { TbCircleCheckFilled } from 'react-icons/tb';
 import { Dialog, Transition } from '@headlessui/react'
 import { getAirDrops } from '../fetchers/SanityFetchers';
 import nuvatokenlogo from '../public/assets/nuvatoken.png'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useSettingsContext } from '../contexts/SettingsContext';
-import neon1  from '../pages/rewarding-renditions/assets/neondreams/1.png'
-import artifacts1  from '../pages/rewarding-renditions/assets/artifacts/1.png'
-import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
-import celestial1  from '../pages/rewarding-renditions/assets/celestialbeings/1.png'
-import { FaInfoCircle } from 'react-icons/fa';
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import Loader from './Loader';
+import { MdOutlineDownloading, MdOutlineOpenInNew } from 'react-icons/md';
+import { allbenefits } from '../constants/benefits';
 
-const Airdrop = ({visible, setShowAirdrop, selectedAirdropChain}) => {
-    const [selectedCollection, setSelectedCollection] = useState(
-        {name: 'Crypto Creatures', key: 'crypto', contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068', phaseDelimiter: 
-            { 
-                phase1 : 625, 
-                phase2: 1250,
-                phase3: 2250,
-                phase4: 5000,
-                phase5: 5000,
-            },
-    }
-    );
+const Airdrop = ({visible, setShowAirdrop, selectedAirdropCollection}) => {
+
+    const [selectedCollectionFamily, setSelectedCollectionFamily] = useState();
+    const [selectedCollection, setSelectedCollection] = useState();
     const [allAirdrops, setAllAirdrops] = useState();
     const [filteredAirdrops, setFilteredAirdrops] = useState();
     const [phase, setPhase] = useState(1);
-    const sdk = new ThirdwebSDK(selectedAirdropChain);
+
     const { chainExplorer, chainIcon, blockchainIdFromName, currencyByChainName } = useSettingsContext();
     const [searchAddress, setSearchAddress] = useState('');
     const [unclaimed, setUnclaimed] = useState();
     const [claimLoading, setClaimLoading] = useState(false);
+
     const style = {
         collectionImage: 'rounded-full h-[30px] w-[30px] inline mr-2',
         selected : ' ring-2 bg-sky-300/30 outline-none ring-offset-0',
         checkMark : 'absolute top-4 right-2 text-sky-700',
         selectionCollection : 'relative border border-neutral-100/80 hover:shadow-md bg-neutral-100/50 p-3 rounded-xl text-sm text-left cursor-pointer transition ',
-    }
-    const collectionLibrary = {
-        ethereum : [
-            {
-                name: 'Nomin', 
-                key: 'nomin', 
-                icon: creature1.src, 
-                contractAddress: '0x05e9d0Fa11eFF24F3c2fB0AcD381B6866CeF2a1C', 
-            }, 
-            {
-                name: 'Grutzi', 
-                key: 'grutzi', 
-                icon: neon1.src, 
-                contractAddress: '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80'
-            }, 
-            {
-                name: 'Hidoi', 
-                key: 'hidoi', 
-                icon: celestial1.src, 
-                contractAddress: '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7'
-            }, 
-            {
-                name: 'Kaioji', 
-                key: 'kaioji', 
-                icon: artifacts1.src, 
-                contractAddress: '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B'
-            },
-        ],
-        binance : [
-            {
-                name: 'Crypto Creatures', 
-                key: 'crypto', 
-                icon: creature1.src, 
-                contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068',
-                phaseDelimiter: 
-                    { 
-                        phase1 : 625, 
-                        phase2: 1250,
-                        phase3: 2500,
-                        phase4: 5000,
-                        phase5: 5000,
-                    },
-            }, 
-            {
-                name: 'Neon Dreams', 
-                key: 'neon', 
-                icon: neon1.src, 
-                contractAddress: '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
-                phaseDelimiter: 
-                    { 
-                        phase1 : 625, 
-                        phase2: 1250,
-                        phase3: 2500,
-                        phase4: 5000,
-                        phase5: 5000,
-                    },
-            }, 
-            {
-                name: 'Celestial Beings', 
-                key: 'celestial', 
-                icon: celestial1.src, 
-                contractAddress: '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
-                phaseDelimiter: 
-                    { 
-                        phase1: 1250, 
-                        phase2: 2500,
-                        phase3: 5000,
-                        phase4: 10000,
-                        phase5: 10000,
-                    },
-            }, 
-            {
-                name: 'Artifacts of the Future', 
-                key: 'artifacts', 
-                icon: artifacts1.src, 
-                contractAddress: '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
-                phaseDelimiter: 
-                    { 
-                        phase1: 2500, 
-                        phase2: 5000,
-                        phase3: 10000,
-                        phase4: 20000,
-                        phase5: 20000,
-                    },
-            },
-        ],
-        polygon : [
-            {name: 'polCrypto Creatures', key: 'polcrypto', icon: creature1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'polhNeon Dreams', key: 'polneon', icon: neon1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'polCelestial Beings', key: 'polcelestial', icon: celestial1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'polArtifacts of the Future', key: 'polartifacts', icon: artifacts1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'},
-        ],
-        avalanche : [
-            {name: 'avaCrypto Creatures', key: 'avacrypto', icon: creature1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'avaNeon Dreams', key: 'avaneon', icon: neon1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'avaCelestial Beings', key: 'avacelestial', icon: celestial1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'avaArtifacts of the Future', key: 'avaartifacts', icon: artifacts1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'},
-        ],
-        arbitrum : [
-            {name: 'arbCrypto Creatures', key: 'arbcrypto', icon: creature1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'arbNeon Dreams', key: 'arbneon', icon: neon1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'arbCelestial Beings', key: 'arbcelestial', icon: celestial1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'}, {name: 'arbrtifacts of the Future', key: 'arbartifacts', icon: artifacts1.src, contractAddress: '0x9809AbFc4319271259a340775eC03E9746B76068'},
-        ],
-    }
-    let collectionName = '';
-    switch (selectedAirdropChain) {
-        case 'mainnet':
-            collectionName = collectionLibrary.ethereum;
-            break;
-        case 'binance':
-            collectionName = collectionLibrary.binance;
-            break;
-        case 'polygon':
-            collectionName = collectionLibrary.polygon;
-            break;
-        case 'avalanche':
-            collectionName = collectionLibrary.avalanche;
-            break;
-        case 'arbitrum':
-            collectionName = collectionLibrary.arbitrum;
-            break;
-    }
+    };
 
     const {data, status} = useQuery(
         ["airdrop"],
@@ -193,9 +69,11 @@ const Airdrop = ({visible, setShowAirdrop, selectedAirdropChain}) => {
     }, [searchAddress])
 
     useEffect(() => {
-        if(!selectedCollection.contractAddress) return
+        if(!selectedCollection) return
         ;(async() => {
             setClaimLoading(true);
+
+            const sdk = new ThirdwebSDK(selectedCollection.chain);
             const contract = await sdk.getContract(selectedCollection.contractAddress);
             const claimed = await contract.erc721.totalClaimedSupply();
             const totalSize = await contract.erc721.totalCount();
@@ -213,8 +91,17 @@ const Airdrop = ({visible, setShowAirdrop, selectedAirdropChain}) => {
             setClaimLoading(false);
         })()
 
-        return () => {}
-    }, [selectedCollection, phase])
+        // return () => {}
+    }, [selectedCollection, phase]);
+
+    useEffect (() => {
+        const selectedCollectionFamily = allbenefits.filter(c => c.collection === selectedAirdropCollection);
+        setSelectedCollectionFamily(selectedCollectionFamily);
+        setSelectedCollection(selectedCollectionFamily[0]);
+        return() => {
+            
+        }
+    }, [selectedAirdropCollection])
     
 
   return (
@@ -227,25 +114,25 @@ const Airdrop = ({visible, setShowAirdrop, selectedAirdropChain}) => {
                     <div className="flex min-h-full items-center justify-center p-4 text-center">
                         <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
                             <Dialog.Panel className="w-full h-[600px] md:h-[564px] max-w-[1000px] transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
-                                {selectedAirdropChain == 'binance' ? (
+                                {selectedCollection?.chain == 'binance' || selectedCollection?.chain == 'ethereum' ? (
                                     <>
                                         <Dialog.Title as="h3" className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center">
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
 
-                                                {collectionName.map(coll => (
+                                                {selectedCollectionFamily.map(coll => 
                                                     <div
                                                         key={coll.name}
-                                                        className={style.selectionCollection + `${selectedCollection.key == coll.key && ' ring-2 bg-sky-300/40 outline-none ring-offset-0'}`}
-                                                        onClick={() => setSelectedCollection({ ...coll })}>
-                                                        <img src={coll.icon} className={style.collectionImage} alt={coll.name}/>
+                                                        className={style.selectionCollection + `${selectedCollection.name == coll.name && ' ring-2 bg-sky-300/40 outline-none ring-offset-0'}`}
+                                                        onClick={() => setSelectedCollection({...coll})}>
+                                                        <img src={coll.profileImage} className={style.collectionImage} alt={coll.name}/>
                                                         {coll.name}
-                                                        {selectedCollection.key == coll.key && <TbCircleCheckFilled fontSize={22} className={style.checkMark} />}
+                                                        {selectedCollection.name == coll.name ? <TbCircleCheckFilled fontSize={22} className={style.checkMark} /> : ''}
                                                     </div>
 
-                                                ))}
+                                                )}
 
                                             </div>
-                                            {chainIcon[blockchainIdFromName[selectedAirdropChain]]}{currencyByChainName[selectedAirdropChain]} Airdrops from <span className="font-bold">{selectedCollection.name}</span>
+                                            {selectedCollection.chainIcon}{selectedCollection.currency} Airdrops from <span className="font-bold">{selectedCollection.name}</span>
                                         </Dialog.Title>
                                         <div className="flex gap-2 justify-center mt-5 mb-3">
                                             <div 
