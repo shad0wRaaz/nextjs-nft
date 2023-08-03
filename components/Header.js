@@ -24,6 +24,7 @@ import { useAddress, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices, getBlockedItems, checkReferralUser } from '../fetchers/SanityFetchers'
+import { BiArrowFromBottom } from 'react-icons/bi'
 
 
 
@@ -34,21 +35,23 @@ const Header = () => {
   const { w } = router.query;
   const address = useAddress();
   const chainid = useChainId();
-  const { dark, errorToastStyle, successToastStyle } = useThemeContext()
+  const { dark, errorToastStyle, successToastStyle, headerToggler, setHeaderToggler} = useThemeContext();
   const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections, setReferralCommission, HOST } = useSettingsContext();
-  const [isLogged, setIsLogged] = useState(false)
-  const { setMyUser, setMyCollections } = useUserContext()
+  const [isLogged, setIsLogged] = useState(false);
+  const { setMyUser, setMyCollections } = useUserContext();
   const { setActiveListings, setLatestNfts, selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
   const [isAdmin, setIsAdmin] = useState(false);
-  
+  // const [headerToggler, setHeaderToggler ] = useState(true);
+  // const showHeader = typeof window !== 'undefined' && localStorage.getItem("menu") || true;
+
   const style = {
-    wrapper: ` mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-50 flex justify-center`,
+    wrapper: `${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-50 flex justify-center`,
     logoContainer: `flex items-center cursor-pointer m-0`,
     logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
     searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] h-[50px] w-full items-center border rounded-lg transition-all linear`,
     searchIcon: `text-[#000000] mx-3 font-bold text-lg absolute`,
     searchInput: `h-[2.6rem] w-full border-0 bg-transparent outline-0 ring-0 px-2 pl-0 text-black placeholder:text-[#8a939b]`,
-    headerItems: `flex items-center justify-end nonMobileMenu`,
+    headerItems: "flex items-center justify-end nonMobileMenu relative",
     headerItem: `px-4 cursor-pointer font-bold`,
     headerIcon: `text-white flex justify-between gap-[5px] items-center rounded-full text-[17px] font-normal p-3 px-6 bg-blue-500 hover:opacity-80 cursor-pointer`,
     menuWrapper: 'relative',
@@ -72,7 +75,7 @@ const Header = () => {
         setMyCollections(res);
       },
     }
-  )
+  );
 
   const { data: coinData, status: coinStatus } = useQuery(
     ['coinPrices'],
@@ -86,7 +89,7 @@ const Header = () => {
         setCoinPrices(res);
       }
     }
-    ) 
+    ) ;
 
     const { data: latestNfts, status: latestNftsStatus } = useQuery(
     ['latestNfts', selectedBlockchain],
@@ -99,7 +102,9 @@ const Header = () => {
         setLatestNfts(res);
       },
     }
-    )
+    );
+
+    
 
   const { data: marketData, status: marketStatus } = useQuery(
     ['marketplace', selectedBlockchain],
@@ -560,6 +565,11 @@ const Header = () => {
           )}
           <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" />
 
+          <div 
+            className="absolute right-0 top-[50px] border p-1 border-[#ffffff22] rounded-full bg-[#ffffff55] hover:bg-[#ffffff66] transition cursor-pointer"
+            onClick={() => setHeaderToggler(curval => !curval)}>
+            <BiArrowFromBottom className={headerToggler ? 'transition' : 'rotate-180 transition'}/>
+          </div>
         </div>
       </div>
     </div>

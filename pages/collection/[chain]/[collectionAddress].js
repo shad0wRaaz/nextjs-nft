@@ -835,7 +835,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
           image={getImagefromWeb3(collectionData?.web3imageprofile)}
           currentUrl={`https://nuvanft.io/collection/${chain}/${collectionAddress}`} />
         )}
-      <div className={`relative z-0 overflow-hidden ${dark && 'darkBackground'}`}>
+      <div className={`relative z-1 overflow-hidden ${dark && 'darkBackground'}`}>
         <Header />
         {/* {collectionStatus == 'loading' && <Loader />} */}
         {showModal && Boolean(collectionData) && (
