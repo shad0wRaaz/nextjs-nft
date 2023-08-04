@@ -349,7 +349,7 @@ const CollectionDetails = (props) => {
     }
 
   //send the tokens and get list of transaction hash to save in database
-  const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain);
+  const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain, collectionData.name);
 
 
   }

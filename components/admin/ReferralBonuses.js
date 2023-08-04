@@ -47,7 +47,7 @@ const ReferralBonuses = () => {
                         }
                         return dataWithUserName;
                     });
-                    console.log(newsrefdata)
+                    // console.log(newsrefdata)
                     if(bonusData == 0){
                         bonusData = [...newsrefdata];
                     }else{

@@ -12,9 +12,13 @@ import Roadmap from './components/Roadmap'
 import Community from './components/Community'
 import HelmetMetaData from '../../components/HelmetMetaData'
 import socialcoverimage from './assets/images/socialcoverimage.webp'
+import { useQuery } from 'react-query'
+import { config } from '../../lib/sanityClient'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const index = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const { refs } = useSettingsContext();
   const dataForSEO = {
     title: 'Admirable Depictions',
     description: "THE TIME IS NOW; break free from the norm and take control of your future. On June 30th 2023, the world's first-ever referral and recurring income opportunity is launching with the Rewarding Renditions Nuva NFT collections! Take action today for paydays from the 30th of June; all payments will be in MATIC. This is your time, your opportunity to get in on the ground floor and take advantage of the optimum timing. It's simple; you only need to register your wallet on the Nuva NFT site and ensure you have MATIC to purchase your own NFTs and enjoy the benefits.  All of this without the need for registration or KYC! Simply connect with like-minded individuals and influencers since this is just the start. The MATIC program is merely the beginning, as you will be able to earn with the same network with four different programs! The time is now! Don't wait, don't hesitate, take advantage of this enormous opportunity to change your life. Join the revolution, register today, and get ready to reap the benefits of Referral and Recurring Income with Rewarding Renditions Nuva NFT collections –And yes, it's a DeFi. And yes, it's ONLY on nuvanft.io.  Launching on 30th June...This is YOUR time. Are you ready?",
@@ -23,6 +27,7 @@ const index = () => {
     currentUrl: 'https://nuvanft.io/admirable-depictions',
     image: 'https://nuvanft.io/assets/socialcoverimage.webp',
   }
+
   return (
     <>
       <SEO

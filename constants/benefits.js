@@ -10,6 +10,10 @@ import kaioji1  from '../pages/rewarding-renditions/assets/artifacts/4.png';
 
 export const allbenefits = [
     {
+        name: 'Matic Coll',
+        contractAddress: '0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4',
+    },
+    {
         name: 'Crypto Creatures', 
         contractAddress : '0x9809abfc4319271259a340775ec03e9746b76068',
         collection: 'rewarding-renditions',

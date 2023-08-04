@@ -162,7 +162,7 @@ export const saveAirdropData = async(transactions, chainId, contractAddress, tok
 
 }
 
-export const sendReferralCommission = async (receivers, address, chainId, connectedChainName) => {
+export const sendReferralCommission = async (receivers, address, chainId, connectedChainName, collectionName) => {
   //first remove all referrers whose referral activation is not done yet; no need to send any tokens
   try{
     const unresolved = receivers.map(async r => await isReferralActivated(r.receiver));
@@ -176,11 +176,12 @@ export const sendReferralCommission = async (receivers, address, chainId, connec
     const token =  process.env.NEXT_PUBLIC_ENCODED_TOKEN_KEY;
 
     const tx = await axios.post(
-      `${FAUCETHOST}/api/nft/sendreferralcommissionsinbnb`,
+      `${FAUCETHOST}/api/nft/sendreferralcommissions`,
       {
         receivers: finalReferrals,
         secretKey: process.env.NEXT_PUBLIC_FAUCET_SECRET_KEY,
         chain: connectedChainName,
+        collectionName,
       },
       {
         headers: {
@@ -189,7 +190,7 @@ export const sendReferralCommission = async (receivers, address, chainId, connec
         },
       }
     ).catch(err => {console.log(err)})
-    
+
     if(!tx || !Boolean(tx.data.length)) return;
     
     saveReferralCommissions(tx?.data, finalReferrals, chainId, address)

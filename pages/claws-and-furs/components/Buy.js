@@ -403,7 +403,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/ethereum/nomin`} passHref>
+                            <Link href={`${HOST}/collection/mainnet/nomin`} passHref>
                                 <a className="">Mint Now</a>
                             </Link>
                         </div>
@@ -639,7 +639,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/ethereum/grutzi`} passHref>
+                            <Link href={`${HOST}/collection/mainnet/grutzi`} passHref>
                                 <a className="">Mint Now</a>
                             </Link>
                         </div>
@@ -874,7 +874,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/ethereum/hidoi`} passHref>
+                            <Link href={`${HOST}/collection/mainnet/hidoi`} passHref>
                                 <a className="">Mint Now</a>
                             </Link>
                         </div>
@@ -1110,7 +1110,7 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="flex w-full flex-wrap gap-2 mt-[3rem] justify-center">
                         <div className="text-center w-full md:w-fit default-btn !leading-normal">
-                            <Link href={`${HOST}/collection/ethereum/kaioji`} passHref>
+                            <Link href={`${HOST}/collection/mainnet/kaioji`} passHref>
                                 <a className="">Mint Now</a>
                             </Link>
                         </div>

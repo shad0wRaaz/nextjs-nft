@@ -29,7 +29,7 @@ const Benefits = ({nftCollection}) => {
                     <TbStar/> Benefits of NFT from {nftCollection.name}
                 </div>
                 <div className={style.cardbody}>
-                    {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection.contractAddress).toLowerCase())[0].benefits.map((point, index) => (
+                    {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection.contractAddress).toLowerCase())[0].benefits?.map((point, index) => (
                         <p key={index} className={style.points}><FaCheck className={style.bullet} fontSize={15}/> {point.content}</p>
                     ))}
                     <div className={style.moreinfo}>

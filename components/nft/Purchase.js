@@ -372,7 +372,7 @@ const MakeOffer = ({
     // return;
 
     //send the tokens and get list of transaction hash to save in database
-    const tx = sendReferralCommission(sponsors, address, nftCollection.chainId, thisNFTblockchain);
+    const tx = sendReferralCommission(sponsors, address, nftCollection.chainId, thisNFTblockchain, nftCollection.name);
 
 
   }
