@@ -285,7 +285,7 @@ const Collection = () => {
                   <MdOutlineCollections fontSize="20px" className="mb-2 inlineblock" />
                   <span className="text-sm inline-block">Collections</span>
                   <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
-                    {outsideCollection?.total}
+                    {Boolean(outsideCollection?.total) ? outsideCollection?.total : Boolean(myCollections.length) ? myCollections.length : 0}
                   </span>
                 </div>
 

@@ -405,7 +405,7 @@ const User = () => {
                   <MdOutlineCollections fontSize="30px" className={`mb-2 ${dark ? 'text-neutral-200' : 'text-neutral-800'}`}/>
                   <span className="text-sm inline-block">Collections</span>
                   <span className="mt-1 text-base font-bold sm:mt-2 sm:text-xl">
-                    {Boolean(outsideCollection?.total) ? outsideCollection?.total : 0}
+                    {Boolean(outsideCollection?.total) ? outsideCollection?.total : Boolean(collectionData?.length) ? collectionData?.length : 0}
                   </span>
                 </div>
 
