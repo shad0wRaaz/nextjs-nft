@@ -90,6 +90,8 @@ const sharedroyalty = () => {
                     </li>
                     <li>
                         To check you are the royalty receiver, you can click on the Royalty Receiver address in the NFT page which will reveal your wallet address and the creator wallet address equally sharing the 10% royalty rewards.
+                        <br/>
+                        <span className="text-slate-400">For an example, if you own an NFT of 100 ETH, 10% will be the royalty which is 10 ETH. 50% of 10 ETH is 5 ETH. That means you will be receiving 5 ETH on the next sale, which is 5% of the total NFT sale value. If the same NFT is sold for 200 ETH next time, you will receive 10 ETH. If again the NFT is sold for 300 ETH, you will be getting 15 ETH. This way, you will be receiving 5% as royalty on every sale.</span>
                     </li>
                 </ol>
             </div>
