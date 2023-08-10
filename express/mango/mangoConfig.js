@@ -1,8 +1,7 @@
 import { BigNumber } from 'ethers';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
-const uri = `mongodb+srv://92d787155e4849783203de6afba9ea:WeYbKmSILCdHvjsN@nuvanft.yzqcmom.mongodb.net/?retryWrites=true&w=majority`;
-// const uri = `mongodb+srv://${process.env.NEXT_PUBLIC_MANGO_USERNAME}:${process.env.NEXT_PUBLIC_MANGO_PASSWORD}@${process.env.NEXT_PUBLIC_MANGO_ATLAS_URI}`;
+const uri = `mongodb+srv://${process.env.NEXT_PUBLIC_MANGO_USERNAME}:${process.env.NEXT_PUBLIC_MANGO_PASSWORD}${process.env.NEXT_PUBLIC_MANGO_ATLAS_URI}`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 
 const client = new MongoClient(uri, {
