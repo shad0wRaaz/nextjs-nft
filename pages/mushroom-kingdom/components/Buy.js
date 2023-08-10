@@ -375,8 +375,8 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Mint Price</h6>
-                                            <h2 className={style.statsNumber}>0.04 ETH</h2>
-                                            <h4 className={style.statsFooter}> ${(0.04 * Number(coins?.ethprice)).toFixed(2)}</h4>
+                                            <h2 className={style.statsNumber}>0.041 ETH</h2>
+                                            <h4 className={style.statsFooter}> ${(0.041 * Number(coins?.ethprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -611,8 +611,8 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Mint Price</h6>
-                                        <h2 className={style.statsNumber}>0.08 ETH</h2>
-                                        <h4 className={style.statsFooter}> ${(0.08 * Number(coins?.ethprice)).toFixed(2)}</h4>
+                                        <h2 className={style.statsNumber}>0.082 ETH</h2>
+                                        <h4 className={style.statsFooter}> ${(0.082* Number(coins?.ethprice)).toFixed(2)}</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -846,8 +846,8 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Mint Price</h6>
-                                            <h2 className={style.statsNumber}>0.135 ETH</h2>
-                                            <h4 className={style.statsFooter}> ${(0.135 * Number(coins?.ethprice)).toFixed(2)}</h4>
+                                            <h2 className={style.statsNumber}>0.14 ETH</h2>
+                                            <h4 className={style.statsFooter}> ${(0.14 * Number(coins?.ethprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -1082,8 +1082,8 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Mint Price</h6>
-                                        <h2 className={style.statsNumber}>0.188 ETH</h2>
-                                        <h4 className={style.statsFooter}> ${(0.188 * Number(coins?.ethprice)).toFixed(2)}</h4>
+                                        <h2 className={style.statsNumber}>0.192 ETH</h2>
+                                        <h4 className={style.statsFooter}> ${(0.192 * Number(coins?.ethprice)).toFixed(2)}</h4>
                                     </div>
                                     </div>
                                 </div>
