@@ -8,13 +8,13 @@ import cron from 'node-cron'
 import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import bodyParser from 'body-parser'
-import { SMTPClient } from 'emailjs'
 import sanityClient from '@sanity/client'
 import { S3Client } from '@aws-sdk/client-s3'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { INFURA_AUTH } from './infura/config.js'
 import { emailBody } from './emails/templates.js'
 import { ThirdwebStorage } from '@thirdweb-dev/storage'
+import { emailClient, sendEmail } from './emails/transporter/index.js'
 import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
 
 const app = express()
@@ -97,15 +97,7 @@ const config = sanityClient({
   ignoreBrowserTokenWarning: true,
 });
 
-const client = new SMTPClient({
-  user: process.env.NEXT_PUBLIC_SMTP_EMAIL,
-  password: process.env.NEXT_PUBLIC_SMTP_PASSWORD,
-  host: process.env.NEXT_PUBLIC_SMTP_HOST,
-  port: process.env.NEXT_PUBLIC_SMTP_PORT,
-  ssl: process.env.NEXT_PUBLIC_SMTP_SSL,
-  tls: true,
-  timeout: process.env.NEXT_PUBLIC_SMTP_TIMEOUT,
-});
+
 
 const getCoinPricefromCMC = () => {
   let response = null;
@@ -1052,7 +1044,7 @@ const updateCollectionData = async () => {
   const query = `*[_type == "nftCollection"] { name, _id, contractAddress, createdBy, chainId, "item": "collection"}`;
     let collectionData = await config.fetch(query);
     collectionData = JSON.stringify(collectionData);
-    redis.set("allcollections", collectionData);
+    redis.set("allcollections", collectionData, 'EX', 10800);
     return collectionData;
 }
 //used in search bar
@@ -1072,7 +1064,11 @@ app.get('/api/updateallcollections', async(req, res) => {
 //new search methods after using mangodb
 app.get('/api/search/', async(req, res) => {
   const { searchText } = req.query;
-  const cacheCollections = await redis.get('allcollections')
+  let cacheCollections = await redis.get('allcollections');
+
+  if(!cacheCollections) {
+    cacheCollections = await updateCollectionData();
+  }
   const collections = JSON.parse(cacheCollections);
   const collectionFilter = collections.filter(coll => String(coll.name).toLowerCase().includes(searchText.toLowerCase()) || String(coll.contractAddress).toLowerCase() == searchText.toLowerCase());
 
@@ -1320,24 +1316,31 @@ app.get('/api/nft/contract/:chainid/:id/:nftid', async(req, res) => {
   }
 });
 
-app.post('/api/sendconfirmationemail', async (req, res) => {
-// console.log(req.body);
- const { email, randomCode, id } = req.body;
- const subject = "Email Confirmation";
- const emailBody = `<a href="http://localhost:3000/emailconfirm?e=${id}&c=${randomCode}">Verify Email</a>`;
+app.post('/api/email/send', async(req, res) => {
+  const { emailBody, to, subject } = req.body;
+  try{
+    const result = await sendEmail(to, subject, emailBody);
+  
+    if(result){
+      return res.status(200).send(JSON.stringify({ message: 'success' }))
+    }
+    return res.status(400).send(JSON.stringify({ message: 'error' }));
+  }
+  catch(err){
+    return res.status(400).send(JSON.stringify({ message: 'error' }));
+  }
+});
 
- try {
-  const message = await client.sendAsync({
-    text: emailBody,
-    attachment: [{ data: emailBody, alternative: true }],
-    from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
-    to: email,
-    subject,
-  })
-} catch (err) {
-  return res.status(400).send(JSON.stringify({ message: err.message }));
-}
-return res.status(200).send(JSON.stringify({ message: 'success' }))
+app.post('/api/sendconfirmationemail', async (req, res) => {
+  const { email, randomCode, id } = req.body;
+  const subject = "Email Confirmation";
+  const emailBody = `<a href="https://nuvanft.io/emailconfirm?e=${id}&c=${randomCode}">Verify Email</a>`;
+
+  const result = await sendEmail(email, subject, emailBody);
+  if(result){
+    return res.status(200).send(JSON.stringify({ message: 'success' }))
+  }
+  return res.status(400).send(JSON.stringify({ message: 'error' }));
 
 });
 
@@ -1355,25 +1358,18 @@ app.post('/api/getintouch', async(req, res) => {
     Thank you.<br/>
     Meta Nuva`;
 
-    try {
-      const message = await client.sendAsync({
-        text: emailBody,
-        attachment: [{ data: emailBody, alternative: true }],
-        from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
-        to: email,
-        subject,
-      })
-    } catch (err) {
-      return res.status(400).send(JSON.stringify({ message: err.message }));
+    const result = await sendEmail(email, subject, emailBody);
+    if(result){
+      return res.status(200).send(JSON.stringify({ message: 'success' }))
     }
-    return res.status(200).send(JSON.stringify({ message: 'success' }));
+    return res.status(400).send(JSON.stringify({ message: 'error' }));
 
 });
 
 app.post('/api/sendemail', async (req, res) => {
   const {email} = req.body
   try {
-    const message = await client.sendAsync({
+    const message = await emailClient.sendAsync({
       text: emailBody,
       attachment: [{ data: emailBody, alternative: true }],
       from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
@@ -1426,7 +1422,7 @@ app.post('/api/Oldsendemail', async (req, res) => {
     </body></html>`;
 
   try {
-    const message = await client.sendAsync({
+    const message = await emailClient.sendAsync({
       text: emailBody,
       attachment: [{ data: emailBody, alternative: true }],
       from: process.env.NEXT_PUBLIC_SMTP_EMAIL,
@@ -1715,7 +1711,7 @@ app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
       Wallet Address: ${walletAddress}.<br/>
       This needs to be added manually.`;
 
-      const message = await client.sendAsync({
+      const message = await emailClient.sendAsync({
         text: emailBody,
         attachment: [{ data: emailBody, alternative: true }],
         from: process.env.NEXT_PUBLIC_SMTP_EMAIL,

@@ -13,17 +13,21 @@ const Faq = ({ setShowMenu }) => {
             content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from 0.04 ETH to 0.188 ETH.'
         },
         {
-            title: 'How does the NFT work with Uni level?',
-            content: 'Earning from your direct referrals is always free. But if you want to earn from deeper levels, you need to hold an NFT from different collection which will unlock different levels in Uni level. You can earn from up to 5 levels.'
+            title: 'How does the Loyalty Reward work?',
+            content: '10% reward from your direct referrals is always free. But if you want to receive reward from deeper levels (eg. receiving rewards from referrals of your referrals and so on), you need to hold an NFT from specific collection which will unlock specific levels in Loyalty reward level. You can receive rewards from up to 5 levels.'
         },
         {
             title: 'What is Royalty Reward?',
-            content: 'When an NFT is bought, the buyer will have to pay certain amount to the creator as royalty. If you are the first buyer of a NFT from any of these collections, the creator will keep 50% of the royalty and you will keep the other 50%.'
+            content: 'When an NFT is bought, 10% is attributed to the creator as royalty. If you are the first buyer of a NFT from any of these collections, the creator will keep 50% of the royalty and you will keep the other 50%. In simple terms, the first buyer of an NFT from Mushroom Kingdom collection will receive 5% of the value of the NFT on every resale as Royalty reward.'
         },
         {
             title: 'What is Platform Reward?',
             content: 'When an NFT is bought or sold, you will be paying certain amount to the platform as service fee. We are sharing certain % of the fees generated from all transaction amongst your network. The NFT you hold will determine % of share you get.'
         },
+        {
+            title: 'When does Free ETH Airdrop take place?',
+            content: 'The airdrop takes place in 4 different stages. Once 625 NFTs are sold, all the holders will receive certain % of the total sales as airdrop equally distributed to all. Similarly, airdrop is sent after the sale of 1250 NFTs, 2500 NFTs and 5000 NFTs. Once whole lot is completed, all the holders will also receive FREE Nuva Tokens via Airdrop.'
+        }
     ]
   return (
     <section 

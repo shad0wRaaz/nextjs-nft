@@ -171,9 +171,8 @@ const SearchBar = () => {
                 ) : (
                   filteredCollection.length > 0 &&
                   filteredCollection?.map((collectionArray,index) => (
-
                       <a
-                        key={collectionArray.index}
+                        key={index}
                         href={
                           collectionArray.item == "collection" ? 
                           `/collection/${blockchainName[collectionArray.chainId]}/${collectionArray.contractAddress}` : 

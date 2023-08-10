@@ -8,6 +8,7 @@ import { GiFamilyTree } from 'react-icons/gi'
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
+import { BiUserVoice } from 'react-icons/bi'
 
 const Sidebar = ({ selectedChain, setSelectedChain, setReferralModal}) => {
     const { dark, errorToastStyle, successToastStyle  } = useThemeContext();
@@ -45,7 +46,7 @@ const Sidebar = ({ selectedChain, setSelectedChain, setReferralModal}) => {
                 <h2 
                     className={`mt-5 mb-3 flex items-center gap-2 font-semibold  rounded-lg p-2 cursor-pointer ${dark ? 'hover:bg-slate-800': 'hover:bg-neutral-200'}`}
                     >
-                       <GoDashboard /> <span>Dashboard</span>
+                       <GoDashboard className="text-xl" /> <span>Dashboard</span>
                 </h2>
             </a>
         </Link>
@@ -79,7 +80,7 @@ const Sidebar = ({ selectedChain, setSelectedChain, setReferralModal}) => {
             </div>
         </div>
 
-        <h2 className="mt-5 mb-3 font-semibold flex gap-2 items-center p-2"><TbRefresh/> Refresh Active Listings</h2>
+        <h2 className="mt-5 mb-3 font-semibold flex gap-2 items-center p-2"><TbRefresh className="text-xl" /> Refresh Active Listings</h2>
         <div className="flex flex-col flex-wrap">
             <div className={`${dark ? 'hover:bg-slate-700': 'hover:bg-white'} hover:shadow-md flex justify-between rounded-lg mx-2 mb-1 p-2 cursor-pointer`}
                 onClick={() => refreshListings("goerli")}>
@@ -114,7 +115,7 @@ const Sidebar = ({ selectedChain, setSelectedChain, setReferralModal}) => {
         <h2 
             className={`mt-5 mb-3 font-semibold flex items-center gap-2 rounded-lg p-2 cursor-pointer ${dark ? 'hover:bg-slate-800': 'hover:bg-neutral-200'}`}
             onClick={() => setReferralModal(true)}>
-                <RiUserSharedLine /> Referral Settings
+                <RiUserSharedLine className="text-xl"/> Referral Settings
         </h2>
         
         <Link href="/admin/network" passHref>
@@ -122,7 +123,16 @@ const Sidebar = ({ selectedChain, setSelectedChain, setReferralModal}) => {
                 <h2 
                     className={`mt-5 mb-3 font-semibold flex items-center gap-2 rounded-lg p-2 cursor-pointer ${dark ? 'hover:bg-slate-800': 'hover:bg-neutral-200'}`}
                     >
-                        <GiFamilyTree className="rotate-180"/> Network Tree
+                        <GiFamilyTree className="rotate-180 text-xl"/> Network Tree
+                </h2>
+            </a>
+        </Link>
+        <Link href="/admin/subscriber" passHref>
+            <a>
+                <h2 
+                    className={`mt-5 mb-3 font-semibold flex items-center gap-2 rounded-lg p-2 cursor-pointer ${dark ? 'hover:bg-slate-800': 'hover:bg-neutral-200'}`}
+                    >
+                        <BiUserVoice className="text-xl"/> Subscriber
                 </h2>
             </a>
         </Link>

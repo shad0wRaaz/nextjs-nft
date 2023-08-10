@@ -17,7 +17,7 @@ const Videos = ({ setShowMenu }) => {
                         <span className="mushroom-kingdom-gradient font-hennypenny">Tutorial Videos </span>
                     </h2>
                     <p className="mb-8">Some informative/guiding videos that might be of great help.</p>
-                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                         <div>
                             <Link href="https://www.youtube.com/watch?v=Ak6GIV5cDFE" passHref>
                                 <a target="_blank">
@@ -36,14 +36,14 @@ const Videos = ({ setShowMenu }) => {
                                 {/* <iframe className="w-full h-[315px]" src="https://www.youtube.com/embed/u7anL0MyEck" title="YouTube video player" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ></iframe> */}
                             <p className="my-4">How to create Metamask Wallet?</p>
                         </div>
-                        <div>
+                        {/* <div>
                             <Link href="https://www.youtube.com/watch?v=gQsfhH3DCDc" passHref>
                                 <a target="_blank">
                                     <Image src={thumb3.src} className="rounded-xl cursor-pointer overflow-hidden" height="315px" width="370px" objectFit="cover" alt="Video Thumbnail"/>
                                 </a>
                             </Link>
                             <p className="my-4">Nuva NFT Rewarding Rendition Whitepaper</p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

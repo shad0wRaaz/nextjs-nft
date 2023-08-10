@@ -31,7 +31,7 @@ const Hero = ({setShowMenu}) => {
                             <p className="text-2xl mb-8 md:text-[3rem] leading-[2rem] md:leading-[4rem] mushroom-kingdom-gradient -skew-y-6 text--3d-mk font-oregano">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 1st of August, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10 -skew-y-6 ">
                                 <li className="social__item transition hover:-translate-x-1 hover:-translate-y-1 ">
-                                    <Link href="https://discord.gg/PvuruVjgpz" className="social__link cursor-pointer">
+                                    <Link href="https://discord.gg/SrdCjEQz" className="social__link cursor-pointer">
                                         <a target="_blank">
                                             <img src={discord.src} className="cursor-pointer" alt="Social Thumb"/>
                                         </a>

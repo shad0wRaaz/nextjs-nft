@@ -8,8 +8,8 @@ import { Dialog, Transition } from '@headlessui/react'
 const OtherReferralCommissions = ({ currentChain }) => {
     const [isOpen, setIsOpen] = useState(false);
     const networks = [
-        { chainName: 'binance', url: '/rewarding-renditions', icon: <IconBNB/>, name: 'Rewarding Renditions'},
         { chainName: 'mainnet', url: '/mushroom-kingdom', icon: <IconEthereum/>, name: 'Mushroom Kingdom'},
+        { chainName: 'binance', url: '/rewarding-renditions', icon: <IconBNB/>, name: 'Rewarding Renditions'},
         { chainName: 'polygon', url: '/admirable-depictions', icon: <IconPolygon/>, name: 'Claws and Furs'},
         { chainName: 'mainnet', url: '/majestic-visions', icon: <IconEthereum/>, name: 'Etherverse'},
         { chainName: 'avalanche', url: '/eminent-creations', icon: <IconAvalanche/>, name: 'Eminent Creations'},

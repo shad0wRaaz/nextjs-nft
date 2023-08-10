@@ -376,6 +376,7 @@ const HeroDesigner = () => {
     <div className={style.wrapper}>
       <div className={style.container}>
         <div className={style.contentWrapper}>
+            
           <div className={style.title}>
             Discover, Collect, Mint, Sell and Buy NFTs
             <p className="animate-bounce textGradGreen text-lg lg:text-3xl">

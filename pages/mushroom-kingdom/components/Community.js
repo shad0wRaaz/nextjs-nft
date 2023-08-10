@@ -14,7 +14,7 @@ const Community = ({setShowMenu }) => {
                       <p className="mushroom-kingdom-gradient font-hennypenny text-[5rem]">Mushroom Kingdom </p>
                     </h2>
                     <p className="mb-8">Join a growing community of Nuva NFT!</p>
-                    <Link href="https://discord.gg/kgm7s3hn">
+                    <Link href="https://discord.gg/SrdCjEQz">
                       <a className="default-btn"><span>Join Our Discord</span></a>
                     </Link>
                 </div>
