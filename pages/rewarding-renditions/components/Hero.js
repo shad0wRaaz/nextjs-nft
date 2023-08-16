@@ -30,7 +30,7 @@ const Hero = ({setShowMenu}) => {
                             <p className="text-normal md:text-2xl leading-[2rem] md:leading-[4rem]">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 30th of June, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10">
                                 <li className="social__item">
-                                    <Link href="https://discord.gg/SrdCjEQz" className="social__link cursor-pointer">
+                                    <Link href="https://discord.gg/DgbeEPBhUw" className="social__link cursor-pointer">
                                         <a target="_blank">
                                             <img src={discord.src} className="cursor-pointer" alt="Social Thumb"/>
                                         </a>
@@ -100,7 +100,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
-        <OtherReferralCommissions currentChain={'binance'}/>
+        <OtherReferralCommissions collectionName={'rewarding-renditions'}/>
     </section>
   )
 }

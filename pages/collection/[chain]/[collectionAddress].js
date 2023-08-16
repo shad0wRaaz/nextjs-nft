@@ -17,7 +17,6 @@ import { RiCloseFill } from 'react-icons/ri'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
-import { BiChevronDown, BiGlobe, BiImport } from 'react-icons/bi'
 import { useQuery, useMutation } from 'react-query'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
@@ -29,6 +28,7 @@ import { useUserContext } from '../../../contexts/UserContext'
 import EditCollection from '../../../components/EditCollection'
 import noProfileImage from '../../../assets/noProfileImage.png'
 import { useThemeContext } from '../../../contexts/ThemeContext'
+import { BiChevronDown, BiGlobe, BiImport } from 'react-icons/bi'
 import { CgClose, CgFacebook, CgSandClock } from 'react-icons/cg'
 import NFTCardExternal from '../../../components/NFTCardExternal'
 import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa'
@@ -1689,16 +1689,15 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 </>
               )
             }
+            {!revealed && Boolean(collectionData) && (
+              <div className="mx-auto flex justify-center z-50 pb-10">
+                <NoSSR>
+                  <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />
+                </NoSSR>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* {!revealed && Boolean(collectionData) && (
-          <div className="mx-auto flex justify-center">
-            <NoSSR>
-              <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />
-            </NoSSR>
-          </div>
-        )} */}
         {isBlocked && (
           <div className="p-[4rem] text-center">
             <div className="mt-[10rem] flex justify-center mb-5"><MdBlock fontSize={100} color='#ff0000'/></div>
@@ -1739,6 +1738,10 @@ export async function getServerSideProps(context){
     kaioji: '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B',
     grutzi: '0x50Fb365F7B1c5CfaF3a0a9341029ABD0ce8e4f80',
     hidoi: '0x023803f52a5DD566AC1E6a3B06bCE8CD0d27a8a7',
+    ursine: '0x1585603eB9b94bCbEb16443f7923cDdbfa056A98',
+    vulpine: '0x587ac4A4ab6320150ACf6B49a6eb3a519506D4b6',
+    lapine: '0xbbfEB3039116Aa1f4d95C009C8eA9DD8eD4d8324',
+    canine: '0xAb5f5ad36d571e1dF18A6a57F50D0e3CB93762cc',
   }
   if(String(collectionAddress).toLowerCase() == 'crypto_creatures') {contractAddress = link.crypto_creatures}
   else if(String(collectionAddress).toLowerCase() == 'neon_dreams') {contractAddress = link.neon_dreams}
@@ -1749,6 +1752,10 @@ export async function getServerSideProps(context){
   else if(String(collectionAddress).toLowerCase() == 'kaioji') {contractAddress = link.kaioji}
   else if(String(collectionAddress).toLowerCase() == 'grutzi') {contractAddress = link.grutzi}
   else if(String(collectionAddress).toLowerCase() == 'hidoi') {contractAddress = link.hidoi}
+  else if(String(collectionAddress).toLowerCase() == 'ursine') {contractAddress = link.ursine}
+  else if(String(collectionAddress).toLowerCase() == 'vulpine') {contractAddress = link.vulpine}
+  else if(String(collectionAddress).toLowerCase() == 'lapine') {contractAddress = link.lapine}
+  else if(String(collectionAddress).toLowerCase() == 'canine') {contractAddress = link.canine}
   else { contractAddress = collectionAddress}
 
   const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}`;

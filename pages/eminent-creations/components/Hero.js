@@ -93,7 +93,7 @@ const Hero = ({setShowMenu}) => {
 
             </div>
         </div>
-        <OtherReferralCommissions currentChain={'avalanche'}/>
+        <OtherReferralCommissions collectionName={'eminent-creations'}/>
     </section>
   )
 }

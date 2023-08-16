@@ -77,7 +77,9 @@ const redis = new Redis({
   port: process.env.NEXT_PUBLIC_REDIS_PORT
 })
 
-const web3storage = new ThirdwebStorage();
+const web3storage = new ThirdwebStorage({
+  secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY,
+});
 
 
 const s3 = new S3Client({
@@ -1607,8 +1609,8 @@ app.post('/api/nft/distributeToken', async(req,res) => {
         case process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS:
           privatekey = process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY;
           break;
-        case process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS:
-          privatekey = process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY;
+        case process.env.NEXT_PUBLIC_GRACE_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_GRACE_PRIVATE_KEY;
           break;
         case process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS:
           privatekey = process.env.NEXT_PUBLIC_CREATIONS_PRIVATE_KEY;
@@ -1616,8 +1618,8 @@ app.post('/api/nft/distributeToken', async(req,res) => {
         case process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS:
           privatekey = process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY;
           break;
-        case process.env.NEXT_PUBLIC_ARBITRUM_WALLET_ADDRESS:
-          privatekey = process.env.NEXT_PUBLIC_ARBITRUM_PRIVATE_KEY;
+        case process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS:
+          privatekey = process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY;
           break;
         case process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_WALLET_ADDRESS:
           privatekey = process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_PRIVATE_KEY;
@@ -1646,7 +1648,7 @@ app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   const chainWalletKeys = { 
     "binance" : process.env.NEXT_PUBLIC_RENDITIONS_PRIVATE_KEY,
     "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_TBNB,
-    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_PRIVATE_KEY,
+    "polygon" : process.env.NEXT_PUBLIC_GRACE_PRIVATE_KEY,
     "mumbai" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
     "ethereum" : process.env.NEXT_PUBLIC_VISIONS_PRIVATE_KEY,
     "goerli" : process.env.NEXT_PUBLIC_METAMASK_PRIVATE_KEY_MUMBAI,
@@ -1655,7 +1657,7 @@ app.post('/api/nft/setroyaltybytoken/', async(req, res) => {
   }
   const chainWallet = {
     "binance" : process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS,
-    "polygon" : process.env.NEXT_PUBLIC_DEPICTIONS_WALLET_ADDRESS,
+    "polygon" : process.env.NEXT_PUBLIC_GRACE_WALLET_ADDRESS,
     "ethereum" : process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS,
     "avalanche" : process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS,
     "binance-testnet" : process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS,

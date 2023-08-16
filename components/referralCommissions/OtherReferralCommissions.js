@@ -1,24 +1,24 @@
 import Link from 'next/link'
 import "@fontsource/alfa-slab-one";
 import React, { Fragment, useState } from 'react'
-import { IconArbitrum, IconAvalanche, IconBNB, IconEthereum, IconPolygon } from '../icons/CustomIcons'
 import { MdOutlineDownloading } from 'react-icons/md'
 import { Dialog, Transition } from '@headlessui/react'
+import { IconArbitrum, IconAvalanche, IconBNB, IconEthereum, IconPolygon } from '../icons/CustomIcons'
 
-const OtherReferralCommissions = ({ currentChain }) => {
+const OtherReferralCommissions = ({ collectionName }) => {
     const [isOpen, setIsOpen] = useState(false);
     const networks = [
-        { chainName: 'mainnet', url: '/mushroom-kingdom', icon: <IconEthereum/>, name: 'Mushroom Kingdom'},
+        { chainName: 'ethereum', url: '/mushroom-kingdom', icon: <IconEthereum/>, name: 'Mushroom Kingdom'},
         { chainName: 'binance', url: '/rewarding-renditions', icon: <IconBNB/>, name: 'Rewarding Renditions'},
-        { chainName: 'polygon', url: '/admirable-depictions', icon: <IconPolygon/>, name: 'Claws and Furs'},
-        { chainName: 'mainnet', url: '/majestic-visions', icon: <IconEthereum/>, name: 'Etherverse'},
+        { chainName: 'polygon', url: '/furry-grace', icon: <IconPolygon/>, name: 'Furry Grace'},
+        { chainName: 'ethereum', url: '/etherverse', icon: <IconEthereum/>, name: 'Etherverse'},
         { chainName: 'avalanche', url: '/eminent-creations', icon: <IconAvalanche/>, name: 'Eminent Creations'},
-        { chainName: 'arbitrum', url: '/eminent-creations', icon: <IconArbitrum/>, name: 'Admirable Depictions'},
+        { chainName: 'arbitrum', url: '/admirable-depictions', icon: <IconArbitrum/>, name: 'Admirable Depictions'},
     ]
-    const currentNetwork = networks.filter(net => net.chainName == currentChain)[0];
+
   return (
     <>
-        {currentChain != 'binance' && 
+        {(collectionName != 'mushroom-kingdom' && collectionName != 'rewarding-renditions') && 
             <div className="fixed top-0 left-0 w-full h-full bg-slate-800/90 backdrop-blur-xl z-40 flex justify-center items-center">
                 <p className="text-2xl md:text-3xl text-center">
                     <MdOutlineDownloading className="inline mr-2" fontSize={40}/>

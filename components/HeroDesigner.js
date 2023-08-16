@@ -20,6 +20,11 @@ import kaioji2  from '../pages/mushroom-kingdom/assets/artifacts/5.png'
 import kaioji3  from '../pages/mushroom-kingdom/assets/artifacts/6.png'
 import kaioji4  from '../pages/mushroom-kingdom/assets/artifacts/7.png'
 
+import bear from '../pages/furry-grace/assets/images/bear.webp'
+import dog from '../pages/furry-grace/assets/images/dog.webp'
+import fox from '../pages/furry-grace/assets/images/fox.webp'
+import rabbit from '../pages/furry-grace/assets/images/rabbit.webp'
+
 import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
 import creature2  from '../pages/rewarding-renditions/assets/cryptocreatures/2.png'
 import creature3  from '../pages/rewarding-renditions/assets/cryptocreatures/3.png'
@@ -357,6 +362,10 @@ const HeroDesigner = () => {
     'grutzi1' : grutzi1.src,
     'hidoi1' : hidoi1.src,
     'kaioji1' : kaioji1.src,
+    'ursine' : bear.src,
+    'canine' : dog.src,
+    'vulpine' : fox.src,
+    'lapine' : rabbit.src,
   }
   const settings = {
     dots: false,
@@ -782,10 +791,10 @@ const HeroDesigner = () => {
                     <IconBNB/> Rewarding Renditions
                 </div>
                 <div 
-                  className={style.collectionSelector + (selectedCollection == 'claws-and-furs' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
-                  onClick={() => setSelectedCollection('claws-and-furs')}
+                  className={style.collectionSelector + (selectedCollection == 'furry-grace' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
+                  onClick={() => setSelectedCollection('furry-grace')}
                   >
-                    <IconPolygon/> Claws and Furs
+                    <IconPolygon/> Furry Grace
                 </div>
                 <div 
                   className={style.collectionSelector + (selectedCollection == 'etherverse' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-800 hover:bg-slate-700')}
@@ -807,12 +816,12 @@ const HeroDesigner = () => {
                 </div>
               </div>
 
-              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' ? (
+              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' || selectedCollection == 'furry-grace' ? (
                   <div className={style.ctaContainer}>
                     {allbenefits.filter(d => d.collection === selectedCollection).map(c => (
                       <div className={style.collectionSelection} key={c.contractAddress}>
                         <div className="absolute top-12 right-2">
-                          <Image src={collectionPicture[c.picture]} height="80px" width="80px" objectFit='cover' className="rounded-full " alt="Crypto Creatures"/>
+                          <Image src={collectionPicture[c.picture]} height="80px" width="80px" objectFit='cover' className="rounded-full " alt={c.name}/>
                         </div>
                         <div className="flex gap-2">
                           <div className="text-left">
@@ -821,7 +830,7 @@ const HeroDesigner = () => {
                           </div>
                         </div>
                         <div className="text-left mt-3">
-                          <p>Mint Price: {c.mintPrice} {c.chain === 'binance' && <IconBNB/>}{c.chain === 'ethereum' && <IconEthereum/>}</p>
+                          <p>Mint Price: {c.mintPrice} {c.chain === 'binance' && <IconBNB/>}{c.chain === 'ethereum' && <IconEthereum/>}{c.chain === 'polygon' && <IconPolygon/>}</p>
                           <p className={style.unilevelInfo}>Unlocks Uni Level: 
                             {
                             c.unlockLevel == 2 ? <TbSquareRoundedNumber2 fontSize={25} />
@@ -959,7 +968,7 @@ const HeroDesigner = () => {
                     </div>
                   </div>
                 </div> */}
-              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' ? 
+              {selectedCollection == 'mushroom-kingdom' || selectedCollection == 'rewarding-renditions' || selectedCollection == 'furry-grace' ? 
               <Airdrop visible={showAirdrop} setShowAirdrop={setShowAirdrop} selectedAirdropCollection={selectedCollection}/>
               :
               ''}
@@ -979,7 +988,7 @@ const HeroDesigner = () => {
                   </Link>
                 </div>
                 <div className="cursor-pointer rounded-full w-full md:w-fit p-3 text-slate-900 bg-white hover:bg-neutral-200 transition px-6 m-auto border border-white/20">
-                  <Link href={selectedCollection == 'mushroom-kingdom' ? '/mushroomkingdom/Whitepaper.pdf' : 'https://nuva-nft.gitbook.io/docs/'} passHref>
+                  <Link href={selectedCollection == 'mushroom-kingdom' ? '/mushroomkingdom/Whitepaper.pdf' : selectedCollection == 'rewarding-renditions' ? 'https://nuva-nft.gitbook.io/docs/' : '/furrygrace/Whitepaper.pdf'} passHref>
                     <a target="_blank">
                       Read Whitepaper
                     </a>

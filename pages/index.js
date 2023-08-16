@@ -30,7 +30,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
         <div className="herocarousel bg-top md:bg-center pb-[4rem] relative z-10" style={{ backgroundImage: `url(${bgimage.src})`, backgroundSize: 'cover'}}>
           <Header/>
           <HeroDesigner />
-          <OtherReferralCommissions currentChain="binance"/>
+          <OtherReferralCommissions collectionName="rewarding-renditions"/>
           {/* {backendAvailable ? (<>
             <HeroCarousel featuredNfts={featuredNfts}/>
             <HeroSearch />

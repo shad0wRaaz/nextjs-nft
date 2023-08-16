@@ -7,6 +7,10 @@ import nomin1  from '../pages/mushroom-kingdom/assets/cryptocreatures/1.png';
 import grutzi1  from '../pages/rewarding-renditions/assets/neondreams/2.png';
 import hidoi1  from '../pages/rewarding-renditions/assets/celestialbeings/3.png';
 import kaioji1  from '../pages/rewarding-renditions/assets/artifacts/4.png';
+import ursine from '../pages/furry-grace/assets/images/bear.webp'
+import vulpine from '../pages/furry-grace/assets/images/fox.webp'
+import lapine from '../pages/furry-grace/assets/images/rabbit.webp'
+import canine from '../pages/furry-grace/assets/images/dog.webp'
 
 export const allbenefits = [
     {
@@ -254,25 +258,26 @@ export const allbenefits = [
                     },
     },
     {
-        name: 'Fox', 
-        contractAddress : '0xa98d96E636123dFB35AB037d1E5a7B76a6e7e95B',
-        collection: 'claws-and-furs', 
+        name: 'Ursine', 
+        contractAddress : '0x1585603eB9b94bCbEb16443f7923cDdbfa056A98',
+        collection: 'furry-grace', 
         chain: 'polygon',
+        profileImage: ursine.src,
         chainIcon: <IconPolygon/>,
         currency: 'MATIC',
-        mintPrice: 0.188,
+        mintPrice: 110,
         totalSize: 5000,
-        unlockLevel: 5,
+        unlockLevel: 2,
         earnDescription: 'Earn 10% from Direct + 8% from Indirect',
-        url: 'fox',
+        url: 'ursine',
         benefits: [
             { content: 'Receive 5% Royalty on every resale of this NFT forever' },
-            { content: 'Allows you to earn 10% from direct, 8% from second, 6% from third, 5% from fourth and 5% from fifth level of Loyalty Reward System' },
-            { content: '4 Stages of FREE ETH Airdrops' },
+            { content: 'Allows you to earn 10% from direct and 8% from second of Loyalty Reward System' },
+            { content: '4 Stages of FREE MATIC Airdrops' },
             { content: '1 stage of FREE Nuva Token Airdrop' }
         ],
         buttonColor: 'orange',
-        picture: 'fox',
+        picture: 'ursine',
         phaseDelimiter: 
                     { 
                         phase1: 625, 
@@ -280,6 +285,96 @@ export const allbenefits = [
                         phase3: 2500,
                         phase4: 5000,
                         phase5: 5000,
+                    },
+    },
+    {
+        name: 'Vulpine', 
+        contractAddress : '0x587ac4A4ab6320150ACf6B49a6eb3a519506D4b6',
+        collection: 'furry-grace', 
+        chain: 'polygon',
+        profileImage: vulpine.src,
+        chainIcon: <IconPolygon/>,
+        currency: 'MATIC',
+        mintPrice: 220,
+        totalSize: 5000,
+        unlockLevel: 3,
+        earnDescription: 'Earn 10% from Direct + (8% + 6%) from Indirect',
+        url: 'vulpine',
+        benefits: [
+            { content: 'Receive 5% Royalty on every resale of this NFT forever' },
+            { content: 'Allows you to earn 10% from direct, 8% from second and 6% from third level of Loyalty Reward System' },
+            { content: '4 Stages of FREE MATIC Airdrops' },
+            { content: '1 stage of FREE Nuva Token Airdrop' }
+        ],
+        buttonColor: 'neon',
+        picture: 'vulpine',
+        phaseDelimiter: 
+                    { 
+                        phase1: 625, 
+                        phase2: 1250,
+                        phase3: 2500,
+                        phase4: 5000,
+                        phase5: 5000,
+                    },
+    },
+    {
+        name: 'Lapine', 
+        contractAddress : '0xbbfEB3039116Aa1f4d95C009C8eA9DD8eD4d8324',
+        collection: 'furry-grace', 
+        chain: 'polygon',
+        profileImage: lapine.src,
+        chainIcon: <IconPolygon/>,
+        currency: 'MATIC',
+        mintPrice: 370,
+        totalSize: 10000,
+        unlockLevel: 4,
+        earnDescription: 'Earn 10% from Direct + (8% + 6% + 5%) from Indirect',
+        url: 'lapine',
+        benefits: [
+            { content: 'Receive 5% Royalty on every resale of this NFT forever' },
+            { content: 'Allows you to earn 10% from direct, 8% from second, 6% from third, and 5% from fourth level of Loyalty Reward System' },
+            { content: '4 Stages of FREE MATIC Airdrops' },
+            { content: '1 stage of FREE Nuva Token Airdrop' }
+        ],
+        buttonColor: 'flamingo',
+        picture: 'lapine',
+        phaseDelimiter: 
+                    { 
+                        phase1: 1250, 
+                        phase2: 2500,
+                        phase3: 5000,
+                        phase4: 10000,
+                        phase5: 10000,
+                    },
+    },
+    {
+        name: 'Canine', 
+        contractAddress : '0xAb5f5ad36d571e1dF18A6a57F50D0e3CB93762cc',
+        collection: 'furry-grace', 
+        profileImage: canine.src,
+        chain: 'polygon',
+        chainIcon: <IconPolygon/>,
+        currency: 'MATIC',
+        mintPrice: 525,
+        totalSize: 20000,
+        unlockLevel: 5,
+        earnDescription: 'Earn 10% from Direct + (8% + 6% + 5% + 5%) from Indirect',
+        url: 'canine',
+        benefits: [
+            { content: 'Receive 5% Royalty on every resale of this NFT forever' },
+            { content: 'Allows you to earn 10% from direct, 8% from second, 6% from third, 5% from fourth and 5% from fifth level of Loyalty Reward System' },
+            { content: '4 Stages of FREE MATIC Airdrops' },
+            { content: '1 stage of FREE Nuva Token Airdrop' }
+        ],
+        buttonColor: 'apple',
+        picture: 'canine',
+        phaseDelimiter: 
+                    { 
+                        phase1: 2500, 
+                        phase2: 5000,
+                        phase3: 10000,
+                        phase4: 20000,
+                        phase5: 20000,
                     },
     }
 ];

@@ -114,7 +114,7 @@ const Airdrop = ({visible, setShowAirdrop, selectedAirdropCollection}) => {
                     <div className="flex min-h-full items-center justify-center p-4 text-center">
                         <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
                             <Dialog.Panel className="w-full h-[600px] md:h-[564px] max-w-[1000px] transform overflow-hidden rounded-2xl bg-[#ffffffbb] backdrop-blur-lg p-6 text-left align-middle shadow-xl transition-all">
-                                {selectedCollection?.chain == 'binance' || selectedCollection?.chain == 'ethereum' ? (
+                                {selectedCollection?.chain == 'binance' || selectedCollection?.chain == 'ethereum' || selectedCollection?.chain == 'polygon' ? (
                                     <>
                                         <Dialog.Title as="h3" className="text-lg font-medium leading-6 pt-6 text-gray-900 text-center">
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
