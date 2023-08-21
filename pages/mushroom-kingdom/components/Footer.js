@@ -17,12 +17,12 @@ const Footer = ({ setShowMenu }) => {
                     <h2 className="mushroom-kingdom-gradient font-hennypenny">Follow Us!</h2>
                     <p className="font-oregano text-3xl">If two Heads Area Better Than One, 40,000 Heads Should Be Way Better!<br/>Join Our Community.</p>
                     <ul className="social justify-content-center flex justify-center gap-3 mt-8">
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://discord.gg/Zzfqk5bf3F" className="social__link"><a target="_blank"><img src={discord.src} alt="Discord"/></a></Link></li>
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://twitter.com/RewardRendition" className="social__link"><a target="_blank"><img src={twitter.src} alt="twitter"/></a></Link></li>
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.facebook.com/RewardRenditions" className="social__link"><a target="_blank"><img src={facebook.src} alt="twitter" style={{ height: '60px', width: '60px'}} /></a></Link></li>
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={instagram.src} alt="instagram"/></a></Link></li>
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={youtube.src} alt="youtube"/></a></Link></li>
-                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.tiktok.com/@nuvacommunity" className="social__link"><a target="_blank"><img src={tiktok.src} alt="tiktok"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://discord.gg/Zzfqk5bf3F" className="social__link"><a target="_blank" aria-label='Discord'><img src={discord.src} alt="Discord"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://twitter.com/RewardRendition" className="social__link"><a target="_blank" aria-label='Twitter'><img src={twitter.src} alt="twitter"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.facebook.com/RewardRenditions" className="social__link"><a target="_blank" aria-label='Facebook'><img src={facebook.src} alt="facebook" style={{ height: '60px', width: '60px'}} /></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.instagram.com/nuva_nft" className="social__link"><a target="_blank" aria-label='Instagram'><img src={instagram.src} alt="instagram"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank" aria-label='Youtube'><img src={youtube.src} alt="youtube"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.tiktok.com/@nuvacommunity" className="social__link"><a target="_blank" aria-label='Tiktok'><img src={tiktok.src} alt="tiktok"/></a></Link></li>
                     </ul>
                 </div>
                 <div className="footer__copyright">

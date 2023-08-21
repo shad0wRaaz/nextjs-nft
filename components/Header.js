@@ -291,9 +291,9 @@ const Header = () => {
   return (
     <div className={style.wrapper}>
       <div className="container flex items-center justify-between">
-        <Link href="/">
+        <Link href="/" aria-label='Nuva NFT logo'>
           <div className={style.logoContainer} style={{ marginLeft: 0 }}>
-            <img src={nuvanftLogo.src} height={55} width={90} />
+            <img src={nuvanftLogo.src} height={55} width={90} alt="Nuva NFT"/>
           </div>
         </Link>
 
@@ -317,7 +317,7 @@ const Header = () => {
         <div className="mobileMenu z-30 text-right">
           <Menu as="div" className="relative inline-block text-left">
             <div>
-              <Menu.Button className="p-1">
+              <Menu.Button className="p-1" aria-label='Menu'>
                 <HiMenu fontSize="25px" />
               </Menu.Button>
             </div>

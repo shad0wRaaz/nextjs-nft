@@ -2,9 +2,9 @@ import React from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Panda from '../../public/assets/adorable_panda.jpg'
-import Tiger from '../../public/assets/adorable_tiger.jpg'
-import Flower from '../../public/assets/flowers.jpg'
+import Panda from '../../public/assets/adorable_panda.webp'
+import Tiger from '../../public/assets/adorable_tiger.webp'
+import Flower from '../../public/assets/flowers.webp'
 import SEO from '../../components/SEO';
 
 
@@ -39,9 +39,9 @@ const nfttypes = () => {
       </div>
       <div className={style.wrapper}>
         <div className="w-full flex flex-wrap gap-5">
-            <img src={Panda.src} className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Flower.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Tiger.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Panda.src} alt="Panda" className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Flower.src} alt="Flower" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
+            <img src={Tiger.src} alt="Tiger" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
             <div className="mx-auto w-full rounded-2xl space-y-[2rem]">
               <p>Decide what kind of NFT you want to create.</p>
               <div><p className="text-4xl mb-2">Art</p>Do you have an original concept but struggle with actually creating the art? When it comes to creating NFT artwork, one of the options that artists and collectors have is to commission other artists to create the artwork for them.  Some websites specialise in connecting artists with clients looking for customised pieces.  By browsing these websites, collectors can scroll through various artists' portfolios and choose the one that best matches their vision.  Typically, collectors can communicate with the artist throughout the creative process to ensure that the final product meets their specifications.  These websites allow artists and collectors to collaborate and create unique and original works of art that can be turned into NFTs.  However, it is important to keep in mind that the success of the NFT will depend on the quality and popularity of the artwork, so it is worth investing time and effort in finding the right artist for the job (if you are not creating the NFT yourself).  An example of a website that offers NFT artwork creation is Fiverr - Freelance Services Marketplace – although there are others, so please have a look around and find the right provider for you.</div>

@@ -2,9 +2,9 @@ import React from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Panda from '../../public/assets/adorable_panda.jpg'
-import Tiger from '../../public/assets/adorable_tiger.jpg'
-import Flower from '../../public/assets/flowers.jpg'
+import Panda from '../../public/assets/adorable_panda.webp'
+import Tiger from '../../public/assets/adorable_tiger.webp'
+import Flower from '../../public/assets/flowers.webp'
 import SEO from '../../components/SEO';
 
 
@@ -39,9 +39,9 @@ const whatarenfts = () => {
       </div>
       <div className={style.wrapper}>
         <div className="w-full flex flex-wrap gap-5">
-            <img src={Panda.src} className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Flower.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Tiger.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Panda.src} alt="Panda" className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Flower.src} alt="Flower" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
+            <img src={Tiger.src} alt="Tiger" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
             <div className="mx-auto w-full rounded-2xl space-y-[2rem]">
               <p>To truly appreciate what Nuva NFT offers and maximise your benefits, it is important to understand what NFTs are. </p>
               <p>NFTs or non-fungible tokens are digital assets that represent ownership of unique and indivisible items such as artwork, music, videos, and even tweets.  They are created on a blockchain, which is a digital ledger that records every transaction and ensures the authenticity and permanence of the asset.  The token is proof of ownership and contains a smart contract outlining the ownership terms and any associated royalties or resale rights.  NFTs have gained popularity in the art world and are seen as a way to give artists more control over their work and create new revenue streams.  It is an excellent time for you to seize the opportunity and take advantage of the rise in the popularity of NFTs.  NFTs can be truly life-changing for their creators, and the great thing is that you don’t need to be a Picasso! (More on that later).</p>

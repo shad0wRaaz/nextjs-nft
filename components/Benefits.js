@@ -23,13 +23,13 @@ const Benefits = ({nftCollection}) => {
 
   return (
     <>
-        {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection.contractAddress).toLowerCase())?.length > 0 ? (
+        {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection?.contractAddress).toLowerCase())?.length > 0 ? (
             <div className={style.card}>
                 <div className={style.cardheader}>
-                    <TbStar/> Benefits of NFT from {nftCollection.name}
+                    <TbStar/> Benefits of NFT from {nftCollection?.name}
                 </div>
                 <div className={style.cardbody}>
-                    {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection.contractAddress).toLowerCase())[0].benefits?.map((point, index) => (
+                    {allbenefits.filter(benefit => String(benefit.contractAddress).toLowerCase() == String(nftCollection?.contractAddress).toLowerCase())[0].benefits?.map((point, index) => (
                         <p key={index} className={style.points}><FaCheck className={style.bullet} fontSize={15}/> {point.content}</p>
                     ))}
                     <div className={style.moreinfo}>

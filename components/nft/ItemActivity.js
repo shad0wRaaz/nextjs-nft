@@ -32,7 +32,7 @@ const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) =>
   const {blockchainIdFromName} = useSettingsContext();
 
   const { data: activityData, status } = useQuery(
-    ['activities', blockchainIdFromName[thisNFTblockchain], selectedNft.contract, selectedNft.tokenId],
+    ['activities', blockchainIdFromName[thisNFTblockchain], selectedNft?.contract, selectedNft?.tokenId],
     INFURA_getNFTTransfers(),
     {
       enabled: Boolean(thisNFTblockchain) && Boolean(selectedNft),

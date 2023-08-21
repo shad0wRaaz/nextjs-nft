@@ -63,13 +63,8 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { IconArbitrum, IconAvalanche, IconBNB, IconEthereum, IconPolygon } from './icons/CustomIcons';
 import { HiArrowNarrowDown } from 'react-icons/hi';
-import { useQuery } from 'react-query';
 import Airdrop from './Airdrop';
-import { getAirDrops } from '../fetchers/SanityFetchers';
-import { useSettingsContext } from '../contexts/SettingsContext';
 import { Dialog, Transition } from '@headlessui/react';
-import { CgClose } from 'react-icons/cg';
-import { MdOutlineOpenInNew } from 'react-icons/md';
 
 const HeroDesigner = () => {
   const [showCollection, setShowCollection] = useState(false);

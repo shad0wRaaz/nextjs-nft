@@ -16,11 +16,11 @@ const Footer = ({ setShowMenu }) => {
                     <h2 className="color--gradient-mv">Follow Us!</h2>
                     <p>If two Heads Area Better Than One, 40,000 Heads Should Be Way Better!<br/>Join Our Community.</p>
                     <ul className="social justify-content-center flex justify-center gap-3 mt-8">
-                        <li className="social__item"><Link href="https://discord.gg/4xCqUjME" className="social__link"><a target="_blank"><img src={discord.src} alt="Discord"/></a></Link></li>
-                        <li className="social__item"><Link href="https://twitter.com/RewardRendition" className="social__link"><a target="_blank"><img src={twitter.src} alt="twitter"/></a></Link></li>
-                        <li className="social__item"><Link href="https://www.facebook.com/RewardRenditions" className="social__link"><a target="_blank"><img src={facebook.src} alt="twitter" style={{ height: '60px', width: '60px'}} /></a></Link></li>
-                        <li className="social__item"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={instagram.src} alt="instagram"/></a></Link></li>
-                        <li className="social__item"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank"><img src={youtube.src} alt="youtube"/></a></Link></li>
+                        <li className="social__item"><Link href="https://discord.gg/4xCqUjME" className="social__link"><a target="_blank" aria-label='Discord'><img src={discord.src} alt="Discord"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://twitter.com/RewardRendition" className="social__link"><a target="_blank" aria-label='Twitter'><img src={twitter.src} alt="twitter"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.facebook.com/RewardRenditions" className="social__link"><a target="_blank" aria-label='Facebook'><img src={facebook.src} alt="facebook" style={{ height: '60px', width: '60px'}} /></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.instagram.com/nuva_nft" className="social__link"><a target="_blank" aria-label='Instagram'><img src={instagram.src} alt="instagram"/></a></Link></li>
+                        <li className="social__item transition hover:-translate-y-1"><Link href="https://www.youtube.com/@METANUVACOMMUNITY" className="social__link"><a target="_blank" aria-label='Youtube'><img src={youtube.src} alt="youtube"/></a></Link></li>
                     </ul>
                 </div>
                 <div className="footer__copyright">

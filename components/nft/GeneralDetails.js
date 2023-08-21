@@ -46,7 +46,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
   const router = useRouter();
   const [auctionedItem, setAuctionedItem] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData.contract}/${nftContractData.tokenId}`;
+  const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData?.contract}/${nftContractData?.tokenId}`;
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
@@ -128,7 +128,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   <a>
                     <img
                       className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
-                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? getImagefromWeb3(metaDataFromSanity?.web3imageprofile) : createAwatar(nftContractData.contract)}
+                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? getImagefromWeb3(metaDataFromSanity?.web3imageprofile) : createAwatar(nftContractData?.contract)}
                       alt={metaDataFromSanity?.name}
                     />
                   </a>
@@ -142,7 +142,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   <span className="text-sm">Collection:</span>
                   <span className="flex items-center font-medium">
                       {/* <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}> */}
-                    <span className="cursor-pointer">{metaDataFromSanity?.name ? metaDataFromSanity?.name : `${nftContractData.contract.slice(0,7)}...${nftContractData.contract.slice(-7)}`}</span>
+                    <span className="cursor-pointer">{metaDataFromSanity?.name ? metaDataFromSanity?.name : `${nftContractData?.contract.slice(0,7)}...${nftContractData?.contract.slice(-7)}`}</span>
                   </span>
                 </span>
               </a>

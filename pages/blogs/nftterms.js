@@ -2,9 +2,9 @@ import React from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Panda from '../../public/assets/adorable_panda.jpg'
-import Tiger from '../../public/assets/adorable_tiger.jpg'
-import Flower from '../../public/assets/flowers.jpg'
+import Panda from '../../public/assets/adorable_panda.webp'
+import Tiger from '../../public/assets/adorable_tiger.webp'
+import Flower from '../../public/assets/flowers.webp'
 import SEO from '../../components/SEO';
 
 const nftterms = () => {
@@ -38,9 +38,9 @@ const nftterms = () => {
     </div>
     <div className={style.wrapper}>
       <div className="w-full flex flex-wrap gap-5">
-          <img src={Panda.src} className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-          <img src={Flower.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-          <img src={Tiger.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+          <img src={Panda.src} alt="Panda" className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+          <img src={Flower.src} alt="Flower" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
+          <img src={Tiger.src} alt="Tiger" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" loading='lazy'/>
           <div className="mx-auto w-full rounded-2xl space-y-[2rem]">
             <div><p className="text-4xl mb-2">Attributes/Properties</p>Attributes/Properties are essential to NFTs and can significantly contribute to their overall value. Attributes refer to unique qualities that distinguish one NFT from another, such as specific traits or characteristics that are rare or highly sought after.  These attributes can be inherent to the artwork itself or generated through the use of algorithms.  For example, an NFT might have a limited edition number or feature a rare colour scheme that makes it stand out from other pieces.  An NFT character could have add-ons like glasses, hats, sports equipment or clothing.  Collectors value NFTs with rare or unique attributes, which can drive up their price points in the market.  The more exclusive or exceptional the attributes, the more valuable the NFT is likely to be.  As the NFT market grows, creators and collectors increasingly focus on developing and marketing NFTs with unique and highly coveted attributes.  Music NFTs can also have their own attributes attached, such as artist or track information, unique and original artwork such as an album cover, limited edition, royalties or even ownership rights.  Ensure you are maximising the earning potential from your NFT by adding attributes.</div>
             <div><p className="text-4xl mb-2">Unlockable content</p>Unlockable content on NFTs refers to additional digital assets or features that are included with an NFT purchase but not immediately accessible to the buyer.  This content is typically hidden or locked behind a code or other means of verification, which the buyer must use to gain access to the content.  Unlockable content can take many different forms, including additional artwork, music, video or other digital files, access to exclusive events, unique experiences or perks.  The NFT creator or seller determines the unlockable content and provides the necessary means to access it, which might be a code, a link, a password, or another verification method.  The concept of unlockable content adds an extra layer of value to an NFT purchase beyond the initial asset itself.  By providing additional content or experiences not available elsewhere, creators and sellers can increase the perceived value of an NFT, leading to greater demand and higher prices.  Unlockable content is an exciting new feature in the world of NFTS. It is supported by Nuva NFT, which can enhance a collector’s experience and provide new opportunities for creators and sellers to differentiate their offerings and stand out in the market.</div>

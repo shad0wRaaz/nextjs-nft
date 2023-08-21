@@ -103,3 +103,20 @@ export const updateUserDataToFindMaxPayLevel = (allusers) => {
 
   return updatedUsers;
 }
+
+export const isCompanyWallet = (walletAddress) => {
+  const wallets = [
+    String(process.env.NEXT_PUBLIC_RENDITIONS_WALLET_ADDRESS).toLowerCase(),
+    String(process.env.NEXT_PUBLIC_GRACE_WALLET_ADDRESS).toLowerCase(),
+    String(process.env.NEXT_PUBLIC_VISIONS_WALLET_ADDRESS).toLowerCase(),
+    String(process.env.NEXT_PUBLIC_CREATIONS_WALLET_ADDRESS).toLowerCase(),
+    String(process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_WALLET_ADDRESS).toLowerCase(),
+    String(process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS).toLowerCase(),
+  ]
+
+  if(wallets.includes(walletAddress.toLowerCase())){
+    return true;
+  }else{
+    return false;
+  }
+}

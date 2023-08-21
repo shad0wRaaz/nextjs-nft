@@ -2,9 +2,9 @@ import React from 'react'
 import { useThemeContext } from '../../contexts/ThemeContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Panda from '../../public/assets/adorable_panda.jpg'
-import Tiger from '../../public/assets/adorable_tiger.jpg'
-import Flower from '../../public/assets/flowers.jpg'
+import Panda from '../../public/assets/adorable_panda.webp'
+import Tiger from '../../public/assets/adorable_tiger.webp'
+import Flower from '../../public/assets/flowers.webp'
 import SEO from '../../components/SEO';
 
 
@@ -39,9 +39,9 @@ const aboutus = () => {
       </div>
       <div className={style.wrapper}>
         <div className="w-full flex flex-wrap gap-5">
-            <img src={Panda.src} className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Flower.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
-            <img src={Tiger.src} className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Panda.src} alt="Panda" className="max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Flower.src} alt="Flower" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
+            <img src={Tiger.src} alt="Tiger" className="hidden lg:block max-w-xs object-cover rounded-xl outline-4 outline outline-neutral-200 shadow-md" />
             <div className="mx-auto w-full rounded-2xl space-y-[2rem]">
               <p>Nuva NFT is a platform that was designed to benefit you as a creator and provide you with a fair and transparent platform to sell your NFTs. As the creator, you receive 100% of the value of the NFT  when it is sold, ensuring that you receive the full value for your work.  This contrasts with other marketplaces that may take payment from you as a commission.  By not taking a commission, Nuva NFT encourages more creators to use their platform and creates a more equitable marketplace for artists of all levels.  Additionally, the 2.5% fee the purchaser pays helps fund the platform’s operations. It ensures that the platform can continue to provide support and resources to creators over the long term.  Overall, Nuva NFT’s unique business model benefits creators and purchasers, providing a fair and transparent platform that rewards you as an artist for your work and enables collectors to discover and own amazing creations.</p>
               <p>As a creator of an NFT, you can earn a 10% (generally set by the creator) royalty each time your NFT is resold, giving you a unique opportunity to receive ongoing compensation for your art.  This is made possible thanks to blockchain technology that underlies NFTs.  Using smart contracts, the blockchain ensures that a portion of the sale price is automatically paid to the NFT creator each time it is sold.  This incentivises creators to continue producing original and high-quality art and helps foster a more sustainable and equitable art market.  By earning a royalty each time your NFT is sold, you can receive a steady stream of income that can be invested into new projects, used to support artistic endeavours, or provide you with the financial stability to pursue your passions.  This also benefits collectors, as they can be confident that the art they buy is unique and supports the artist who created it.  Overall, the royalty system built into NFTs represents a revolutionary change in the art world, providing a more transparent and fair way for you to benefit from your work.</p>

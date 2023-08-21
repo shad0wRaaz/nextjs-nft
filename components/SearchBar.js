@@ -13,7 +13,7 @@ const style = {
 }
 
 const SearchBar = () => {
-  const [selected, setSelected] = useState('Search NFTs/Collections')
+  const [selected, setSelected] = useState('Search NFTs and Collections')
   const [query, setQuery] = useState('')
   const [filteredCollection, setFilteredCollection] = useState([])
   const router = useRouter()
@@ -115,7 +115,7 @@ const SearchBar = () => {
       <Combobox value={selected} onChange={setSelected}>
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left  sm:text-sm">
-            <Combobox.Input data-headlessui-state=""
+            <Combobox.Input data-headlessui-state="" aria-label='Search NFTs and Collections'
               className={`w-full rounded-full border-transparent bg-transparent bg-none py-2 px-[1.4rem] text-sm leading-5 outline-none ${
                 dark
                   ? ' placeholder:text-neutral-500'
@@ -126,11 +126,11 @@ const SearchBar = () => {
               onFocus={(event) => (event.target.value = '')}
               onBlur={(event) =>
                 event.target.value == ''
-                  ? (event.target.value = 'Search NFTs/Collections')
+                  ? (event.target.value = 'Search NFTs and Collections')
                   : ''
               }
             />
-            <Combobox.Button className="absolute  right-0 flex items-center pr-2" data-headlessui-state="" aria-haspopup="true">
+            <Combobox.Button className="absolute  right-0 flex items-center pr-2" data-headlessui-state="" aria-haspopup="true" aria-label='Search'>
               <RiSearchLine color='#000000' className="h-5 w-5 text-black" />
             </Combobox.Button>
           </div>

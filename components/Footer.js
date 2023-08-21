@@ -112,26 +112,26 @@ const Footer = () => {
         <div className={style.bottomContainer}>
         <div className={style.leftBox}>
             <h2 className={style.header}>
-              <Image src={nuvanftLogo} width="90px" height="55px" />
+              <Image src={nuvanftLogo} alt="Nuva NFT" width="90px" height="55px" />
             </h2>
             <p className="text-sm pb-4">Join our community to keep up to date with our latest work and announcements.</p>
             <div className={style.socialWrapper}>
               <Link href="https://t.me/metanuva">
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Telegram'>
                   <div className={style.socialItem + ' telegram'}>
                     <FaTelegramPlane color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://twitter.com/nuvacommunity">
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Twitter'>
                   <div className={style.socialItem + ' twitter'}>
                     <FaTwitter color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.instagram.com/nuva.community/">
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Instagram'>
                   <div className={style.socialItem + ' instagram'}>
                     <FaInstagram color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
@@ -145,20 +145,20 @@ const Footer = () => {
                 </a>
               </Link>
               <Link href="https://www.linkedin.com/company/metanuva/">
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Linked In'>
                   <div className={style.socialItem + ' linkedin'}>
                     <FaLinkedinIn color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
               <Link href="https://www.youtube.com/c/NUVAGAMERSESPORT">
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Youtube'>
                   <div className={style.socialItem + ' youtube'}>
                     <FaYoutube color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.tiktok.com/@nuvacommunity">
+              <Link href="https://www.tiktok.com/@nuvacommunity" aria-label='Tiktok'>
                 <a target="_blank" rel="noopener noreferrer">
                   <div className={style.socialItem + ' tiktok'}>
                     <FaTiktok color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />

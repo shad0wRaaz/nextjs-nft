@@ -44,7 +44,7 @@ import AirdropSettings from '../../../components/collection/AirdropSettings'
 import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
-import { createAwatar, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
+import { createAwatar, isCompanyWallet, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { ConnectWallet, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
@@ -357,6 +357,9 @@ const CollectionDetails = (props) => {
 
   const updateRoyaltyReceiver = async (claimedNFTId) => {
     if(!referralAllowedCollections || !collectionData || !address) return;
+
+    if(isCompanyWallet(address)) return;
+    
     const allowedContracts = referralAllowedCollections.map(coll => coll._ref);
     
     

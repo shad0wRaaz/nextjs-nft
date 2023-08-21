@@ -83,7 +83,7 @@ const MakeOffer = ({
   const [coinMultiplier, setCoinMultiplier] = useState();
   const [closeBidLoading, setCloseBidLoading] = useState();
   const burntOwnerAddress = "0x0000000000000000000000000000000000000000";
-  const isburnt = nftContractData.owner == burntOwnerAddress ? true : false;
+  const isburnt = nftContractData?.owner == burntOwnerAddress ? true : false;
   const router = useRouter();
   const [minNextBig, setMinNextBig] = useState(0);
   const [testnet, setTestnet] = useState(false);
@@ -944,7 +944,7 @@ const MakeOffer = ({
             <div className="flex flex-wrap gap-4">
               <div className="inputControls flex flex-1">
                 <div className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
-                  { currency[thisNFTblockchain].offerCurrency }
+                  { currency[thisNFTblockchain]?.offerCurrency }
                 </div>
                 <input 
                   type="number" 
@@ -977,7 +977,7 @@ const MakeOffer = ({
           <div className="inputControls flex flex-1">
             <div 
               className={`text-sm p-3 border rounded-l-xl ${dark ? 'bg-slate-800 border-slate-700' : 'bg-neutral-200 border-neutral-200'}`}>
-                { currency[thisNFTblockchain].bidCurrency }
+                { currency[thisNFTblockchain]?.bidCurrency }
             </div>
             <input 
               type="number" 
