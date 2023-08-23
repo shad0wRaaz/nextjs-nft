@@ -60,7 +60,7 @@ const Header = ({setShowMenu, showMenu}) => {
     
 
   return (
-    <header className="header bg-[#23162c00] backdrop-blur-lg alphaslab text-neutral-100 fixed z-50 w-full" style={{ fontFamily: 'Alfa Slab One'}}>
+    <header className="header bg-[#23162c00] backdrop-blur-lg alphaslab text-neutral-100 fixed z-40 w-full" style={{ fontFamily: 'Alfa Slab One'}}>
         <div className="container mx-auto px-4">
             <nav className="navbar navbar-expand-xl flex !justify-between"  style={{ padding: '0 !important'}}>
                 <a className="navbar-brand w-fit" href="/">

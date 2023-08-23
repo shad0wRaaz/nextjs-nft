@@ -83,7 +83,7 @@ const Footer = () => {
     bottomContainer:
       'm-auto justify-between flex flex-wrap container px-[1.2rem] gap-4',
     footerContainer:
-      'm-auto justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t flex-col md:flex-row',
+      'm-auto mt-4 justify-between flex flex-wrap container py-[2rem] px-[1.2rem] border-t flex-col md:flex-row',
     header: `text-lg mb-3 inline-flex items-center gap-1 mt-[40px] text-[${dark ? '#fff': '#1d1d1f'}]`,
     text: '',
     leftBox: 'lg:max-w-[30%] sm:max-w-[300px]',
@@ -110,66 +110,6 @@ const Footer = () => {
         style={{ marginTop: '120px', paddingTop: '40px' }}
       >
         <div className={style.bottomContainer}>
-        <div className={style.leftBox}>
-            <h2 className={style.header}>
-              <Image src={nuvanftLogo} alt="Nuva NFT" width="90px" height="55px" />
-            </h2>
-            <p className="text-sm pb-4">Join our community to keep up to date with our latest work and announcements.</p>
-            <div className={style.socialWrapper}>
-              <Link href="https://t.me/metanuva">
-                <a target="_blank" rel="noopener noreferrer" aria-label='Telegram'>
-                  <div className={style.socialItem + ' telegram'}>
-                    <FaTelegramPlane color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://twitter.com/nuvacommunity">
-                <a target="_blank" rel="noopener noreferrer" aria-label='Twitter'>
-                  <div className={style.socialItem + ' twitter'}>
-                    <FaTwitter color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://www.instagram.com/nuva.community/">
-                <a target="_blank" rel="noopener noreferrer" aria-label='Instagram'>
-                  <div className={style.socialItem + ' instagram'}>
-                    <FaInstagram color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://www.facebook.com/METANUVA">
-                <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem + ' facebook'}>
-                    <FaFacebookF color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://www.linkedin.com/company/metanuva/">
-                <a target="_blank" rel="noopener noreferrer" aria-label='Linked In'>
-                  <div className={style.socialItem + ' linkedin'}>
-                    <FaLinkedinIn color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://www.youtube.com/c/NUVAGAMERSESPORT">
-                <a target="_blank" rel="noopener noreferrer" aria-label='Youtube'>
-                  <div className={style.socialItem + ' youtube'}>
-                    <FaYoutube color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-              <Link href="https://www.tiktok.com/@nuvacommunity" aria-label='Tiktok'>
-                <a target="_blank" rel="noopener noreferrer">
-                  <div className={style.socialItem + ' tiktok'}>
-                    <FaTiktok color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
-                  </div>
-                </a>
-              </Link>
-            </div>
-            <p className="mt-4 text-sm">For Support: <a href="mailto:nuvanft@gmail.com" className="text-sky-600 hover:text-sky-400 transition">nuvanft@gmail.com</a></p>
-          </div>
-          
-
           <div>
             <h2 className={style.header}><BiHelpCircle/> Information</h2>
             {/* <div className="flex flex-col gap-3 text-sm">
@@ -252,75 +192,136 @@ const Footer = () => {
               </button>
             </div> */}
           </div>
+
+          <div className={style.leftBox}>
+            <h2 className={style.header}>
+              <Image src={nuvanftLogo} alt="Nuva NFT" width="90px" height="55px" />
+            </h2>
+            <p className="text-sm pb-4">Join our community to keep up to date with our latest work and announcements.</p>
+            <div className={style.socialWrapper}>
+              <Link href="https://t.me/metanuva">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Telegram'>
+                  <div className={style.socialItem + ' telegram'}>
+                    <FaTelegramPlane color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://twitter.com/nuvacommunity">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Twitter'>
+                  <div className={style.socialItem + ' twitter'}>
+                    <FaTwitter color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.instagram.com/nuva.community/">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Instagram'>
+                  <div className={style.socialItem + ' instagram'}>
+                    <FaInstagram color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.facebook.com/METANUVA">
+                <a target="_blank" rel="noopener noreferrer">
+                  <div className={style.socialItem + ' facebook'}>
+                    <FaFacebookF color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.linkedin.com/company/metanuva/">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Linked In'>
+                  <div className={style.socialItem + ' linkedin'}>
+                    <FaLinkedinIn color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.youtube.com/c/NUVAGAMERSESPORT">
+                <a target="_blank" rel="noopener noreferrer" aria-label='Youtube'>
+                  <div className={style.socialItem + ' youtube'}>
+                    <FaYoutube color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://www.tiktok.com/@nuvacommunity" aria-label='Tiktok'>
+                <a target="_blank" rel="noopener noreferrer">
+                  <div className={style.socialItem + ' tiktok'}>
+                    <FaTiktok color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
+                  </div>
+                </a>
+              </Link>
+            </div>
+            <p className="mt-4 text-sm">For Support: <a href="mailto:nuvanft@gmail.com" className="text-sky-600 hover:text-sky-400 transition">nuvanft@gmail.com</a></p>
+          </div>
+
+          <div
+            className={
+              dark
+                ? style.footerContainer + ' border-sky-400/20'
+                : style.footerContainer + ' border-neutral-200'
+            }
+            >
+            <p className={style.copyright}>&copy; {new Date().getFullYear()} Nuva NFT.</p>
+            <div className={style.footerLinksWrapper}>
+              <Link href="/blogs/aboutus">
+                <a
+                  className={
+                    dark
+                      ? style.footerLinks +
+                        ' text-neutral-100'
+                      : style.footerLinks + ' text-black'
+                  }
+                  rel="noopener noreferrer"
+                >
+                  About Us
+                </a>
+              </Link>
+              <Link href="/termsandconditions">
+                <a
+                  className={
+                    dark
+                      ? style.footerLinks +
+                        ' text-neutral-100'
+                      : style.footerLinks + ' text-black'
+                  }
+                  rel="noopener noreferrer"
+                >
+                  Terms & Conditions
+                </a>
+              </Link>
+              <Link href="/privacypolicy">
+                <a
+                  className={
+                    dark
+                      ? style.footerLinks +
+                        ' text-neutral-100 '
+                      : style.footerLinks + ' text-black'
+                  }
+                  rel="noopener noreferrer"
+                >
+                  Privacy Policy
+                </a>
+              </Link>
+              <Link href="/cookiespolicy">
+                <a
+                  className={
+                    dark
+                      ? style.footerLinks +
+                        ' text-neutral-100'
+                      : style.footerLinks + ' text-black '
+                  }
+                  rel="noopener noreferrer"
+                >
+                  Cookies Policy
+                </a>
+              </Link>
+            </div>
+          </div>
           
         </div>
       </div>
       <div
         className={style.bottomWrapper}
         >
-        <div
-          className={
-            dark
-              ? style.footerContainer + ' border-sky-400/20'
-              : style.footerContainer + ' border-neutral-200'
-          }
-          >
-          <p className={style.copyright}>&copy; {new Date().getFullYear()} Nuva NFT.</p>
-          <div className={style.footerLinksWrapper}>
-            <Link href="/blogs/aboutus">
-              <a
-                className={
-                  dark
-                    ? style.footerLinks +
-                      ' text-neutral-100'
-                    : style.footerLinks + ' text-black'
-                }
-                rel="noopener noreferrer"
-              >
-                About Us
-              </a>
-            </Link>
-            <Link href="/termsandconditions">
-              <a
-                className={
-                  dark
-                    ? style.footerLinks +
-                      ' text-neutral-100'
-                    : style.footerLinks + ' text-black'
-                }
-                rel="noopener noreferrer"
-              >
-                Terms & Conditions
-              </a>
-            </Link>
-            <Link href="/privacypolicy">
-              <a
-                className={
-                  dark
-                    ? style.footerLinks +
-                      ' text-neutral-100 '
-                    : style.footerLinks + ' text-black'
-                }
-                rel="noopener noreferrer"
-              >
-                Privacy Policy
-              </a>
-            </Link>
-            <Link href="/cookiespolicy">
-              <a
-                className={
-                  dark
-                    ? style.footerLinks +
-                      ' text-neutral-100'
-                    : style.footerLinks + ' text-black '
-                }
-                rel="noopener noreferrer"
-              >
-                Cookies Policy
-              </a>
-            </Link>
-          </div>
-        </div>
+        
       </div>
     </div>
   )

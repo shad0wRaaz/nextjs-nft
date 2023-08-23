@@ -45,7 +45,7 @@ const Header = () => {
   // const showHeader = typeof window !== 'undefined' && localStorage.getItem("menu") || true;
 
   const style = {
-    wrapper: `${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-50 flex justify-center`,
+    wrapper: `${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-40 flex justify-center`,
     logoContainer: `flex items-center cursor-pointer m-0`,
     logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
     searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] h-[50px] w-full items-center border rounded-lg transition-all linear`,

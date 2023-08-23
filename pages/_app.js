@@ -6,6 +6,8 @@ import icon32 from '../assets/favicon/favicon-32x32.png'
 import icon16 from '../assets/favicon/favicon-16x16.png'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { SearchProvider } from '../contexts/SearchContext'
+import GoogleAnalytics from '../components/GoogleAnalytics'
+import CookieBanner from '../components/CookieBanner'
 import { AdminUserProvider } from '../contexts/AdminContext'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
@@ -20,23 +22,8 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Script strategy='afterInteractive' src="https://www.googletagmanager.com/gtag/js?id=G-BBEXJ0P1FY"/>
-      {process.env.NODE_ENV == 'production' && 
-        <Script
-        id='google-analytics'
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-BBEXJ0P1FY', {
-            page_path: window.location.pathname,
-          });
-          `,
-        }}
-        />
-      }
+      <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_MEAUSREMENT_ID} />
+      <CookieBanner />
       <ThirdwebProvider
         activeChain="ethereum"
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
