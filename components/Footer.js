@@ -100,8 +100,8 @@ const Footer = () => {
   }
 
   return (
-    <div className={`${dark ? 'darkNavy': 'bg-neutral-100'}` + ' relative z-0'}>
-      <Toaster position="bottom-right" reverseOrder={false} />
+    <div className={`${dark ? 'darkNavy': 'bg-neutral-100'}` + ' relative z-40'}>
+      <Toaster position="bottom-right" reverseOrder={false}/>
       {/* <div className={style.bottomContainer}>
         <h2 className={style.header}>Partners</h2>
       </div> */}

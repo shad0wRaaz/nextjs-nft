@@ -22,8 +22,8 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_MEAUSREMENT_ID} />
-      <CookieBanner />
+      {/* <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_MEAUSREMENT_ID} />
+      <CookieBanner /> */}
       <ThirdwebProvider
         activeChain="ethereum"
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}

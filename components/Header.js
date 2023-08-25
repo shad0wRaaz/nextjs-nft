@@ -12,6 +12,7 @@ import { config } from '../lib/sanityClient'
 import { GoDashboard } from 'react-icons/go'
 import ChainSelection from './ChainSelection'
 import nuvanftLogo from '../assets/nuvanft.png'
+import { BiArrowFromBottom } from 'react-icons/bi'
 import { Menu, Transition } from '@headlessui/react'
 import { useState, useEffect, Fragment } from 'react'
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'
@@ -24,7 +25,6 @@ import { useAddress, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices, getBlockedItems, checkReferralUser } from '../fetchers/SanityFetchers'
-import { BiArrowFromBottom } from 'react-icons/bi'
 
 
 
@@ -91,18 +91,18 @@ const Header = () => {
     }
     ) ;
 
-    const { data: latestNfts, status: latestNftsStatus } = useQuery(
-    ['latestNfts', selectedBlockchain],
-    getLatestNfts(24),
-    {
-      onError: () => {
-        toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
-      },
-      onSuccess: (res) => {
-        setLatestNfts(res);
-      },
-    }
-    );
+  const { data: latestNfts, status: latestNftsStatus } = useQuery(
+  ['latestNfts', selectedBlockchain],
+  getLatestNfts(24),
+  {
+    onError: () => {
+      toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
+    },
+    onSuccess: (res) => {
+      setLatestNfts(res);
+    },
+  }
+  );
 
     
 

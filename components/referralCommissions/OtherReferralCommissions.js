@@ -25,7 +25,7 @@ const OtherReferralCommissions = ({ collectionName }) => {
                     Collection coming soon</p>
             </div>
         }
-        <div className="fixed bottom-2 w-full p-2 z-50 flex justify-center alfaslab">
+        <div className="fixed bottom-2 w-full p-2 z-10 flex justify-center alfaslab">
             <div className="bg-[#ffffff88] backdrop-blur-lg rounded-xl text-slate-900 text-normal p-2 px-5 text-xl text-center">
                 <p className="text-[0.55rem] leading-3 md:text-xl">One Wallet &#x2022; One Referral Network &#x2022; Earn from 5 Different Chains & 6 Different Collections</p>
                 <p className="text-[0.55rem] md:text-xl leading-normal">Buy/Mint NFT from specified collections from any chain, get Loyalty, Royalty and Platform rewards forever.</p>

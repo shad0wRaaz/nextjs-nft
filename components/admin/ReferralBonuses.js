@@ -9,7 +9,7 @@ import { useThemeContext } from '../../contexts/ThemeContext';
 const ReferralBonuses = () => {
     const { dark } = useThemeContext()
     const [bonuses, setBonuses] = useState();
-    const { chainExplorer } = useSettingsContext();
+    const { chainExplorer, chainIcon } = useSettingsContext();
     const [searchText, setSearchText] = useState();
     const [filterData, setFilterData] = useState();
     const style = {
@@ -113,7 +113,7 @@ const ReferralBonuses = () => {
                                     {bonus.transactionHash.slice(0,5)}...{bonus.transactionHash.slice(-5)}
                                 </a>
                             </td>
-                            <td className={style.tablecell}><IconBNB/>{bonus.amount}</td>
+                            <td className={style.tablecell}>{chainIcon[bonus.chainId]}{bonus.amount.toFixed(5)}</td>
                             <td className={style.tablecell}>{bonus.username} - {bonus.destination.slice(0,5)}...{bonus.destination.slice(-5)}</td>
                             <td className={style.tablecell}>{bonus.source.slice(0,5)}...{bonus.source.slice(-5)}</td>
                         </tr>
