@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import Script from 'next/script'
 import { UserProvider } from '../contexts/UserContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
 import icon32 from '../assets/favicon/favicon-32x32.png'
@@ -15,7 +14,7 @@ import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
 import { ThirdwebProvider, metamaskWallet, coinbaseWallet, walletConnect, safeWallet } from '@thirdweb-dev/react'
 import { Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet, Ethereum, Goerli, Mumbai, Polygon } from '@thirdweb-dev/chains'
-
+// import TransitionLayout from '../components/TransitionLayout'
 
 function MyApp({ Component, pageProps }) {
   const client = new QueryClient();
@@ -48,7 +47,9 @@ function MyApp({ Component, pageProps }) {
                   <MarketplaceProvider>
                     <SettingsProvider>
                       <CollectionFilterProvider>
+                        {/* <TransitionLayout> */}
                           <Component {...pageProps} />
+                        {/* </TransitionLayout> */}
                       </CollectionFilterProvider>
                     </SettingsProvider>
                     <ReactQueryDevtools />

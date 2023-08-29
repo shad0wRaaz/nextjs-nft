@@ -124,7 +124,7 @@ const Footer = () => {
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/nftterms" className="hover:text-sky-500 transition">NFT Terms</a></div>
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/loyalty-reward" className="hover:text-sky-500 transition">Loyalty Reward</a></div>
               <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/royalty-reward" className="hover:text-sky-500 transition">Royalty Reward</a></div>
-              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/shared-platform-fee" className="hover:text-sky-500 transition">Platform Fee Reward</a></div>
+              <div className="flex items-center"><BsArrowRightShort fontSize={20}/><a href="/blogs/platform-reward" className="hover:text-sky-500 transition">Platform Fee Reward</a></div>
             </div>
           </div>
 
