@@ -24,6 +24,25 @@ import bear from '../pages/furry-grace/assets/images/bear.webp'
 import dog from '../pages/furry-grace/assets/images/dog.webp'
 import fox from '../pages/furry-grace/assets/images/fox.webp'
 import rabbit from '../pages/furry-grace/assets/images/rabbit.webp'
+import ursine1  from '../pages/furry-grace/assets/ursine/ursine1.webp'
+import ursine2  from '../pages/furry-grace/assets/ursine/ursine2.webp'
+import ursine3  from '../pages/furry-grace/assets/ursine/ursine3.webp'
+import ursine4  from '../pages/furry-grace/assets/ursine/ursine4.webp'
+
+import vulpine1  from '../pages/furry-grace/assets/vulpine/vulpine1.webp'
+import vulpine2  from '../pages/furry-grace/assets/vulpine/vulpine2.webp'
+import vulpine3  from '../pages/furry-grace/assets/vulpine/vulpine3.webp'
+import vulpine4  from '../pages/furry-grace/assets/vulpine/vulpine4.webp'
+
+import lapine1  from '../pages/furry-grace/assets/lapine/lapine1.webp'
+import lapine2  from '../pages/furry-grace/assets/lapine/lapine2.webp'
+import lapine3  from '../pages/furry-grace/assets/lapine/lapine3.webp'
+import lapine4  from '../pages/furry-grace/assets/lapine/lapine4.webp'
+
+import canine1  from '../pages/furry-grace/assets/canine/canine1.webp'
+import canine2  from '../pages/furry-grace/assets/canine/canine2.webp'
+import canine3  from '../pages/furry-grace/assets/canine/canine3.webp'
+import canine4  from '../pages/furry-grace/assets/canine/canine4.webp'
 
 import creature1  from '../pages/rewarding-renditions/assets/cryptocreatures/1.png'
 import creature2  from '../pages/rewarding-renditions/assets/cryptocreatures/2.png'
@@ -83,6 +102,10 @@ const HeroDesigner = () => {
     grutzi: '/collection/ethereum/grutzi',
     hidoi: '/collection/ethereum/hidoi',
     kaioji: '/collection/ethereum/kaioji',
+    ursine: '/collection/polygon/ursine',
+    vulpine: '/collection/polygon/vulpine',
+    lapine: '/collection/polygon/lapine',
+    canine: '/collection/polygon/canine',
   }
   const style = {
     wrapper: `relative overflow-hidden`,
@@ -276,6 +299,78 @@ const HeroDesigner = () => {
       height: '100%',
     },
   ];
+  const ursineImages = [
+    {
+      original: ursine1.src,
+      thumbnail: ursine1.src,
+    },
+    {
+      original: ursine2.src,
+      thumbnail: ursine2.src,
+    },
+    {
+      original: ursine3.src,
+      thumbnail: ursine3.src,
+    },
+    {
+      original: ursine4.src,
+      thumbnail: ursine4.src,
+    }
+  ];
+  const vulpineImage = [
+    {
+      original: vulpine1.src,
+      thumbnail: vulpine1.src,
+    },
+    {
+      original: vulpine2.src,
+      thumbnail: vulpine2.src,
+    },
+    {
+      original: vulpine3.src,
+      thumbnail: vulpine3.src,
+    },
+    {
+      original: vulpine4.src,
+      thumbnail: vulpine4.src,
+    }
+  ];
+  const lapineImage = [
+    {
+      original: lapine1.src,
+      thumbnail: lapine1.src,
+    },
+    {
+      original: lapine2.src,
+      thumbnail: lapine2.src,
+    },
+    {
+      original: lapine3.src,
+      thumbnail: lapine3.src,
+    },
+    {
+      original: lapine4.src,
+      thumbnail: lapine4.src,
+    }
+  ];
+  const canineImages = [
+    {
+      original: canine1.src,
+      thumbnail: canine1.src,
+    },
+    {
+      original: canine2.src,
+      thumbnail: canine2.src,
+    },
+    {
+      original: canine3.src,
+      thumbnail: canine3.src,
+    },
+    {
+      original: canine4.src,
+      thumbnail: canine4.src,
+    }
+  ];
   const nominImages = [
     {
       original: nomin1.src,
@@ -389,13 +484,34 @@ const HeroDesigner = () => {
               <HiArrowNarrowDown className="inline"/>
               <HiArrowNarrowDown className="inline"/>
             </p>
-            <p className="text-center text-5xl my-3 huerotation">
-              in Ethereum and Binance
+            <p className="text-center text-5xl my-3 huerotation leading-[60px]">
+              in Polygon, Ethereum and Binance
             </p>
           </div>
+
           <div className={style.grid}>
             {/* cypto */}
             <div className={style.gridCol}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={ursineImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  isRTL={true}
+                  slideInterval={1800}/>
+                <div className={style.content}>
+                  <p className="title">Ursine</p>
+                  <p className={style.subtitle}>Mint Price: 110 <IconPolygon/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.ursine} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
               <div className={style.gridContent}>
                 <ImageGallery 
                   items={nominImages}
@@ -439,6 +555,27 @@ const HeroDesigner = () => {
             </div>
             {/* neon */}
             <div className={style.gridCol + ' pt-0 md:pt-10 pb-10'}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={vulpineImage}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2200}
+                  isRTL={true}
+                  />
+                <div className={style.content}>
+                  <p className="title">Vulpine</p>
+                  <p className={style.subtitle}>Mint Price: 220 <IconPolygon/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.vulpine} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                  </div>
+              </div>
               <div className={style.gridContent}>
                 <ImageGallery 
                   items={grutziImages}
@@ -512,6 +649,26 @@ const HeroDesigner = () => {
             <div className={style.gridCol + ' py-10'}>
               <div className={style.gridContent}>
                 <ImageGallery 
+                    items={lapineImage}
+                    showNav={false}
+                    showThumbnails={false}
+                    showFullscreenButton={false}
+                    showPlayButton={false}
+                    autoPlay={true}
+                    slideInterval={2600}
+                    />
+                <div className={style.content}>
+                  <p className="title">Lapine</p>
+                  <p className={style.subtitle}>Mint Price: 370 <IconPolygon/></p>
+                  <div className={style.mintButton}>
+                    <Link href={links.lapine} passHref>
+                      <a>Mint Now</a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className={style.gridContent}>
+                <ImageGallery 
                     items={hidoiImages}
                     showNav={false}
                     showThumbnails={false}
@@ -555,6 +712,25 @@ const HeroDesigner = () => {
             </div>
             {/* cypto */}
             <div className={style.gridCol}>
+              <div className={style.gridContent}>
+                <ImageGallery 
+                  items={canineImages}
+                  showNav={false}
+                  showThumbnails={false}
+                  showFullscreenButton={false}
+                  showPlayButton={false}
+                  autoPlay={true}
+                  slideInterval={2300}/>
+                  <div className={style.content}>
+                    <p className="title">Canine</p>
+                    <p className={style.subtitle}>Mint Price: 525 <IconPolygon/></p>
+                    <div className={style.mintButton}>
+                      <Link href={links.canine  } passHref>
+                        <a>Mint Now</a>
+                      </Link>
+                    </div>
+                  </div>
+              </div>
               <div className={style.gridContent}>
                 <ImageGallery 
                   items={kaiojiImages}
@@ -766,8 +942,9 @@ const HeroDesigner = () => {
             <p className="text-md"><TbStar className="inline"/> Occasional Airdrops of Native Tokens(respective chain) from each collection.</p>
             </div> */}
           </div>
+
           <div className="mt-[2rem]">
-            <p className="text-xl animate-bounce text-white">🌟🌟 Minting Available in Ethereum and Binance Chain 🌟🌟</p>
+            <p className="text-xl animate-bounce text-white">🌟🌟 Minting Available in Polygon, Ethereum and Binance Chain 🌟🌟</p>
           </div>
           {/* {showCollection ? ( */}
             <div className="text-white mt-[3rem] border border-white/20 rounded-3xl bg-slate-900/80 mx-8 md:mx-0 p-8 shadow-md">

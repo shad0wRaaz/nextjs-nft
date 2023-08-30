@@ -7,22 +7,22 @@ import { useQuery } from 'react-query'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { MdOutlineOpenInNew } from 'react-icons/md'
 import { Dialog, Transition } from '@headlessui/react'
-import creature1  from '../assets/cryptocreatures/1.png'
-import creature2  from '../assets/cryptocreatures/2.png'
-import creature3  from '../assets/cryptocreatures/3.png'
-import creature4  from '../assets/cryptocreatures/4.png'
-import neon1  from '../assets/neondreams/1.png'
-import neon2  from '../assets/neondreams/2.png'
-import neon3  from '../assets/neondreams/3.png'
-import neon4  from '../assets/neondreams/4.png'
-import celestial1  from '../assets/celestialbeings/1.png'
-import celestial2  from '../assets/celestialbeings/2.png'
-import celestial3  from '../assets/celestialbeings/3.png'
-import celestial4  from '../assets/celestialbeings/4.png'
-import artifacts1  from '../assets/artifacts/1.png'
-import artifacts2  from '../assets/artifacts/2.png'
-import artifacts3  from '../assets/artifacts/3.png'
-import artifacts4  from '../assets/artifacts/4.png'
+import creature1  from '../assets/ursine/ursine1.webp'
+import creature2  from '../assets/ursine/ursine2.webp'
+import creature3  from '../assets/ursine/ursine3.webp'
+import creature4  from '../assets/ursine/ursine4.webp'
+import neon1  from '../assets/vulpine/vulpine1.webp'
+import neon2  from '../assets/vulpine/vulpine2.webp'
+import neon3  from '../assets/vulpine/vulpine3.webp'
+import neon4  from '../assets/vulpine/vulpine4.webp'
+import celestial1  from '../assets/lapine/lapine1.webp'
+import celestial2  from '../assets/lapine/lapine2.webp'
+import celestial3  from '../assets/lapine/lapine3.webp'
+import celestial4  from '../assets/lapine/lapine4.webp'
+import artifacts1  from '../assets/canine/canine1.webp'
+import artifacts2  from '../assets/canine/canine2.webp'
+import artifacts3  from '../assets/canine/canine3.webp'
+import artifacts4  from '../assets/canine/canine4.webp'
 import React, { Fragment, useEffect, useState } from 'react'
 import { getAirDrops } from '../../../fetchers/SanityFetchers'
 import { useSettingsContext } from '../../../contexts/SettingsContext'
@@ -378,7 +378,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Minting starts</h6>
-                                            <h2 className={style.statsNumber}>20th*</h2>
+                                            <h2 className={style.statsNumber}>1st</h2>
                                             <h4 className={style.statsFooter}>September</h4>
                                         </div>
                                     </div>
@@ -614,7 +614,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Minting starts</h6>
-                                        <h2 className={style.statsNumber}>20th*</h2>
+                                        <h2 className={style.statsNumber}>1st</h2>
                                         <h4 className={style.statsFooter}>September</h4>
                                     </div>
                                     </div>
@@ -849,7 +849,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Minting starts</h6>
-                                            <h2 className={style.statsNumber}>20th*</h2>
+                                            <h2 className={style.statsNumber}>1st</h2>
                                             <h4 className={style.statsFooter}>September</h4>
                                         </div>
                                     </div>
@@ -1085,7 +1085,7 @@ const Buy = ({ setShowMenu }) => {
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Minting starts</h6>
-                                        <h2 className={style.statsNumber}>20th*</h2>
+                                        <h2 className={style.statsNumber}>1st</h2>
                                         <h4 className={style.statsFooter}>September</h4>
                                     </div>
                                     </div>

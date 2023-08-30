@@ -18,7 +18,7 @@ const OtherReferralCommissions = ({ collectionName }) => {
 
   return (
     <>
-        {(collectionName != 'mushroom-kingdom' && collectionName != 'rewarding-renditions') && 
+        {(collectionName != 'mushroom-kingdom' && collectionName != 'rewarding-renditions' && collectionName != 'furry-grace') && 
             <div className="fixed top-0 left-0 w-full h-full bg-slate-800/90 backdrop-blur-xl z-40 flex justify-center items-center">
                 <p className="text-2xl md:text-3xl text-center">
                     <MdOutlineDownloading className="inline mr-2" fontSize={40}/>

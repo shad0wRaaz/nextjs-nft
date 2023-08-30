@@ -19,7 +19,7 @@ const Hero = ({setShowMenu}) => {
     const HOST = process.env.NODE_ENV == 'production' ?  'https://nuvanft.io' : 'http://localhost:3000'
   return (
     <section onClick={() => setShowMenu(false)} id="home" className="rrbanner !pb-0 !pt-[12rem] md:!pt-[150px]" style={{ fontFamily: 'Alfa Slab One', backgroundImage: `url('${bannerbg.src}')`}}>
-        <div className="container mx-auto px-8">
+        <div className="container mx-auto px-8 pb-[8rem]">
             <div className="rrbanner__wrapper">
                 <div className="flex items-center justify-center gap-5">
                     <div className="col">
@@ -80,7 +80,7 @@ const Hero = ({setShowMenu}) => {
                 </div>
             </div>
         </div>
-        <div className="flex justify-between md:mt-[-4rem]">
+        {/* <div className="flex justify-between md:mt-[-4rem]">
             <div className="flex">
                 <div className="rrbanner__apes-item">
                     <img src={madmonkey1.src} alt="Crypto Creatures Mad Monkey" className="md:h-[300px]"/>
@@ -99,7 +99,7 @@ const Hero = ({setShowMenu}) => {
                 </div>
 
             </div>
-        </div>
+        </div> */}
         <OtherReferralCommissions collectionName={'rewarding-renditions'}/>
     </section>
   )
