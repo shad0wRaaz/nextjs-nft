@@ -6,7 +6,7 @@ const Faq = ({ setShowMenu }) => {
     const faqs = [
         {
             title: 'When is the official launch?',
-            content: 'The Official launch is on September 20th, 2023.'
+            content: 'The Official launch of Furry Grace NFT Collection is on September 1st, 2023.'
         },
         {
             title: 'What will the buy price be?',
