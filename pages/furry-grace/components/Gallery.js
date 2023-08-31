@@ -162,7 +162,7 @@ const Gallery = ({ setShowMenu }) => {
                         The "Furry Grace" NFT Collection is a heartwarming and enchanting digital art series that captures the essence of unity, diversity, and coexistence among a charming ensemble of animals. Each NFT within this collection is a window into a world where different species come together in harmony, celebrating their unique qualities and forging connections that transcend boundaries.
                         <br/>
                         <br/>
-                        "Furry Grace" NFTs are not just ordinary digital artworks; they're glimpses into a realm where animals of various kinds—dogs, bears, foxes, and rabbits—convey a message of empathy, kindness, and the shared beauty of nature. Each NFT is a testament to the delicate balance that exists within ecosystems, highlighting the importance of preserving the interconnectedness of all living beings.
+                        "Furry Grace" NFTs are not just ordinary digital artworks; they're glimpses into a realm where animals of various kinds — Bears(Ursine), Foxes(Vulpine), and Rabbits(Lapine), and Dogs(Canine)—convey a message of empathy, kindness, and the shared beauty of nature. Each NFT is a testament to the delicate balance that exists within ecosystems, highlighting the importance of preserving the interconnectedness of all living beings.
                     </p>
                 </div>
             </div>

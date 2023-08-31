@@ -27,7 +27,7 @@ const Hero = ({setShowMenu}) => {
                             <h1 className="text--3d text-xl leading-[1.2] -skew-y-6 "> 
                                 <span className="mushroom-kingdom-gradient font-hennypenny">Furry<br/>Grace</span> 
                             </h1>
-                            <p className="text-2xl mb-8 md:text-[3rem] leading-[2rem] md:leading-[4rem] mushroom-kingdom-gradient -skew-y-6 text--3d-mk font-oregano">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 20th of September, 2023</p>
+                            <p className="text-2xl mb-8 md:text-[3rem] leading-[2rem] md:leading-[4rem] mushroom-kingdom-gradient -skew-y-6 text--3d-mk font-oregano">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 1st of September, 2023</p>
                             <ul className="social flex gap-5 justify-center mb-10 -skew-y-6 ">
                                 <li className="social__item transition hover:-translate-x-1 hover:-translate-y-1 ">
                                     <Link href="https://discord.gg/ExyYbCUaX4" className="social__link cursor-pointer">
