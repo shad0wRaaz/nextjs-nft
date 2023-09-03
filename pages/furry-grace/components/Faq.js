@@ -5,10 +5,6 @@ import { HiChevronDown } from 'react-icons/hi'
 const Faq = ({ setShowMenu }) => {
     const faqs = [
         {
-            title: 'When is the official launch?',
-            content: 'The Official launch of Furry Grace NFT Collection is on September 1st, 2023.'
-        },
-        {
             title: 'What will the buy price be?',
             content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from 110 MATIC to 525 MATIC.'
         },

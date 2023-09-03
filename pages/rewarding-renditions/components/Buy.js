@@ -62,6 +62,15 @@ const Buy = ({ setShowMenu }) => {
     const celestialContract = "0x54265672B480fF8893389F2c68caeF29C95c7BE2";
     const futureContract = "0x9BDa42900556fCce5927C1905084C4b3CffB23b0";
 
+    const style = {
+        collectionH2: 'text--3d-mk text-[3rem] md:text-[4.25rem] leading-normal text-center',
+        collectionname : 'mushroom-kingdom-gradient font-hennypenny',
+        description: 'text-center mt-3 text-2xl md:text-3xl',
+        statsTitle: 'text-xs md:text-lg rewarding-renditions-gradient',
+        statsNumber: 'text-xl md:text-4xl rewarding-renditions-gradient',
+        statsFooter: 'text-sm md:text-xl rewarding-renditions-gradient',
+    }
+
     useEffect(() => {
         ;(async()=>{
             const contractCrypto = await sdk.getContract(cryptoContract);
@@ -174,7 +183,7 @@ const Buy = ({ setShowMenu }) => {
     <section 
         onClick={() => setShowMenu(false)}
         id="buy" 
-        className="mint bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
+        className="mints bg-cover alfaslab py-[70px] pt-0 bg-[#23162c]">
         <div className="container mx-auto px-8  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
@@ -352,40 +361,40 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Project Size</h6>
-                                            <h2 className="mint__numbers">5,000</h2>
-                                            <h4 className="mint__name text-uppercase">NFT's</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Project Size</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>5000</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}>NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Mint Price</h6>
-                                            <h2 className="mint__numbers">0.32 BNB</h2>
-                                            <h4 className="mint__name text-uppercase"> ${(0.32 * Number(coins?.bnbprice)).toFixed(2)}</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Mint Price</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>0.32 BNB</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}> ${(0.32 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
+                                        <div className="text-center">
                                             <h6 className="mint__sub-title">Minting starts</h6>
                                             <h2 className="mint__numbers">30th*</h2>
                                             <h4 className="mint__name text-uppercase">June</h4>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Remaining</h6>
-                                            <h2 className="mint__numbers">{remainingCrypto.toString()}</h2>
-                                            <h4 className="mint__name text-uppercase">NFTs</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Remaining</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>{remainingCrypto.toString()}</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}>NFTs</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -588,40 +597,40 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Project Size</h6>
-                                        <h2 className="mint__numbers">5,000</h2>
-                                        <h4 className="mint__name text-uppercase">NFT's</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Project Size</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>5000</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}>NFT's</h4>
                                     </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Mint Price</h6>
-                                        <h2 className="mint__numbers">0.64 BNB</h2>
-                                        <h4 className="mint__name text-uppercase"> ${(0.64 * Number(coins?.bnbprice)).toFixed(2)}</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Mint Price</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>0.64 BNB</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}> ${(0.64 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                     </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
+                                    <div className="text-center">
                                         <h6 className="mint__sub-title">Minting starts</h6>
                                         <h2 className="mint__numbers">30th*</h2>
                                         <h4 className="mint__name text-uppercase">June</h4>
                                     </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Remaining</h6>
-                                        <h2 className="mint__numbers">{remainingNeon.toString()}</h2>
-                                        <h4 className="mint__name text-uppercase">NFTs</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Remaining</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>{remainingNeon.toString()}</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}>NFTs</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -823,40 +832,40 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Project Size</h6>
-                                            <h2 className="mint__numbers">10,000</h2>
-                                            <h4 className="mint__name text-uppercase">NFT's</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Project Size</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>10000</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}>NFT's</h4>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Mint Price</h6>
-                                            <h2 className="mint__numbers">1.04 BNB</h2>
-                                            <h4 className="mint__name text-uppercase"> ${(1.04 * Number(coins?.bnbprice)).toFixed(2)}</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Mint Price</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>1.04 BNB</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}> ${(1.04 * Number(coins?.bnbprice)).toFixed(2)}</h4>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
+                                        <div className="text-center">
                                             <h6 className="mint__sub-title">Minting starts</h6>
                                             <h2 className="mint__numbers">30th*</h2>
                                             <h4 className="mint__name text-uppercase">June</h4>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                        <div className="mint__inner">
-                                            <h6 className="mint__sub-title">Remaining</h6>
-                                            <h2 className="mint__numbers">{remainingCelestial.toString()}</h2>
-                                            <h4 className="mint__name text-uppercase">NFTs</h4>
+                                        <div className="text-center">
+                                            <h6 className={style.statsTitle + " mint__sub-title"}>Remaining</h6>
+                                            <h2 className={style.statsNumber + " mint__numbers"}>{remainingCelestial.toString()}</h2>
+                                            <h4 className={style.statsFooter + " mint__name"}>NFTs</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -1058,40 +1067,40 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Project Size</h6>
-                                        <h2 className="mint__numbers">20,000</h2>
-                                        <h4 className="mint__name text-uppercase">NFT's</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Project Size</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>20000</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}>NFT's</h4>
                                     </div>
                                     </div>
                                 </div>
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Mint Price</h6>
-                                        <h2 className="mint__numbers">1.49 BNB</h2>
-                                        <h4 className="mint__name text-uppercase"> ${(1.49 * Number(coins?.bnbprice)).toFixed(5)}</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Mint Price</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>1.49 BNB</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}> ${(1.49 * Number(coins?.bnbprice)).toFixed(5)}</h4>
                                     </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
+                                    <div className="text-center">
                                         <h6 className="mint__sub-title">Minting starts</h6>
                                         <h2 className="mint__numbers">30th*</h2>
                                         <h4 className="mint__name text-uppercase">June</h4>
                                     </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
-                                    <div className="mint__inner">
-                                        <h6 className="mint__sub-title">Remaining</h6>
-                                        <h2 className="mint__numbers">{remainingArtifacts.toString()}</h2>
-                                        <h4 className="mint__name text-uppercase">NFTs</h4>
+                                    <div className="text-center">
+                                        <h6 className={style.statsTitle + " mint__sub-title"}>Remaining</h6>
+                                        <h2 className={style.statsNumber + " mint__numbers"}>{remainingArtifacts.toString()}</h2>
+                                        <h4 className={style.statsFooter + " mint__name"}>NFTs</h4>
                                     </div>
                                     </div>
                                 </div>
@@ -1110,12 +1119,6 @@ const Buy = ({ setShowMenu }) => {
                             View Airdrops
                         </div>
                     </div>
-                   
-                    
-                    {/* <div className="w-full md:w-1/2">
-                        <div className="mint__thumb aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000"> */}
-                        {/* </div>
-                    </div> */}
                 </div>
             </div>
         </div>

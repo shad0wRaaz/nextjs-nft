@@ -60,9 +60,9 @@ const Buy = ({ setShowMenu }) => {
         collectionH2: 'text--3d-mk text-[3rem] md:text-[4.25rem] leading-normal text-center',
         collectionname : 'mushroom-kingdom-gradient font-hennypenny',
         description: 'text-center mt-3 text-2xl md:text-3xl',
-        statsTitle: 'text-[1.125rem] mushroom-kingdom-gradient',
-        statsNumber: 'text-[2.5rem] mushroom-kingdom-gradient',
-        statsFooter: 'text-[1.575rem] text-uppercase mushroom-kingdom-gradient',
+        statsTitle: 'text-xs md:text-lg mushroom-kingdom-gradient',
+        statsNumber: 'text-base md:text-4xl mushroom-kingdom-gradient',
+        statsFooter: 'text-sm md:text-xl text-uppercase mushroom-kingdom-gradient',
     }
 
     useEffect(() => {
@@ -355,12 +355,12 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full alfaslab">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Project Size</h6>
-                                            <h2 className={style.statsNumber}>5,000</h2>
+                                            <h2 className={style.statsNumber}>5000</h2>
                                             <h4 className={style.statsFooter}>NFT's</h4>
                                         </div>
                                     </div>
@@ -374,7 +374,7 @@ const Buy = ({ setShowMenu }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Minting starts</h6>
@@ -382,7 +382,7 @@ const Buy = ({ setShowMenu }) => {
                                             <h4 className={style.statsFooter}>September</h4>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
@@ -591,12 +591,12 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full alfaslab">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Project Size</h6>
-                                        <h2 className={style.statsNumber}>5,000</h2>
+                                        <h2 className={style.statsNumber}>5000</h2>
                                         <h4 className={style.statsFooter}>NFT's</h4>
                                     </div>
                                     </div>
@@ -610,7 +610,7 @@ const Buy = ({ setShowMenu }) => {
                                     </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Minting starts</h6>
@@ -618,7 +618,7 @@ const Buy = ({ setShowMenu }) => {
                                         <h4 className={style.statsFooter}>September</h4>
                                     </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">
@@ -826,12 +826,12 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full alfaslab">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Project Size</h6>
-                                            <h2 className={style.statsNumber}>10,000</h2>
+                                            <h2 className={style.statsNumber}>10000</h2>
                                             <h4 className={style.statsFooter}>NFT's</h4>
                                         </div>
                                     </div>
@@ -845,7 +845,7 @@ const Buy = ({ setShowMenu }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
                                             <h6 className={style.statsTitle}>Minting starts</h6>
@@ -853,7 +853,7 @@ const Buy = ({ setShowMenu }) => {
                                             <h4 className={style.statsFooter}>September</h4>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                         <div className="text-center">
@@ -1062,12 +1062,12 @@ const Buy = ({ setShowMenu }) => {
                     </div>
                     <div className="w-full alfaslab">
                         <div className=" mint__content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1000">
-                            <div className="grid grid-cols-2 md:grid-cols-4">
+                            <div className="grid grid-cols-3 md:grid-cols-3">
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Project Size</h6>
-                                        <h2 className={style.statsNumber}>20,000</h2>
+                                        <h2 className={style.statsNumber}>20000</h2>
                                         <h4 className={style.statsFooter}>NFT's</h4>
                                     </div>
                                     </div>
@@ -1081,7 +1081,7 @@ const Buy = ({ setShowMenu }) => {
                                     </div>
                                     </div>
                                 </div>
-                                <div className="mt-[3rem]">
+                                {/* <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">
                                         <h6 className={style.statsTitle}>Minting starts</h6>
@@ -1089,7 +1089,7 @@ const Buy = ({ setShowMenu }) => {
                                         <h4 className={style.statsFooter}>September</h4>
                                     </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="mt-[3rem]">
                                     <div className="mint__item">
                                     <div className="text-center">

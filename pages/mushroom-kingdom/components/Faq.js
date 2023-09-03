@@ -5,10 +5,6 @@ import { HiChevronDown } from 'react-icons/hi'
 const Faq = ({ setShowMenu }) => {
     const faqs = [
         {
-            title: 'When is the official launch?',
-            content: 'The Official launch is on August 1st, 2023.'
-        },
-        {
             title: 'What will the buy price be?',
             content: 'We want to provide our community with the best quality art from real artist at affordable prices that holds value in real world. We have 4 collections and prices ranges from 0.04 ETH to 0.188 ETH.'
         },

@@ -27,7 +27,7 @@ const Hero = ({setShowMenu}) => {
                             <h1 className="text--3d text-xl leading-[1.2] -skew-y-6 "> 
                                 <span className="mushroom-kingdom-gradient font-hennypenny">Furry<br/>Grace</span> 
                             </h1>
-                            <p className="text-2xl mb-8 md:text-[3rem] leading-[2rem] md:leading-[4rem] mushroom-kingdom-gradient -skew-y-6 text--3d-mk font-oregano">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward<br/>Starting from 1st of September, 2023</p>
+                            <p className="text-2xl mb-8 md:text-[3rem] leading-[2rem] md:leading-[4rem] mushroom-kingdom-gradient -skew-y-6 text--3d-mk font-oregano">First ever Referrals on NFTs<br/>40,000 Unique Digital Characters<br/>Get Loyalty Rewards from upto 5 levels<br/>Get 5% Royalty on every resale forever<br/>Get 0.25% of Platform Fee as Reward</p>
                             <ul className="social flex gap-5 justify-center mb-10 -skew-y-6 ">
                                 <li className="social__item transition hover:-translate-x-1 hover:-translate-y-1 ">
                                     <Link href="https://discord.gg/ExyYbCUaX4" className="social__link cursor-pointer">
@@ -72,34 +72,11 @@ const Hero = ({setShowMenu}) => {
                                     </Link>
                                 </li>
                             </ul>
-                            {/* <Link href={`${HOST}/collection/binance-testnet/0x2D7ec9C0e08fE4440472c04a03F1Ff85833DE923`} passHref>
-                                <a className="default-btn">View On Nuva NFT</a>
-                            </Link> */}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {/* <div className="flex justify-between md:mt-[-4rem]">
-            <div className="flex">
-                <div className="rrbanner__apes-item">
-                    <img src={madmonkey1.src} alt="Nomin" className="md:h-[300px]"/>
-                </div>
-                <div className="rrbanner__apes-item">
-                    <img src={madmonkey2.src} alt="Grutzi" className="md:left-[20%] md:bottom[-10%] md:h-[300px] relative"/>
-                </div>
-            </div>
-
-            <div className="flex">
-                <div className="rrbanner__apes-item">
-                    <img src={madmonkey3.src} alt="Hidoi" className="relative md:left-[-20%] md:h-[300px]"/>
-                </div>
-                <div className="rrbanner__apes-item">
-                    <img src={madmonkey4.src} alt="Kaioji" className="relative md:left-[-20%] md:h-[300px]"/>
-                </div>
-
-            </div>
-        </div> */}
         <OtherReferralCommissions collectionName={'furry-grace'}/>
     </section>
   )
