@@ -4,7 +4,7 @@ import { config } from '../lib/sanityClient'
 const settingDocId = "3cae3666-6292-4f72-b8b7-fba643c068bf";
 
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080' : 'http://localhost:8080';
-const FAUCETHOST = process.env.NODE_ENV == "production" ? 'https://faucet.metanuva.com:8889' : 'http://localhost:8889';
+const FAUCETHOST = process.env.NODE_ENV == "production" ? 'https://faucet.metanuva.com:8080' : 'http://localhost:8889';
 
 export const updatePayableLevel = async ({walletAddress, level}) => {
   await config
