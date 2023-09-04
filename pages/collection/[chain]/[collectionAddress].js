@@ -244,114 +244,112 @@ const CollectionDetails = (props) => {
 
   const payToMySponsors = async() => {
 
-  if(!Boolean(referralCommission)) {
-    toast.error("Referral commission could not be found", errorToastStyle);
-    return;
-  }
-  let sponsors = [];
-  const payNetwork = await getMyPayingNetwork(address);
+    if(!Boolean(referralCommission)) {
+      toast.error("Referral commission could not be found", errorToastStyle);
+      return;
+    }
+    let sponsors = [];
+    const payNetwork = await getMyPayingNetwork(address);
 
-  let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
-  if(Boolean(network?.sponsor)){
-    network = {
-      ...network,
-      sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
-      }
-
-    if(Boolean(network?.sponsor?.sponsor)){
+    let network = updateSingleUserDataToFindMaxPayLevel(payNetwork[0], refs);
+    if(Boolean(network?.sponsor)){
       network = {
         ...network,
-        sponsor: {
-          ...network.sponsor,
-          sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
+        sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor, refs)
         }
-      }
 
-      if(Boolean(network?.sponsor?.sponsor?.sponsor)){
+      if(Boolean(network?.sponsor?.sponsor)){
         network = {
           ...network,
           sponsor: {
             ...network.sponsor,
-            sponsor: {
-              ...network.sponsor.sponsor,
-              sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
-            }
+            sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor, refs),
           }
         }
-      }
 
-      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor)){
-        network = {
-          ...network,
-          sponsor: {
-            ...network.sponsor,
+        if(Boolean(network?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
             sponsor: {
-              ...network.sponsor.sponsor,
-              sponsor:{
-                ...network.sponsor.sponsor.sponsor,
-                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor, refs)
               }
             }
           }
         }
-      }
 
-      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor)){
-        network = {
-          ...network,
-          sponsor: {
-            ...network.sponsor,
+        if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
             sponsor: {
-              ...network.sponsor.sponsor,
-              sponsor:{
-                ...network.sponsor.sponsor.sponsor,
-                sponsor: {
-                  ...network.sponsor.sponsor.sponsor.sponsor,
-                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor:{
+                  ...network.sponsor.sponsor.sponsor,
+                  sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor, refs)
+                }
+              }
+            }
+          }
+        }
+
+        if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor)){
+          network = {
+            ...network,
+            sponsor: {
+              ...network.sponsor,
+              sponsor: {
+                ...network.sponsor.sponsor,
+                sponsor:{
+                  ...network.sponsor.sponsor.sponsor,
+                  sponsor: {
+                    ...network.sponsor.sponsor.sponsor.sponsor,
+                    sponsor: updateSingleUserDataToFindMaxPayLevel(network.sponsor.sponsor.sponsor.sponsor.sponsor, refs)
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-    // console.log(network);
-  }
-
-  if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
-
-    let sponsor_L1 = network.sponsor.walletAddress;
-    let sponsor_L1_rate = isAllowedSeperateCommission ? collectionData?.referralrate_one : referralCommission.referralrate_one;
-    sponsors.push({ receiver: sponsor_L1, token: mintPrice * sponsor_L1_rate / 100 });  
-  }
-    if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
-      let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
-      let sponsor_L2_rate = isAllowedSeperateCommission ? collectionData?.referralrate_two : referralCommission.referralrate_two;
-      sponsors.push({ receiver: sponsor_L2, token: mintPrice * sponsor_L2_rate / 100 });
+      // console.log(network);
     }
 
-    if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
-      let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
-      let sponsor_L3_rate = isAllowedSeperateCommission ? collectionData?.referralrate_three : referralCommission.referralrate_three;
-      sponsors.push({ receiver: sponsor_L3, token: mintPrice * sponsor_L3_rate / 100 });
+    if(Boolean(network?.sponsor) && network?.sponsor?.paylevel >= 1){
+
+      let sponsor_L1 = network.sponsor.walletAddress;
+      let sponsor_L1_rate = isAllowedSeperateCommission ? collectionData?.referralrate_one : referralCommission.referralrate_one;
+      sponsors.push({ receiver: sponsor_L1, token: mintPrice * sponsor_L1_rate / 100 });  
     }
+      if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
+        let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
+        let sponsor_L2_rate = isAllowedSeperateCommission ? collectionData?.referralrate_two : referralCommission.referralrate_two;
+        sponsors.push({ receiver: sponsor_L2, token: mintPrice * sponsor_L2_rate / 100 });
+      }
 
-    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
-      let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
-      let sponsor_L4_rate = isAllowedSeperateCommission ? collectionData?.referralrate_four : referralCommission.referralrate_four;
-      sponsors.push({ receiver: sponsor_L4, token: mintPrice * sponsor_L4_rate / 100 });
-    }
+      if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
+        let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L3_rate = isAllowedSeperateCommission ? collectionData?.referralrate_three : referralCommission.referralrate_three;
+        sponsors.push({ receiver: sponsor_L3, token: mintPrice * sponsor_L3_rate / 100 });
+      }
 
-    if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
-      let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
-      let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
-      sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
-    }
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
+        let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L4_rate = isAllowedSeperateCommission ? collectionData?.referralrate_four : referralCommission.referralrate_four;
+        sponsors.push({ receiver: sponsor_L4, token: mintPrice * sponsor_L4_rate / 100 });
+      }
 
-  //send the tokens and get list of transaction hash to save in database
-  const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain, collectionData.name);
+      if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
+        let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
+        let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
+        sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
+      }
 
-
+    //send the tokens and get list of transaction hash to save in database
+    const tx = sendReferralCommission(sponsors, address, collectionData.chainId, selectedBlockchain, collectionData.name);
   }
 
 
