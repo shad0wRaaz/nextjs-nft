@@ -12,17 +12,8 @@ module.exports = {
               value: 'DENY',
             },
             {
-              key: 'Content-Security-Policy',
-              value:
-                "default-src 'self'; script-src 'self' https://www.google-analytics.com; font-src 'self' 'https://fonts.googleapis.com' 'https://www.googletagmanager.com' 'https://unpkg.com'",
-            },
-            {
               key: 'X-Content-Type-Options',
               value: 'nosniff',
-            },
-            {
-              key: 'Permissions-Policy',
-              value: "camera=(); battery=(self); geolocation=(); microphone=()",
             },
             {
               key: 'Referrer-Policy',
