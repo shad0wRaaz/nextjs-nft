@@ -47,7 +47,7 @@ const ExploreNFTs = () => {
 
   return (
     <div className={style.wrapper}>
-      <h2 className={style.title}><span className="textGradCyan">Freshly Listed NFTs</span></h2>
+      <h2 className={style.title}><span className="textGradCyan">NFTs in Marketplace</span></h2>
       {!address && (
         <div className="container mx-auto mb-[4rem] flex justify-center">
           <div

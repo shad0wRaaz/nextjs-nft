@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
       <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_MEAUSREMENT_ID} />
       <CookieBanner />
       <ThirdwebProvider
-        activeChain="ethereum"
+        activeChain="binance"
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
         supportedWallets={[
           metamaskWallet(),

@@ -21,9 +21,9 @@ export function MarketplaceProvider({ children }) {
   const [marketContract, setMarketContract] = useState();
   const [activeListings, setActiveListings] = useState();
   const [auctionListings, setAuctionListings] = useState();
-  const [selectedBlockchain, setSelectedBlockchain] = useState('ethereum');
+  const [selectedBlockchain, setSelectedBlockchain] = useState('binance');
   const [topTradedCollections, setTopTradedCollections] = useState();
-  const [marketAddress, setMarketAddress] = useState(marketplace['ethereum']); //this is mumbai marketplace contract address
+  const [marketAddress, setMarketAddress] = useState(marketplace['binance']); 
 
   useEffect(() => {
     if(!selectedBlockchain) return
