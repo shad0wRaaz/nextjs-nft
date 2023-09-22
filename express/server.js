@@ -1,23 +1,27 @@
 import path from 'path'
-import cors from 'cors'
-import axios from 'axios'
-import Redis from 'ioredis'
-import dotenv from 'dotenv'
-import multer from 'multer'
-import cron from 'node-cron'
-import express from 'express'
-import { v4 as uuidv4 } from 'uuid'
-import bodyParser from 'body-parser'
-import sanityClient from '@sanity/client'
-import { S3Client } from '@aws-sdk/client-s3'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-import { INFURA_AUTH } from './infura/config.js'
-import { emailBody } from './emails/templates.js'
-import { ThirdwebStorage } from '@thirdweb-dev/storage'
-import { emailClient, sendEmail } from './emails/transporter/index.js'
-import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js'
+import cors from 'cors';
+import axios from 'axios';
+import Redis from 'ioredis';
+import dotenv from 'dotenv';
+import multer from 'multer';
+import cron from 'node-cron';
+import helmet from 'helmet';
+import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import bodyParser from 'body-parser';
+import sanityClient from '@sanity/client';
+import { S3Client } from '@aws-sdk/client-s3';
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
+import { INFURA_AUTH } from './infura/config.js';
+import { emailBody } from './emails/templates.js';
+import { ThirdwebStorage } from '@thirdweb-dev/storage';
+import { emailClient, sendEmail } from './emails/transporter/index.js';
+import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js';
 
-const app = express()
+const app = express();
+//enable helmet middleware
+app.use(helmet());
+
 app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
 // app.use(cors({origin: "*"}))
 

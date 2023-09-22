@@ -343,7 +343,20 @@ const Nft = (props) => { //props are from getServerSideProps
               <div className="mt-4 w-full rounded-2xl">
                 <Tab.Group>
                   <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-
+                      <Tab
+                        key={category}
+                        className={({ selected }) =>
+                          classNames(
+                            'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                            selected
+                              ? 'bg-white shadow'
+                              : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                          )
+                        }
+                      >
+                        Details
+                      </Tab>
                       <Tab
                         key={category}
                         className={({ selected }) =>
@@ -374,20 +387,7 @@ const Nft = (props) => { //props are from getServerSideProps
                         Properties
                       </Tab>
 
-                      <Tab
-                        key={category}
-                        className={({ selected }) =>
-                          classNames(
-                            'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
-                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                            selected
-                              ? 'bg-white shadow'
-                              : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
-                          )
-                        }
-                      >
-                        Details
-                      </Tab>
+                      
 
                   </Tab.List>
                   <Tab.Panels className="mt-2">
@@ -422,6 +422,67 @@ const Nft = (props) => { //props are from getServerSideProps
 
                   </Tab.Panels>
                 </Tab.Group>
+
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
+                          dark
+                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
+                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
+                      >
+                        <div className="flex items-center gap-1 font-bold">
+                          <HiOutlineDotsVertical fontSize={18} />
+                          <span className="text-lg">Details</span>
+                        </div>
+                        <BiChevronUp
+                          className={`${
+                            open ? 'transform transition' : 'rotate-180 '
+                          } h-5 w-5 text-neutral-500 transition`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
+                        <div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Contract Address</span>
+                            <a href={`${chainExplorer[metaDataFromSanity?.chainId]}address/${metaDataFromSanity?.collection?.contractAddress}`} target="_blank">
+                              <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{metaDataFromSanity?.collection?.contractAddress}</span>
+                            </a>
+                          </div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span>Item ID</span>
+                            <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.id}</span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Token Standard</span>
+                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
+                              {nftContractData?.type}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Blockchain</span>
+                            <span className="line-clamp-1 text-base">
+                              {chainIcon[metaDataFromSanity?.collection?.chainId]}
+                              {chainName[metaDataFromSanity?.collection?.chainId]}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
+                            <span className="line-clamp-1 text-sm cursor-pointer">
+                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
+                                <a>
+                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                </a>
+                              </Link>
+                            </span>
+                          </div>
+                        </div>
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
 
                 <Disclosure>
                   {({ open }) => (
@@ -524,66 +585,7 @@ const Nft = (props) => { //props are from getServerSideProps
                   )}
                 </Disclosure>
 
-                <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`mt-3 flex w-full justify-between rounded-lg px-4 py-4 text-left text-sm ${
-                          dark
-                            ? ' bg-slate-800 text-neutral-100 hover:bg-slate-700'
-                            : ' bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
-                        } focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75`}
-                      >
-                        <div className="flex items-center gap-1 font-bold">
-                          <HiOutlineDotsVertical fontSize={18} />
-                          <span className="text-lg">Details</span>
-                        </div>
-                        <BiChevronUp
-                          className={`${
-                            open ? 'transform transition' : 'rotate-180 '
-                          } h-5 w-5 text-neutral-500 transition`}
-                        />
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="text-md px-4 pt-4 pb-2">
-                        <div>
-                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Contract Address</span>
-                            <a href={`${chainExplorer[metaDataFromSanity?.chainId]}address/${metaDataFromSanity?.collection?.contractAddress}`} target="_blank">
-                              <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{metaDataFromSanity?.collection?.contractAddress}</span>
-                            </a>
-                          </div>
-                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                            <span>Item ID</span>
-                            <span className="line-clamp-1 text-sm">{nftContractData?.metadata?.id}</span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Token Standard</span>
-                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
-                              {nftContractData?.type}
-                            </span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Blockchain</span>
-                            <span className="line-clamp-1 text-base">
-                              {chainIcon[metaDataFromSanity?.collection?.chainId]}
-                              {chainName[metaDataFromSanity?.collection?.chainId]}
-                            </span>
-                          </div>
-                          <div className="flex flex-row justify-between py-2">
-                            <span>Royalty Receiver ({royaltyData?.seller_fee_basis_points? Number(royaltyData.seller_fee_basis_points) / 100 + '%' : ''})</span>
-                            <span className="line-clamp-1 text-sm cursor-pointer">
-                              <Link href={`/user/${royaltyData?.fee_recipient}`} passHref>
-                                <a>
-                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
-                                </a>
-                              </Link>
-                            </span>
-                          </div>
-                        </div>
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure>
+                
 
                 <Disclosure>
                   {({ open }) => (

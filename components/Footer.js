@@ -206,14 +206,14 @@ const Footer = () => {
                   </div>
                 </a>
               </Link>
-              <Link href="https://twitter.com/nuvacommunity">
+              <Link href="https://twitter.com/nuvatoken">
                 <a target="_blank" rel="noopener noreferrer" aria-label='Twitter'>
                   <div className={style.socialItem + ' twitter'}>
                     <FaTwitter color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.instagram.com/nuva.community/">
+              <Link href="https://www.instagram.com/nuva.token/">
                 <a target="_blank" rel="noopener noreferrer" aria-label='Instagram'>
                   <div className={style.socialItem + ' instagram'}>
                     <FaInstagram color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />
@@ -227,7 +227,7 @@ const Footer = () => {
                   </div>
                 </a>
               </Link>
-              <Link href="https://www.linkedin.com/company/metanuva/">
+              <Link href="https://www.linkedin.com/company/nuvatoken">
                 <a target="_blank" rel="noopener noreferrer" aria-label='Linked In'>
                   <div className={style.socialItem + ' linkedin'}>
                     <FaLinkedinIn color={ dark ? 'white' : '#1d1d1f' } fontSize="1.1rem" />

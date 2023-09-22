@@ -180,7 +180,7 @@ const getstarted = () => {
                         <BiChevronUp className={`${ open ? 'rotate-180 transform' : ''} h-5 w-5 transition`} fontSize={30}/>
                     </Disclosure.Button>
                     <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm leading-6">
-                        <p>Burning NFT means deleting the NFT. However, since the data is in the blockchain, permanently deleting is not possible in any case. So, burning an NFT means making the NFT unaccessible to clain by anyone. No action can be done with the NFT once it is burnt.</p>
+                        <p>Burning NFT means deleting the NFT. However, since the data is in the blockchain, permanently deleting is not possible in any case. So, burning an NFT means making the NFT unable to claim by anyone. No action can be done with the NFT once it is burnt.</p>
                         <ol className="mt-4 leading-10 pl-3" style={{'listStyleType': 'lower-alpha'}}>
                             <li>To burn an NFT, in the NFT page, click on <span class={style.button}>Burn</span></li>
                             <li>Click <span className={style.button}>Confirm</span> whenever your connected wallet prompts.</li>

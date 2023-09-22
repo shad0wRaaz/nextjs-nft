@@ -141,8 +141,8 @@ const FeaturedCollection = () => {
                       <div className="text-center">Total Supply<br/> <span className="font-bold text-xl">15000</span></div>
                       <div className="text-center">Remaining<br/> {totalUnclaimedSupply ? <span className="font-bold text-xl">{totalUnclaimedSupply.toString()}</span> : <IconLoading dark="inbutton" />}</div>
                     </div>
-                    <div className="gradBlue text-neutral-100 relative w-fit py-4 px-8 m-auto mt-3 rounded-full">
-                      <Link href="/collection/binance/0xbDd60f4d2795f145C09dd4eA6d9565B185F6CBF9" passhref>
+                    <div className="gradBlue text-neutral-100 relative w-fit py-4 px-8 m-auto mt-3 rounded-xl">
+                      <Link href="/collection/binance/pandagram_v2" passhref>
                         <a>
                           View Collection
                         </a>

@@ -30,7 +30,7 @@ const ExploreNFTs = () => {
     coinLogo: 'inline mr-[3px] ml-[5px]',
     nftwrapper: `grid grid-cols-1 ${compact ? 'md:grid-cols-4 lg:grid-cols-6' : 'md:grid-cols-2 lg:grid-cols-4'}  gap-8`,
     button:
-      'text-md rounded-full cursor-pointer gradBlue py-4 px-8 text-neutral-100',
+      'text-md rounded-xl cursor-pointer gradBlue py-4 px-8 text-neutral-100',
   }
 
   const changeBlockchain = (selectedChainName) => {
@@ -76,7 +76,7 @@ const ExploreNFTs = () => {
 
       {latestNfts?.length == 0 && (
         <div>
-          <span>No NFTs are available in the connected chain.</span>
+          <span className='text-gray-400'>No NFTs are available in the connected chain.</span>
         </div>
       )}
 

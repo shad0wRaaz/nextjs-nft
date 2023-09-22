@@ -17,6 +17,7 @@ import { RiCloseFill } from 'react-icons/ri'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
+import { HiOutlineUsers } from 'react-icons/hi'
 import { useQuery, useMutation } from 'react-query'
 import Property from '../../../components/Property'
 import SellAll from '../../../components/nft/SellAll'
@@ -44,11 +45,10 @@ import AirdropSettings from '../../../components/collection/AirdropSettings'
 import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
-import { createAwatar, isCompanyWallet, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { ConnectWallet, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { createAwatar, isCompanyWallet, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
-import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconVerified } from '../../../components/icons/CustomIcons'
-import { HiOutlineUsers } from 'react-icons/hi'
+import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconUSDT, IconVerified } from '../../../components/icons/CustomIcons'
 
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
@@ -116,13 +116,14 @@ const CollectionDetails = (props) => {
   const [totalCirculatingSupply, setTotalCirculatingSupply] = useState();
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
   const [isMinting, setIsMinting] = useState(false);
-  const [mintPrice, setMintPrice] = useState();
+  // const [mintPrice, setMintPrice] = useState();
   const [coinMultiplier, setCoinMultiplier] = useState(0);
   const [isAllowedSeperateCommission, setAllowedSeperateCommission] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('Mint an NFT')
-
+  const [claimCurrency, setClaimCurrency] = useState();
 
   const rewardingCollections = allbenefits.map(c => c.contractAddress.toLowerCase());
+  const [moreLinks, setMoreLinks] = useState();
 
   const style = {
     bannerImageContainer: `h-[30vh] w-full overflow-hidden flex justify-center items-center bg-[#ededed]`,
@@ -188,9 +189,14 @@ const CollectionDetails = (props) => {
           const contract = await sdk.getContract(collectionAddress);
           const totalCirculatingSupply = await contract.erc721.totalCount();
           const unclaimedSupply = await contract.erc721.totalUnclaimedSupply();
-          const {price} = await contract.erc721.claimConditions.getActive();
-  
-          setMintPrice(ethers.utils.formatUnits(price, 18));
+          const {price, currencyAddress, currencyMetadata} = await contract.erc721.claimConditions.getActive();
+          const newcurrencyObj = { 
+            ...currencyMetadata, 
+            currencyAddress, 
+            mintPrice: Number(price.toString()) / 10 ** currencyMetadata?.decimals, 
+           }
+          console.log(newcurrencyObj, price.toString())
+          setClaimCurrency({...newcurrencyObj});
           setTotalCirculatingSupply(parseInt(totalCirculatingSupply._hex, 16));
           setTotalUnclaimedSupply(parseInt(unclaimedSupply._hex, 16));
         }
@@ -322,30 +328,30 @@ const CollectionDetails = (props) => {
 
       let sponsor_L1 = network.sponsor.walletAddress;
       let sponsor_L1_rate = isAllowedSeperateCommission ? collectionData?.referralrate_one : referralCommission.referralrate_one;
-      sponsors.push({ receiver: sponsor_L1, token: mintPrice * sponsor_L1_rate / 100 });  
+      sponsors.push({ receiver: sponsor_L1, token: claimCurrency?.mintPrice * sponsor_L1_rate / 100 });  
     }
       if(Boolean(network?.sponsor?.sponsor) && network?.sponsor?.sponsor?.paylevel >= 2){
         let sponsor_L2 =  network.sponsor.sponsor.walletAddress;
         let sponsor_L2_rate = isAllowedSeperateCommission ? collectionData?.referralrate_two : referralCommission.referralrate_two;
-        sponsors.push({ receiver: sponsor_L2, token: mintPrice * sponsor_L2_rate / 100 });
+        sponsors.push({ receiver: sponsor_L2, token: claimCurrency?.mintPrice * sponsor_L2_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.paylevel >= 3){
         let sponsor_L3 =  network.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L3_rate = isAllowedSeperateCommission ? collectionData?.referralrate_three : referralCommission.referralrate_three;
-        sponsors.push({ receiver: sponsor_L3, token: mintPrice * sponsor_L3_rate / 100 });
+        sponsors.push({ receiver: sponsor_L3, token: claimCurrency?.mintPrice * sponsor_L3_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 4){
         let sponsor_L4 =  network.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L4_rate = isAllowedSeperateCommission ? collectionData?.referralrate_four : referralCommission.referralrate_four;
-        sponsors.push({ receiver: sponsor_L4, token: mintPrice * sponsor_L4_rate / 100 });
+        sponsors.push({ receiver: sponsor_L4, token: claimCurrency?.mintPrice * sponsor_L4_rate / 100 });
       }
 
       if(Boolean(network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor) && network?.sponsor?.sponsor?.sponsor?.sponsor?.sponsor?.paylevel >= 5){
         let sponsor_L5 =  network.sponsor.sponsor.sponsor.sponsor.sponsor.walletAddress;
         let sponsor_L5_rate = isAllowedSeperateCommission ? collectionData?.referralrate_five : referralCommission.referralrate_five;
-        sponsors.push({ receiver: sponsor_L5, token: mintPrice  * sponsor_L5_rate / 100 });
+        sponsors.push({ receiver: sponsor_L5, token: claimCurrency?.mintPrice  * sponsor_L5_rate / 100 });
       }
 
     //send the tokens and get list of transaction hash to save in database
@@ -385,27 +391,34 @@ const CollectionDetails = (props) => {
   }
 
   const claimNFT = async(toastHandler = toast) => {
-
     if(!signer) {
-        toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
-        return;
+      toastHandler.error('Wallet is not connected. Connect wallet and then try again', errorToastStyle);
+      return;
     }
     if(activechain.chainId.toString() != collectionData.chainId.toString()){
       toastHandler.error("Wallet is connected to wrong chain.", errorToastStyle);
       
       return;
     }
-
+    if(!claimCurrency){
+      toastHandler.error("Error getting mint price. Refresh and try again.", errorToastStyle);
+      return;
+    }
+    
     try{
-        setIsMinting(true);
-        setButtonLabel('Minting')
-        const sdk = new ThirdwebSDK(signer, {
-          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
-        });
-        const contract = await sdk.getContract(collectionAddress)
-        const txResult = await contract.erc721.claim("1").catch(err => {
+      setIsMinting(true);
+      setButtonLabel('Minting')
+      const sdk = new ThirdwebSDK(signer, {
+        clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      });
+      const contract = await sdk.getContract(collectionAddress)
+      const txResult = await contract.erc721.claim("1").catch(err => {
+          
           if(err.reason == 'missing revert data in call exception; Transaction reverted without a reason string'){
             toast.error('Error in minting NFT. This may be due to insufficient funds.', errorToastStyle);
+          }
+          else{
+            console.log(err)
           }
 
         });
@@ -429,7 +442,7 @@ const CollectionDetails = (props) => {
           changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
 
           
-          const volume2Add = parseFloat(mintPrice * coinMultiplier);
+          const volume2Add = parseFloat(claimCurrency?.mintPrice * coinMultiplier);
                   
           //adding volume to Collection
           addVolume({
@@ -501,7 +514,6 @@ const CollectionDetails = (props) => {
     }
   }
 
-
   useEffect(() => {
     if(!collectionData) return
     if(collectionData?.external_link){
@@ -524,6 +536,14 @@ const CollectionDetails = (props) => {
     setCollectionId(collectionData._id);
     setShowUnlisted(collectionData?.showUnlisted);
     setThisCollectionMarketAddress(marketplace[collectionData.chainId]);
+
+    const linksData = allbenefits.filter(collection => String(collection.contractAddress).toLowerCase() == String(collectionData.contractAddress).toLowerCase());
+    // console.log(linksData)
+
+    setMoreLinks({
+      learnmore: linksData[0]?.learnmorelink, 
+      whitepaper: linksData[0]?.whitepaper,
+    });
 
     return() => {}
   }, [collectionData])
@@ -1078,11 +1098,11 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 </div>
 
                 <div className="mt-5 flex-grow md:mt-0 md:ml-8 xl:ml-14">
-                  <div className="flex w-full justify-between">
+                  <div className="flex w-full justify-between mb-6">
                     <div className="w-full">
                       <div className="flex flex-row w-full justify-between">
                         <div className="flex-grow">
-                          <div className="flex justify-between">
+                          <div className="flex flex-wrap md:gap-0 gap-8 justify-between">
                             <div>
                               <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl items-center justify-start">
                                 {!collectionData && 'Unknown NFT Collection'}
@@ -1185,125 +1205,151 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                               </div>
                             )}
                             {/* this option is only available if the user is creator of this collection */}
-                            {collectionData && collectionData?.createdBy?._ref ==
-                              myUser?.walletAddress  && collectionData.datasource =='internal' && (
-                              <div className="z-20 flex gap-2">
-                                {/* show airdrop only to selected collections */}
-                                {hasReferralSetting && (
-                                  <div className="">
-                                    <div 
-                                      className="flex cursor-pointer w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
-                                      onClick={() => setShowAirdrop(true)}>
-                                      <TbParachute/> Airdrop
+                            <div className="z-20 flex gap-2 justify-center w-full md:w-auto md:justify-normal">
+                              {Boolean(moreLinks?.learnmore) && (
+                                <>
+                                  <div>
+                                    <div className="cursor-pointer text-sm transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 text-white">
+                                      <a 
+                                        href={moreLinks?.learnmore}
+                                        target="_blank">
+                                        Learn More
+                                      </a>
                                     </div>
                                   </div>
-                                )}
-                                <Menu as="div" className="relative inline-block">
                                   <div>
-                                    <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
-                                      <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> <span className="hidden md:block">Settings</span>
-                                    </Menu.Button>
+                                    <div className="cursor-pointer text-sm transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 text-white">
+                                      <a 
+                                        href={moreLinks?.whitepaper}
+                                        target="_blank">
+                                        Read Whitepaper
+                                      </a>
+                                    </div>
                                   </div>
+                                </>
+                              )}
+                              {collectionData && collectionData?.createdBy?._ref ==
+                                myUser?.walletAddress  && collectionData.datasource =='internal' && (
+                                <>
+                                  {/* show airdrop only to selected collections */}
+                                  {hasReferralSetting && (
+                                    <div>
+                                      <div 
+                                        className="flex cursor-pointer w-fit text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white"
+                                        onClick={() => setShowAirdrop(true)}>
+                                        <TbParachute/> Airdrop
+                                      </div>
+                                    </div>
+                                  )}
+                                  <Menu as="div" className="relative inline-block">
+                                    <div>
+                                      <Menu.Button className="inline-flex w-full text-sm justify-center transition p-4 rounded-xl bg-blue-700 hover:bg-blue-800 py-3 gap-1 items-center text-white">
+                                        <FiSettings fontSize="18px" className=" hover:rotate-45 transition"/> <span className="hidden md:block">Settings</span>
+                                      </Menu.Button>
+                                    </div>
 
-                                  <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-100"
-                                    enterFrom="transform opacity-0 scale-95"
-                                    enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-75"
-                                    leaveFrom="transform opacity-100 scale-100"
-                                    leaveTo="transform opacity-0 scale-95"
-                                  >
-                                    <Menu.Items
-                                      className={`${
-                                        dark ? 'bg-slate-700' : 'bg-white'
-                                      } absolute p-4 right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                                    <Transition
+                                      as={Fragment}
+                                      enter="transition ease-out duration-100"
+                                      enterFrom="transform opacity-0 scale-95"
+                                      enterTo="transform opacity-100 scale-100"
+                                      leave="transition ease-in duration-75"
+                                      leaveFrom="transform opacity-100 scale-100"
+                                      leaveTo="transform opacity-0 scale-95"
                                     >
-                                      <div className="px-1 py-1 ">
-                                        <Menu.Item>
-                                          {({active}) => (
-                                            <div 
-                                              className={`flex w-full rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
-                                              onClick={() => setShowModal(curVal => !curVal)}
-                                              >
-                                              <TbEdit fontSize={20} className="ml-[4px]"/> <span className="ml-1">Edit Collection Metadata</span>
-                                            </div>
-                                          )}
-                                        </Menu.Item>
-                                        <Menu.Item>
-                                          {({active}) => (
-                                            <div 
-                                              className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
-                                              onClick={() => setPaymentModal(curVal => !curVal)}
-                                              >
-                                              <IconDollar className="" /> <span className="ml-1"> Payout Settings</span>
-                                            </div>
-                                          )}
-                                        </Menu.Item>
-                                        {hasReferralSetting && (
+                                      <Menu.Items
+                                        className={`${
+                                          dark ? 'bg-slate-700' : 'bg-white'
+                                        } absolute p-4 right-0 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                                      >
+                                        <div className="px-1 py-1 ">
+                                          <Menu.Item>
+                                            {({active}) => (
+                                              <div 
+                                                className={`flex w-full rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
+                                                onClick={() => setShowModal(curVal => !curVal)}
+                                                >
+                                                <TbEdit fontSize={20} className="ml-[4px]"/> <span className="ml-1">Edit Collection Metadata</span>
+                                              </div>
+                                            )}
+                                          </Menu.Item>
                                           <Menu.Item>
                                             {({active}) => (
                                               <div 
                                                 className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
-                                                onClick={() => setShowReferralModal(curVal => !curVal)}
+                                                onClick={() => setPaymentModal(curVal => !curVal)}
                                                 >
-                                                <IconDollar className="" /> <span className="ml-1"> Referral Commission Rate</span>
+                                                <IconDollar className="" /> <span className="ml-1"> Payout Settings</span>
                                               </div>
                                             )}
                                           </Menu.Item>
-                                        )}
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <div
-                                              className={`group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
-                                            >
-                                              Show Unlisted to Others
-                                              <Switch
-                                                checked={showUnlisted}
-                                                onChange={() =>
-                                                  updateShowListed({
-                                                    collectionid: collectionid,
-                                                    showUnlisted: showUnlisted,
-                                                  })
-                                                }
-                                                className={`${
-                                                  showUnlisted
-                                                    ? 'bg-sky-500'
-                                                    : dark
-                                                    ? 'bg-slate-500'
-                                                    : 'bg-neutral-300'
-                                                }
-                                                  relative inline-flex h-[24px] w-[48px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                          {hasReferralSetting && (
+                                            <Menu.Item>
+                                              {({active}) => (
+                                                <div 
+                                                  className={`flex w-full items-center rounded-md p-2 text-sm cursor-pointer ${active ? dark ? 'bg-slate-600' : 'bg-neutral-100' : ''}`}
+                                                  onClick={() => setShowReferralModal(curVal => !curVal)}
+                                                  >
+                                                  <IconDollar className="" /> <span className="ml-1"> Referral Commission Rate</span>
+                                                </div>
+                                              )}
+                                            </Menu.Item>
+                                          )}
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <div
+                                                className={`group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm`}
                                               >
-                                                <span
-                                                  aria-hidden="true"
+                                                Show Unlisted to Others
+                                                <Switch
+                                                  checked={showUnlisted}
+                                                  onChange={() =>
+                                                    updateShowListed({
+                                                      collectionid: collectionid,
+                                                      showUnlisted: showUnlisted,
+                                                    })
+                                                  }
                                                   className={`${
                                                     showUnlisted
-                                                      ? 'translate-x-6'
-                                                      : 'translate-x-0'
+                                                      ? 'bg-sky-500'
+                                                      : dark
+                                                      ? 'bg-slate-500'
+                                                      : 'bg-neutral-300'
                                                   }
-                                                    pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                                                />
-                                              </Switch>
-                                            </div >
-                                          )}
-                                        </Menu.Item>
-                                      </div>
-                                    </Menu.Items>
-                                  </Transition>
-                                </Menu>
-                              </div>
-                            )} 
+                                                    relative inline-flex h-[24px] w-[48px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                                >
+                                                  <span
+                                                    aria-hidden="true"
+                                                    className={`${
+                                                      showUnlisted
+                                                        ? 'translate-x-6'
+                                                        : 'translate-x-0'
+                                                    }
+                                                      pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                                                  />
+                                                </Switch>
+                                              </div >
+                                            )}
+                                          </Menu.Item>
+                                        </div>
+                                      </Menu.Items>
+                                    </Transition>
+                                  </Menu>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex lg:gap-3 flex-wrap md:flex-nowrap ">
-                        <div className="py-4 lg:max-h-[200px] overflow-auto max-h-[200px]">
-                          <span className="block text-sm">
-                            {collectionData?.description}
-                          </span>
+                      {collectionData?.description && (
+                        <div className="flex lg:gap-3 flex-wrap md:flex-nowrap mt-3">
+                          <div className="py-4 lg:max-h-[200px] overflow-auto max-h-[200px]">
+                            <span className="block text-sm">
+                              {collectionData?.description}
+                            </span>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
                     </div>
                   </div>
@@ -1314,7 +1360,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         dark
                           ? ' border border-sky-400/20'
                           : ' border border-neutral-50/30'
-                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-3`}
                     >
                       <span className="text-sm text-center">Floor Price</span>
                       <span className="mt-2 text-base font-bold md:text-xl">
@@ -1328,7 +1374,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         dark
                           ? ' border border-sky-400/20'
                           : ' border border-neutral-50/30'
-                      } flex text-center flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}
+                      } flex text-center flex-col items-center justify-center rounded-2xl p-3 shadow-md lg:p-3`}
                     >
                       <span className="text-sm text-center">Volume Traded</span>
                       <span className="mt-2 break-all text-base font-bold md:text-xl">
@@ -1343,7 +1389,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             dark
                               ? ' border border-sky-400/20'
                               : ' border border-neutral-50/30'
-                          } flex flex-col items-center justify-center rounded-2xl p-5 text-center shadow-md lg:p-6`}>
+                          } flex flex-col items-center justify-center rounded-2xl p-5 text-center shadow-md lg:p-3`}>
                           <span className="text-sm text-center">Total NFTs</span>
                           <span className="mt-2 text-base font-bold md:text-xl">
                             {totalCirculatingSupply ? totalCirculatingSupply : <IconLoading dark="inbutton"/>}
@@ -1354,7 +1400,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                             dark
                               ? ' border border-sky-400/20'
                               : ' border border-neutral-50/30'
-                          } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                          } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-3`}>
                           <span className="text-sm text-center">Unclaimed NFTs</span>
                           <span className="mt-2 text-base font-bold md:text-xl">
                             {totalUnclaimedSupply ? totalUnclaimedSupply : <IconLoading dark="inbutton" />}
@@ -1367,7 +1413,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                         dark
                           ? ' border border-sky-400/20'
                           : ' border border-neutral-50/30'
-                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-6`}>
+                      } flex flex-col items-center justify-center rounded-2xl p-5 shadow-md lg:p-3`}>
                       <span className="text-sm text-center">Total NFTs</span>
                       <span className="mt-2 text-base font-bold sm:text-xl">
                         {nfts?.length}
@@ -1379,13 +1425,13 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       dark
                       ? ' border border-sky-400/20'
                       : ' border border-neutral-50/30'
-                    } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-6 outline-none ring-0 focus:ring-0 focus:outline-none`}>
+                    } relative flex flex-col items-center justify-center z-1 rounded-2xl p-5 shadow-md lg:p-3 outline-none ring-0 focus:ring-0 focus:outline-none`}>
                       <span className="text-sm block">Owners</span>
                       <p className="mt-2 text-base font-bold sm:text-xl">
                         {nftHolders.length}
                       </p>
                       <div 
-                        className="absolute bottom-1 cursor-pointer text-xs py-0.5 px-2 z-50 rounded-2xl shadow-md outline-none ring-0 focus:ring-0 focus:outline-0"
+                        className="absolute bottom-0 cursor-pointer text-xs py-0.5 px-2 z-50 rounded-2xl shadow-md outline-none ring-0 focus:ring-0 focus:outline-0"
                         onClick={() => setShowOwners(true)}>
                         View
                       </div>
@@ -1435,12 +1481,14 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 <div className="flex gap-[5rem] justify-between text-left">
                   <span>Mint Price</span>
                   <span>
-                    {Boolean(mintPrice) ? (
+                    {Boolean(claimCurrency?.mintPrice) ? (
                       <div className="flex gap-2 items-center text-xl font-bold">
-                        {mintPrice} {chainIcon[collectionData?.chainId]}
+                        {claimCurrency?.mintPrice} 
+                        {/* <IconUSDT/> */}
+                        {chainIcon[collectionData?.chainId]}
                       </div>
                     ) : (
-                      <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Calculating..</span>
+                      <span className={`text-xs ${dark ? 'text-slate-500': 'text-neutral-300'}`}>Fetching..</span>
                     )}
                   </span>
                 </div>
@@ -1690,7 +1738,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 </>
               )
             }
-            {!revealed && Boolean(collectionData) && (
+            {!revealed && Boolean(collectionData) && false && (
               <div className="mx-auto flex justify-center z-50 pb-10">
                 <NoSSR>
                   <Countdown date={new Date(collectionData.revealtime)} renderer={renderer} />

@@ -43,7 +43,7 @@ const cookiespolicy = () => {
       <div className={style.wrapper}>
         <div className={style.section}>
           <p className={style.header}>Scope of this policy</p>
-          1. NUVA NFT (we or us or our) uses cookies when you visit our website, nuvatoken.com, (the Website) to help customise the Website and improve your experience using the Website.<br/><br/>
+          1. NUVA NFT (we or us or our) uses cookies when you visit our website,nuvanft.io, (the Website) to help customise the Website and improve your experience using the Website.<br/><br/>
           2. This policy applies between you, the user of this Website, and us, NUVA NFT, the owner and provider of this Website.<br/><br/>
           3. When you visit the Website, and before your Website places cookies on your computer, you will be presented with a message bar requesting your consent to set those cookies. By giving your consent to the placing of cookies, you are enabling us to provide a better experience and service. You may, if you wish, deny consent to the placing of these cookies; however, certain features of the Website may not function fully or as intended.<br/><br/>
           4. This cookie policy should be read alongside, and in addition to, our Privacy Policy, which can be found at: <a href="/privacypolicy" className="underline text-blue-500">https://nuvanft.io/privacypolicy</a>.
@@ -53,7 +53,7 @@ const cookiespolicy = () => {
           <p className={style.header}>What are cookies?</p>
           5. A cookie is a small text file placed on your computer by this Website when you visit certain parts of the Website and/or when you use certain features of the Website.<br/><br/>
           6. This Website may place and access certain cookies on your computer. We use these cookies to improve your experience of using the Website and to improve our range of services.<br/><br/>
-          7. Cookies do not usually contain any information that personally identifies you, the Website user. However, personal information that we store about you may be linked to the information obtained from and stored in cookies. For more information on how such personal information is handled and stored, refer to our Privacy Policy which is available online at: <a href="/privacypolicy" className="underline">https://nuvanft.io/privacypolicy</a>.
+          7. Cookies do not usually contain any information that personally identifies you, the Website user. However, personal information that we store about you may be linked to the information obtained from and stored in cookies. For more information on how such personal information is handled and stored, refer to our Privacy Policy which is available online at: <a href="/privacypolicy" className="underline text-blue-500">https://nuvanft.io/privacypolicy</a>.
         </div>
 
         <div className={style.section}>

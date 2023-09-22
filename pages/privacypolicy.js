@@ -131,11 +131,8 @@ const privacypolicy = () => {
           <p className={style.header}>Data Collected</p>
           5. We may collect the following data, which includes personal data, from you:
           <ol className="pl-8">
-            <li>a. name</li>
-            <li>b. date of birth</li>
-            <li>c. gender</li>
-            <li>d. contact information such as email addresses and telephone numbers</li>
-            <li>e. demographic information such as postcode, preferences and interests</li>
+            <li>a. username</li>
+            <li>d. contact information such as email addresses</li>
             <li>f. IP address (automatically collected)</li>
             <li>g. web browser type and version (automatically collected)</li>
             <li>h. operating system (automatically collected)</li>
@@ -196,7 +193,7 @@ const privacypolicy = () => {
           <p className={style.header}>Our use of data</p>
           11. Any or all of the above Data may be required by us from time to time in order to provide you with the best possible service and experience when using our Website. Specifically, Data may be used by us for the following reasons:
           <ol className="pl-8">
-            <li>a. internal record keeping;</li>
+            <li>a. internal record keeping and analytics;</li>
             <li>b. improvement of our products / services;</li>
             <li>c. transmission by email of marketing materials that may be of interest to you;</li>
             <li>d. contact for market research purposes which may be done using email, telephone, fax or mail. Such information may be used to customise or update the Website;</li>

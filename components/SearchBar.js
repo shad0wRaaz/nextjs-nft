@@ -148,7 +148,7 @@ const SearchBar = () => {
                   : style.comboMenu + ' bg-white text-black'
               }
             >
-              <div className="max-h-[300px] md:max-h-[500px] overflow-scroll">
+              <div className="max-h-[300px] md:max-h-[500px] overflow-auto">
                 {loading && 'Loading..'}
                 {!loading && filteredCollection.length === 0 && query !== '' ? (
                   <div

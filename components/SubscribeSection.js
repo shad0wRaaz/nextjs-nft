@@ -149,7 +149,7 @@ const SubscribeSection = () => {
     <div className={style.wrapper}>
         <div className="relative flex flex-col lg:flex-row lg:items-center">
             <div className="flex-shrink-0 mb-10 lg:mb-0 lg:mr-10 lg:w-2/5">
-                <h2 className="font-semibold text-5xl textGradBlue2 leading-normal">Keep getting Updated</h2>
+                <h2 className="font-semibold text-5xl textGradBlue2 leading-normal">Subscribe for Updates</h2>
                 <span className="block mt-5 text-sm">Subcribe to our super-exclusive newsletter subscription and be the first to get updated with latest news, build ups, ecosystem developments, etc.</span>
                 <ul className="space-y-4 mt-10 hidden">
                     <li className="flex items-center space-x-4">
@@ -164,7 +164,7 @@ const SubscribeSection = () => {
                 <form className="mt-10 relative max-w-sm space-y-3">
                     <input 
                         type="email" 
-                        className={`block w-full md:max-w-[305px] border ${dark ? ' border-slate-600 focus:ring-slate-500 bg-slate-700' : 'bg-white border-neutral-200 focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 '} rounded-full text-sm font-normal h-11 px-4 py-3`}
+                        className={`block w-full md:max-w-[305px] border focus:ring-none ${dark ? ' border-slate-600 bg-slate-700' : 'bg-white border-neutral-200 focus:ring-0 focus:border-0 outline-0 '} rounded-xl text-sm font-normal h-11 px-4 py-3`}
                         required=""  
                         placeholder="Enter your email"
                         value={subscriberEmail}
@@ -174,7 +174,7 @@ const SubscribeSection = () => {
                       sitekey={SITE_KEY} 
                       ref={captchaRef}/>
                     <button onClick={handleSubscribe} 
-                      className="w-full md:max-w-[305px] flex items-center justify-center rounded-full !leading-none disabled:bg-opacity-70 gradBlue text-neutral-50 p-4" type="button">
+                      className="w-full md:max-w-[305px] flex items-center justify-center rounded-xl !leading-none disabled:bg-opacity-70 gradBlue text-neutral-50 p-4" type="button">
                         Subscribe
                     </button>
                 </form>

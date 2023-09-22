@@ -12,7 +12,6 @@ export default function CookieBanner(){
 
     useEffect (() => {
         const storedCookieConsent = getLocalStorage("cookie_consent", null)
-
         setCookieConsent(storedCookieConsent)
     }, [setCookieConsent])
 
@@ -27,13 +26,13 @@ export default function CookieBanner(){
         setLocalStorage("cookie_consent", cookieConsent)
 
         //For Testing
-        console.log("Cookie Consent: ", cookieConsent)
+        // console.log("Cookie Consent: ", cookieConsent)
 
     }, [cookieConsent]);
 
 
     return (
-        <div className={`my-10 mx-auto max-w-max md:max-w-screen-md ${cookieConsent != null ? "hidden" : "flex"}
+        <div className={`my-10 mx-2 max-w-max md:max-w-screen-md ${cookieConsent != null ? "hidden" : "flex"}
                         fixed top-0 left-0 right-0 mx-6 md:mx-auto
                          p-8 justify-between items-center flex-col gap-4  
                          bg-gray-100 rounded-2xl shadow z-50`}>

@@ -69,7 +69,7 @@ const Header = ({setShowMenu, showMenu}) => {
                     onClick={() => setShowMenu(cur => !cur)}>
                    <CgMenu fontSize={25}/>
                 </button>
-                <div ref={menuRef} className={`md:flex ${!showMenu && 'hidden'} justify-end items-center flex-wrap flex-col w-full md:flex-row pb-4`} id="">
+                <div ref={menuRef} className={`md:flex text-white drop-shadow-lg ${!showMenu && 'hidden'} justify-end items-center flex-wrap flex-col w-full md:flex-row pb-4`} id="">
                     <div className="navbar-nav">
                         <a className="nav-link text-center" aria-current="page" href="#home" onClick={() => setShowMenu(false)}>Home</a>
                         <a className="nav-link text-center" aria-current="page" href="#" onClick={() => {setShowAbout(true); setShowMenu(false)}}>About</a>

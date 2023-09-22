@@ -29,7 +29,9 @@ function MyApp({ Component, pageProps }) {
         supportedWallets={[
           metamaskWallet(),
           coinbaseWallet(),
-          walletConnect(),
+          walletConnect({
+            projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_V2_PROJECT_ID
+          }),
           safeWallet(),
         ]}
         supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}

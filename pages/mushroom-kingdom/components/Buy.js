@@ -188,8 +188,10 @@ const Buy = ({ setShowMenu }) => {
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
-                        <h2 className={style.collectionH2}> 
-                        <span className={style.collectionname}>Nomin</span></h2>
+                        <a name="nomin">
+                            <h2 className={style.collectionH2}> 
+                            <span className={style.collectionname}>Nomin</span></h2>
+                        </a>
                         <p className={style.description}>Hardworking Nomins of Mushroom Kingdom work very hard to earn their livelihood. They are non-aggressive and can hardly defend themselves. There are only a few of them who can fight to protect their people from the likes of evil Grutzis. Fighter Nomins generally carry a white flag. During the fight, they are generally protected by Hidois. They are very loyal and obedient to their Kaioji.</p>
                         <div className="flex gap-2 mt-[2rem] mb-2 justify-center">
                             <Image src={creature1} alt="Nomin" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -421,12 +423,15 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
+        
         <div className="container mx-auto px-8 mt-[4rem]  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">
                     <div className="w-full">
-                        <h2 className={style.collectionH2}> 
-                        <span className={style.collectionname}>Grutzi</span></h2>
+                        <a name="grutzi">
+                            <h2 className={style.collectionH2}> 
+                            <span className={style.collectionname}>Grutzi</span></h2>
+                        </a>
                         <p className={style.description}>The primary objective of Grutzi is to amass wealth and power through robbery and theft. They prey upon defenseless and unsuspecting Nomins, ambushing them with deadly precision. They possess an uncanny ability to strike fear into their victims, utilizing their malevolent gaze and weaponry to paralyze, weaken, and even kill the bravest and strongest of Nomins. Grutzi flag bearers are cunning thieves, agile assassins, and treacherous spies, while others serve as their minions.</p>
                         <div className="flex gap-2 mt-[2rem] justify-center">
                             <Image src={neon1} alt="Grutzi" height="100px" width="100px" objectFit='cover' className="rounded-md"/>
@@ -656,6 +661,7 @@ const Buy = ({ setShowMenu }) => {
                 </div>
             </div>
         </div>
+        
         <div className="container mx-auto px-8 mt-[4rem]  pb-[4rem] shadow-2xl rounded-xl">
             <div className="mint__wrapper">
                 <div className="flex flex-wrap items-center">

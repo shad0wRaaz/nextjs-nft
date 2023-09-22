@@ -449,223 +449,220 @@ const Nft = (props) => { //props are from getServerSideProps
                   <div className="mt-4 w-full rounded-2xl">
                     <Tab.Group>
                       <Tab.List className={`flex space-x-1 rounded-xl ${dark ? 'bg-slate-800' : 'bg-neutral-100'} p-2`}>
-
-                          <Tab
-                            className={({ selected }) =>
-                              classNames(
-                                'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
-                                selected
-                                  ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
-                                  : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
-                              )
-                            }
-                          >
-                            Description
-                          </Tab>
-                          
-                          <Tab
-                            className={({ selected }) =>
-                              classNames(
-                                'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
-                                selected
-                                  ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
-                                  : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
-                              )
-                            }
-                          >
-                            Properties
-                          </Tab>
-
-                          <Tab
-                            className={({ selected }) =>
-                              classNames(
-                                'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
-                                selected
-                                  ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
-                                  : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
-                              )
-                            }
-                          >
+                        <Tab
+                              className={({ selected }) =>
+                                classNames(
+                                  'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                                  selected
+                                    ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                                    : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                                )
+                              }
+                            >
                             Details
-                          </Tab>
+                        </Tab>
 
+                        <Tab
+                          className={({ selected }) =>
+                            classNames(
+                              'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                              selected
+                                ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                                : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                            )
+                          }
+                        >
+                          Description
+                        </Tab>
+                        
+                        <Tab
+                          className={({ selected }) =>
+                            classNames(
+                              'w-full rounded-lg text-sm p-2.5 transition font-medium outline-0', 
+                              selected
+                                ? (dark ? 'bg-slate-600 text-neutral-100 shadow' : ' bg-neutral-300 text-slate-700 shadow ring-2 ring-neutral-300')
+                                : (dark ? 'text-blue-100 hover:bg-white/[0.12] hover:text-white' : 'hover:bg-neutral-200')
+                            )
+                          }
+                        >
+                          Properties
+                        </Tab>
                       </Tab.List>
                       <Tab.Panels className="mt-2">
-
-                          <Tab.Panel className={'rounded-xl text-sm ring-white p-3 ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
-                            {nftContractData?.metadata?.description == '' ? <p className={`text-sm my-5 text-center ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
-                          </Tab.Panel>
-                          <Tab.Panel className={'rounded-xl p-3 my-5  ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
-                            <div className="flex flex-wrap gap-2">
-                              {nftContractData?.metadata?.attributes?.map(
-                                (props, id) => (
-                                  <div key={id}>
-                                    {props.propertyKey != "" ? (
-                                      <div
-                                        className={`w-[130px] cursor-pointer rounded-xl border border-solid h-full ${
-                                          dark
-                                            ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
-                                            : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
-                                        } p-2 text-center transition`}
-                                        onClick={() => {
-                                          setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
-                                          router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
-                                        }}>
-                                        <p className={dark ? 'text-sm font-bold text-neutral-200' : 'text-sm font-bold text-sky-400'}>
-                                          {props.trait_type}
-                                        </p>
-                                        <p className={ dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500' }>
-                                          {props.value}
-                                        </p>
-                                      </div>
-                                      ) : (<p className="text-sm text-center">No properties defined.</p>)}
+                        <Tab.Panel className={'rounded-xl p-3'}>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span className="text-sm md:text-base">Contract Address</span>
+                            <div className="flex gap-1 items-center">
+                                <Link href={`/collection/${thisNFTblockchain}/${contractAddress}`} passHref>
+                                  <a>
+                                    <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{nftContractData?.contract}</span>
+                                  </a>
+                                </Link>
+                                <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${nftContractData?.contract}`} passHref>
+                                  <a target="_blank">
+                                    <MdOutlineOpenInNew />
+                                  </a>
+                                </Link>
+                            </div>
+                          </div>
+                          <div className="flex flex-row justify-between py-2 flex-wrap break-words">
+                            <span className="text-sm md:text-base">Item ID</span>
+                            <span className="line-clamp-1 text-sm">{nftContractData?.tokenId}</span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span className="text-sm md:text-base">Token Standard</span>
+                            <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
+                              {ownerData?.owners[0]?.contractType}
+                            </span>
+                          </div>
+                          <div className="flex flex-row justify-between py-2">
+                            <span className="text-sm md:text-base">Blockchain</span>
+                            <span className="line-clamp-1 text-base">
+                              {chainIcon[blockchainIdFromName[thisNFTblockchain]]}
+                              {chainName[blockchainIdFromName[thisNFTblockchain]]}
+                            </span>
+                          </div>
+                          <div className="flex flex-row items-start justify-between py-2">
+                            <span className="text-sm md:text-base">Creator Earnings</span>
+                            <div className="flex justify-end flex-col flex-wrap items-end">
+                              <div className="flex gap-2 items-center relative">
+                                <span className="cursor-pointer" onClick={() => {
+                                        navigator.clipboard.writeText(royaltyData?.fee_recipient)
+                                        toast.success('Address copied !', successToastStyle);
+                                      }}>
+                                  <IconCopy />
+                                </span>
+                                <span className="line-clamp-1 text-sm cursor-pointer">
+                                  {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
+                                </span>
+                                {Boolean(royaltyData?.seller_fee_basis_points) && (
+                                  <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{Number(royaltyData.seller_fee_basis_points) / 100 + '%'}</span>
+                                )}
+                                {royaltySplitData && (
+                                  <div 
+                                    className="rounded-lg bg-yellow-400 p-1 hover:bg-yellow-400 transition cursor-pointer"
+                                    onClick={() => {
+                                      setShowSplit(curVal => !curVal);
+                                    }}>
+                                    <TbArrowsSplit className={`text-yellow-700 transition font-bold ${showSplit && 'rotate-90'}`} fontSize={18}/>
                                   </div>
-                                )
-                              )}
-                              {nftContractData?.metadata?.properties?.traits?.map(
-                                (props, id) => (
-                                  <div key={id} className="cursor-pointer" onClick={() => {
-                                    setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
-                                    router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
-                                  }}>
-                                    {props.propertyKey != "" ? (
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <Transition
+                            as={Fragment}
+                            show={showSplit}
+                            enter="transform transition duration-[300ms]"
+                            enterFrom="opacity-0 scale-50"
+                            enterTo="opacity-100 scale-100"
+                            leave="transform duration-200 transition ease-in-out"
+                            leaveFrom="opacity-100 scale-100 "
+                            leaveTo="opacity-0 scale-95 "
+                          >
+                            <div className={`relative ${dark ? 'bg-slate-700' : 'bg-neutral-200'} p-7 rounded-xl mt-3 overflow-hidden`}>
+                              <BiInfoCircle className={`absolute ${dark ? 'text-slate-500' : 'text-neutral-400'} -top-7 -left-7 z-0 opacity-25`} fontSize={100}/> <span className="text-sm max-w-10 z-10 relative">The royalty is received by the Split contract. When this NFT is sold, the Split contract receives royalty, it will split equally between the given two receivers.</span>
+                                {royaltySplitData?.map((recipient, index) => (
+                                    <div key={recipient.address} className="line-clamp-1 text-sm cursor-pointer mt-2 pl-4">
+                                      <Link href={`/user/${recipient.address}`}>
+                                        <>
+                                          <p className="block md:hidden">{recipient.address.slice(0,10)}...{recipient.address.slice(-10)}</p>
+                                          <p className={`hidden md:block p-1 rounded-lg border text-center ${dark ? 'border-slate-600': 'border-neutral-300'}`}>{recipient.address}</p>
+                                        </>
+                                      </Link>
+                                    </div>
+                                ))}
+                                {Boolean(royaltyData?.fee_recipient) && (
+                                  <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${royaltyData?.fee_recipient}/#internaltx`}>
+                                    <a target="_blank">
+                                      <p className="w-fit text-sm px-3 cursor-pointer gradBlue mt-4 rounded-xl p-2 m-auto text-center">View all Royalty Distribution</p>
+                                    </a>
+                                  </Link>
+                                )}
+                            </div>
+                          </Transition>
+                        </Tab.Panel>
 
+                        <Tab.Panel className={'rounded-xl text-sm ring-white p-3 ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                          {nftContractData?.metadata?.description == '' ? <p className={`text-sm my-5 text-center ${dark ? 'text-slate-500' : 'text-neutral-600'}`}>No description provided</p> : nftContractData?.metadata?.description}
+                        </Tab.Panel>
+                        <Tab.Panel className={'rounded-xl p-3 my-5  ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'}>
+                          <div className="flex flex-wrap gap-2">
+                            {nftContractData?.metadata?.attributes?.map(
+                              (props, id) => (
+                                <div key={id}>
+                                  {props.propertyKey != "" ? (
                                     <div
-                                      className={`w-[130px] rounded-xl border border-solid h-full ${
+                                      className={`w-[130px] cursor-pointer rounded-xl border border-solid h-full ${
                                         dark
                                           ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
                                           : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
-                                      } py-2 px-2 text-center transition`}
-                                      key={id}
-                                    >
-                                      <p
-                                        className={
-                                          dark
-                                            ? 'text-sm font-bold text-neutral-200'
-                                            : 'text-sm font-bold text-sky-400'
-                                        }
-                                      >
-                                        {props.propertyKey}
+                                      } p-2 text-center transition`}
+                                      onClick={() => {
+                                        setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                                        router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
+                                      }}>
+                                      <p className={dark ? 'text-sm font-bold text-neutral-200' : 'text-sm font-bold text-sky-400'}>
+                                        {props.trait_type}
                                       </p>
-                                      <p
-                                        className={
-                                          dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
-                                        }
-                                      >
-                                        {props.propertyValue}
+                                      <p className={ dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500' }>
+                                        {props.value}
                                       </p>
-                                      {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
-                                        <span
-                                          className={`w-fit rounded-md ${
-                                            dark
-                                              ? ' border border-slate-500 px-2 text-neutral-50'
-                                              : 'border border-sky-300 px-2 text-sky-500'
-                                          }`}
-                                        >
-                                          100% Match
-                                        </span>
-                                      </p> */}
                                     </div>
-                                    ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </Tab.Panel>
-                          <Tab.Panel className={'rounded-xl p-3'}>
-                              <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                                <span className="text-sm md:text-base">Contract Address</span>
-                                <div className="flex gap-1 items-center">
-                                    <Link href={`/collection/${thisNFTblockchain}/${contractAddress}`} passHref>
-                                      <a>
-                                        <span className="line-clamp-1 text-sm hover:text-sky-600 transition">{nftContractData?.contract}</span>
-                                      </a>
-                                    </Link>
-                                    <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${nftContractData?.contract}`} passHref>
-                                      <a target="_blank">
-                                        <MdOutlineOpenInNew />
-                                      </a>
-                                    </Link>
+                                    ) : (<p className="text-sm text-center">No properties defined.</p>)}
                                 </div>
-                              </div>
-                              <div className="flex flex-row justify-between py-2 flex-wrap break-words">
-                                <span className="text-sm md:text-base">Item ID</span>
-                                <span className="line-clamp-1 text-sm">{nftContractData?.tokenId}</span>
-                              </div>
-                              <div className="flex flex-row justify-between py-2">
-                                <span className="text-sm md:text-base">Token Standard</span>
-                                <span className={`line-clamp-1 text-xs border rounded-lg py-1 px-2 bg-slate-${dark ? '700' : '100'} border-slate-${dark ? '600' : '200'}`}>
-                                  {ownerData?.owners[0]?.contractType}
-                                </span>
-                              </div>
-                              <div className="flex flex-row justify-between py-2">
-                                <span className="text-sm md:text-base">Blockchain</span>
-                                <span className="line-clamp-1 text-base">
-                                  {chainIcon[blockchainIdFromName[thisNFTblockchain]]}
-                                  {chainName[blockchainIdFromName[thisNFTblockchain]]}
-                                </span>
-                              </div>
-                              <div className="flex flex-row items-start justify-between py-2">
-                                <span className="text-sm md:text-base">Creator Earnings</span>
-                                <div className="flex justify-end flex-col flex-wrap items-end">
-                                  <div className="flex gap-2 items-center relative">
-                                    <span className="cursor-pointer" onClick={() => {
-                                            navigator.clipboard.writeText(royaltyData?.fee_recipient)
-                                            toast.success('Address copied !', successToastStyle);
-                                          }}>
-                                      <IconCopy />
-                                    </span>
-                                    <span className="line-clamp-1 text-sm cursor-pointer">
-                                      {royaltyData?.fee_recipient?.slice(0,7)}...{royaltyData?.fee_recipient?.slice(-7)}
-                                    </span>
-                                    {Boolean(royaltyData?.seller_fee_basis_points) && (
-                                      <span className={`py-1 px-2 rounded-md border ${dark ? 'border-sky-700/50 bg-sky-700/20' : 'border-neutral-200'}  text-xs`}>{Number(royaltyData.seller_fee_basis_points) / 100 + '%'}</span>
-                                    )}
-                                    {royaltySplitData && (
-                                      <div 
-                                        className="rounded-lg bg-yellow-400 p-1 hover:bg-yellow-400 transition cursor-pointer"
-                                        onClick={() => {
-                                          setShowSplit(curVal => !curVal);
-                                        }}>
-                                        <TbArrowsSplit className={`text-yellow-700 transition font-bold ${showSplit && 'rotate-90'}`} fontSize={18}/>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              <Transition
-                                as={Fragment}
-                                show={showSplit}
-                                enter="transform transition duration-[300ms]"
-                                enterFrom="opacity-0 scale-50"
-                                enterTo="opacity-100 scale-100"
-                                leave="transform duration-200 transition ease-in-out"
-                                leaveFrom="opacity-100 scale-100 "
-                                leaveTo="opacity-0 scale-95 "
-                              >
-                                <div className={`relative ${dark ? 'bg-slate-700' : 'bg-neutral-200'} p-7 rounded-xl mt-3 overflow-hidden`}>
-                                  <BiInfoCircle className={`absolute ${dark ? 'text-slate-500' : 'text-neutral-400'} -top-7 -left-7 z-0 opacity-25`} fontSize={100}/> <span className="text-sm max-w-10 z-10 relative">The royalty is received by the Split contract. When this NFT is sold, the Split contract receives royalty, it will split equally between the given two receivers.</span>
-                                    {royaltySplitData?.map((recipient, index) => (
-                                        <div key={recipient.address} className="line-clamp-1 text-sm cursor-pointer mt-2 pl-4">
-                                          <Link href={`/user/${recipient.address}`}>
-                                            <>
-                                              <p className="block md:hidden">{recipient.address.slice(0,10)}...{recipient.address.slice(-10)}</p>
-                                              <p className={`hidden md:block p-1 rounded-lg border text-center ${dark ? 'border-slate-600': 'border-neutral-300'}`}>{recipient.address}</p>
-                                            </>
-                                          </Link>
-                                        </div>
-                                    ))}
-                                    {Boolean(royaltyData?.fee_recipient) && (
-                                      <Link href={`${chainExplorer[blockchainIdFromName[thisNFTblockchain]]}address/${royaltyData?.fee_recipient}/#internaltx`}>
-                                        <a target="_blank">
-                                          <p className="w-fit text-sm px-3 cursor-pointer gradBlue mt-4 rounded-xl p-2 m-auto text-center">View all Royalty Distribution</p>
-                                        </a>
-                                      </Link>
-                                    )}
-                                </div>
-                              </Transition>
-                          </Tab.Panel>
+                              )
+                            )}
+                            {nftContractData?.metadata?.properties?.traits?.map(
+                              (props, id) => (
+                                <div key={id} className="cursor-pointer" onClick={() => {
+                                  setSelectedProperties([{ propertyKey: props.propertyKey, propertyValue: props.propertyValue}]);
+                                  router.push(`/collection/${thisNFTblockchain}/${contractAddress}`)
+                                }}>
+                                  {props.propertyKey != "" ? (
 
+                                  <div
+                                    className={`w-[130px] rounded-xl border border-solid h-full ${
+                                      dark
+                                        ? 'border-slate-600 bg-slate-700 hover:bg-slate-600'
+                                        : 'border-sky-200/70 bg-sky-100 hover:bg-sky-200/90'
+                                    } py-2 px-2 text-center transition`}
+                                    key={id}
+                                  >
+                                    <p
+                                      className={
+                                        dark
+                                          ? 'text-sm font-bold text-neutral-200'
+                                          : 'text-sm font-bold text-sky-400'
+                                      }
+                                    >
+                                      {props.propertyKey}
+                                    </p>
+                                    <p
+                                      className={
+                                        dark ? 'text-neutral-100 text-sm' : 'text-sm text-sky-500'
+                                      }
+                                    >
+                                      {props.propertyValue}
+                                    </p>
+                                    {/* <p className="mt-2  py-0 text-center text-[0.7rem] font-bold">
+                                      <span
+                                        className={`w-fit rounded-md ${
+                                          dark
+                                            ? ' border border-slate-500 px-2 text-neutral-50'
+                                            : 'border border-sky-300 px-2 text-sky-500'
+                                        }`}
+                                      >
+                                        100% Match
+                                      </span>
+                                    </p> */}
+                                  </div>
+                                  ) : (<p className={`text-sm text-center`}>No properties defined.</p>)}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </Tab.Panel>
                       </Tab.Panels>
                     </Tab.Group>
 

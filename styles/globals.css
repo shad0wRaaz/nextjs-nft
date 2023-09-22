@@ -411,6 +411,22 @@ background: #00000033;
 z-index: -1;
 }
 
+/***Hero Designer ***/
+.animatedBall {
+  offset-path: path("M20,20 C20,100 200,0 200,100");
+  animation: move 30s infinite alternate ease-in-out;
+}
+
+@keyframes move {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+/*** End of Hero Designer ***/
+
 /** New featured card design ***/
 
 @property --rotate{
