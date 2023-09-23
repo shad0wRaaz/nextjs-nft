@@ -534,7 +534,7 @@ const HeroDesigner = () => {
                   slideInterval={1800}/>
                 <div className={style.content}>
                   <p className="title">Ursine</p>
-                  <p className={style.subtitle}>Mint Price: 110 <IconPolygon/></p>
+                  <p className={style.subtitle}>Mint Price: 145 <IconPolygon/></p>
                   <div className={style.mintButton}>
                     <Link href={links.ursine} passHref>
                       <a>Mint Now</a>
@@ -554,7 +554,7 @@ const HeroDesigner = () => {
                   slideInterval={1800}/>
                 <div className={style.content}>
                   <p className="title">Nomin</p>
-                  <p className={style.subtitle}>Mint Price: 0.04 <IconEthereum/></p>
+                  <p className={style.subtitle}>Mint Price: 0.047 <IconEthereum/></p>
                   <div className={style.mintButton}>
                     <Link href={links.nomin} passHref>
                       <a>Mint Now</a>
@@ -574,7 +574,7 @@ const HeroDesigner = () => {
                   slideInterval={2000}/>
                 <div className={style.content}>
                   <p className="title">Crypto Creatures</p>
-                  <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 0.36 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.creatures} passHref>
                       <a>Mint Now</a>
@@ -598,7 +598,7 @@ const HeroDesigner = () => {
                   />
                 <div className={style.content}>
                   <p className="title">Vulpine</p>
-                  <p className={style.subtitle}>Mint Price: 220 <IconPolygon/></p>
+                  <p className={style.subtitle}>Mint Price: 290 <IconPolygon/></p>
                   <div className={style.mintButton}>
                     <Link href={links.vulpine} passHref>
                       <a>Mint Now</a>
@@ -619,7 +619,7 @@ const HeroDesigner = () => {
                   />
                 <div className={style.content}>
                   <p className="title">Grutzi</p>
-                  <p className={style.subtitle}>Mint Price: 0.08 <IconEthereum/></p>
+                  <p className={style.subtitle}>Mint Price: 0.094 <IconEthereum/></p>
                   <div className={style.mintButton}>
                     <Link href={links.grutzi} passHref>
                       <a>Mint Now</a>
@@ -689,7 +689,7 @@ const HeroDesigner = () => {
                     />
                 <div className={style.content}>
                   <p className="title">Lapine</p>
-                  <p className={style.subtitle}>Mint Price: 370 <IconPolygon/></p>
+                  <p className={style.subtitle}>Mint Price: 480 <IconPolygon/></p>
                   <div className={style.mintButton}>
                     <Link href={links.lapine} passHref>
                       <a>Mint Now</a>
@@ -710,7 +710,7 @@ const HeroDesigner = () => {
                 {/* <img src={celestial2.src} className={style.gridImage} alt="Celestial Beings" /> */}
                 <div className={style.content}>
                   <p className="title">Hidoi</p>
-                  <p className={style.subtitle}>Mint Price: 0.135 <IconEthereum/></p>
+                  <p className={style.subtitle}>Mint Price: 0.157 <IconEthereum/></p>
                   <div className={style.mintButton}>
                     <Link href={links.hidoi} passHref>
                       <a>Mint Now</a>
@@ -731,7 +731,7 @@ const HeroDesigner = () => {
                 {/* <img src={celestial1.src} className={style.gridImage + ' max-h-[150px]'} alt="Celestial Beings" /> */}
                 <div className={style.content}>
                   <p className="title">Celestial Beings</p>
-                  <p className={style.subtitle}>Mint Price: 1.04<IconBNB/></p>
+                  <p className={style.subtitle}>Mint Price: 1.19 <IconBNB/></p>
                   <div className={style.mintButton}>
                     <Link href={links.celestial} passHref>
                       <a>Mint Now</a>
@@ -753,7 +753,7 @@ const HeroDesigner = () => {
                   slideInterval={2300}/>
                   <div className={style.content}>
                     <p className="title">Canine</p>
-                    <p className={style.subtitle}>Mint Price: 525 <IconPolygon/></p>
+                    <p className={style.subtitle}>Mint Price: 675 <IconPolygon/></p>
                     <div className={style.mintButton}>
                       <Link href={links.canine  } passHref>
                         <a>Mint Now</a>
@@ -772,7 +772,7 @@ const HeroDesigner = () => {
                   slideInterval={2300}/>
                   <div className={style.content}>
                     <p className="title">Kaioji</p>
-                    <p className={style.subtitle}>Mint Price: 0.188 <IconEthereum/></p>
+                    <p className={style.subtitle}>Mint Price: 0.22 <IconEthereum/></p>
                     <div className={style.mintButton}>
                       <Link href={links.kaioji  } passHref>
                         <a>Mint Now</a>
@@ -791,7 +791,7 @@ const HeroDesigner = () => {
                   slideInterval={2400}/>
                   <div className={style.content}>
                     <p className="title">Artifacts of the Future</p>
-                    <p className={style.subtitle}>Mint Price: 0.32 <IconBNB/></p>
+                    <p className={style.subtitle}>Mint Price: 1.66 <IconBNB/></p>
                     <div className={style.mintButton}>
                       <Link href={links.artifacts} passHref>
                         <a>Mint Now</a>
