@@ -57,6 +57,9 @@ const User = () => {
   const [collectionCount, setCollectionCount] = useState(0);
   const [nftCount, setNftCount] = useState(0);
   const [mynfts, setMyNfts] = useState();
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
+  
   const style = {
     collectionWrapper:
       'grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center',
@@ -89,7 +92,16 @@ const User = () => {
     ) {
       setIsFollower(true)
     }
-    setFollowerCount(userData?.followers?.length)
+    setFollowerCount(userData?.followers?.length);
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(userData?.web3imageprofile);
+      const nftBannerPath = await getImagefromWeb3(userData?.web3imagebanner);
+
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+      setBannerPath(nftBannerPath?.data);
+    })();
     
 
     return() => {
@@ -249,7 +261,7 @@ const User = () => {
       <div className="w-full">
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="absolute inset-0">
-            <img src={userData?.web3imagebanner ? getImagefromWeb3(userData?.web3imagebanner) : `https://picsum.photos/1500/500/?blur=10`}
+            <img src={userData?.web3imagebanner ? bannerPath : `https://picsum.photos/1500/500/?blur=10`}
               className="h-full w-full object-cover"
               alt={userData?.userName}
               />
@@ -266,7 +278,7 @@ const User = () => {
               <div className="sm:w-full md:w-20 xl:w-20">
                 <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl">
                   <img
-                    src={userData?.web3imageprofile ? getImagefromWeb3(userData?.web3imageprofile) : createAwatar(address)}
+                    src={userData?.web3imageprofile ? imgPath : createAwatar(address)}
                     className="h-full w-full object-cover"
                     alt={userData?.userName}
                   />

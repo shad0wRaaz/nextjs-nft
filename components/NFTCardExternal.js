@@ -10,6 +10,7 @@ import { getImagefromWeb3 } from '../fetchers/s3'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
+import SkeletonLoader from './SkeletonLoader'
 
 const style = {
   wrapper: `bg-[#1E293BEE] shadow-[inset_0_0_0_1px_rgb(255,255,255,0.1)] flex-auto max-w-[17rem] w-[17rem] h-[29rem] mb-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
@@ -42,10 +43,23 @@ const NFTCardExternal = ({
   compact,
 }) => {
   // const [likers, setLikers] = useState([])
-  const { dark } = useThemeContext()
-  const { myUser } = useUserContext()
-  const [listedItem, setListedItem] = useState()
-  const [isAuctionItem, setIsAuctionItem] = useState(null)
+  const { dark } = useThemeContext();
+  const { myUser } = useUserContext();
+  const [listedItem, setListedItem] = useState();
+  const [isAuctionItem, setIsAuctionItem] = useState(null);
+  const [imgPath, setImgPath] = useState();
+
+  useEffect(() => {
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(nftItem.metadata.image);
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+    })();
+
+    return () => {}
+
+  }, []);
 
   // useEffect(() => {
   //   if (!listings || !nftItem) return
@@ -117,16 +131,16 @@ const NFTCardExternal = ({
             <div className="relative flex-shrink-0 cursor-pointer">
               <div>
                 <div className={`aspect-w-11 aspect-h-12 relative z-0 flex ${compact ?  'h-[250px]' : 'h-[415px]'} w-full overflow-hidden rounded-2xl`}>
-                  {Boolean(nftItem?.metadata?.image) ? (
-                    <Image
-                      src={getImagefromWeb3(nftItem.metadata.image)}
-                      className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
+                  {imgPath ? (
+                    <img
+                      src={imgPath}
+                      className="h-full w-full rounded-2xl transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03] max-w-full object-cover"
                       alt={nftItem?.metadata?.name}
-                      objectFit="cover"
-                      layout="fill"
                       loading='lazy'
                     />
-                  ) : ''}
+                  ) : 
+                  <SkeletonLoader roundness="xl"/> 
+                  }
                 </div>
                 {Boolean(nftItem?.listingData?.type == 1) && (
                   <div className="absolute left-2 top-2 bg-slate-800/90 rounded-full p-2">

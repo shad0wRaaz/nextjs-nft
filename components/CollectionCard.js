@@ -2,6 +2,7 @@ import Link from 'next/link'
 import millify from 'millify'
 import Image from 'next/image'
 import { GoVerified } from 'react-icons/go'
+import SkeletonLoader from './SkeletonLoader';
 import { getImagefromWeb3 } from '../fetchers/s3'
 import noBannerImage from '../assets/noBannerImage.png'
 import noProfileImage from '../assets/noProfileImage.png'
@@ -18,7 +19,7 @@ const style = {
   bannerImage: 'object-cover w-full h-full',
   profile:
     'cursor-pointer rounded-full overflow-hidden ring ring-white relative mx-auto top-[-25px] h-[70px] w-[70px] mb-[2rem]',
-  title: 'cursor-pointer text-center text-md relative ',
+  title: 'cursor-pointer text-center text-md relative drop-shadow-md',
   description: 'cursor-pointer relative px-4 text-md text-center',
 }
 const chainIcon = {
@@ -50,20 +51,8 @@ const CollectionCard = ({
 }) => {
   const { dark } = useThemeContext();
   const { currencyByChainId, blockchainName } = useSettingsContext();
-  // const link ={
-  //   crypto_creatures: '0x9809AbFc4319271259a340775eC03E9746B76068',
-  //   neon_dreams: '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
-  //   celestial_beings: '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
-  //   artifacts_of_the_future: '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
-  // }
-  // const rr = [
-  //   '0x9809AbFc4319271259a340775eC03E9746B76068',
-  //   '0x2945db324Ec216a5D5cEcE8B4D76f042553a213f',
-  //   '0x54265672B480fF8893389F2c68caeF29C95c7BE2',
-  //   '0x9BDa42900556fCce5927C1905084C4b3CffB23b0',
-  //   '0xD090F5bb1dD329cC857A585CCF5c04Eb9A672cc4',
-  //   '0xD6Ed05E8EA5cc03D18895F4c01C4C9117c6135b1'
-  // ]
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
 
   let collectionAddress = '';
   if(String(contractAddress).toLowerCase() == String('0x9809AbFc4319271259a340775eC03E9746B76068').toLowerCase()) {collectionAddress = 'crypto_creatures'}
@@ -72,7 +61,25 @@ const CollectionCard = ({
   else if(String(contractAddress).toLowerCase() == String('0x9BDa42900556fCce5927C1905084C4b3CffB23b0').toLowerCase()) {collectionAddress = 'artifacts_of_the_future'}
   else { collectionAddress = contractAddress }
 
-  const link = `/collection/${blockchainName[chainId]}/${collectionAddress}`
+  const link = `/collection/${blockchainName[chainId]}/${collectionAddress}`;
+
+  useEffect(() => {
+
+    ;(async () => {
+      if(profileImage) {
+        const nftImagePath = await getImagefromWeb3(profileImage);
+        setImgPath(nftImagePath?.data);
+      }
+
+      if(bannerImage) {
+        const nftBannerPath = await getImagefromWeb3(bannerImage);
+        setBannerPath(nftBannerPath?.data);
+      }
+    })();
+
+    return () => {}
+
+  }, []);
 
   return (
     <Link href={link} passHref>
@@ -85,19 +92,14 @@ const CollectionCard = ({
           }
         >
           <div className={style.bannerContainer}>
-            {bannerImage ? (
+            {bannerPath ? (
               <img
-                src={getImagefromWeb3(bannerImage)}
+                src={bannerPath}
                 className={style.bannerImage}
                 alt={name}
               />
             ) : (
-              <Image
-                src={noBannerImage}
-                className={style.bannerImage}
-                layout="fill"
-                objectFit="cover"
-              />
+              <SkeletonLoader roundness="xl"/>
             )}
           </div>
 
@@ -120,22 +122,15 @@ const CollectionCard = ({
 
             <div className="absolute -top-5 left-1/2 -translate-x-1/2">
               <div className="wil-avatar relative inline-flex h-20 bg-white w-20 flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-600">
-                {profileImage ? (
+                {imgPath ? (
                   <img
                     className="absolute inset-0 h-full w-full rounded-full object-cover"
-                    src={getImagefromWeb3(profileImage)}
+                    src={imgPath}
                     alt={name}
                   />
                 ) : (
-                  <Image
-                    className="absolute inset-0 h-full w-full rounded-full object-cover"
-                    src={noProfileImage}
-                    alt={name}
-                    layout="fill"
-                    object-fit="cover"
-                  />
+                  <SkeletonLoader roundness="full" />
                 )}
-                <span className="wil-avatar__name">J</span>
               </div>
             </div>
           </div>

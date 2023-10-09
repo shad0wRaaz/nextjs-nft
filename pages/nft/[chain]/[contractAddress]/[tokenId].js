@@ -9,7 +9,6 @@ import { TbArrowsSplit } from 'react-icons/tb'
 import { BsPause, BsPlay } from 'react-icons/bs'
 import Header from '../../../../components/Header'
 import Footer from '../../../../components/Footer'
-import { MdOutlineDangerous, MdOutlineOpenInNew } from 'react-icons/md'
 import { Fragment, useEffect, useState } from 'react'
 import { config } from '../../../../lib/sanityClient'
 import { MdAudiotrack, MdBlock } from 'react-icons/md'
@@ -20,9 +19,10 @@ import Purchase from '../../../../components/nft/Purchase'
 import { ThirdwebSDK, getContract } from '@thirdweb-dev/sdk'
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 import RelatedNFTs from '../../../../components/RelatedNFTs'
-import { Disclosure, Tab, Transition } from '@headlessui/react'
+import { isCompanyWallet } from '../../../../utils/utilities'
 import ItemOffers from '../../../../components/nft/ItemOffers'
 import BurnCancel from '../../../../components/nft/BurnCancel'
+import { Disclosure, Tab, Transition } from '@headlessui/react'
 import ItemActivity from '../../../../components/nft/ItemActivity'
 import AuctionTimer from '../../../../components/nft/AuctionTimer'
 import { useThemeContext } from '../../../../contexts/ThemeContext'
@@ -30,11 +30,12 @@ import { getReferralRate } from '../../../../fetchers/SanityFetchers'
 import ReportActivity from '../../../../components/nft/ReportActivity'
 import GeneralDetails from '../../../../components/nft/GeneralDetails'
 import BrowseByCategory from '../../../../components/BrowseByCategory'
+import { MdOutlineDangerous, MdOutlineOpenInNew } from 'react-icons/md'
 import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
-import { isCompanyWallet } from '../../../../utils/utilities'
+import SkeletonLoader from '../../../../components/SkeletonLoader'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -87,6 +88,9 @@ const Nft = (props) => { //props are from getServerSideProps
   const [isAuctionItem, setIsAuctionItem] = useState(false);
   const [royaltySplitData, setRoyaltySplitData] = useState();
   const [showSplit, setShowSplit] = useState(false);
+  const [animationUrl, setAnimationUrl] = useState();
+  const [imgPath, setImgPath] = useState();
+
   const {data: royaltyData, status: royaltyStatus} = useQuery(
     ['royalty'],
     async() => {
@@ -116,6 +120,19 @@ const Nft = (props) => { //props are from getServerSideProps
       }
     }
   );
+
+  useEffect(() => {
+
+      ;(async () => {
+        const nftImagePath = await getImagefromWeb3(nftContractData?.metadata?.image);
+        const nftAVPath = await getImagefromWeb3(nftContractData?.metadata?.animation_url);
+        // console.log(nftImagePath)
+        setImgPath(nftImagePath?.data);
+        setAnimationUrl(nftAVPath?.data);
+      })();
+    return() => {}
+
+  }, [])
   
   useEffect(() => {
     if(!nftContractData || nftContractData === null || !Boolean(nftContractData.metadata)) return
@@ -129,6 +146,8 @@ const Nft = (props) => { //props are from getServerSideProps
     }else {
       setItemType('image');
     }
+    
+    return() => {}
   }, [nftContractData])
 
   useEffect(() => {
@@ -207,6 +226,8 @@ const Nft = (props) => { //props are from getServerSideProps
     if(Boolean(listingData?.type == 1)) {
       setIsAuctionItem(true);
     }
+
+    return() => {}
   }, [listingData])
 
 
@@ -372,11 +393,11 @@ const Nft = (props) => { //props are from getServerSideProps
                       {playItem && itemType == "video" && (
                         <>
                           <video className="w-full h-full" autoPlay loop>
-                            <source src={getImagefromWeb3(nftContractData?.metadata?.animation_url)}/>
+                            <source src={animationUrl}/>
                             Your browser does not support video tag. Upgrade your browser.
                           </video>
                           <img
-                          src={getImagefromWeb3(nftContractData?.metadata?.image)}
+                          src={imgPath}
                           className="h-full w-full object-cover"
                           />
                       </>
@@ -384,20 +405,26 @@ const Nft = (props) => { //props are from getServerSideProps
                       {playItem && itemType == "audio" && (
                         <>
                           <audio className="w-full h-full" autoPlay loop>
-                            <source src={getImagefromWeb3(nftContractData?.metadata?.animation_url)}/>
+                            <source src={animationUrl}/>
                             Your browser does not support video tag. Upgrade your browser.
                           </audio>
                           <img
-                            src={getImagefromWeb3(nftContractData?.metadata?.image)}
+                            src={imgPath}
                             className="h-full w-full object-cover"
                           />
                         </>
                       )}
                       {!playItem && (
-                        <img
-                          src={getImagefromWeb3(nftContractData?.metadata?.image)}
-                          className="h-full w-full object-cover"
-                        />
+                        <>
+                        {imgPath ? (
+                          <img
+                            src={imgPath}
+                            className="h-full w-full object-cover"
+                          />
+                          ) : 
+                            <SkeletonLoader roundness="xl" />
+                          }
+                        </>
                       )}
                     </div>
 
@@ -761,7 +788,7 @@ const Nft = (props) => { //props are from getServerSideProps
       )}
 
       {/* <RelatedNFTs collection={metaDataFromSanity.collection} listingData={listingData} allNfts={listedItemsFromThisMarket} /> */}
-      <BrowseByCategory />
+      {/* <BrowseByCategory /> */}
       <Footer />
     </div>
   )

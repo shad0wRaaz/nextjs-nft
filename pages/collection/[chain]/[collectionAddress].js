@@ -112,6 +112,9 @@ const CollectionDetails = (props) => {
   const [isImporting, setIsImporting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showOwners, setShowOwners] = useState(false);
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
+  const [creatorImgPath, setCreatorImgPath] = useState();
 
   const [totalCirculatingSupply, setTotalCirculatingSupply] = useState();
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
@@ -195,7 +198,7 @@ const CollectionDetails = (props) => {
             currencyAddress, 
             mintPrice: Number(price.toString()) / 10 ** currencyMetadata?.decimals, 
            }
-          console.log(newcurrencyObj, price.toString())
+
           setClaimCurrency({...newcurrencyObj});
           setTotalCirculatingSupply(parseInt(totalCirculatingSupply._hex, 16));
           setTotalUnclaimedSupply(parseInt(unclaimedSupply._hex, 16));
@@ -215,6 +218,25 @@ const CollectionDetails = (props) => {
       //do nothing
     }
   }, []);
+
+  useEffect(() => {
+    if(!collectionData) return
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(collectionData?.web3imageprofile);
+      const nftBannerPath = await getImagefromWeb3(collectionData?.web3imagebanner);
+      const creatorImgPath = await getImagefromWeb3(collectionData?.creator?.web3imageprofile);
+
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+      setBannerPath(nftBannerPath?.data);
+      setCreatorImgPath(creatorImgPath?.data);
+    })();
+
+    return() => {}
+
+  }, [collectionData]);
+
 
   useEffect(() => {
     if(!Boolean(coinPrices)) return;
@@ -593,51 +615,53 @@ const CollectionDetails = (props) => {
     });
     
 
-  const unresolved = parsedData.map(async nft => {
-    const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
-    const newObject= {
-      ...nft,
-      listingData: data[0]
-    }
-    return newObject;
-  });
+    const unresolved = parsedData.map(async nft => {
+      const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
+      const newObject= {
+        ...nft,
+        listingData: data[0]
+      }
+      return newObject;
+    });
 
-  ;(async() => {
-    const resolved = await Promise.all(unresolved);
-    //remove nfts without metadata
-    const filternfts = resolved.filter(nft => nft.metadata != null)
-    setNfts(filternfts); //these are all nfts, for displaying nft cards
-    setFilteredNftData(filternfts);
-  })();
+    ;(async() => {
+      const resolved = await Promise.all(unresolved);
+      //remove nfts without metadata
+      const filternfts = resolved.filter(nft => nft.metadata != null)
+      setNfts(filternfts); //these are all nfts, for displaying nft cards
+      setFilteredNftData(filternfts);
+    })();
 
-    //this is for showing owners details
-  const ownerArray = parsedData.map(o => o.ownerOf);
-  const ownerset = new Set(ownerArray);
-  setNftHolders(Array.from(ownerset));
+      //this is for showing owners details
+    const ownerArray = parsedData.map(o => o.ownerOf);
+    const ownerset = new Set(ownerArray);
+    setNftHolders(Array.from(ownerset));
 
-  let propObj = [];
+    let propObj = [];
 
-  parsedData?.map(nft => {
-    //this will be for  nfts minted in house and opensea
-    if(Boolean(nft?.metadata?.properties?.traits)){
-      nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
-        if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
-          propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
-        }
-      });
-    }
-    //this will be for any other nfts
-    else if(Boolean(nft?.metadata?.attributes)){
-      nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
-        if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
-          propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
-        }
-      });
-    }
+    parsedData?.map(nft => {
+      //this will be for  nfts minted in house and opensea
+      if(Boolean(nft?.metadata?.properties?.traits)){
+        nft?.metadata?.properties?.traits?.filter(props => props.propertyKey != "" || props.propertyValue != "").map(props => {
+          if(propObj.findIndex(p => (p.propertyKey == props.propertyKey && p.propertyValue == props.propertyValue)) < 0){
+            propObj.push({propertyKey: props.propertyKey, propertyValue: props.propertyValue});
+          }
+        });
+      }
+      //this will be for any other nfts
+      else if(Boolean(nft?.metadata?.attributes)){
+        nft?.metadata?.attributes?.filter(trait => trait.trait_type != "" || trait.value != "").map(trait => {
+          if(propObj.findIndex(p => (p.trait_type == trait.trait_type && p.value == trait.value)) < 0){
+            propObj.push({propertyKey: trait.trait_type, propertyValue: trait.value});
+          }
+        });
+      }
 
-  })
-  setProperties(propObj);
-  setIsLoading(false);
+    })
+    setProperties(propObj);
+    setIsLoading(false);
+
+    return() => {}
   }, [infiniteData]);
 
 
@@ -853,7 +877,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
         <SEO
           title={collectionData?.name}
           description={collectionData?.description}
-          image={getImagefromWeb3(collectionData?.web3imageprofile)}
+          image={imgPath}
           currentUrl={`https://nuvanft.io/collection/${chain}/${collectionAddress}`} />
         )}
       <div className={`relative z-1 overflow-hidden ${dark && 'darkBackground'}`}>
@@ -995,9 +1019,9 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
               <div className="absolute inset-0" ref={bannerRef}>
                 <img
                   src={
-                    collectionData?.web3imagebanner ? getImagefromWeb3(collectionData?.web3imagebanner) : noBannerImage.src
+                    collectionData?.web3imagebanner ? bannerPath : noBannerImage.src
                   }
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover max-w-full"
                   alt={collectionData?.name}
                 />
               </div>
@@ -1015,7 +1039,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       <img
                         src={
                           collectionData?.web3imageprofile
-                            ? getImagefromWeb3(collectionData?.web3imageprofile)
+                            ? imgPath
                             : noProfileImage.src
                         }
                         className="h-full w-full object-cover"
@@ -1159,7 +1183,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                                         <div className="wil-avatar relative inline-flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full font-semibold uppercase text-neutral-100 shadow-inner ring-1 ring-white">
                                         {Boolean(collectionData?.creator?.web3imageprofile) ? (
                                             <img 
-                                              src={getImagefromWeb3(collectionData?.creator?.web3imageprofile)} 
+                                              src={creatorImgPath} 
                                               className="absolute inset-0 h-full w-full rounded-full object-cover" 
                                               alt={collectionData?.creator?.name}/>    
                                         ): (

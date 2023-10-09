@@ -4,7 +4,7 @@ import Report from '../Report'
 import toast from 'react-hot-toast'
 import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
-import { useState, Fragment } from 'react'
+import { useState, Fragment, useEffect } from 'react'
 import HelmetMetaData from '../HelmetMetaData'
 import { HiOutlineMail } from 'react-icons/hi'
 import { useAddress } from '@thirdweb-dev/react'
@@ -46,7 +46,23 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
   const router = useRouter();
   const [auctionedItem, setAuctionedItem] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [profilePath, setProfilePath] = useState();
+  const [ownerPath, setOwnerPath] = useState();
   const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData?.contract}/${nftContractData?.tokenId}`;
+
+  useEffect(() => {
+
+    ;(async () => {
+      const profile = await getImagefromWeb3(metaDataFromSanity?.web3imageprofile);
+      const owner = await getImagefromWeb3(ownerData?.web3imageprofile);
+      setProfilePath(profile?.data);
+      setOwnerPath(owner?.data);
+    })();
+
+    return () => {}
+
+  }, []);
+
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
@@ -128,7 +144,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   <a>
                     <img
                       className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
-                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? getImagefromWeb3(metaDataFromSanity?.web3imageprofile) : createAwatar(nftContractData?.contract)}
+                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? profilePath : createAwatar(nftContractData?.contract)}
                       alt={metaDataFromSanity?.name}
                     />
                   </a>
@@ -176,7 +192,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                       {ownerData?.web3imageprofile ? (
                         <img
                           className="absolute inset-0 h-full w-full rounded-full object-cover"
-                          src={getImagefromWeb3(ownerData?.web3imageprofile)}
+                          src={ownerPath}
                           alt={ownerData?.userName}
                         />
                       ) : (

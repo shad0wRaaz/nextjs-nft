@@ -39,6 +39,23 @@ const EditCollection = ({collection, setShowModal}) => {
   const [newCollectionData, setNewCollectionData] = useState(collection);
   const [selectedCategory, setSelectedCategory] = useState({"value": collection.category, "label": collection.category});
   const [updateStatus, setUpdateStatus] = useState('idle');
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
+
+  useEffect(() => {
+    if(!collection) return;
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(collection?.web3imageprofile);
+      const nftBannerPath = await getImagefromWeb3(collection?.web3imagebanner);
+
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+      setBannerPath(nftBannerPath?.data);
+    })();
+
+    return () => {}
+  }, [newCollectionData])
 
   const { mutate: updateMetadata, status: updateStatus_Old } = useMutation(
       () => updateCollectionMetaData(newCollectionData, signer, profile),
@@ -368,7 +385,7 @@ const EditCollection = ({collection, setShowModal}) => {
                 {profile ? (
                   <img src={URL.createObjectURL(profile)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setProfile(undefined)}/>
                   ) : newCollectionData?.web3imageprofile ? (
-                    <img src={getImagefromWeb3(newCollectionData.web3imageprofile)} 
+                    <img src={imgPath} 
                       className="object-cover cursor-pointer hover:opacity-80" 
                       onClick={e => {profileInputRef.current.click()}}/>
                 ) : (
@@ -411,7 +428,7 @@ const EditCollection = ({collection, setShowModal}) => {
                     {banner ? (
                       <img src={URL.createObjectURL(banner)} className="object-cover cursor-pointer hover:opacity-80" onClick={e => setBanner(undefined)}/>
                     ) : newCollectionData?.web3imagebanner ? (
-                      <img src={getImagefromWeb3(newCollectionData.web3imagebanner)} 
+                      <img src={bannerPath} 
                         className="object-cover cursor-pointer hover:opacity-80" 
                         onClick={e => {bannerInputRef.current.click()}}/>
                   ) : (

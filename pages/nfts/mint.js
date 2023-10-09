@@ -14,6 +14,7 @@ import { getImagefromWeb3 } from '../../fetchers/s3'
 import { checkValidURL } from '../../utils/utilities'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useUserContext } from '../../contexts/UserContext'
+import SkeletonLoader from '../../components/SkeletonLoader'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'
 import React, { useState, useEffect, useReducer } from 'react'
@@ -127,6 +128,7 @@ const mint = () => {
   const { errorToastStyle, successToastStyle } = useThemeContext();
   const [thisChainCollection, setThisChainCollection] = useState([]);
   const connectedChain = useChain();
+  const [chainImg, setChainImg] = useState();
   const address = useAddress();
   const { dark } = useThemeContext();
   const [sanityCollection, setSanityCollection] = useState([]) //this is for getting all collections from sanity
@@ -135,10 +137,48 @@ const mint = () => {
   const [isMinting, setIsMinting] = useState(false)
 
   useEffect(() => {
+    if(!connectedChain) return;
+
+    ;(async() => {
+      const imgPath = await getImagefromWeb3(connectedChain.icon.url)
+      setChainImg(imgPath?.data);
+
+    })()
+
+    return() => {}
+
+  }, [connectedChain])
+
+  useEffect(() => {
     //get only collection from this currently connected chain to show in Collection Selection Area
     if(!myCollections) return
-    let tempCollection = myCollections.filter((collection) => collection.chainId == connectedChain.chainId)
-    setThisChainCollection(tempCollection)
+    let tempCollection = myCollections.filter((collection) => collection.chainId == connectedChain.chainId);
+
+    const updatedCollection = tempCollection.map(async coll => {
+
+     const temp = {
+      ...coll,
+      web3imageprofile: await getImagefromWeb3(coll.web3imageprofile),
+      web3imagebanner: await getImagefromWeb3(coll.web3imagebanner),
+     }
+     return temp;
+    });
+
+    ;(async() => {
+      const a = await Promise.all(updatedCollection);
+      const b = a.map(c => {
+        const d = {
+          ...c,
+          web3imagebanner: c.web3imagebanner?.data,
+          web3imageprofile: c.web3imageprofile?.data,
+        }
+        return d;
+      });
+
+      setThisChainCollection(b);
+    })()
+
+
 
     return() => {
       //clean up function
@@ -418,7 +458,7 @@ const mint = () => {
                                         ? (dark ? 'bg-sky-900 bg-opacity-75 ring-2 ring-sky-600': 'ring-sky-600 ring-2 bg-sky-100')
                                         : (dark ? 'bg-[#1e293b] hover:bg-slate-700' : ' border border-neutral-100')
                                     }
-                                        linear relative flex w-full grow cursor-pointer rounded-lg px-5 py-4 shadow-md transition duration-300 focus:outline-none`
+                                        linear relative flex w-full h-full grow cursor-pointer rounded-lg px-5 py-4 shadow-md transition duration-300 focus:outline-none`
                                     }
                                 >
                                     {({ active, checked }) => (
@@ -427,11 +467,17 @@ const mint = () => {
                                             <div className="flex items-center flex-grow">
                                                 <div className="flex flex-col flex-grow justify-center space-y-3 text-sm items-center">
                                                     <div className="">
+                                                      {collection.web3imageprofile ? (
                                                         <img
-                                                        src={getImagefromWeb3(collection.web3imageprofile)}
+                                                        src={collection.web3imageprofile}
                                                         alt={collection.name}
                                                         className="aspect-video h-[50px] w-[50px] rounded-full ring-2 ring-white"
-                                                        />
+                                                        />)
+                                                        :
+                                                        <div className="relative aspect-video h-[50px] w-[50px] rounded-full ring-2 ring-white overflow-hidden">
+                                                          <SkeletonLoader roundness="lg" />
+                                                        </div>
+                                                      }
                                                     </div>
                                                     <div className="grow">
                                                         <RadioGroup.Label
@@ -536,7 +582,7 @@ const mint = () => {
 
                 <div className={`text-small mx-auto !mt-6 text-center border ${dark ? 'border-slate-700': 'border-neutral-100'} rounded-lg p-3 w-fit`}>
                     This NFT will be minted on 
-                    <img src={getImagefromWeb3(connectedChain.icon.url)} height="20px" width="20px" className="inline-block ml-4 mr-2" />
+                    <img src={chainImg} height="20px" width="20px" className="inline-block ml-4 mr-2" />
                     {connectedChain?.name}
                 </div>
 

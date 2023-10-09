@@ -8,6 +8,7 @@ import { getImagefromWeb3 } from '../fetchers/s3'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import SkeletonLoader from './SkeletonLoader'
 
 
 const SearchItem = ({ nftItem, compact }) => {
@@ -15,6 +16,19 @@ const SearchItem = ({ nftItem, compact }) => {
   const address = useAddress();
   const { dark } = useThemeContext();
   const { selectedBlockchain } = useMarketplaceContext();
+  const [imgPath, setImgPath] = useState();
+
+  useEffect(() => {
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(nftItem?.asset?.image);
+      setImgPath(nftImagePath?.data);
+    })();
+
+    return () => {}
+
+  }, []);
+
   // const [likers, setLikers] = useState([])
   // const [isLiked, setIsLiked] = useState(false)
  
@@ -73,15 +87,17 @@ const SearchItem = ({ nftItem, compact }) => {
                 <div>
                   <div
                     className={`aspect-w-11 aspect-h-12 z-0 flex ${compact ? 'h-[150px]' : 'h-[300px]'} w-full cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out will-change-transform`}>
-                      {Boolean(nftItem.asset.image) && (
-                        <Image
-                          src={getImagefromWeb3(nftItem.asset.image)}
+                      {imgPath ? (
+                        <img
+                          src={imgPath}
                           className="h-full w-full rounded-2xl hover:rounded-2xl overflow-hidden object-cover "
                           objectFit='cover'
                           layout= 'fill'
                           alt={nftItem.asset.name}
                         />
-                      )}
+                      ) :
+                      <SkeletonLoader roundness="xl"/>
+                      }
                   </div>
                   {Boolean(nftItem?.type == 1) && (
                   <div className="absolute left-2 top-2 bg-slate-800/90 rounded-full p-2">
@@ -109,12 +125,12 @@ const SearchItem = ({ nftItem, compact }) => {
 
                 {/* <div className={`w-full border-b ${dark ? 'border-sky-700/30' : 'border-neutral-100'}`}></div> */}
 
-                <div className={`flex border-t ${dark ? 'border-slate-600' : 'border-neutral-100'} pt-4 items-end justify-between `}>
-                  <div className="pt-3">
+                <div className={`flex ${dark ? 'border-slate-600' : 'border-neutral-100'} items-end justify-between `}>
+                  <div className="">
                     <div className={`relative flex items-baseline rounded-lg ${compact ? 'border' : 'border-2'} border-green-500 py-1.5 px-2.5 text-sm font-semibold sm:text-base md:py-2 md:px-3.5 `}>
-                      <span className={`absolute bottom-full -mx-1 block rounded-md translate-y-1 p-1 px-3 bg-green-500 text-xs font-normal text-neutral-100`}>
+                      {/* <span className={`absolute bottom-full -mx-1 block rounded-md translate-y-1 p-1 px-3 bg-green-500 text-xs font-normal text-neutral-100`}>
                         Price
-                      </span>
+                      </span> */}
 
                       <span className=" !leading-none text-green-500">
                         {ethers.utils.formatUnits(nftItem.buyoutPrice.hex, 18)}{' '}

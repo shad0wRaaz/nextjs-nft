@@ -52,6 +52,8 @@ const Collection = () => {
   const [cursorHistory, setCursorHistory] = useState([]);
   const [ collectionsFromInfura, setCollectionsFromInfura] = useState([]);
   const [mynfts, setMynfts] = useState();
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
   const style = {
     nftwrapper:
     `grid gap-4 md:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${compact ? 'grid-cols-6' : 'xl:grid-cols-4'} place-items-center`,
@@ -135,6 +137,22 @@ const Collection = () => {
   )
 
   useEffect(() => {
+    if(!myUser) return
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(myUser?.web3imageprofile);
+      const nftBannerPath = await getImagefromWeb3(myUser?.web3imagebanner);
+
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+      setBannerPath(nftBannerPath?.data);
+    })();
+
+    return() => {}
+
+  }, [myUser])
+
+  useEffect(() => {
     if (!address) {
       router.push('/')
       return
@@ -167,7 +185,7 @@ const Collection = () => {
         <div className="relative h-60 w-full md:h-60 2xl:h-96" ref={bannerRef}>
           <div className="absolute inset-0">
             <img
-              src={myUser?.web3imagebanner ? getImagefromWeb3(myUser?.web3imagebanner) : `https://picsum.photos/1500/500/?blur=10`}
+              src={myUser?.web3imagebanner ? bannerPath : `https://picsum.photos/1500/500/?blur=10`}
               className="h-full w-full object-cover"
               alt={myUser?.userName}
             />
@@ -186,7 +204,7 @@ const Collection = () => {
                   className="aspect-w-1 aspect-h-1 overflow-hidden rounded-3xl"
                 >
                   <img
-                    src={ myUser?.web3imageprofile ? getImagefromWeb3(myUser?.web3imageprofile) : createAwatar(address) }
+                    src={ myUser?.web3imageprofile ? imgPath : createAwatar(address) }
                     className="h-full w-full object-cover"
                     alt={myUser?.userName}
                   />

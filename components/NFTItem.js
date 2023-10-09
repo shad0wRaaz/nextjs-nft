@@ -12,6 +12,21 @@ import { IconHeart, IconImage, IconVideo } from './icons/CustomIcons'
 const NFTItem = ({ nftItem, chain, compact }) => {
   if(!nftItem.asset) return
   const { dark } = useThemeContext();
+  const [imgPath, setImgPath] = useState();
+
+  useEffect(() => {
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(nftItem?.asset?.image);
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+    })();
+
+    return () => {}
+
+  }, []);
+  
+
   // const [isLiked, setIsLiked] = useState(false);
   // const address = useAddress();
   // const [nftData, settNftData] = useState();
@@ -53,6 +68,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
   //     //do nothing
   //   }
   // }, [address])
+  console.log(imgPath?.data)
 
   return (
     <div
@@ -70,7 +86,7 @@ const NFTItem = ({ nftItem, chain, compact }) => {
         <div className="relative flex-shrink-0 cursor-pointer">
           <div className={`aspect-w-11 aspect-h-12 relative z-0 flex ${compact ? 'h-[250px]' : 'h-[415px]'} w-full overflow-hidden rounded-2xl`}>
             <img
-              src={getImagefromWeb3(nftItem?.asset?.image)}
+              src={imgPath}
               className="rounded-2xl object-cover h-full w-full transition-transform duration-300 ease-in-out will-change-transform hover:scale-[1.03]"
               alt={nftItem?.asset?.name}
               loading='lazy'

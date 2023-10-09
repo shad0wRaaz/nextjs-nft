@@ -61,6 +61,8 @@ const profile = () => {
   const [sendingEmail, setSendingEmail] = useState(false);
   const [isReferrerAdded, setIsReferrerAdded] = useState(false);
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
+  const [imgPath, setImgPath] = useState();
+  const [bannerPath, setBannerPath] = useState();
 
   useEffect(() => {
     if (!myUser) return
@@ -220,6 +222,20 @@ const profile = () => {
       setIsSaving(false)
     }
   }
+
+  useEffect(() => {
+    if(!userDoc) return;
+
+    ;(async () => {
+      const userPath = await getImagefromWeb3(userDoc?.web3imageprofile);
+      const bannerPath = await getImagefromWeb3(userDoc?.web3imagebanner);
+      // console.log(nftImagePath)
+      setImgPath(userPath?.data);
+      setBannerPath(bannerPath?.data);
+    })();
+    return() => {}
+
+  }, [userDoc])
 
   const initiateEmailVerification = async (email, toastHandler = toast) => {
     //check email pattern first
@@ -507,7 +523,7 @@ const profile = () => {
                         <div 
                           onClick={() => {profileInputRef.current.click()}} 
                           className={`imageContainer relative cursor-pointer w-full h-full text-center flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-${dark ? '800' : '100'} px-4`}
-                          style={{ backgroundImage: `url(${getImagefromWeb3(userDoc?.web3imageprofile)})`, backgroundSize: 'cover'}}
+                          style={{ backgroundImage: `url(${imgPath})`, backgroundSize: 'cover'}}
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={(e) => {
                             e.preventDefault();
@@ -549,7 +565,7 @@ const profile = () => {
                         <div 
                           onClick={() => {bannerInputRef.current.click()}} 
                           className={`imageContainer relative cursor-pointer w-full h-full text-center flex justify-center flex-wrap flex-col gap-2 p-3 items-center text-slate-400 hover:bg-slate-${dark ? '800' : '100'} px-4`}
-                          style={{ backgroundImage: `url(${getImagefromWeb3(userDoc?.web3imagebanner)})`, backgroundSize: 'cover'}}
+                          style={{ backgroundImage: `url(${bannerPath})`, backgroundSize: 'cover'}}
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={(e) => {
                             e.preventDefault();

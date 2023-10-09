@@ -42,7 +42,7 @@ const Home = ({ featuredNfts, backendAvailable }) => {
         
           <ExploreNFTs/>
           <HowToInfo/>
-          <BrowseByCategory/>
+          {/* <BrowseByCategory/> */}
         
         <SubscribeSection />
         <Footer/>

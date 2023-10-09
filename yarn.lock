@@ -2568,6 +2568,16 @@
     form-data "^4.0.0"
     uuid "^9.0.0"
 
+"@thirdweb-dev/storage@^1.2.11":
+  version "1.2.11"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/storage/-/storage-1.2.11.tgz#dba2c0725ee0e16bb5b5609d3667bec1fbd2924e"
+  integrity sha512-V9S7teVZ2XokbCCrf1AmWUDGECkRxjS0sN4pi11jVjO/hcp9q5arMX2FkXLvdAjpFoOreVqh2uOUiRmFcSj3HQ==
+  dependencies:
+    cid-tool "^3.0.0"
+    cross-fetch "^3.1.8"
+    form-data "^4.0.0"
+    uuid "^9.0.0"
+
 "@thirdweb-dev/wallets@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@thirdweb-dev/wallets/-/wallets-1.1.5.tgz#f5d2c1ed151f534a3bb7aca3a6f1416f02b8a0cd"

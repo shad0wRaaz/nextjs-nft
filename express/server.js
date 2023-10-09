@@ -22,7 +22,7 @@ const app = express();
 //enable helmet middleware
 app.use(helmet());
 
-app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
+app.use(cors({origin: ['http://localhost:3000', 'https://nuvanft.io', 'https://www.nuvanft.io', 'https://metanuva.com', 'https://ipfs.thirdwebcdn.com']}))
 // app.use(cors({origin: "*"}))
 
 // parse application/x-www-form-urlencoded
@@ -82,7 +82,7 @@ const redis = new Redis({
 })
 
 const web3storage = new ThirdwebStorage({
-  secretKey: process.env.NEXT_PUBLIC_THIRDWEB_SECRET_KEY,
+  secretKey: process.env.NEXT_PUBLIC_THIRDWEB_STORAGE_KEY,
 });
 
 
@@ -679,6 +679,12 @@ app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
     return res.status(200).json({ 'message': 'Error in saving image in Web3'});
   }
 });
+
+app.get('/api/getweb3image', async(req,res) => {
+  const uri = req.query.uri;
+  const url = await web3storage.resolveScheme(uri);
+  res.send(url);
+})
 
 app.get('/api/updateListings/:blockchain', async (req, res) => {
   //only refresh required chain.

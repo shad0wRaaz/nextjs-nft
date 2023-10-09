@@ -1,4 +1,6 @@
-import axios from 'axios'
+import axios from 'axios';
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
+
 
 const HOST = process.env.NODE_ENV === 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
 
@@ -33,7 +35,16 @@ export const saveImageToWeb3 = async (formdata) => {
     })
 }
 
-export const getImagefromWeb3 = (ipfsuri) => {
+export const getImagefromWeb3 = async (ipfsuri) => {
+  if(!ipfsuri) return;
+  const web3image = await axios.get(`${HOST}/api/getweb3image`, {
+    params: {
+      uri: ipfsuri,
+    }
+  })
+  return web3image;
+
+
   if(ipfsuri?.startsWith("https://")) 
   {
     return ipfsuri;
