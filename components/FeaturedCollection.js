@@ -18,11 +18,13 @@ import panda10 from '../public/assets/panda10.png'
 import panda11 from '../public/assets/panda11.png'
 import panda12 from '../public/assets/panda12.png'
 import { IconBNB, IconLoading } from './icons/CustomIcons'
+import { getImagefromWeb3 } from '../fetchers/s3'
 
 
 const FeaturedCollection = () => {
   const [totalUnclaimedSupply, setTotalUnclaimedSupply ] = useState();
   const [mintPrice, setMintPrice] = useState();
+  const [imgPath, setImgPath] = useState();
   const style = {
       wrapperContainer: 'topCollectionWrapper text-center bg-center bg-top md:bg-center md:bg-cover z-0 relative',
       wrapper: 'container mx-auto lg:p-[8rem] p-[2rem]  pb-[4rem]',
@@ -101,6 +103,9 @@ const FeaturedCollection = () => {
       setTotalUnclaimedSupply(await contract.erc721.totalUnclaimedSupply());
       const {price} = await contract.erc721.claimConditions.getActive();
       setMintPrice(ethers.utils.formatUnits(price, 18));
+
+      const profilePath = await getImagefromWeb3('ipfs://QmW9so3RSqMZPaHQwLwbX2XeUj3pyvUeJgPQLs3hYANoxK/0');
+      setImgPath(profilePath?.data)
     })()
   }, []);
 
@@ -132,7 +137,7 @@ const FeaturedCollection = () => {
                   <div className="">
                     <div className="flex gap-4 justify-center text-left text-2xl relative">
                       <div className="wil-avatar relative inline-flex h-[40px] bg-white w-[40px] flex-shrink-0 items-center justify-center rounded-full text-2xl font-semibold uppercase text-neutral-100 shadow-inner ring-2 ring-neutral-400">
-                        <img className="absolute inset-0 h-full w-full rounded-full object-cover" src="https://ipfs.io/ipfs/QmW9so3RSqMZPaHQwLwbX2XeUj3pyvUeJgPQLs3hYANoxK/0" alt="Pandagram v2"/>
+                        <img className="absolute inset-0 h-full w-full rounded-full object-cover" src={imgPath} alt="Pandagram v2"/>
                           <span className="wil-avatar__name">J</span>
                       </div>
                     Pandagram v2</div>
