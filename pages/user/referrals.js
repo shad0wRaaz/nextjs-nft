@@ -17,6 +17,7 @@ import { TbSquareRoundedNumber1Filled, TbSquareRoundedNumber2Filled, TbSquareRou
 import SEO from '../../components/SEO'
 import { BsQuestionCircle } from 'react-icons/bs'
 import Link from 'next/link'
+import ReferralUserBox from '../../components/ReferralUserBox'
 
 const referrals = () => {
     const address = useAddress();
@@ -45,11 +46,9 @@ const referrals = () => {
     }
     const style = {
         wrapper: '',
-        userprofile: 'w-[40px] mx-auto mb-1 h-[40px] rounded-full object-cover outline outline-2 outline-slate-300 mt-3',
         tablewrapper: `max-h-[500px] overflow-auto rounded-lg border ${dark ? 'border-slate-700' : 'border-neutral-200'}`,
         userul: dark ? 'before:border-l before:border-slate-700' :'before:border-l before:border-neutral-200',
         userli: dark ? 'before:border-t before:border-slate-700 after:border-t after:border-slate-700 last:before:border-r last:before:border-border-slate-700 after:border-l after:border-slate-700' :'before:border-t before:border-neutral-200 after:border-t after:border-neutral-200 last:before:border-r last:before:border-border-slate-200 after:border-l after:border-neutral-200',
-        userbox: `${dark ? 'border border-slate-700': 'border border-neutral-200'} bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-400/50 to-blue-500/50`,
         table: `text-sm w-full text-base whitespace-nowrap`,
         tableheader: `font-normal py-4 ${dark ? 'bg-slate-600' : ' bg-neutral-100'} text-left pl-2`,
         tablecell: 'py-3 pl-2',
@@ -161,122 +160,64 @@ const referrals = () => {
                             <div className="tree w-max mx-auto"><span className="hidden">{leveltwoRef.current = 0 }{levelthreeRef.current = 0 }{levelfourRef.current = 0 }{levelfiveRef.current = 0 }</span>
                                 <ul className="flex w-[2000px] lg:w-auto justify-start lg:justify-center">
                                     <li>
-                                        <a href="#" className={style.userbox + ' outline-2 outline-sky-700  outline-double'}>
-                                            {myUser && (
-                                                <>
-                                                    <img src={Boolean(myUser.web3imageprofile) ? getImagefromWeb3(myUser.web3imageprofile) : createAwatar(myUser.walletAddress)} alt={myUser.userName} className={style.userprofile} /> 
-                                                    {myUser.userName != "Unnamed" && <>{myUser.userName}</>}
-                                                    <p>
-                                                        <BiWallet className="inline-block" fontSize={14}/> 
-                                                        <span className="text-sm">
-                                                            {myUser.walletAddress.slice(0,4)}...{myUser.walletAddress.slice(-4)}
-                                                        </span>
-                                                    </p>
-                                                </>
-                                            )}
-                                        </a>
+                                        {myUser && (
+                                            <ReferralUserBox 
+                                                walletAddress={myUser.walletAddress}
+                                                profileImage={myUser.web3imageprofile}
+                                                userName={myUser.userName}
+                                            />
+                                        )}
                                         <ul className={style.userul}>
                                             {networkStatus == "success" && networkData.map((person) => (
                                                 <li key={person.walletAddress} className={style.userli + ' first:before:!hidden'}>
-                                                    <a href={`/user/${person.walletAddress}`} className={style.userbox}>
-                                                        <img src={Boolean(person.web3imageprofile) ? getImagefromWeb3(person.web3imageprofile) : createAwatar(person.walletAddress)} alt={person.userName} className={style.userprofile} />
-                                                        {/* <span className="hidden">{teamcountRef.current += 1}</span> */}
-                                                        {person.userName != "Unnamed" && <>{person.userName}</>}
-                                                        <p>
-                                                            <BiWallet className="inline-block" fontSize={14}/> 
-                                                            <span className="text-sm">
-                                                                {person.walletAddress.slice(0,4)}...{person.walletAddress.slice(-4)}
-                                                            </span>
-                                                        </p>
-                                                    </a>
+                                                    <ReferralUserBox 
+                                                        walletAddress={person.walletAddress}
+                                                        profileImage={person.web3imageprofile}
+                                                        userName={person.userName}
+                                                    />
                                                     {Boolean(person.level1Friends) && (
                                                         <ul className={style.userul + `${(Boolean(myUser) && myUser.payablelevel == 1) ? ' pointer-events-none opacity-30': ''}`}>
                                                             {person.level1Friends?.map((level1Friend) => (
                                                             <li key={level1Friend.walletAddress} className={style.userli}>
-                                                                <a href={`/user/${level1Friend.walletAddress}`} className={style.userbox}>
-                                                                    <img 
-                                                                        src={
-                                                                            Boolean(level1Friend.web3imageprofile) ? 
-                                                                                getImagefromWeb3(level1Friend.web3imageprofile) : 
-                                                                                createAwatar(level1Friend.walletAddress)
-                                                                            } 
-                                                                        alt={level1Friend.userName} 
-                                                                        className={style.userprofile} />
-                                                                    <span className="hidden">{leveltwoRef.current += 1}</span>
-                                                                    {level1Friend.userName != "Unnamed" && <>{level1Friend.userName}</>}
-                                                                    <p>
-                                                                        <BiWallet className="inline-block" fontSize={14}/> 
-                                                                        <span className="text-sm">
-                                                                            {level1Friend.walletAddress.slice(0,4)}...{level1Friend.walletAddress.slice(-4)}
-                                                                        </span>
-                                                                    </p>
-                                                                </a>
+                                                                <ReferralUserBox 
+                                                                    walletAddress={level1Friend.walletAddress}
+                                                                    profileImage={level1Friend.web3imageprofile}
+                                                                    userName={level1Friend.userName}
+                                                                    hiddenValue={leveltwoRef.current += 1}
+                                                                />
                                                                 {Boolean(level1Friend.level2Friends) && (
                                                                     <ul className={style.userul + `${(Boolean(myUser) && myUser.payablelevel == 2) ? ' pointer-events-none opacity-30': ''}`}>
                                                                         {level1Friend.level2Friends?.map((level2Friend) => (
                                                                             <li key={level2Friend.walletAddress} className={style.userli}>
-                                                                                <a href={`/user/${level2Friend.walletAddress}`} className={style.userbox}>
-                                                                                    <img 
-                                                                                        src={
-                                                                                            Boolean(level2Friend.web3imageprofile) ? 
-                                                                                            getImagefromWeb3(level2Friend.web3imageprofile) : 
-                                                                                            createAwatar(level2Friend.walletAddress)
-                                                                                        }
-                                                                                        alt={level2Friend.userName}
-                                                                                        className={style.userprofile} />
-                                                                                    <span className="hidden">{levelthreeRef.current += 1}</span>
-                                                                                    {level2Friend.userName != "Unnamed" && <>{level2Friend.userName}</>}
-                                                                                    <p>
-                                                                                        <BiWallet className="inline-block" fontSize={14}/> 
-                                                                                        <span className="text-sm">
-                                                                                            {level2Friend.walletAddress.slice(0,4)}...{level2Friend.walletAddress.slice(-4)}
-                                                                                        </span>
-                                                                                    </p>
-                                                                                </a>
+                                                                                <ReferralUserBox 
+                                                                                    walletAddress={level2Friend.walletAddress}
+                                                                                    profileImage={level2Friend.web3imageprofile}
+                                                                                    userName={level2Friend.userName}
+                                                                                    hiddenValue={levelthreeRef.current += 1}
+                                                                                />
+                                                                                
                                                                                 {Boolean(level2Friend.level3Friends) && (
                                                                                     <ul className={style.userul + `${(Boolean(myUser) && myUser.payablelevel == 3) ? ' pointer-events-none opacity-30': ''}`}>
                                                                                         {level2Friend.level3Friends?.map((level3Friend) => (
                                                                                             <li key={level3Friend.walletAddress} className={style.userli}>
-                                                                                                <a href={`/user/${level3Friend.walletAddress}`} className={style.userbox}>
-                                                                                                    <img 
-                                                                                                        src={
-                                                                                                            Boolean(level3Friend.web3imageprofile) ? 
-                                                                                                            getImagefromWeb3(level3Friend.web3imageprofile) : 
-                                                                                                            createAwatar(level3Friend.walletAddress)
-                                                                                                        } 
-                                                                                                        alt={level3Friend.userName} 
-                                                                                                        className={style.userprofile} />
-                                                                                                    <span className="hidden">{levelfourRef.current += 1}</span>
-                                                                                                    {level3Friend.userName != "Unnamed" && <>{level3Friend.userName}</>}
-                                                                                                    <p>
-                                                                                                        <BiWallet className="inline-block" fontSize={14}/> 
-                                                                                                        <span className="text-sm">
-                                                                                                            {level3Friend.walletAddress.slice(0,4)}...{level3Friend.walletAddress.slice(-4)}
-                                                                                                        </span>
-                                                                                                    </p>
-                                                                                                </a>
+                                                                                                <ReferralUserBox 
+                                                                                                    walletAddress={level3Friend.walletAddress}
+                                                                                                    profileImage={level3Friend.web3imageprofile}
+                                                                                                    userName={level3Friend.userName}
+                                                                                                    hiddenValue={levelfourRef.current += 1}
+                                                                                                />
+
                                                                                                 {Boolean(level3Friend.level4Friends) && (
                                                                                                     <ul className={style.userul + `${(Boolean(myUser) && myUser.payablelevel == 4) ? ' pointer-events-none opacity-30': ''}`}>
                                                                                                         {level3Friend.level4Friends?.map((level4Friend) => (
                                                                                                             <li key={level4Friend.walletAddress} className={style.userli}>
-                                                                                                                <a href={`/user/${level4Friend.walletAddress}`} className={style.userbox}>
-                                                                                                                    <img 
-                                                                                                                        src={
-                                                                                                                            Boolean(level4Friend.web3imageprofile) ? 
-                                                                                                                            getImagefromWeb3(level4Friend.web3imageprofile) : 
-                                                                                                                            createAwatar(level4Friend.walletAddress)
-                                                                                                                        } 
-                                                                                                                        alt={level4Friend.userName} 
-                                                                                                                        className={style.userprofile} />
-                                                                                                                    <span className="hidden">{levelfiveRef.current += 1}</span>
-                                                                                                                    {level4Friend.userName != "Unnamed" && <>{level4Friend.userName}</>}
-                                                                                                                    <p>
-                                                                                                                        <BiWallet className="inline-block" fontSize={14}/> 
-                                                                                                                        <span className="text-sm">
-                                                                                                                            {level4Friend.walletAddress.slice(0,4)}...{level4Friend.walletAddress.slice(-4)}
-                                                                                                                        </span>
-                                                                                                                    </p>
-                                                                                                                </a>
+                                                                                                                <ReferralUserBox 
+                                                                                                                    walletAddress={level4Friend.walletAddress}
+                                                                                                                    profileImage={level4Friend.web3imageprofile}
+                                                                                                                    userName={level4Friend.userName}
+                                                                                                                    hiddenValue={levelfiveRef.current += 1}
+                                                                                                                />
+                                                                                                                
                                                                                                                 {/* {Boolean(level4Friend.level5Friends) && (
                                                                                                                     <ul className={style.userul}>
                                                                                                                         {level4Friend.level5Friends?.map((level5Friend) => (

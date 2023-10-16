@@ -7,6 +7,7 @@ import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { HiMenu } from 'react-icons/hi'
 import Notifications from './Notifications'
+import ConnectButton from './ConnectButton'
 import ThemeSwitcher from './ThemeSwitcher'
 import { config } from '../lib/sanityClient'
 import { GoDashboard } from 'react-icons/go'
@@ -18,10 +19,10 @@ import { useState, useEffect, Fragment } from 'react'
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
+import { useAddress, useChainId } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../contexts/SettingsContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
-import { useAddress, ConnectWallet, useChainId } from '@thirdweb-dev/react'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices, getBlockedItems, checkReferralUser } from '../fetchers/SanityFetchers'
@@ -160,10 +161,12 @@ const Header = () => {
     }
   }, []);
 
+
   useEffect(() => {
     if (!address) {
       setIsLogged(false);
       setIsAdmin(false);
+
       setMyUser();
       return
     }
@@ -450,7 +453,7 @@ const Header = () => {
                     </>
                   )}
                   <div className="flex justify-center  mb-4 mt-4 pt-4 border-t border-slate-600">
-                    <ConnectWallet accentColor="#0053f2" colorMode="light" className="rounded-xxl" />
+                    <ConnectButton/>
                   </div>
                 </div>
               </Menu.Items>
@@ -563,7 +566,7 @@ const Header = () => {
               </div>
             </>
           )}
-          <ConnectWallet accentColor="#0053f2" colorMode={dark ? "dark": "light"} className=" ml-4" />
+          <ConnectButton />
 
           <div 
             className="absolute right-0 top-[50px] border p-1 border-[#ffffff22] rounded-full bg-[#ffffff55] hover:bg-[#ffffff66] transition cursor-pointer"

@@ -25,6 +25,7 @@ import BurnCancel from '../../../../components/nft/BurnCancel'
 import { Disclosure, Tab, Transition } from '@headlessui/react'
 import ItemActivity from '../../../../components/nft/ItemActivity'
 import AuctionTimer from '../../../../components/nft/AuctionTimer'
+import SkeletonLoader from '../../../../components/SkeletonLoader'
 import { useThemeContext } from '../../../../contexts/ThemeContext'
 import { getReferralRate } from '../../../../fetchers/SanityFetchers'
 import ReportActivity from '../../../../components/nft/ReportActivity'
@@ -35,7 +36,6 @@ import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
-import SkeletonLoader from '../../../../components/SkeletonLoader'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -316,7 +316,7 @@ const Nft = (props) => { //props are from getServerSideProps
   // }, [metaDataFromSanity, address])
 
   return (
-    <div className={`overflow-hidden ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}>
+    <div className={` ${dark ? 'darkBackground text-neutral-100' : ' gradSky-vertical-white'}`}>
       {isZoom && (
         <div className=" h-full fixed z-20 w-full top-0 left-0 backdrop-blur-3xl bg-[#00000022] flex justify-center items-center cursor-pointer" onClick={() => setIsZoom(false)}>
           <div className="relative">
@@ -723,62 +723,63 @@ const Nft = (props) => { //props are from getServerSideProps
                     </Disclosure>
                   </div>
                 </div>
-                <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10`}>
+                <div className={`border-t ${dark ? ' border-slate-600' : ' border-neutral-200'} pt-10 lg:border-t-0 lg:pt-0 xl:pl-10 relative`}>
+                  <div className="sticky lg:top-[150px]">
+                    <Purchase
+                      nftContractData={nftContractData}
+                      listingData={listingData}
+                      nftCollection={metaDataFromSanity}
+                      auctionItem={isAuctionItem}
+                      ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
+                      thisNFTMarketAddress={thisNFTMarketAddress}
+                      thisNFTblockchain={thisNFTblockchain}
+                      splitContract={royaltyData?.fee_recipient}
+                      royaltySplitData={royaltySplitData}
+                      />
+                      
+                    <Benefits nftCollection={metaDataFromSanity}/>
 
-                  <Purchase
-                    nftContractData={nftContractData}
-                    listingData={listingData}
-                    nftCollection={metaDataFromSanity}
-                    auctionItem={isAuctionItem}
-                    ownerData={Boolean(ownerData?.owners[0]) ? ownerData?.owners[0] : null}
-                    thisNFTMarketAddress={thisNFTMarketAddress}
-                    thisNFTblockchain={thisNFTblockchain}
-                    splitContract={royaltyData?.fee_recipient}
-                    royaltySplitData={royaltySplitData}
-                    />
-                    
-                  <Benefits nftCollection={metaDataFromSanity}/>
+                    {/* {listingData && isAuctionItem && (parseInt(listingData?.endTimeInEpochSeconds.hex, 16) != parseInt(listingData?.startTimeInEpochSeconds.hex, 16)) && (
+                      <AuctionTimer
+                      selectedNft={nftContractData}
+                      listingData={listingData}
+                      auctionItem={isAuctionItem}
+                      />
+                    )} */}
+                    {Boolean(listingData) && (
+                      <ItemOffers
+                      selectedNft={ownerData}
+                      listingData={listingData}
+                      metaDataFromSanity={metaDataFromSanity}
+                      thisNFTMarketAddress={thisNFTMarketAddress}
+                      thisNFTblockchain={thisNFTblockchain}
+                      isAuctionItem={isAuctionItem}
+                      />
+                    )}
 
-                  {/* {listingData && isAuctionItem && (parseInt(listingData?.endTimeInEpochSeconds.hex, 16) != parseInt(listingData?.startTimeInEpochSeconds.hex, 16)) && (
-                    <AuctionTimer
-                    selectedNft={nftContractData}
-                    listingData={listingData}
-                    auctionItem={isAuctionItem}
-                    />
-                  )} */}
-                  {Boolean(listingData) && (
-                    <ItemOffers
-                    selectedNft={ownerData}
-                    listingData={listingData}
-                    metaDataFromSanity={metaDataFromSanity}
-                    thisNFTMarketAddress={thisNFTMarketAddress}
-                    thisNFTblockchain={thisNFTblockchain}
-                    isAuctionItem={isAuctionItem}
-                    />
-                  )}
-
-                  <ItemActivity
-                    thisNFTblockchain={thisNFTblockchain}
-                    selectedNft={nftContractData}
-                    metaDataFromSanity={ metaDataFromSanity }
-                    />
-                  {address && (
-                    <ReportActivity
+                    <ItemActivity
+                      thisNFTblockchain={thisNFTblockchain}
                       selectedNft={nftContractData}
                       metaDataFromSanity={ metaDataFromSanity }
-                    />
-                  )}
+                      />
+                    {address && (
+                      <ReportActivity
+                        selectedNft={nftContractData}
+                        metaDataFromSanity={ metaDataFromSanity }
+                      />
+                    )}
 
-                  <BurnCancel 
-                    nftContractData={nftContractData} 
-                    ownerData={ownerData?.owners[0].ownerOf}
-                    listingData={listingData}
-                    auctionItem={isAuctionItem}
-                    nftCollection={metaDataFromSanity}
-                    thisNFTMarketAddress={thisNFTMarketAddress}
-                    thisNFTblockchain={thisNFTblockchain}
-                    />
+                    <BurnCancel 
+                      nftContractData={nftContractData} 
+                      ownerData={ownerData?.owners[0].ownerOf}
+                      listingData={listingData}
+                      auctionItem={isAuctionItem}
+                      nftCollection={metaDataFromSanity}
+                      thisNFTMarketAddress={thisNFTMarketAddress}
+                      thisNFTblockchain={thisNFTblockchain}
+                      />
 
+                  </div>
                 </div>
               </div>
             </main>

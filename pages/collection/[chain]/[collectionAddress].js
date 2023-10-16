@@ -49,6 +49,7 @@ import { ConnectWallet, useAddress, useChain, useSigner, useSwitchChain } from '
 import { createAwatar, isCompanyWallet, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconUSDT, IconVerified } from '../../../components/icons/CustomIcons'
+import ConnectButton from '../../../components/ConnectButton';
 
 //do not remove HOST, need it for serverside props so cannot use it from context
 const HOST = process.env.NODE_ENV == 'production' ? 'https://nuvanft.io:8080' : 'http://localhost:8080'
@@ -1531,7 +1532,8 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                 )}
                 <div className="flex gap-4 justify-center flex-wrap">
                   {!Boolean(address) && (
-                    <ConnectWallet className="!w-full md:!w-fit "/>
+                    // <ConnectWallet className="!w-full md:!w-fit "/>
+                    <ConnectButton className="!w-full md:!w-fit "/>
                   )}
                   {rewardingCollections.includes(collectionAddress?.toLowerCase()) &&
                   (<Link href={`/rewarding-renditions#videos`} passHref>

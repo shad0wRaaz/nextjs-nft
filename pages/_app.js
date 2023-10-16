@@ -12,7 +12,19 @@ import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
-import { ThirdwebProvider, metamaskWallet, coinbaseWallet, walletConnect, safeWallet } from '@thirdweb-dev/react'
+import { ThirdwebProvider,
+  ConnectWallet,
+  metamaskWallet,
+  coinbaseWallet,
+  walletConnect,
+  safeWallet,
+  trustWallet,
+  zerionWallet,
+  bloctoWallet,
+  magicLink,
+  frameWallet,
+  rainbowWallet,
+  phantomWallet, } from '@thirdweb-dev/react'
 import { Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet, Ethereum, Goerli, Mumbai, Polygon } from '@thirdweb-dev/chains'
 // import TransitionLayout from '../components/TransitionLayout'
 
@@ -28,12 +40,52 @@ function MyApp({ Component, pageProps }) {
         clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
         supportedWallets={[
           metamaskWallet(),
-          coinbaseWallet(),
-          walletConnect({
-            projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_V2_PROJECT_ID
+          coinbaseWallet({ recommended: true }),
+          walletConnect(),
+          safeWallet({
+            personalWallets: [
+              metamaskWallet(),
+              coinbaseWallet({ recommended: true }),
+              walletConnect(),
+              trustWallet(),
+              zerionWallet(),
+              bloctoWallet(),
+              magicLink({
+                apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
+                oauthOptions: {
+                  providers: [
+                    "google"
+                  ],
+                },
+              }),
+              frameWallet(),
+              rainbowWallet(),
+              phantomWallet(),
+            ],
           }),
-          safeWallet(),
+          trustWallet(),
+          zerionWallet(),
+          bloctoWallet(),
+          magicLink({
+            apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
+            oauthOptions: {
+              providers: [
+                "google"
+              ],
+            },
+          }),
+          frameWallet(),
+          rainbowWallet(),
+          phantomWallet(),
         ]}
+        // supportedWallets={[
+        //   metamaskWallet(),
+        //   coinbaseWallet(),
+        //   walletConnect({
+        //     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_V2_PROJECT_ID
+        //   }),
+        //   safeWallet(),
+        // ]}
         supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
         dAppMeta={{
           name: 'Nuva NFT',

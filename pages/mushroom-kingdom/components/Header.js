@@ -2,10 +2,11 @@ import Image from 'next/image';
 import "@fontsource/alfa-slab-one";
 import { CgMenu } from 'react-icons/cg'
 import { MdOutlineClose } from 'react-icons/md';
+import { useAddress } from '@thirdweb-dev/react';
 import { config } from '../../../lib/sanityClient'
 import nuvanftLogo from '../../../assets/nuvanft.png'
 import { Dialog, Transition } from '@headlessui/react';
-import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
+import ConnectButton from '../../../components/ConnectButton';
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useSettingsContext } from '../../../contexts/SettingsContext';
 
@@ -81,7 +82,7 @@ const Header = ({setShowMenu, showMenu}) => {
                         <a className="nav-link text-center" href="#faq" onClick={() => setShowMenu(false)}>Faq</a>
                     </div>
                     <div className="social-btns  text-center md:ml-5">
-                        <ConnectWallet accentColor="#0053f2" colorMode="light" className="" />
+                        <ConnectButton/>
                         {/* <a href="#" className="default-btn">
                             <span>Connect Wallet</span>
                         </a> */}
