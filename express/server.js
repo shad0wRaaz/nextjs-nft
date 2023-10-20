@@ -108,7 +108,6 @@ const config = sanityClient({
 const getCoinPricefromCMC = () => {
   let response = null;
   new Promise(async (resolve, reject) => {
-    try {
       response = await axios.get(process.env.NEXT_PUBLIC_CMC_HOST_URL, {
         headers: {
           'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_CMC_API_KEY,
@@ -116,34 +115,38 @@ const getCoinPricefromCMC = () => {
         params: {
           symbol: "ETH,MATIC,BNB,AVAX",
         }
+      }).catch((e) => {
+        response = null;
+        console.log(e);
+        reject(e);
       });
-    } catch(ex) {
-      response = null;
-      // error
-      console.log(ex);
-      reject(ex);
-    }
-    if (response) {
-      // success
-      const json = response.data;
-      resolve(json);
 
-      const avaxprice = json.data.AVAX[0].quote.USD.price;
-      const ethprice = json.data.ETH[0].quote.USD.price;
-      const maticprice = json.data.MATIC[0].quote.USD.price;
-      const bnbprice = json.data.BNB[0].quote.USD.price;
+    try{
+      if (response) {
+        // success
+        const json = response.data;
+        resolve(json);
 
-      const coins = {
-              maticprice: parseFloat(maticprice).toFixed(4), 
-              ethprice: parseFloat(ethprice).toFixed(4), 
-              avaxprice: parseFloat(avaxprice).toFixed(4),
-              bnbprice: parseFloat(bnbprice).toFixed(4)
-            };
-            redis.set('coins', JSON.stringify(coins));
-            
-            var date = new Date()
-            console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+        const avaxprice = json.data.AVAX[0].quote.USD.price;
+        const ethprice = json.data.ETH[0].quote.USD.price;
+        const maticprice = json.data.MATIC[0].quote.USD.price;
+        const bnbprice = json.data.BNB[0].quote.USD.price;
 
+        const coins = {
+                maticprice: parseFloat(maticprice).toFixed(4), 
+                ethprice: parseFloat(ethprice).toFixed(4), 
+                avaxprice: parseFloat(avaxprice).toFixed(4),
+                bnbprice: parseFloat(bnbprice).toFixed(4)
+              };
+              redis.set('coins', JSON.stringify(coins));
+              
+              var date = new Date()
+              console.log(`Coins Price updated on ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+  
+      }
+    }catch(e){
+      console.log(e);
+      reject(e)
     }
   });
 }

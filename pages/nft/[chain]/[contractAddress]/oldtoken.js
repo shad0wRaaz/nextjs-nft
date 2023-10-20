@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import millify from 'millify'
-
-
 import toast from 'react-hot-toast'
 import { Router } from 'react-router'
 import { useQuery } from 'react-query'
@@ -14,7 +12,6 @@ import Footer from '../../../../components/Footer'
 import { Fragment, useEffect, useState } from 'react'
 import { config } from '../../../../lib/sanityClient'
 import { MdAudiotrack, MdBlock } from 'react-icons/md'
-import { ThirdwebNftMedia, useContract, useNFT } from "@thirdweb-dev/react";
 import Benefits from '../../../../components/Benefits'
 import { BiChevronUp, BiInfoCircle } from 'react-icons/bi'
 import { getImagefromWeb3 } from '../../../../fetchers/s3'
@@ -35,11 +32,10 @@ import ReportActivity from '../../../../components/nft/ReportActivity'
 import GeneralDetails from '../../../../components/nft/GeneralDetails'
 import BrowseByCategory from '../../../../components/BrowseByCategory'
 import { MdOutlineDangerous, MdOutlineOpenInNew } from 'react-icons/md'
-import { useAddress, useSigner } from '@thirdweb-dev/react'
+import { useAddress, useContract, useSigner } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../../../../contexts/SettingsContext'
 import { useCollectionFilterContext } from '../../../../contexts/CollectionFilterContext'
 import { IconAvalanche, IconBNB, IconCopy, IconEthereum, IconHeart, IconImage, IconPolygon, IconVideo } from '../../../../components/icons/CustomIcons'
-import axios from 'axios'
 
 const style = {
   wrapper: `flex flex-col pt-[5rem] sm:px-[2rem] lg:px-[8rem] items-center container-lg text-[#e5e8eb]`,
@@ -75,7 +71,7 @@ const chainName = {
 const HOST = process.env.NODE_ENV == "production" ? 'https://nuvanft.io:8080': 'http://localhost:8080';
 
 const Nft = (props) => { //props are from getServerSideProps
-  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData } = props;
+  const { nftContractData, metaDataFromSanity, listingData, thisNFTMarketAddress, thisNFTblockchain, listedItemsFromThisMarket, ownerData, contractAddress } = props;
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const address = useAddress();
   const signer = useSigner();
@@ -88,20 +84,12 @@ const Nft = (props) => { //props are from getServerSideProps
   const [isZoom, setIsZoom] = useState(false);
   const { setReferralCommission } = useSettingsContext();
   const router = useRouter();
-  const { chain, contractAddress, tokenId} = router.query;
   const { setSelectedProperties } = useCollectionFilterContext();
   const [isAuctionItem, setIsAuctionItem] = useState(false);
   const [royaltySplitData, setRoyaltySplitData] = useState();
   const [showSplit, setShowSplit] = useState(false);
   const [animationUrl, setAnimationUrl] = useState();
   const [imgPath, setImgPath] = useState();
-
-  console.log(contractAddress)
-  const {contract} = useContract(contractAddress);
-  const { data: nft, isLoading:nftLoading, error:nftError } = useNFT(contract, tokenId);
-  console.log(nft)
-
-
 
   const {data: royaltyData, status: royaltyStatus} = useQuery(
     ['royalty'],
@@ -144,33 +132,7 @@ const Nft = (props) => { //props are from getServerSideProps
       })();
     return() => {}
 
-  }, []);
-
-  // useEffect(() => {
-  //   if(!router) return;
-
-  //   const blockchainIdFromName = { 
-  //     'mainnet' : '1',
-  //     'goerli': '5',
-  //     'avalanche': '43114',
-  //     'avalanche-fuji': '43113',
-  //     'polygon': '137',
-  //     'mumbai': '80001',
-  //     'binance': '56',
-  //     'binance-testnet': '97',
-  //     'arbitrum-goerli': '421563',
-  //     'arbitrum': '421564',
-  //   }
-
-  //   const { chain, contractAddress, tokenId} = router.query;
-  //   (async() => {
-  //     const t = await axios.get(`${HOST}/api/infura/getNFTMetadata/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`);
-  //     console.log(t)
-  //     // `${HOST}/api/infura/getNFTMetadata/${blockchainIdFromName[chain]}/${contractAddress}/${tokenId}`,
-
-  //   })()
-  //   return() => {}
-  // }, [router]);
+  }, [])
   
   useEffect(() => {
     if(!nftContractData || nftContractData === null || !Boolean(nftContractData.metadata)) return
@@ -361,11 +323,11 @@ const Nft = (props) => { //props are from getServerSideProps
             {!playItem && itemType == "video" && (
               <>
                 <video className="w-full h-full" autoPlay loop>
-                  <source src={animationUrl}/>
+                  <source src={nftContractData?.metadata?.animation_url}/>
                   Your browser does not support video tag. Upgrade your browser.
                 </video>
                 <img
-                src={imgPath}
+                src={getImagefromWeb3(nftContractData?.metadata?.image)}
                 className="h-full w-full object-cover"
                 loading='lazy'
                 />
@@ -374,18 +336,18 @@ const Nft = (props) => { //props are from getServerSideProps
             {!playItem && itemType == "audio" && (
               <>
                 <audio className="w-full h-full" autoPlay loop>
-                  <source src={animationUrl}/>
+                  <source src={nftContractData?.metadata?.animation_url}/>
                   Your browser does not support video tag. Upgrade your browser.
                 </audio>
                 <img
-                  src={imgPath}
+                  src={getImagefromWeb3(nftContractData?.metadata?.image)}
                   className="h-full w-full object-cover"
                 />
               </>
             )}
             {!playItem && (
               <img
-                src={imgPath}
+                src={getImagefromWeb3(nftContractData?.metadata?.image)}
                 className="relative top-10" style={{ maxHeight: '850px' }}
               />
             )}
@@ -407,7 +369,7 @@ const Nft = (props) => { //props are from getServerSideProps
           <SEO 
             title={nftContractData?.metadata?.name}
             description={nftContractData?.metadata?.description}
-            image={imgPath}
+            image={getImagefromWeb3(nftContractData?.metadata?.image)}
             currentUrl={`https://nuvanft.io/nft/${thisNFTblockchain}/${contractAddress}/${nftContractData?.tokenId}`} />
           {isBlocked ? (
             <div className="p-[4rem] text-center">
@@ -428,14 +390,7 @@ const Nft = (props) => { //props are from getServerSideProps
                     }
                   >
                     <div className="aspect-w-11 aspect-h-12 overflow-hidden rounded-2xl max-h-[38rem] cursor-zoom-in" onClick={() => setIsZoom(true)}>
-                      {nftLoading ? (
-                        <div className="!h-full !w-full !object-cover">
-                          <SkeletonLoader roundness="xl" />
-                        </div>
-                        ) : 
-                        <ThirdwebNftMedia metadata={nft.metadata} className="!h-full !w-full !object-cover"/>
-                      }
-                      {/* {playItem && itemType == "video" && (
+                      {playItem && itemType == "video" && (
                         <>
                           <video className="w-full h-full" autoPlay loop>
                             <source src={animationUrl}/>
@@ -470,7 +425,7 @@ const Nft = (props) => { //props are from getServerSideProps
                             <SkeletonLoader roundness="xl" />
                           }
                         </>
-                      )} */}
+                      )}
                     </div>
 
                     {/* <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full  bg-black/50 text-white md:h-10 md:w-10">
@@ -595,7 +550,7 @@ const Nft = (props) => { //props are from getServerSideProps
                             </span>
                           </div>
                           <div className="flex flex-row items-start justify-between py-2">
-                            <span className="text-sm md:text-base">Royalty</span>
+                            <span className="text-sm md:text-base">Creator Earnings</span>
                             <div className="flex justify-end flex-col flex-wrap items-end">
                               <div className="flex gap-2 items-center relative">
                                 <span className="cursor-pointer" onClick={() => {

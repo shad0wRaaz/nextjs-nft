@@ -19,7 +19,7 @@ import { useState, useEffect, Fragment } from 'react'
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useAddress, useChainId } from '@thirdweb-dev/react'
+import { useAddress, useChainId, useWallet } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../contexts/SettingsContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
@@ -44,6 +44,20 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   // const [headerToggler, setHeaderToggler ] = useState(true);
   // const showHeader = typeof window !== 'undefined' && localStorage.getItem("menu") || true;
+
+  const wallet = useWallet('magicLink');
+
+  const getUserMagicEmail = async () => {
+    if (!wallet) return;
+    const magicSDK = await wallet.getMagic();
+
+    // refer to magic sdk docs from on how to get user info
+    // example of getting email / phone number
+    const metadata = await magicSDK.user.getMetadata();
+    const email = metadata?.email ? metadata?.email : '';
+
+    return email;
+}
 
   const style = {
     wrapper: `${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-40 flex justify-center`,
@@ -180,7 +194,8 @@ const Header = () => {
         userExists = await checkReferralUser(address);
       }
 
-
+      const magicEmail = await getUserMagicEmail();
+      const emailVerified = magicEmail != '' ? true : false;
 
       let userDoc;
       if(!Boolean(refExists?.length > 0)){
@@ -194,6 +209,8 @@ const Header = () => {
           refactivation: true,
           tokensent: false,
           payablelevel: 1,
+          email: magicEmail,
+          verified: emailVerified,
         }
       }else{
         userDoc = {
@@ -206,6 +223,8 @@ const Header = () => {
           refactivation: true,
           tokensent: false,
           payablelevel: 1,
+          email: magicEmail,
+          verified: emailVerified,
           referrer: { _type: 'reference', _ref: referrer}
         }
         //delete the referal info from storage as it is not needed anymore

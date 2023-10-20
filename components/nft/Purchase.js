@@ -138,7 +138,9 @@ const MakeOffer = ({
     ({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}) => updateBoughtNFTs({ walletAddress, chainId, contractAddress, tokenId, payablelevel, type}),
     {
       onError: (err) => { console.log(err); },
-      onSuccess: (res) => { console.log(res)}
+      onSuccess: (res) => { 
+        // console.log(res)
+      }
     }
   )
   
@@ -586,7 +588,7 @@ const MakeOffer = ({
                                 toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
                               });
           if(tx){
-            console.log(splitContract, royaltySplitData[0].address, process.env.NEXT_PUBLIC_ENX_KEY);
+
             const result = await axios.post(`${HOST}/api/nft/distributeToken`, {
               splitContract,
               walletAddress: royaltySplitData[0].address,
@@ -595,7 +597,7 @@ const MakeOffer = ({
             }).catch(err => {
               console.log(err)
             });
-            console.log(result);
+
       
               // mutateSaveTransaction({
               //   transaction: tx,

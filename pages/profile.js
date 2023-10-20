@@ -483,10 +483,12 @@ const profile = () => {
                         className={
                           dark
                             ? style.input +
-                              ' border-slate-600 bg-slate-700 hover:bg-slate-600'
+                              ' border-slate-600 bg-slate-700 hover:bg-slate-600 disabled'
                             : style.input +
                               ' border-neutral-200 hover:bg-neutral-100 '
+                              
                         }
+                        readOnly = {userDoc.verified}
                         value={userDoc?.email ? userDoc?.email : ''}
                         onChange={(e) =>
                           setUserDoc({ ...userDoc, email: e.target.value })
