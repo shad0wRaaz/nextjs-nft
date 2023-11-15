@@ -32,18 +32,8 @@ const blockchainCurrency = {
 "avalanche-fuji":{currency: "AVAX", icon: <IconAvalanche />, DATABASE_COIN_NAME: "avaxprice"},
 }
 
-const blockchainId = {
-  'mumbai': '80001',
-  'polygon': '137',
-  'avalanche-fuji': '43113',
-  'avalanche': '43114',
-  'binance-testnet': '97',
-  'binance': '56',
-  'goerli': '5',
-  'mainnet': '1',
-}
-
 const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblockchain }) => {
+
   const { dark, errorToastStyle, successToastStyle } = useThemeContext()
   const address = useAddress()
   const router = useRouter()
@@ -169,6 +159,8 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
       })
       return;
     }
+
+    return () => {}
   }, [isOpen]);
 
   const directListItem = async (
@@ -196,8 +188,8 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
 
     //NFT Collection Contract Address
     const listing = {
-      assetContractAddress: nftContractData?.contract,
-      tokenId: nftContractData.tokenId,
+      assetContractAddress: nftContractData?.token_address,
+      tokenId: nftContractData.token_id,
       startTimestamp: startingDate,
       endTimestamp: endingDate,
       quantity: 1,
@@ -235,6 +227,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
       //            });
 
       if(tx){
+        console.log(tx)
         //update market listing id in database
         // const marketListingId = tx.id.toString();
         // ;(async(id = marketListingId , dbClient = sanityClient)=> {
@@ -251,72 +244,64 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
                   .commit()
                   .catch(err => console.log(err));
           }
+
+          //save listing data in database
+
+          const document = {
+            id: tx?.id.toString(),
+            assetContractAddress: String(nftContractData?.token_address).toLowerCase(),
+            buyoutPrice: {
+              type: "BigNumber",
+              hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
+            },
+            currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+            buyoutCurrencyValuePerToken: {
+                symbol: currencyByChainName[thisNFTblockchain],
+                value: {
+                    type: "BigNumber",
+                    hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
+                },
+                displayValue: listingPrice,
+            },
+            tokenId: {
+                type: "BigNumber",
+                hex: BigNumber.from(nftContractData.token_id)._hex,
+            },
+            quantity: {
+                type: "BigNumber",
+                hex: 1,
+            },
+            startTime: startingDate,
+            endTime: endingDate,
+            sellerAddress: address,
+            asset: {...nftContractData.normalized_metadata},
+            chainId: nftCollection?.chainId,
+            listedTime: new Date(),
+            type: 0,
+          }
+
+          ;(async() => {
+            await axios.post(`${HOST}/api/mango/insertSingle`, 
+            {
+              document,
+              chain: thisNFTblockchain,
+            }).catch(err => console.log(err))
+              .then(() => {
+                setLoadingNewPrice(false);
+                setIsLoading(false);
+                toastHandler.success("NFT successfully listed in the marketplace", successToastStyle);
+                router.reload(window.location.pathname);
+                router.replace(router.asPath);
+              })
+          })()
+
         })();
-  
-  
-        //saving transaction data
-        // mutateSaveTransaction({
-        //   transaction: tx,
-        //   chainid: chainid,
-        //   eventName: 'List',
-        //   price: listingPrice,
-        //   id: nftContractData.metadata.id.toString(),
-        //   itemid: nftContractData.metadata.properties.tokenid,
-        // })
   
         queryClient.invalidateQueries(['activities']);
         queryClient.invalidateQueries(['owner']);
         queryClient.invalidateQueries(['marketplace']);
         
-        //save listing data in database
-
-        const document = {
-          id: tx?.id.toString(),
-          assetContractAddress: String(nftContractData?.contract).toLowerCase(),
-          buyoutPrice: {
-            type: "BigNumber",
-            hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
-          },
-          currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-          buyoutCurrencyValuePerToken: {
-              symbol: currencyByChainName[thisNFTblockchain],
-              value: {
-                  type: "BigNumber",
-                  hex: ethers.utils.parseUnits(listingPrice.toString(), 18)._hex,
-              },
-              displayValue: listingPrice,
-          },
-          tokenId: {
-              type: "BigNumber",
-              hex: BigNumber.from(nftContractData.tokenId)._hex,
-          },
-          quantity: {
-              type: "BigNumber",
-              hex: 1,
-          },
-          startTime: startingDate,
-          endTime: endingDate,
-          sellerAddress: address,
-          asset: {...nftContractData.metadata},
-          chainId: nftCollection?.chainId,
-          listedTime: new Date(),
-          type: 0,
-        }
-
-        ;(async() => {
-          await axios.post(`${HOST}/api/mango/insertSingle`, 
-          {
-            document,
-            chain: thisNFTblockchain,
-          }).catch(err => console.log(err))
-            .then(() => {
-              setLoadingNewPrice(false);
-              setIsLoading(false);
-              toastHandler.success("NFT successfully listed in the marketplace", successToastStyle);
-              router.reload(window.location.pathname);
-              router.replace(router.asPath);
-            })
-        })()
+        
         
         
         //update listing data
@@ -371,8 +356,8 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
 
     const auction = {
       //NFT Collection Contract Address
-      assetContractAddress: nftContractData?.contract,
-      tokenId: nftContractData.tokenId,
+      assetContractAddress: nftContractData?.token_address,
+      tokenId: nftContractData.token_id,
       buyoutBidAmount: buyoutPrice,
       minimumBidAmount: reservePrice,
       currencyContractAddress: NATIVE_TOKEN_ADDRESS,
@@ -420,7 +405,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
 
         const document = {
           id: tx?.id.toString(),
-          assetContractAddress: nftContractData?.contract,
+          assetContractAddress: nftContractData?.token_address,
           buyoutPrice: {
             type: "BigNumber",
             hex: ethers.utils.parseUnits(buyoutPrice.toString(), 18)._hex,
@@ -440,7 +425,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
           },
           tokenId: {
               type: "BigNumber",
-              hex: BigNumber.from(nftContractData.tokenId)._hex,
+              hex: BigNumber.from(nftContractData.token_id)._hex,
           },
           quantity: {
               type: "BigNumber",
@@ -449,7 +434,7 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
           startTime: startingDate,
           endTime: endingDate,
           sellerAddress: address,
-          asset: {...nftContractData.metadata},
+          asset: {...nftContractData?.normalized_metadata},
           chainId: nftCollection?.chainId,
           type: 1,
         }
@@ -470,32 +455,8 @@ const Sell = ({ nftContractData, nftCollection, thisNFTMarketAddress, thisNFTblo
             })
         })()
 
-
-        //update listing data
-        // ;(async() => {
-        //   setLoadingNewPrice(true);
-        //   await axios.get(`${HOST}/api/updateListings/${thisNFTblockchain}`).finally(() => {
-        //     setLoadingNewPrice(false);
-        //     router.reload(window.location.pathname);
-        //     router.replace(router.asPath);
-        //     toastHandler.success('NFT successfully auctioned in the marketplace.', successToastStyle);
-        //   }).catch(err => console.log(err))
-        // })();
       }
-      // const receipt = tx.receipt
-      // const newListingId = tx.id
       
-
-      //saving transaction data
-      // mutateSaveTransaction({
-      //   transaction: tx,
-      //   id: nftContractData.metadata.id.toString(),
-      //   eventName: 'Auction',
-      //   itemid: nftContractData.metadata.properties.tokenid,
-      //   price: buyoutPrice,
-      //   chainid: chainid,
-      // })
-      // window.location.reload(false); //refresh the page
     } catch (error) {
       console.log(error)
       toastHandler.error('Error in listing the NFT', errorToastStyle);

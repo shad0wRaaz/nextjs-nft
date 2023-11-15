@@ -60,7 +60,7 @@ const Header = () => {
 }
 
   const style = {
-    wrapper: `${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-40 flex justify-center`,
+    wrapper: `${!dark ? 'bg-neutral-100/70 backdrop-blur-md ' : ''} ${!headerToggler ? '-translate-y-[70px]' : ''} transition mx-auto fixed top-0 w-full px-[1.2rem] lg:px-[8rem] py-[0.8rem] backdrop-blur-md border border-b-[#ffffff22] border-t-0 border-l-0 border-r-0 z-40 flex justify-center`,
     logoContainer: `flex items-center cursor-pointer m-0`,
     logoText: ` ml-[0.8rem] font-base text-2xl logoText`,
     searchBar: ` relative backdrop-blur-sm flex mx-[0.8rem] h-[50px] w-full items-center border rounded-lg transition-all linear`,
@@ -111,7 +111,7 @@ const Header = () => {
   getLatestNfts(24),
   {
     onError: () => {
-      toast.error('Error fetching latest NFT data. Refresh and try again.',errorToastStyle);
+      toast.error('Error fetching Marketplace NFTs. Refresh and try again.', errorToastStyle);
     },
     onSuccess: (res) => {
       setLatestNfts(res);
@@ -152,7 +152,9 @@ const Header = () => {
 
   useEffect(() => {
     if(!w) return
-    localStorage.setItem('refWallet', w)
+    localStorage.setItem('refWallet', w);
+
+    return() => {}
   }, [w]);
 
   useEffect(() => {
@@ -170,6 +172,9 @@ const Header = () => {
       setReferralCommission(referralCommission);
     })();
 
+    if(!localStorage.getItem('currentChainId')){
+      localStorage.setItem('currentChainId', 56);
+    }
     return () => {
       //do nothing
     }
@@ -302,7 +307,7 @@ const Header = () => {
   useEffect(() => {
     if(!chainid) return
       setSelectedBlockchain(blockchainName[chainid]);
-    
+      localStorage.setItem('currentChainId', chainid);
       return(() => {
         //do nothing , just clean up function
       })
@@ -500,8 +505,8 @@ const Header = () => {
           {address && isLogged && (
             <>
               <Menu as="div" className="relative inline-block text-left">
-                  <Menu.Button className={`py-3 px-2 flex items-center gap-1 ${dark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-neutral-100 text-white hover:text-black'} rounded-xl`}>
-                    <IconImage />  <span className="hidden lg:block text-sm">My Account</span>
+                  <Menu.Button className={`py-3 px-2 flex items-center gap-1 transition ${dark ? 'hover:bg-slate-800 hover:text-white text-white' : 'hover:bg-neutral-100 text-black hover:text-black'} rounded-xl`}>
+                    <IconImage />  <span className={` hidden lg:block text-sm`}>My Account</span>
                   </Menu.Button>
                   <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                     <Menu.Items className={` ${
@@ -509,7 +514,7 @@ const Header = () => {
                         ? 'divide-sky-700/20 bg-slate-800 text-white'
                         : ' divide-gray-100 bg-white'
                     } absolute right-0 mt-2 w-72 origin-top-right divide-y  rounded-xl py-4 px-3 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-30`}>
-                      <div className="px-1 py-1 flex flex-col text-left">
+                      <div className="px-1 py-1 flex flex-col text-left text-sm">
                         <Menu.Item>
                           <div className={`p-3 py-2 text-left hover:bg-${dark ? 'slate-600' : 'neutral-100'} cursor-pointer rounded-md`}>
                             <Link href="/contracts">
@@ -576,7 +581,7 @@ const Header = () => {
               <div className="flex flex-row items-center gap-4 pl-2 pr-5">
                 {isAdmin ? (
                   <a href="/admin/dashboard">
-                    <div className={`${dark ? 'hover:bg-slate-800' : 'hover:bg-neutral-100 text-white hover:text-black'} p-2 -mr-2 rounded-xl cursor-pointer`}>
+                    <div className={`transition ${dark ? 'hover:bg-slate-800 text-white' : 'hover:bg-neutral-100 text-black hover:text-black'} p-2 -mr-2 rounded-xl cursor-pointer`}>
                       <GoDashboard fontSize={23}/>
                     </div>
                   </a>

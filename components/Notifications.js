@@ -81,7 +81,7 @@ const Notifications = () => {
             : style.background + ' hover:bg-neutral-100 text-white hover:text-black'
         }>
             <Menu.Button>
-              <IconBell />
+              <div className={` ${!dark && 'text-black'}`}><IconBell /></div>
               {isNotification && (
                 <div className="absolute -top-0 -right-0">
                   <span className="flex h-3 w-3">
@@ -118,10 +118,10 @@ const Notifications = () => {
               } p-7 pb-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
             >
               <div className="flex  justify-between">
-                <h3 className="mb-2 pb-2 text-xl font-bold">Notifications</h3>
+                <h3 className="mb-2 pb-2 text-md font-bold">Notifications</h3>
                 <div>
                   <div
-                    className={`rounded-lg p-2 cursor-pointer ${
+                    className={`rounded-lg p-2 cursor-pointer transition ${
                       dark ? ' hover:bg-red-500' : ' hover:bg-red-500 hover:text-white'
                     } `}
                     onClick={() => deleteAllNotifications(myUser.walletAddress)}
@@ -161,8 +161,8 @@ const Notifications = () => {
                                 alt="User"
                               />
                             </div>
-                            <div className="ml-3 space-y-1 sm:ml-4">
-                              <p className="font-medium ">
+                            <div className="ml-3 sm:ml-4">
+                              <p className="font-semibold text-sm my-0">
                                 {notification?.from?.userName != "Unnamed" ? 
                                 notification?.from?.userName : 
                                 <>

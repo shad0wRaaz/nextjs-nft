@@ -17,6 +17,7 @@ import { emailBody } from './emails/templates.js';
 import { ThirdwebStorage } from '@thirdweb-dev/storage';
 import { emailClient, sendEmail } from './emails/transporter/index.js';
 import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js';
+import { getNFTCollectionsByWallet, getNFTContractMetadata, getNFTMetadata, getNFTOwner, getNFTTransfersByTokenID, getNFTsByCollection, getNFTsByWallet } from './moralis/config.js';
 
 const app = express();
 //enable helmet middleware
@@ -344,45 +345,8 @@ app.get('/api/infura/:chainId/search/:searchQuery', async(req, res) => {
   }
 
 })
-//get all collections in which the walletaddress own an nft
-app.get('/api/infura/sdk/getCollectionByWalletAddress/:chainId/:walletAddress', async(req, res) => {
-  const { chainId, walletAddress } = req.params;
-  // const data = await getCollectionsByWallet(chainId, walletAddress)
-  // return res.send(data)
-  try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${walletAddress}/assets/collections`, {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
 
-  });
-  
-  return res.send(data);
-  
-  }catch(error){
-    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
-  }
 
-})
-
-//nft transfer data
-app.get('/api/infura/getTransferData/:chainId/:contractAddress/:tokenId', async(req, res) =>{
-  const {chainId, contractAddress, tokenId} = req.params;
-  try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tokens/${tokenId}/transfers`, {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
-  });
-  
-  return res.send(data);
-  
-  }catch(error){
-    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
-  }
-})
 
 //market data
 app.get('/api/infura/getMarketData/:chainId/:contractAddress', async(req, res) =>{
@@ -406,46 +370,133 @@ app.get('/api/infura/getMarketData/:chainId/:contractAddress', async(req, res) =
 })
 
 //get NFT Owner Data with metadata and minter address as well
-const getNFTOwnerDataFromInfura = async(chainId, tokenAddress, tokenid) => {
-  const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
-  })
-  return data;
-}
-app.get('/api/infura/getNFTOwnerData/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
-  const {chainId, tokenAddress, tokenid} = req.params;
+/****  Deprecated ******/
+
+// const getNFTOwnerDataFromInfura = async(chainId, tokenAddress, tokenid) => {
+//   const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/${tokenid}/owners`, {
+//     headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Basic ${INFURA_AUTH}`,
+//       }
+//   })
+//   return data;
+// }
+
+//get all collections in which the walletaddress own an nft
+app.get('/api/moralis/getCollectionByWalletAddress/:chain/:walletAddress', async(req, res) => {
+  const { chain, walletAddress } = req.params;
+  
+  const collections = await getNFTCollectionsByWallet(chain, walletAddress);
+  
+  return res.send(collections?.result);
+
+});
+
+app.get('/api/moralis/getNFTOwnerData/:chain/:contractAddress/:tokenid', async(req, res) =>{
+  const {chain, contractAddress, tokenid} = req.params;
   try{
-    const ownerData = await getNFTOwnerDataFromInfura(chainId, tokenAddress, tokenid);
-    return res.status(200).send(ownerData);
+    const ownerData = await getNFTOwner(chain, contractAddress, tokenid);
+    return res.status(200).send(ownerData?.result);
   
   }catch(error){
     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+    return res.send(null);
   }
 });
 
-//get NFT Metadata, contract address
-const getNFTMetaData = async(chainId, tokenAddress, tokenid) => {
-  try{
-    const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenid}?resyncMetadata=true `, {
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${INFURA_AUTH}`,
-        }
-    })
-    return data;
-  }catch(err){
-    console.log(":rocket: ~ file: index.js:17 ~ error:", err);
-    return null
-  }
-}
-app.get('/api/infura/getNFTMetadata/:chainId/:tokenAddress/:tokenid', async(req, res) =>{
-  const {chainId, tokenAddress, tokenid} = req.params;
-  const nftmetadata = await getNFTMetaData(chainId, tokenAddress, tokenid);
+app.get('/api/moralis/getNFTMetadata/:chain/:contractAddress/:tokenid', async(req, res) =>{
+  const {chain, contractAddress, tokenid} = req.params;
+  const nftmetadata = await getNFTMetadata(chain, contractAddress, tokenid);
+
   return res.send(nftmetadata);
 });
+
+//get all NFTs based on wallet address
+app.get('/api/moralis/getNFT/:chain/:address', async(req, res) => {
+  const {chain, address} = req.params;
+  const { cursor } = req.query;
+
+  const nfts = await getNFTsByWallet(chain, address, cursor);
+
+  return res.send(nfts);
+  
+});
+
+app.get('/api/moralis/getAllNFTsFromCollection/:chain/:contractAddress', async(req,res) => {
+  const { chain, contractAddress } = req.params;
+  const { cursor } = req.query;
+
+  const nftdata = await getNFTsByCollection(chain, contractAddress, cursor);
+
+  res.send(nftdata)
+});
+
+//This will return Sanity Database data of an NFT
+app.get('/api/moralis/getCollectionSanityData/:chain/:contractAddress/', async(req, res) => {  
+  const {chain, contractAddress} = req.params;
+
+  //first find collection data in sanity, if not found, find from Moralis
+  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainEnum[chain]}"] {...,"creator": createdBy->}`;
+
+  const sanityData = await config.fetch(query);
+
+  const nftdata = await getNFTsByCollection(chain, contractAddress);
+
+  if(sanityData.length > 0){
+    const returnObject = {
+      ...sanityData[0],
+      total: nftdata?.result.length || 0,
+      datasource: 'internal',
+    }
+    return res.status(200).send(returnObject);
+  }
+  else {
+    // console.log('Collection not found in sanity');
+    return res.send(null)
+    //get data from INFURA, if the collection is not deployed in this platform
+    const data =  await getCollectionMetaDataFromInfura(chainId, contractAddress);
+      
+
+    // get minter/creator address details from any token
+    const minterData = await getNFTOwnerDataFromInfura(chainId,contractAddress, 1);
+
+    const owner = minterData?.owners[0]?.ownerOf;
+
+    //get yesterdays date for reveal time, other wise all collection will show not revealed
+    let today = new Date();
+    today.setDate(today.getDate() - 1);
+
+    const contractObj = {
+      name: data.name,
+      contractAddress: data.contract,
+      creator: {
+        userName: 'Unnamed',
+        walletAddress: owner,
+      },
+      chainId,
+      description: '',
+      revealtime: today.toString(),
+      createdBy: {
+        _ref: ''
+      },
+      collectionData: 0,
+      total: data?.total,
+      datasource: 'external',
+    }
+
+    return res.status(200).send(contractObj);
+    // return res.status(200).json({"message": "Collection data not found"});
+  }
+});
+
+
+//nft transfer data
+app.get('/api/moralis/getTransferData/:chain/:contractAddress/:tokenId', async(req, res) =>{
+  const {chain, contractAddress, tokenId} = req.params;
+  const transfers = await getNFTTransfersByTokenID(chain, contractAddress, tokenId);
+  return res.send(transfers)
+})
+
 
 //get Collection Metadata
 const getCollectionMetaDataFromInfura = async(chainId, tokenAddress) => {
@@ -503,124 +554,7 @@ app.get('/api/infura/getCollectionOwners/:chainId/:address', async(req, res) => 
   }
 })
 
-//get all NFTs based on collection address
-// app.get('/api/infura/getCollection/:chainId/:address', async(req, res) =>{
-//   const {chainId, address} = req.params;
-//   try{
-//     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${address}/tokens`, {
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': `Basic ${INFURA_AUTH}`,
-//       }
-//   })
-//   // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
-//   return res.send(data);
-  
-//   }catch(error){
-//     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
-//   }
-// })
 
-//get all token transfers
-// app.get('/api/infura/getNFTtransfers/:chainId/:tokenAddress/:tokenId', async(req, res) => {
-//   const {chainId, tokenAddress, tokenId} = req.params;
-//   try{
-//     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${tokenAddress}/tokens/${tokenId}/transfers`, {
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': `Basic ${INFURA_AUTH}`,
-//       }
-//   })
-//   // console.log(":rocket: ~ file: index.js:20 ~ result:", data)
-//   return res.send(data);
-  
-//   }catch(error){
-//     console.log(":rocket: ~ file: index.js:17 ~ error:", error)
-//   }
-// });
-
-
-//get all NFTs based on wallet address
-app.get('/api/infura/getNFT/:chainId/:address', async(req, res) => {
-  const {chainId, address} = req.params;
-  const { cursor } = req.query;
-  // console.log(cursor)
-  try{
-    const query = Boolean(cursor) ? `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts?cursor=${cursor}` : `${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/accounts/${address}/assets/nfts`;
-    const {data} = await axios.get(query, 
-    {
-      headers: {
-        'accept': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
-    })
-
-    return res.send(data);
-  
-  }catch(error){
-    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
-  }
-});
-
-//This will return Sanity Database data of an NFT
-app.get('/api/infura/getCollectionSanityData/:chainId/:contractAddress/', async(req, res) => {  
-  const {chainId, contractAddress} = req.params;
-  //first find collection data in sanity, if not found, find from infura
-
-  const query = `*[_type == "nftCollection" && contractAddress match "${contractAddress}" && chainId == "${chainId}"] {...,"creator": createdBy->}`;
-  const sanityData = await config.fetch(query);
-
-  const tokens = await axios.get(`${process.env.NEXT_PUBLIC_INFURA_API_ENDPOINT}/networks/${chainId}/nfts/${contractAddress}/tokens`, {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${INFURA_AUTH}`,
-      }
-  });
-
-  if(sanityData.length > 0){
-    const returnObject = {
-      ...sanityData[0],
-      total: tokens?.data?.total,
-      datasource: 'internal',
-    }
-    return res.status(200).send(returnObject);
-  }
-  else {
-    //get data from INFURA, if the collection is not deployed in this platform
-    const data =  await getCollectionMetaDataFromInfura(chainId, contractAddress);
-      
-
-    // get minter/creator address details from any token
-    const minterData = await getNFTOwnerDataFromInfura(chainId,contractAddress, 1);
-
-    const owner = minterData?.owners[0]?.ownerOf;
-
-    //get yesterdays date for reveal time, other wise all collection will show not revealed
-    let today = new Date();
-    today.setDate(today.getDate() - 1);
-
-    const contractObj = {
-      name: data.name,
-      contractAddress: data.contract,
-      creator: {
-        userName: 'Unnamed',
-        walletAddress: owner,
-      },
-      chainId,
-      description: '',
-      revealtime: today.toString(),
-      createdBy: {
-        _ref: ''
-      },
-      collectionData: 0,
-      total: data?.total,
-      datasource: 'external',
-    }
-
-    return res.status(200).send(contractObj);
-    // return res.status(200).json({"message": "Collection data not found"});
-  }
-});
 
 app.get('/api/getcoinsprice', async(req, res) => {
   const data = await redis.get("coins");
@@ -686,7 +620,7 @@ app.post('/api/saveweb3image', upload.single('imagefile'), async (req, res) => {
 app.get('/api/getweb3image', async(req,res) => {
   const uri = req.query.uri;
   const url = await web3storage.resolveScheme(uri);
-  res.send(url);
+  return res.send(url);
 })
 
 app.get('/api/updateListings/:blockchain', async (req, res) => {
@@ -1109,7 +1043,7 @@ app.get('/api/topTradedCollections/:blockchain', async( req, res) => {
   if(blockchain){
     var topCollections;
     const chainid = chainEnum[blockchain];
-console.log(chainid)
+
     redis.del("toptradedcollections"+blockchain)
     topCollections = await redis.get("toptradedcollections-"+blockchain);
   

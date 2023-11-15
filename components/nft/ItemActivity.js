@@ -5,9 +5,9 @@ import { useQuery } from 'react-query'
 import { BiChevronUp } from 'react-icons/bi'
 import EventItem from './itemActivity/EventItem'
 import { HiOutlineLightningBolt } from 'react-icons/hi'
+import { getNFTTransfers } from '../../fetchers/Web3Fetchers'
 import { useThemeContext } from '../../contexts/ThemeContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { INFURA_getNFTTransfers } from '../../fetchers/Web3Fetchers'
 
 const style = {
   wrapper: `w-full mt-3 border rounded-xl overflow-hidden`,
@@ -32,17 +32,14 @@ const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) =>
   const {blockchainIdFromName} = useSettingsContext();
 
   const { data: activityData, status } = useQuery(
-    ['activities', blockchainIdFromName[thisNFTblockchain], selectedNft?.contract, selectedNft?.tokenId],
-    INFURA_getNFTTransfers(),
+    ['activities', thisNFTblockchain, selectedNft?.token_address, selectedNft?.token_id],
+    getNFTTransfers(),
     {
       enabled: Boolean(thisNFTblockchain) && Boolean(selectedNft),
       onError: () => {
         toast.error('Cannot fetch Item activities.', errorToastStyle)
       },
-      onSuccess: (res) => {
-        //  console.log(res)
-
-      },
+      onSuccess:(res) =>{}
     }
   )
 
@@ -128,7 +125,7 @@ const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) =>
                 </tr>
               )}
 
-              {status == 'success' && activityData.length == 0 && (
+              {status == 'success' && activityData?.length == 0 && (
                 <tr>
                   <td colSpan="5" className="p-4 text-center">
                     <span className="text-sm">No activities yet.</span>
@@ -136,7 +133,7 @@ const ItemActivity = ({ thisNFTblockchain, selectedNft, metaDataFromSanity }) =>
                 </tr>
               )}
 
-              {status == 'success' && activityData.length > 0 && (
+              {status == 'success' && activityData?.length > 0 && (
                 <>
                   {activityData?.map((event, id) => (
                     <EventItem key={id} event={event} thisNFTblockchain={thisNFTblockchain}/>

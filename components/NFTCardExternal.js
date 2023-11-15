@@ -125,8 +125,8 @@ const NFTCardExternal = ({
           {/* <Link
             href={nftItem?.metadata?.properties?.tokenid ? `/nfts/${nftItem?.metadata?.properties?.tokenid}` : "#"}
           > */}
-          <Link
-            href={`/nft/${chain}/${collectionAddress ? collectionAddress : nftItem.contract}/${nftItem.tokenId}`}
+          <a
+            href={`/nft/${chain}/${collectionAddress ? collectionAddress : nftItem.token_address}/${nftItem.token_id}`}
           >
             <div className="relative flex-shrink-0 cursor-pointer">
               <div>
@@ -268,7 +268,7 @@ const NFTCardExternal = ({
                 </div>
               </div>
             </div>
-          </Link>
+          </a>
         </div>
       )}
     </>

@@ -53,7 +53,7 @@ const User = () => {
   const { data: fullListingData } = useQuery(['fulllistings'], getFullListings());
   const [compact, setCompact] = useState(true);
   const [cursor, setCursor] = useState();
-  const [collectionsFromInfura, setCollectionsFromInfura] = useState([]);
+  const [nonNativeCollections, setNonNativeCollections] = useState([]);
   const [collectionCount, setCollectionCount] = useState(0);
   const [nftCount, setNftCount] = useState(0);
   const [mynfts, setMyNfts] = useState();
@@ -130,7 +130,7 @@ const User = () => {
   //this gives all the collections from INFURA but does not gives images, so have to be imported by the user manually and then update images manually
   const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
     ['allcollections', address, selectedBlockchain],
-    INFURA_getMyCollections(blockchainIdFromName[selectedBlockchain], address),
+    INFURA_getMyCollections(selectedBlockchain, address),
     {
       enabled: Boolean(address) ,
       onSuccess: (res) => {
@@ -141,17 +141,19 @@ const User = () => {
 
   //filter out only those collections deployed in third party websites
   useEffect(() => {
-    setCollectionsFromInfura('');
+    setNonNativeCollections('');
     if(collectionStatus == 'success' && outsideCollectionStatus == 'success' ){
-      const allCollections = [...outsideCollection.collections];
+
+      const allCollections = [...outsideCollection];
       
       const inhouseCollections = collectionData.map(coll => coll.contractAddress.toLowerCase());
-      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.contract));
+      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.token_address));
       // console.log('all',outsideCollections)
       if(outsideCollections.length > 0){
-        setCollectionsFromInfura([...outsideCollections]);
+        setNonNativeCollections([...outsideCollections]);
       }
     }
+
     return () => {
       //do nothing, just clean up function
     }
@@ -159,14 +161,13 @@ const User = () => {
 
   const { data, status: mynftstatus } = useQuery(
     ['mynfts', address, cursor, selectedBlockchain, activeChain?.chainId],
-    INFURA_getMyAllNFTs(activeChain ? activeChain.chainId : blockchainIdFromName[selectedBlockchain]),
+    INFURA_getMyAllNFTs(selectedBlockchain),
     {
       refetchOnWindowFocus: false,
       enabled: Boolean(address) && (Boolean(activeChain) || Boolean(selectedBlockchain)),
       onError:() => {},
       onSuccess:(res) => 
       {
-        // console.log(res);
         // console.log(res.cursor)
         const selectedChain = Boolean(activeChain?.chainId) ? blockchainName[activeChain.chainId] : selectedBlockchain 
         const unresovled = res?.assets.map(async nft => {
@@ -540,7 +541,7 @@ const User = () => {
           <>
           {/* Displaying in house collections */}
               {collectionStatus == 'loading' && <Loader />}
-              {collectionData?.length == 0 && collectionsFromInfura?.length == 0 && (
+              {collectionData?.length == 0 && nonNativeCollections?.length == 0 && (
                 <div className="text-center">
                   <h2 className={style.errorTitle}>No Collection created yet.</h2>
                 </div>
@@ -569,14 +570,14 @@ const User = () => {
               
             </div>
             {/* Displaying outside Collections */}
-            {Boolean(collectionsFromInfura) && collectionsFromInfura.length > 0 && (
+            {Boolean(nonNativeCollections) && nonNativeCollections.length > 0 && (
               <div className={style.collectionWrapper + ' mt-8'}>
-                {collectionsFromInfura?.map((coll, id) => (
+                {nonNativeCollections?.map((coll, id) => (
                   <CollectionCardExternal
                     key={id}
                     name={coll.name}
                     id={coll.contract}
-                    contractAddress={coll.contract}
+                    contractAddress={coll.token_address}
                     chainId={blockchainIdFromName[selectedBlockchain]}
                     creator="Unnamed"
                     creatorAddress={address}

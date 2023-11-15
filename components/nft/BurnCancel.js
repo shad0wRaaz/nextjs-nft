@@ -16,14 +16,16 @@ import { updateBoughtNFTs } from '../../mutators/SanityMutators'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useMarketplaceContext } from '../../contexts/MarketPlaceContext'
 import { useAddress, useChainId, useSigner, useSwitchChain } from '@thirdweb-dev/react'
+import { BigNumber } from 'ethers'
 
 
 const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, thisNFTMarketAddress, ownerData, thisNFTblockchain}) => {
+
+    const listingId =  listingData ? BigNumber.from(listingData?.id).toNumber() : null;
     const { dark, errorToastStyle, successToastStyle } = useThemeContext();
     const address = useAddress();
     const chainid = useChainId();
     const router = useRouter();
-    const { selectedBlockchain } = useMarketplaceContext()
     const { setLoadingNewPrice, HOST, referralAllowedCollections } = useSettingsContext();
     const [showBurnModal, setBurnModal] = useState(false);
     const [showCancelModal, setCancelModal] = useState(false);
@@ -71,24 +73,26 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
           try {
             setCancelModal(false);
             setIsCanceling(true);
-            
+            console.log(listingData, listingId, thisNFTMarketAddress)
+
             const sdk = new ThirdwebSDK(signer);
             const contract = await sdk.getContract(thisNFTMarketAddress, "marketplace-v3");
             let tx = '';
             // console.log(auctionItem)
             if(listingData?.type  == 0){
               tx = await contract.directListings
-              .cancelListing(listingData.id)
+              .cancelListing(listingId)
               .catch(err => {
                 if(err.reason == 'user rejected transaction'){
                   toastHandler.error('Transaction rejected via wallet', errorToastStyle);
                 }
+                console.log(err)
                 setIsCanceling(false);
                 setLoadingNewPrice(false);
               });
             }else{
               tx = await contract.englishAuctions
-              .cancelAuction(listingData.id)
+              .cancelAuction(listingId)
               .catch(err => {
                 if(err.reason == 'user rejected transaction'){
                   toastHandler.error('Transaction rejected via wallet', errorToastStyle);
@@ -136,7 +140,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
                 ;(async() => {
                   setLoadingNewPrice(true);
                   await axios
-                        .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.contract}/${nftContractData?.tokenId}`)
+                        .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.token_address}/${nftContractData?.token_id}`)
                         .catch(err => console.log(err))
                         .then((res) =>{
                           setIsCanceling(false);
@@ -169,7 +173,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
 
     const burn = (e, sanityClient = config, toastHandler = toast) => {
       
-      if (Boolean(listingData?.id)) {
+      if (Boolean(listingId)) {
         toastHandler.error('Cannot burn a listed NFT. Delist this NFT first.', errorToastStyle);
         setBurnModal(false);
         return
@@ -200,10 +204,10 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
             setBurnModal(false);
 
             const sdk = new ThirdwebSDK(signer);
-            const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
+            const contract = await sdk.getContract(nftContractData.token_address, "nft-collection");
               
             const tx = await contract
-                              .burn(nftContractData?.tokenId)
+                              .burn(nftContractData?.token_id)
                               .catch(err => {
                                 if (err.reason == 'user rejected transaction'){
                                   toastHandler.error('Transaction rejected via wallet', errorToastStyle);
@@ -305,8 +309,8 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
         setIsTransfer(true);
         ;(async() => {
           const sdk = new ThirdwebSDK(signer);
-          const contract = await sdk.getContract(nftContractData.contract, "nft-collection");
-          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.tokenId)
+          const contract = await sdk.getContract(nftContractData.token_address, "nft-collection");
+          const tx = await contract.erc721.transfer(transferAddress, nftContractData?.token_id)
                                           .catch(err => {
                                             if(err.reason == 'user rejected transaction'){
                                               toast.error('The transaction is rejection via wallet', errorToastStyle);
@@ -320,7 +324,7 @@ const BurnCancel = ({nftContractData, listingData, auctionItem, nftCollection, t
                 walletAddress: transferAddress,
                 chainId: nftCollection.chainId,
                 contractAddress: nftCollection.contractAddress,
-                tokenId: nftContractData.tokenId,
+                tokenId: nftContractData.token_id,
                 payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
                 type: 'buy'
               }

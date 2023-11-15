@@ -126,3 +126,14 @@ export const pageview = (GA_MEASUREMENT_ID, url) => {
       page_path: url,
   });
 };
+
+export const sortObjects = (data, key, direction) => {
+  const sortedData = data.sort(function(a,b){
+    if(direction == 'ASC'){
+      return a[key] - b[key];
+    }else {
+      return b[key] - a[key];
+    }
+  })
+  return sortedData
+}

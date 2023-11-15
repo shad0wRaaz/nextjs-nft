@@ -16,7 +16,7 @@ const style = {
     titleLeft: `flex-1 flex items-center text-md font-bold`,
     titleIcon: `text-2xl mr-2`,
     titleRight: `text-xl transition`,
-    reportWrapper: 'p-4 px-6 flex flex-col gap-3 max-h-96 overflow-y-scroll',
+    reportWrapper: 'p-4 px-6 flex flex-col gap-3 max-h-96 overflow-y-auto',
 }
 
 const ReportActivity = ({ selectedNft, metaDataFromSanity }) => {

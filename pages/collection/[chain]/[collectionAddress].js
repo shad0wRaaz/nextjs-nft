@@ -46,7 +46,7 @@ import useIntersectionObserver from '../../../hooks/useIntersectionObserver'
 import EditCollectionPayment from '../../../components/EditCollectionPayment'
 import { useCollectionFilterContext } from '../../../contexts/CollectionFilterContext'
 import { ConnectWallet, useAddress, useChain, useSigner, useSwitchChain } from '@thirdweb-dev/react'
-import { createAwatar, isCompanyWallet, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
+import { createAwatar, isCompanyWallet, sortObjects, updateSingleUserDataToFindMaxPayLevel } from '../../../utils/utilities';
 import { addVolumeTraded, changeShowUnlisted, importMyCollection, sendReferralCommission, updateBoughtNFTs } from '../../../mutators/SanityMutators'
 import { IconArbitrum, IconAvalanche, IconBNB, IconCopy, IconDollar, IconEthereum, IconFilter, IconLoading, IconPolygon, IconUSDT, IconVerified } from '../../../components/icons/CustomIcons'
 import ConnectButton from '../../../components/ConnectButton';
@@ -116,7 +116,6 @@ const CollectionDetails = (props) => {
   const [imgPath, setImgPath] = useState();
   const [bannerPath, setBannerPath] = useState();
   const [creatorImgPath, setCreatorImgPath] = useState();
-
   const [totalCirculatingSupply, setTotalCirculatingSupply] = useState();
   const [totalUnclaimedSupply, setTotalUnclaimedSupply] = useState();
   const [isMinting, setIsMinting] = useState(false);
@@ -441,7 +440,7 @@ const CollectionDetails = (props) => {
             toast.error('Error in minting NFT. This may be due to insufficient funds.', errorToastStyle);
           }
           else{
-            console.log(err)
+            console.log(err);
           }
 
         });
@@ -574,9 +573,19 @@ const CollectionDetails = (props) => {
 
   const getInfiniteNfts = async ({pageParam}) => {
     const cursor = pageParam;    
-    const { data } = await axios.get(`${HOST}/api/infura/getCollectionOwners/${blockchainIdFromName[chain]}/${collectionAddress}`, {params: {cursor}}, {headers: {'Content-Type': 'application/json'}});
-    return data;
+
+    const { data } = await axios.get(`${HOST}/api/moralis/getAllNFTsFromCollection/${chain}/${collectionAddress}`,
+     {
+      params: {cursor}
+      },
+     {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+      });
+    return data?.result;
   }
+
 
   const { data: infiniteData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: statusNFT } = useInfiniteQuery(
       ['infinitenfts'],
@@ -584,9 +593,6 @@ const CollectionDetails = (props) => {
       { 
         staleTime: Infinity,
         refetchOnWindowFocus: false,
-        onSuccess:(res) => { 
-          setIsLoading(true)
-        },
         getNextPageParam: (page) => {
           return page.cursor
         },
@@ -602,11 +608,14 @@ const CollectionDetails = (props) => {
   });
 
   useEffect(() => {
+
     if(!infiniteData) return
+    setIsLoading(true);
+
     //nft metadata are in string, so need to parse it
     let parsedData = []
     infiniteData.pages.map(page => {
-      page.owners.map(item => {
+      page.map(item => {
         const newData = {
           ...item,
           metadata: JSON.parse(item.metadata),
@@ -614,10 +623,10 @@ const CollectionDetails = (props) => {
       parsedData.push(newData);
       }); 
     });
-    
+    parsedData = sortObjects(parsedData, 'token_id', 'ASC');
 
     const unresolved = parsedData.map(async nft => {
-      const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.tokenAddress}/${nft.tokenId}`)
+      const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${chain}/${nft.token_address}/${nft.token_id}`)
       const newObject= {
         ...nft,
         listingData: data[0]
@@ -627,8 +636,10 @@ const CollectionDetails = (props) => {
 
     ;(async() => {
       const resolved = await Promise.all(unresolved);
+      
       //remove nfts without metadata
       const filternfts = resolved.filter(nft => nft.metadata != null)
+
       setNfts(filternfts); //these are all nfts, for displaying nft cards
       setFilteredNftData(filternfts);
     })();
@@ -732,9 +743,9 @@ const CollectionDetails = (props) => {
   useEffect(() => {
     if(!address || !filteredNftData) return
 
-    const mine = filteredNftData.filter(nft => nft.ownerOf.toLowerCase() == address.toLowerCase());
+    // const mine = filteredNftData.filter(nft => nft.ownerOf.toLowerCase() == address.toLowerCase());
 
-    setMyNfts(mine);
+    // setMyNfts(mine);
 
     return() => {
       //do nothing
@@ -1575,15 +1586,15 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                     </div>
                   )}
 
-                  <Popover className="relative z-50">
+                  <Popover className="relative z-50 w-screen max-w-sm">
                     {({ open }) => (
                       <>
                         <Popover.Button
                           className={`
                             ${open ? '' : 'text-opacity-90'}
-                            group inline-flex items-center rounded-lg transition bg-sky-700 hover:bg-sky-600 px-3 py-2 text-sm  text-white hover:text-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}
+                            group ml-3 inline-flex items-center rounded-lg transition bg-sky-700 hover:bg-sky-600 px-3 py-2 text-sm  text-white hover:text-opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}
                         >
-                          <span>Filters by Properties</span>
+                          <span>Filter by Properties</span>
                           <BiChevronDown
                             className={`${open ? 'rotate-180' : 'text-opacity-70'}
                                 h-5 w-5 text-white-300 transition ease-in-out group-hover:text-opacity-80`}
@@ -1599,9 +1610,9 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                           leaveFrom="opacity-100 translate-y-0"
                           leaveTo="opacity-0 translate-y-1"
                         >
-                          <Popover.Panel className="absolute z-10 mt-3 w-screen max-w-sm  transform px-4 sm:px-0">
+                          <Popover.Panel className="absolute z-10 mt-3 transform px-4 sm:px-0 sm:-left-1/2 md:left-0 sm:w-full w-screen">
                             <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
-                              <div className="bg-slate-700/90 backdrop-blur-lg p-6 ">
+                              <div className="bg-slate-700/90 backdrop-blur-lg p-6 max-h-64 overflow-auto">
                                 {properties && (
                                   <Property traits={properties} nftData={nfts} />
                                 )}
@@ -1709,6 +1720,9 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
                       }
                     </div>
                       )}
+                  {!showMine && filteredNftData?.length == 0 && (
+                    <p className="text-center">NFT not minted yet.</p>
+                  )}
                   {!showMine && (
                     <div className={style.nftwrapper}>
                       {
@@ -1790,18 +1804,7 @@ export default CollectionDetails
 
 export async function getServerSideProps(context){
   const {chain, collectionAddress } = context.params;
-  const blockchainIdFromName = { 
-    'ethereum' : '1',
-    'goerli': '5',
-    'avalanche': '43114',
-    'avalanche-fuji': '43113',
-    'polygon': '137',
-    'mumbai': '80001',
-    'binance': '56',
-    'binance-testnet': '97',
-    'arbitrum-goerli': '421613',
-    'arbitrum': '42161',
-  }
+  
   let contractAddress = '';
   const link = {
     crypto_creatures: '0x9809AbFc4319271259a340775eC03E9746B76068',
@@ -1833,9 +1836,10 @@ export async function getServerSideProps(context){
   else if(String(collectionAddress).toLowerCase() == 'canine') {contractAddress = link.canine}
   else { contractAddress = collectionAddress}
 
-  const fetchPoint = `${HOST}/api/infura/getCollectionSanityData/${blockchainIdFromName[chain]}/${contractAddress}`;
+  const fetchPoint = `${HOST}/api/moralis/getCollectionSanityData/${chain}/${contractAddress}`;
 
   const collectionData = await axios.get(fetchPoint);
+
 
   return {
     props : {

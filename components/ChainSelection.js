@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast'
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { BiChevronDown } from 'react-icons/bi'
 import { Menu, Transition } from '@headlessui/react'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -8,11 +8,21 @@ import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
 
 const ChainSelection = () => {
     const { selectedBlockchain, setSelectedBlockchain } = useMarketplaceContext();
-    const { chainIconByName, chainName, liveNetworks, testNetworks } = useSettingsContext();
+    const { chainIconByName, chainName, liveNetworks, testNetworks, blockchainIdFromName, blockchainName } = useSettingsContext();
     const { successToastStyle } = useThemeContext();
+
+    useEffect(() => {
+      const prevBlockchain = localStorage.getItem('currentChainId');
+      if(prevBlockchain){
+        setSelectedBlockchain(blockchainName[prevBlockchain])
+      }
+
+      return () => {}
+    }, [])
     
     const changeBlockchain = (selectedChainName) => {
         setSelectedBlockchain(selectedChainName);
+        localStorage.setItem('currentChainId', blockchainIdFromName[selectedChainName]);
         toast.success(`You are in ${selectedChainName} chain.`, successToastStyle);
     }
     

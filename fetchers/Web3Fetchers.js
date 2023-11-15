@@ -48,7 +48,7 @@ export const getMarketOffers = (marketAddress, blockchain, listingData) => async
       }
     }else if(listingData?.type == 1){
       const marketBids = await contract?.offers.getAllValid();
-      console.log('bids?', marketBids);
+      // console.log('bids?', marketBids);
       return marketBids;
     }
   }
@@ -126,16 +126,16 @@ async ({ queryKey }) => {
   return data;
 }
 
-export const INFURA_getMyCollections = (chainId, address) => async({ queryKey }) => {
+export const INFURA_getMyCollections = (chain, address) => async({ queryKey }) => {
   // const [_, address ] = queryKey;
-  const { data } = await axios.get(`${HOST}/api/infura/sdk/getCollectionByWalletAddress/${chainId}/${address}`);
+  const { data } = await axios.get(`${HOST}/api/moralis/getCollectionByWalletAddress/${chain}/${address}`);
   return data;
 }
 
-export const INFURA_getMyAllNFTs = (chainId) => async ({ queryKey }) => {
+export const INFURA_getMyAllNFTs = (chain) => async ({ queryKey }) => {
   const [_, address, cursor] = queryKey;
 
-  const {data} = await axios.get(`${HOST}/api/infura/getNFT/${chainId}/${address}`,
+  const {data} = await axios.get(`${HOST}/api/moralis/getNFT/${chain}/${address}`,
   {
     params: {
       cursor
@@ -146,10 +146,11 @@ export const INFURA_getMyAllNFTs = (chainId) => async ({ queryKey }) => {
       'Content-Type': 'application/json'
     }
   });
+
   //sort out data according to name aphabetically
-  let unsortedAssets = [...data.assets];
+  let unsortedAssets = [...data]
   unsortedAssets = unsortedAssets.filter(asset => Boolean(asset.metadata));
-  // console.log(unsortedData)
+
   const sortedAssets = unsortedAssets.sort(function(a,b){
     var nameA = a.metadata.name;
     var nameB = b.metadata.name;
@@ -167,10 +168,10 @@ export const INFURA_getMyAllNFTs = (chainId) => async ({ queryKey }) => {
   return sortedData;
 }
 
-export const INFURA_getNFTTransfers = () => async({queryKey}) => {
-  const [_, chainId, contractAddress, tokenId] = queryKey;
-  const {data} = await axios.get(`${HOST}/api/infura/getTransferData/${chainId}/${contractAddress}/${tokenId}`);
-  return (data? data.transfers: null);
+export const getNFTTransfers = () => async({queryKey}) => {
+  const [_, chain, contractAddress, tokenId] = queryKey;
+  const {data} = await axios.get(`${HOST}/api/moralis/getTransferData/${chain}/${contractAddress}/${tokenId}`);
+  return (data? data?.result : null);
 }
 export const INFURA_getCollectionMetaData = (chainId) => async({queryKey}) => {
   const [_, contractAddress] = queryKey;
@@ -255,7 +256,7 @@ export const updateListings =
     // const result = await axios.get(`${HOST}/api/updateListings`)
 
     // return result
-    console.log(rpcUrl)
+
     return 'something'    
   }
 
@@ -284,7 +285,7 @@ export const getAuctionItems =
       });
       const marketplace = await sdk.getContract(marketplaceId, "marketplace");
       const res = await marketplace.getAllListings();
-      console.log(res);
+
       return res
     } catch (error) {}
   }

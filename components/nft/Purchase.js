@@ -28,16 +28,7 @@ const style = {
   priceValue: 'text-2xl font-bold',
   buttons: 'flex',
 }
-const blockchainNum = {
-  "mumbai" : 80001,
-  "polygon": 137,
-  "binance-testnet": 97,
-  "binance": 56,
-  "avalanche-fuji": 43113,
-  "avalanche": 43114,
-  "goerli": 5,
-  "mainnet": 1,
-}
+
 const currency = {
   "mumbai" : { offerCurrency: "WMATIC", bidCurrency: "MATIC" },
   "polygon": { offerCurrency: "WMATIC", bidCurrency: "MATIC" },
@@ -56,7 +47,7 @@ const MakeOffer = ({
   auctionItem,
   thisNFTMarketAddress,
   thisNFTblockchain,
-  ownerData,
+  ownerAddress,
   splitContract,
   royaltySplitData
 }) => {
@@ -65,7 +56,7 @@ const MakeOffer = ({
   if(listingData?.message || !listingData) {
     listed = false
   }
-
+// console.log(splitContract, royaltySplitData)
   const { coinPrices, loadingNewPrice, setLoadingNewPrice, HOST, referralCommission, referralAllowedCollections, blockchainIdFromName, refs } = useSettingsContext();
   const { dark, errorToastStyle, successToastStyle } = useThemeContext();
   const {myUser} = useUserContext();
@@ -83,7 +74,7 @@ const MakeOffer = ({
   const [coinMultiplier, setCoinMultiplier] = useState();
   const [closeBidLoading, setCloseBidLoading] = useState();
   const burntOwnerAddress = "0x0000000000000000000000000000000000000000";
-  const isburnt = nftContractData?.owner == burntOwnerAddress ? true : false;
+  const isburnt = nftContractData?.owner_of == burntOwnerAddress ? true : false;
   const router = useRouter();
   const [minNextBig, setMinNextBig] = useState(0);
   const [testnet, setTestnet] = useState(false);
@@ -144,16 +135,16 @@ const MakeOffer = ({
     }
   )
   
-  const currencyChainMatcher = {
-      "80001": "MATIC",
-      "137" : "MATIC",
-      "1": "ETH",
-      "5": "ETH",
-      "43113": "AVAX",
-      "43114": "AVAX",
-      "97": "TBNB",
-      "56": "BNB"
-  }
+  // const currencyChainMatcher = {
+  //     "80001": "MATIC",
+  //     "137" : "MATIC",
+  //     "1": "ETH",
+  //     "5": "ETH",
+  //     "43113": "AVAX",
+  //     "43114": "AVAX",
+  //     "97": "TBNB",
+  //     "56": "BNB"
+  // }
 
   //check for testnet NFTs
   useEffect(() => {
@@ -170,9 +161,7 @@ const MakeOffer = ({
     if(allAllowedCollections.includes(nftCollection?._id)){
       setAllowedSeperateCommission(true);
     }
-    return() => {
-//clean up function
-    }
+    return() => {}
 
   }, [referralAllowedCollections]);
 
@@ -211,29 +200,29 @@ const MakeOffer = ({
     }
   }, [listingData, coinPrices])
 
-  const convertBuyPricetoBNB = (price) => {
-    if(!nftCollection) return null
-    switch(nftCollection?.chainId){
-      case "97":
-        return price;
-      case "56":
-        return price;
-      case "80001":
-        return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
-      case "137":
-        return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
-      case "1":
-        return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
-      case "5":
-        return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
-      case "43113":
-        return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
-      case "43114":
-        return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
-      default:
-        return null;
-    }
-  }
+  // const convertBuyPricetoBNB = (price) => {
+  //   if(!nftCollection) return null
+  //   switch(nftCollection?.chainId){
+  //     case "97":
+  //       return price;
+  //     case "56":
+  //       return price;
+  //     case "80001":
+  //       return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
+  //     case "137":
+  //       return (Number(price) * Number(coinPrices.maticprice) / Number(coinPrices.bnbprice));
+  //     case "1":
+  //       return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
+  //     case "5":
+  //       return (Number(price) * Number(coinPrices.ethprice) / Number(coinPrices.bnbprice));
+  //     case "43113":
+  //       return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
+  //     case "43114":
+  //       return (Number(price) * Number(coinPrices.avaxprice) / Number(coinPrices.bnbprice));
+  //     default:
+  //       return null;
+  //   }
+  // }
 
   const updateRoyaltyReceiver = async () => {
     if(!referralAllowedCollections || !listingData) return;
@@ -422,8 +411,8 @@ const MakeOffer = ({
 
       const tx = await contract?.offers.makeOffer(
               {
-                assetContractAddress: nftContractData?.contract,
-                tokenId: nftContractData?.tokenId,
+                assetContractAddress: nftContractData?.token_address,
+                tokenId: nftContractData?.token_id,
                 quantity: quantityDesired,
                 totalPrice: offerAmount,
             }).catch(err => {
@@ -550,13 +539,10 @@ const MakeOffer = ({
         return;
       }
       if (!address || !signer) {
-        toastHandler.error(
-          'Wallet not connected. Connect wallet first.',
-          errorToastStyle
-          )
-          return
-        }
-        try {
+        toastHandler.error('Wallet not connected. Connect wallet first.', errorToastStyle)
+        return
+      }
+      try {
           //check if the conencted wallet is in same chain
           //check for correct connected chain with nft chain
           if(nftCollection.chainId != chainId.toString()){
@@ -587,133 +573,112 @@ const MakeOffer = ({
                                 setLoadingNewPrice(false); 
                                 toast.error("Error in buying. Possible reason: Insufficient funds", errorToastStyle);
                               });
+                              console.log(tx)
           if(tx){
 
-            const result = await axios.post(`${HOST}/api/nft/distributeToken`, {
-              splitContract,
-              walletAddress: royaltySplitData[0].address,
-              key: process.env.NEXT_PUBLIC_ENX_KEY,
-              chain: thisNFTblockchain,
-            }).catch(err => {
-              console.log(err)
-            });
-
-      
-              // mutateSaveTransaction({
-              //   transaction: tx,
-              //   id: nftContractData.tokenId,
-              //   eventName: 'Buy',
-              //   itemid: nftContractData.metadata.properties.tokenid,
-              //   price: buyOutPrice.toString(),
-              //   chainid: chainId,
-              // })
-              // console.log(tx)
-              if(Boolean(nftCollection)){
-                const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
-                
-                //adding volume to Collection
-                addVolume({
-                  id: nftCollection?._id,
-                  volume: volume2Add,
-                });
-          
-                //adding volume to the user
-                addVolume({
-                  id: String(address).toLowerCase(),
-                  volume: volume2Add
-                });
-
-                //update pay info-> list of all bought NFTs from the selected Collections
-                const payObj =  {
-                  walletAddress: address,
-                  chainId: nftCollection.chainId,
-                  contractAddress: listingData.assetContractAddress,
-                  tokenId: listingData.asset.id,
-                  payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
-                  type: 'buy'
-                }
-                changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
-                
-                // //also update the bought NFTs from seller address
-                // //no need to do this if the seller is company
-                if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
-                  const sellObj = {
-                    ...payObj,
-                    walletAddress: listingData?.sellerAddress,
-                    type: 'sell',
-                  }
-                  changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
-                }
-                
-                //no need to do updateLevel, as this will now be handled using boughtnfts field
-                //check payable commission level, only update if new nft collection has higher level the user's current payable level
-                // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
-                // const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
-
-                // if(collectionlevel > userlevel) {
-                //   updateLevel(
-                //     { 
-                //       walletAddress: address, 
-                //       level: nftCollection?.payablelevel
-                //     }
-                //   );
-                // }
-          
-                // payout to network
-                await payToMySponsors();
-
-                //change the unilevel of seller, if it applies
-
-
-                //update the royalty receiver of the nft, only if this is first purchase and it is from the company
-                await updateRoyaltyReceiver();
-              }
-        
-              //update Owner in Database
-              // await sanityClient
-              //       .patch(nftContractData.metadata.properties.tokenid)
-              //       .set({ "ownedBy" : { _type: 'reference', _ref: address} })
-              //       .commit();
-        
-        
-              qc.invalidateQueries(['activities']);
-              qc.invalidateQueries(['owner']);
-              qc.invalidateQueries(['marketplace']);
-              
+            (async() => {
               //delete data from market data in mango
-              ;(async() => {
-                setLoadingNewPrice(true);
-                await axios
-                      .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.contract}/${nftContractData?.tokenId}`)
-                      .catch(err => console.log(err))
-                      .then((res) =>{
-                        setBuyLoading(false);
-                        setLoadingNewPrice(false);
-                        router.reload(window.location.pathname);
-                        router.replace(router.asPath);
-                        toastHandler.success('NFT bought successfully.', successToastStyle);
-                      })
-              })()
+              setLoadingNewPrice(true);
+              await axios
+                    .get(`${HOST}/api/mango/deleteSingle/${thisNFTblockchain}/${nftContractData?.token_address}/${nftContractData?.token_id}`)
+                    .catch(err => console.log(err))
+                    .then((res) =>{
+                      toastHandler.success('NFT bought successfully.', successToastStyle);
+                    })
+            })();
 
-              //update listing data
-              // await axios
-              //       .get(`${HOST}/api/updateListings/${thisNFTblockchain}`)
-              //       .finally(() => {
-              //         router.reload(window.location.pathname);
-              //         router.replace(router.asPath);
-              //         setLoadingNewPrice(false);
-              //         setBuyLoading(false)
-              //         toastHandler.success('NFT purchase successful.', successToastStyle);
-              //       });
+            if(Boolean(royaltySplitData)){
+              await axios.post(`${HOST}/api/nft/distributeToken`, {
+                splitContract,
+                walletAddress: royaltySplitData[0]?.address,
+                key: process.env.NEXT_PUBLIC_ENX_KEY,
+                chain: thisNFTblockchain,
+              }).catch(err => {
+                console.log(err)
+              });
+
+            }
+
+            if(Boolean(nftCollection)){
+              const volume2Add = parseFloat(buyOutPrice * coinMultiplier);
+              
+              //adding volume to Collection
+              addVolume({
+                id: nftCollection?._id,
+                volume: volume2Add,
+              });
+        
+              //adding volume to the user
+              addVolume({
+                id: String(address).toLowerCase(),
+                volume: volume2Add
+              });
+
+              //update pay info-> list of all bought NFTs from the selected Collections
+              const payObj =  {
+                walletAddress: address,
+                chainId: nftCollection.chainId,
+                contractAddress: listingData.assetContractAddress,
+                tokenId: listingData.asset.id,
+                payablelevel: Boolean(nftCollection.payablelevel) ? nftCollection.payablelevel : 1,
+                type: 'buy'
+              }
+              changeBoughtNFTs(payObj); // this will change buyer's bought NFT field -> add NFT
+              
+              // //also update the bought NFTs from seller address
+              // //no need to do this if the seller is company
+              if(listingData.sellerAddress != process.env.NEXT_PUBLIC_TEST_COMPANY_WALLET_ADDRESS && listingData.sellerAddress != process.env.NEXT_PUBLIC_COMPANY_WALLET_ADDRESS){
+                const sellObj = {
+                  ...payObj,
+                  walletAddress: listingData?.sellerAddress,
+                  type: 'sell',
+                }
+                changeBoughtNFTs(sellObj); // this will change seller's bought NFT field -> remove NFT
+              }
+              
+              //no need to do updateLevel, as this will now be handled using boughtnfts field
+              //check payable commission level, only update if new nft collection has higher level the user's current payable level
+              // const userlevel = Boolean(myUser?.payablelevel) ? Number(myUser.payablelevel) : 0;
+              // const collectionlevel = Boolean(nftCollection?.payablelevel) ? Number(nftCollection.payablelevel) : 0;
+
+              // if(collectionlevel > userlevel) {
+              //   updateLevel(
+              //     { 
+              //       walletAddress: address, 
+              //       level: nftCollection?.payablelevel
+              //     }
+              //   );
+              // }
+        
+              // payout to network
+              await payToMySponsors().catch(err => console.log(err));
+
+              //change the unilevel of seller, if it applies
+
+
+              //update the royalty receiver of the nft, only if this is first purchase and it is from the company
+              await updateRoyaltyReceiver().catch(err => console.log(err));;
+            }
+      
+            qc.invalidateQueries(['activities']);
+            qc.invalidateQueries(['owner']);
+            qc.invalidateQueries(['marketplace']);
+
+            router.reload(window.location.pathname);
+            router.replace(router.asPath);
           }
       
-    } catch (error) {
-      // console.log(error?.message)
-      setBuyLoading(false);
-      setLoadingNewPrice(false);
-      toastHandler.error('Error in buying NFT', errorToastStyle);
-      return
-    }
+      }catch (error) {
+        console.log(error);
+        router.reload(window.location.pathname);
+        router.replace(router.asPath);
+        toastHandler.error('Error in buying NFT', errorToastStyle);
+      }
+
+      router.reload(window.location.pathname);
+      router.replace(router.asPath);
+    // setBuyLoading(false);
+    // setLoadingNewPrice(false);
   }
   const openOfferSetting = (value) => {
     if(!address) {
@@ -854,7 +819,7 @@ const MakeOffer = ({
       )}
 
       <div className="mt-8 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-        {!listed && (String(address).toLowerCase() == String(ownerData?.ownerOf).toLowerCase()) && (
+        {!listed && (String(address).toLowerCase() == ownerAddress.toLowerCase()) && (
           <Sell
             nftContractData={nftContractData}
             nftCollection={nftCollection}
@@ -862,8 +827,8 @@ const MakeOffer = ({
             thisNFTblockchain={thisNFTblockchain}
           />
         )}
-        {/* nftContractData?.owner <- this was in place of -> ownerData?.ownerOf */}
-        {listed && address?.toLowerCase() != ownerData?.ownerOf.toLowerCase() && !auctionItem && (
+
+        {listed && address?.toLowerCase() != ownerAddress.toLowerCase() && !auctionItem && (
           <>
             {buyLoading ? (
               <div className="gradBlue relative inline-flex flex-1 h-auto cursor-wait items-center justify-center rounded-xl px-4 py-3 text-sm font-medium text-neutral-50  transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:bg-opacity-70 sm:px-6 sm:text-base">
@@ -995,12 +960,12 @@ const MakeOffer = ({
           ) : null}
           <div className="buttonControls flex flex-1">
             <button 
-              className={`gradBlue p-3 text-white rounded-xl ml-0 px-6 flex items-center gap-2 w-full text-center justify-center`}
+              className={`transition gradBlue p-3 text-white rounded-xl ml-0 px-6 flex items-center gap-2 w-full text-center justify-center`}
               onClick={() => bidItem()}>
                 <MdOutlineCheckCircle /> Bid
             </button>
             <button 
-              className={`${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-blue-600 text-slate-800 hover:text-white border-netural-200'} transition border p-3 justify-center text-white items-center rounded-xl ml-3 px-6 flex gap-2 w-full text-center`}
+              className={`transition ${dark ? 'bg-slate-700 border-slate-600 hover:bg-slate-500' :'bg-white hover:bg-neutral-500 text-slate-800 hover:text-white border-netural-200'} transition border p-3 justify-center items-center rounded-xl ml-3 px-6 flex gap-2 w-full text-center`}
               onClick={() => openBidSetting('none')}>
                 <MdOutlineCancel /> Cancel
             </button>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+ import { useEffect } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconSun, IconMoon } from './icons/CustomIcons'
 
@@ -8,9 +8,25 @@ const style = {
 
 const ThemeSwitcher = () => {
   const { dark, setDark } = useThemeContext()
+
   useEffect(() => {
-    localStorage.setItem('theme', JSON.stringify(dark))
+    const themeStyle = localStorage.getItem('theme');
+    
+    if(dark != themeStyle){
+      const themeStyle = localStorage.setItem('theme', !themeStyle);
+      setDark(!themeStyle)
+    }
+    // if(themeStyle){
+    //   localStorage.setItem('theme', themeStyle)
+    // }{
+    //   localStorage.setItem('theme', themeStyle)
+    // }
+    return() => {}
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('theme', dark);
+  }, [dark])
   return (
       <div
         className=""

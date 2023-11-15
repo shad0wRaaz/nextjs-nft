@@ -42,7 +42,7 @@ const Collection = () => {
   const { blockchainName, blockchainIdFromName, chainIcon, HOST } = useSettingsContext();
   const { selectedBlockchain } = useMarketplaceContext();
   const bannerRef = useRef();
-  const activechain = useChain();
+  const activeChain = useChain();
   const [listStyle, setListStyle] = useState('grid');
   const { myUser, myCollections} = useUserContext();
   const [showType, setShowType] = useState('myallnfts');
@@ -67,7 +67,7 @@ const Collection = () => {
   
   const {data: outsideCollection, status: outsideCollectionStatus} = useQuery(
     ['allcollections', address, selectedBlockchain],
-    INFURA_getMyCollections(chainid ? chainid : blockchainIdFromName[selectedBlockchain], address),
+    INFURA_getMyCollections(selectedBlockchain, address),
     {
       refetchOnWindowFocus: false,
       enabled: Boolean(address) ,
@@ -80,10 +80,10 @@ const Collection = () => {
   //filter out only those collections deployed in third party websites
   useEffect(() => {
     if(myCollections && outsideCollectionStatus == 'success' ){
-      const allCollections = [...outsideCollection.collections];
+      const allCollections = [...outsideCollection];
       
       const inhouseCollections = myCollections.map(coll => coll.contractAddress.toLowerCase());
-      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.contract));
+      const outsideCollections = allCollections.filter(coll => !inhouseCollections.includes(coll.token_address));
       // console.log('all',outsideCollections)
       if(outsideCollections.length > 0){
         setCollectionsFromInfura([...outsideCollections]);
@@ -95,15 +95,16 @@ const Collection = () => {
   }, [myCollections, outsideCollectionStatus]);
 
   const { data, status: mynftstatus } = useQuery(
-    ['mynfts', address, cursor, activechain],
-    INFURA_getMyAllNFTs(activechain?.chainId),
+    ['mynfts', address, cursor, selectedBlockchain],
+    INFURA_getMyAllNFTs(selectedBlockchain),
     {
-      enabled: Boolean(address) && Boolean(activechain),
+      refetchOnWindowFocus: false,
+      enabled: Boolean(address) && Boolean(activeChain),
       onError:() => {},
       onSuccess:(res) => 
       {
         const unresovled = res?.assets.map(async nft => {
-          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[activechain.chainId]}/${nft.contract}/${nft.tokenId}`);
+          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[activeChain.chainId]}/${nft.contract}/${nft.tokenId}`);
           const newObject= {
             ...nft,
             listingData: data[0]
@@ -497,7 +498,7 @@ const Collection = () => {
                     name={coll.name}
                     id={coll.contract}
                     contractAddress={coll.contract}
-                    chainId={activechain?.chainId}
+                    chainId={activeChain?.chainId}
                     creator="Unnamed"
                     creatorAddress={address}
                   />

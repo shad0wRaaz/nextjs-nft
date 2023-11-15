@@ -39,7 +39,7 @@ const style = {
   divider: `border border-white border-slate-700 border-r-1`,
 }
 
-const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFromSanity, contractAddress }) => {
+const GeneralDetails = ({ nftContractData, chain, listingData, metaDataFromSanity, contractAddress }) => {
   const { marketAddress } = useMarketplaceContext();
   const { dark, successToastStyle, errorToastStyle } = useThemeContext();
   const address = useAddress();
@@ -48,28 +48,15 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
   const [showModal, setShowModal] = useState(false);
   const [profilePath, setProfilePath] = useState();
   const [ownerPath, setOwnerPath] = useState();
-  const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData?.contract}/${nftContractData?.tokenId}`;
-
-  useEffect(() => {
-
-    ;(async () => {
-      const profile = await getImagefromWeb3(metaDataFromSanity?.web3imageprofile);
-      const owner = await getImagefromWeb3(ownerData?.web3imageprofile);
-      setProfilePath(profile?.data);
-      setOwnerPath(owner?.data);
-    })();
-
-    return () => {}
-
-  }, []);
+  const shareURL = `https://nuvanft.io/nft/${chain}/${nftContractData?.token_address}/${nftContractData?.token_id}`;
 
 
   //getCollection Name from Sanity
   const { data: ownerData, status: ownerStatus } = useQuery(
-    ['owner', owner?.owners[0]?.ownerOf.toUpperCase()],
+    ['owner', nftContractData?.owner_of.toUpperCase()],
     getUserContinuously(),
   {
-      enabled: Boolean(owner?.owners[0]?.ownerOf) && Boolean(owner?.owners[0]?.ownerOf != "0x0000000000000000000000000000000000000000"),
+      enabled: Boolean(nftContractData?.owner_of) && Boolean(nftContractData?.owner_of != "0x0000000000000000000000000000000000000000"),
       onError: () => {
         toast.error('Error in getting Owner info.', errorToastStyle);
       },
@@ -87,13 +74,26 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
           process.env.NEXT_PUBLIC_MAINNET_MARKETPLACE.toLowerCase(), 
           process.env.NEXT_PUBLIC_BINANCE_SMARTCHAIN_MARKETPLACE.toLowerCase(),
           ];
-        if (!res && (marketArray.includes(owner?.owners[0]?.ownerOf))) {
+        if (!res && (marketArray.includes(nftContractData?.owner_of))) {
           setAuctionedItem(true);
         }
       },
     }
   )
 
+  useEffect(() => {
+
+    ;(async () => {
+      const profile = await getImagefromWeb3(metaDataFromSanity?.web3imageprofile);
+      const owner = await getImagefromWeb3(ownerData?.web3imageprofile);
+      setProfilePath(profile?.data);
+      setOwnerPath(owner?.data);
+    })();
+
+    return () => {}
+
+  }, [metaDataFromSanity, ownerData]);
+  
   return (
     <div className={dark ? ' text-neutral-200' : 'text-black'}>
       {/* Modal window*/}
@@ -109,7 +109,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
       {/* End of Modal window*/}
       <div className="space-y-5">
         <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
-          {nftContractData?.metadata?.name}
+          {nftContractData?.normalized_metadata?.name}
         </h1>
         {Boolean(metaDataFromSanity?.category) &&(
           <div 
@@ -144,7 +144,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   <a>
                     <img
                       className="absolute inset-0 h-full w-full cursor-pointer rounded-full object-cover"
-                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? profilePath : createAwatar(nftContractData?.contract)}
+                      src={ Boolean(metaDataFromSanity?.web3imageprofile) ? profilePath : createAwatar(nftContractData?.token_address)}
                       alt={metaDataFromSanity?.name}
                     />
                   </a>
@@ -158,7 +158,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   <span className="text-sm">Collection:</span>
                   <span className="flex items-center font-medium">
                       {/* <Link href={`/collections/${metaDataFromSanity?.collection?._id}`}> */}
-                    <span className="cursor-pointer">{metaDataFromSanity?.name ? metaDataFromSanity?.name : `${nftContractData?.contract.slice(0,7)}...${nftContractData?.contract.slice(-7)}`}</span>
+                    <span className="cursor-pointer">{metaDataFromSanity?.name ? metaDataFromSanity?.name : `${nftContractData?.token_address.slice(0,7)}...${nftContractData?.token_address.slice(-7)}`}</span>
                   </span>
                 </span>
               </a>
@@ -173,7 +173,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
 
           <div className="flex items-center">
             {ownerStatus == 'Loading' && <Loader />}
-            {owner?.owners[0]?.ownerOf == '' && (
+            {nftContractData?.owner_of == '' && (
               <div className="flex items-center gap-2 rounded-md bg-rose-500 py-2 px-4 text-white">
                 <AiFillFire /> Burnt NFT
               </div>
@@ -201,7 +201,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                     </div>
 
                     <span className="ml-2.5 flex cursor-pointer flex-col">
-                      <span className="text-sm">Owned by: </span>
+                      <span className="text-sm">Owner: </span>
                       <span className="flex items-center font-medium">
                         {ownerData?.userName == "Unnamed" ? (
                           <span>{ownerData?.walletAddress.slice(0,5)}...{ownerData?.walletAddress.slice(-5)}</span>
@@ -228,7 +228,7 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                 Share:
               </div>
               <FacebookShareButton className="hover:scale-125 transition"
-                quote={nftContractData?.metadata?.name}
+                quote={nftContractData?.normalized_metadata?.name}
                 url={shareURL}>
                 {dark ? (
                     <FiFacebook
@@ -313,8 +313,8 @@ const GeneralDetails = ({ nftContractData, chain, owner, listingData, metaDataFr
                   />
                 )}
               </EmailShareButton>
-              {nftContractData?.metadata?.properties?.external_link ? (
-                <Link href={nftContractData?.metadata?.properties?.external_link}>
+              {nftContractData?.normalized_metadata?.properties?.external_link ? (
+                <Link href={nftContractData?.normalized_metadata?.properties?.external_link}>
                   <a target="_blank" className=" scale-105 transition">
                     <RiShareBoxLine className="cursor-pointer transition hover:scale-125" />
                   </a>

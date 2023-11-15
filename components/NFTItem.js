@@ -68,7 +68,6 @@ const NFTItem = ({ nftItem, chain, compact }) => {
   //     //do nothing
   //   }
   // }, [address])
-  console.log(imgPath?.data)
 
   return (
     <div
