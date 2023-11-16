@@ -243,7 +243,7 @@ const CollectionDetails = (props) => {
 
       if (chain == "polygon" || chain == "mumbai") {
         setCoinMultiplier(coinPrices?.maticprice);
-      } else if (chain == "mainnet" || chain == "goerli") {
+      } else if (chain == "mainnet" || chain == "goerli" || chain == "ethereum") {
         setCoinMultiplier(coinPrices?.ethprice);
       } else if (chain == "avalanche" || chain == "avalanche-fuji") {
         setCoinMultiplier(coinPrices?.avaxprice);

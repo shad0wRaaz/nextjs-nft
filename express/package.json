@@ -10,7 +10,7 @@
     "@infura/sdk": "^2.4.1",
     "@react-email/render": "^0.0.7",
     "@sanity/client": "^3.3.3",
-    "@thirdweb-dev/storage": "^1.2.11",
+    "@thirdweb-dev/storage": "^2.0.4",
     "aws-sdk": "^2.853.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",

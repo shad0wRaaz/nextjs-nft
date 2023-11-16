@@ -19,9 +19,9 @@ import { useState, useEffect, Fragment } from 'react'
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useAddress, useChainId, useWallet } from '@thirdweb-dev/react'
 import { useSettingsContext } from '../contexts/SettingsContext'
 import { useMarketplaceContext } from '../contexts/MarketPlaceContext'
+import { useAddress, useChainId, useWallet } from '@thirdweb-dev/react'
 import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
@@ -141,6 +141,7 @@ const Header = () => {
   const { data:blockedItems, status:blockedItemStatus } = useQuery(
       ["blockedItems"], 
       getBlockedItems(), {
+          enabled: false,
           onSuccess: (res) => {
             if(res){
               setBlockedCollections(res[0]?.blockedcollections);

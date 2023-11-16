@@ -25,7 +25,7 @@ import { ThirdwebProvider,
   frameWallet,
   rainbowWallet,
   phantomWallet, } from '@thirdweb-dev/react'
-import { Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet, Ethereum, Goerli, Mumbai, Polygon } from '@thirdweb-dev/chains'
+// import { Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet, Ethereum, Goerli, Mumbai, Polygon } from '@thirdweb-dev/chains'
 // import TransitionLayout from '../components/TransitionLayout'
 
 function MyApp({ Component, pageProps }) {
@@ -86,7 +86,7 @@ function MyApp({ Component, pageProps }) {
         //   }),
         //   safeWallet(),
         // ]}
-        supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
+        // supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
         dAppMeta={{
           name: 'Nuva NFT',
           description: 'A Multichain NFT Marketplace',
@@ -101,9 +101,9 @@ function MyApp({ Component, pageProps }) {
                   <MarketplaceProvider>
                     <SettingsProvider>
                       <CollectionFilterProvider>
-                        {/* <TransitionLayout> */}
+
                           <Component {...pageProps} />
-                        {/* </TransitionLayout> */}
+
                       </CollectionFilterProvider>
                     </SettingsProvider>
                     <ReactQueryDevtools />

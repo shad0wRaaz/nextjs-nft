@@ -210,7 +210,6 @@ const Nft = (props) => { //props are from getServerSideProps
         ;(async() => {
           const splitContract = await sdk.getContract(royaltyData.fee_recipient, "split");
           const allRecipient = await splitContract.getAllRecipients();
-          console.log(allRecipient)
           setRoyaltySplitData(allRecipient);
         })();
       }

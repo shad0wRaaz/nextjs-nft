@@ -122,7 +122,7 @@ export const getNFTTransfersByTokenID = async(chain, address, tokenId) => {
             address,
             tokenId,
           });
-        console.log(response.raw)
+
         return response.raw
         
     } catch(error) {

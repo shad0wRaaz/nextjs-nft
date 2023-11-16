@@ -104,7 +104,7 @@ const Collection = () => {
       onSuccess:(res) => 
       {
         const unresovled = res?.assets.map(async nft => {
-          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[activeChain.chainId]}/${nft.contract}/${nft.tokenId}`);
+          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${blockchainName[activeChain.chainId]}/${nft.token_address}/${nft.token_id}`);
           const newObject= {
             ...nft,
             listingData: data[0]

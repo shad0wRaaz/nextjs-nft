@@ -168,10 +168,10 @@ const User = () => {
       onError:() => {},
       onSuccess:(res) => 
       {
-        // console.log(res.cursor)
         const selectedChain = Boolean(activeChain?.chainId) ? blockchainName[activeChain.chainId] : selectedBlockchain 
+
         const unresovled = res?.assets.map(async nft => {
-          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${selectedChain}/${nft.contract}/${nft.tokenId}`);
+          const {data} =  await axios.get(`${HOST}/api/mango/getSingle/${selectedChain}/${nft.token_address}/${nft.token_id}`);
           const newObject= {
             ...nft,
             listingData: data[0]

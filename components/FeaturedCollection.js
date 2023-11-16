@@ -98,7 +98,9 @@ const FeaturedCollection = () => {
   useEffect(() => {
     const contractAddress = '0xbDd60f4d2795f145C09dd4eA6d9565B185F6CBF9';
     ;(async() => {
-      const sdk = new ThirdwebSDK("binance");
+      const sdk = new ThirdwebSDK("binance",{
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+      });
       const contract = await sdk.getContract(contractAddress);
       setTotalUnclaimedSupply(await contract.erc721.totalUnclaimedSupply());
       const {price} = await contract.erc721.claimConditions.getActive();

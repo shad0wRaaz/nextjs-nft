@@ -1,5 +1,5 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 
 const MarketplaceContext = createContext();
 
@@ -25,10 +25,12 @@ export function MarketplaceProvider({ children }) {
   const [topTradedCollections, setTopTradedCollections] = useState();
   const [marketAddress, setMarketAddress] = useState(marketplace['binance']); 
 
-  useEffect(() => {
+  useCallback(() => {
     if(!selectedBlockchain) return
       ;(async() => {
-        const sdk = new ThirdwebSDK(selectedBlockchain);
+        const sdk = new ThirdwebSDK(selectedBlockchain, {
+          clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY
+        });
         const contract = await sdk.getContract(marketplace[selectedBlockchain], "marketplace-v3");
         setMarketAddress(marketplace[selectedBlockchain]);
         setMarketContract(contract);
