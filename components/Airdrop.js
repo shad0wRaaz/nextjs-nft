@@ -8,7 +8,7 @@ import { TbCircleCheckFilled } from 'react-icons/tb';
 import { Dialog, Transition } from '@headlessui/react'
 import { getAirDrops } from '../fetchers/SanityFetchers';
 import nuvatokenlogo from '../public/assets/nuvatoken.png'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import { useSettingsContext } from '../contexts/SettingsContext';
 import { MdOutlineDownloading, MdOutlineOpenInNew } from 'react-icons/md';
 import { allbenefits } from '../constants/benefits';
@@ -68,12 +68,14 @@ const Airdrop = ({visible, setShowAirdrop, selectedAirdropCollection}) => {
 
     }, [searchAddress])
 
-    useEffect(() => {
+    useCallback(() => {
         if(!selectedCollection) return
         ;(async() => {
             setClaimLoading(true);
 
-            const sdk = new ThirdwebSDK(selectedCollection.chain);
+            const sdk = new ThirdwebSDK(selectedCollection.chain, {
+                clientId: process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY,
+            });
             const contract = await sdk.getContract(selectedCollection.contractAddress);
             const claimed = await contract.erc721.totalClaimedSupply();
             const totalSize = await contract.erc721.totalCount();

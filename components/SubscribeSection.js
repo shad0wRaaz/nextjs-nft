@@ -1,14 +1,13 @@
 import axios from 'axios'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { config } from '../lib/sanityClient'
 import ReCAPTCHA from 'react-google-recaptcha'
 import dropimage from '../assets/pandadrop.webp'
-import { RiArrowRightLine } from 'react-icons/ri'
 import { useThemeContext } from '../contexts/ThemeContext'
-import { useSettingsContext } from '../contexts/SettingsContext'
 import { saveSubscriber } from '../mutators/SanityMutators'
+import { useSettingsContext } from '../contexts/SettingsContext'
 
 const style = {
     wrapper: 'container mx-auto lg:p-[8rem] lg:pb-0 p-[3rem]  pb-0 mt-0',
