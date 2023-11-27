@@ -47,6 +47,19 @@ export const getNFTOwner = async(chain, address, tokenId) => {
     }
 }
 
+export const getNFTOwnersOfCollection = async(chain, address) => {
+    try{
+        const response = await Moralis.EvmApi.nft.getNFTOwners({
+            chain: chainCode[chain],
+            address,
+          });
+        return response.toJSON().result;
+    }catch(error){
+        console.log(error);
+        return null
+    }
+}
+
 export const getNFTsByCollection = async (chain, address, cursor) => {
     try{
         const response = await Moralis.EvmApi.nft.getContractNFTs({

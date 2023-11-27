@@ -113,12 +113,8 @@ export const isCompanyWallet = (walletAddress) => {
     String(process.env.NEXT_PUBLIC_MUSHROOM_KINGDOM_WALLET_ADDRESS).toLowerCase(),
     String(process.env.NEXT_PUBLIC_METAMASK_WALLET_ADDRESS).toLowerCase(),
   ]
+  return wallets.includes(walletAddress.toLowerCase()) ? true : false;
 
-  if(wallets.includes(walletAddress.toLowerCase())){
-    return true;
-  }else{
-    return false;
-  }
 }
 
 export const pageview = (GA_MEASUREMENT_ID, url) => {

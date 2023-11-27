@@ -1,41 +1,40 @@
 import Link from 'next/link';
-import {getLocalStorage, setLocalStorage} from '../lib/storageHelper';
-import { useEffect, useState } from 'react';
 import { Tab } from '@headlessui/react';
+import { useCookies } from 'react-cookie';
+import { useEffect } from 'react';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
 
 export default function CookieBanner(){
-    const [cookieConsent, setCookieConsent] = useState(null);
 
-    useEffect (() => {
-        const storedCookieConsent = getLocalStorage("cookie_consent", null)
-        setCookieConsent(storedCookieConsent)
-    }, [setCookieConsent])
+    const [cookie, setCookie] = useCookies(['consent']);
+
+
+    const handleCookies = (action) => {
+        if(action == "allow"){
+            setCookie('consent', 'granted')
+        }else{
+            setCookie('consent', 'denied')
+        }
+    }
 
     
     useEffect(() => {
-        const newValue = cookieConsent ? 'granted' : 'denied'
+        const newValue = cookie ? 'granted' : 'denied'
 
         window.gtag("consent", 'update', {
             'analytics_storage': newValue
         });
 
-        setLocalStorage("cookie_consent", cookieConsent)
+        return () => {}
 
-        //For Testing
-        // console.log("Cookie Consent: ", cookieConsent)
-
-    }, [cookieConsent]);
+    }, [cookie]);
 
 
     return (
-        <div className={`my-10 mx-2 max-w-max md:max-w-screen-md ${cookieConsent != null ? "hidden" : "flex"}
-                        fixed top-0 left-0 right-0 mx-6 md:mx-auto
-                         p-8 justify-between items-center flex-col gap-4  
-                         bg-gray-100 rounded-2xl shadow z-50`}>
+        <div className={`my-10 mx-2 max-w-max md:max-w-screen-md ${!cookie['consent'] ? "hidden" : "flex"} fixed top-0 left-0 right-0 mx-6 md:mx-auto p-8 justify-between items-center flex-col gap-4 bg-gray-100 rounded-2xl shadow z-50`}>
             <Tab.Group>
                 <Tab.List className="border w-full border-l-0 border-r-0">
                     <Tab className={({selected}) => classNames('p-4 border border-t-0 border-l-0 border-r-0 border-b-4 transition', selected ? 'border-blue-600 text-blue-700': 'border-white') }>Consent</Tab>
@@ -67,8 +66,15 @@ export default function CookieBanner(){
 
             
             <div className='flex gap-2'>
-                <button className='px-5 py-2 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition' onClick={() => setCookieConsent(false)}>Decline</button>
-                <button className='gradBlue px-5 py-2 text-white rounded-lg hover:bg-gray-700 transition' onClick={() => setCookieConsent(true)}>Allow Cookies</button>
+                <button className='px-5 py-2 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition'
+                    onClick={() => handleCookies('decline')}>
+                        Decline
+                </button>
+
+                <button className='gradBlue px-5 py-2 text-white rounded-lg hover:bg-gray-700 transition' 
+                    onClick={() => handleCookies('allow')}>
+                        Allow Cookies
+                </button>
             </div>   
         </div>
     )}

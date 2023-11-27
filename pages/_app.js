@@ -12,6 +12,7 @@ import { QueryClientProvider, QueryClient } from 'react-query'
 import { SettingsProvider } from '../contexts/SettingsContext'
 import { MarketplaceProvider } from '../contexts/MarketPlaceContext'
 import { CollectionFilterProvider } from '../contexts/CollectionFilterContext'
+import { CookiesProvider } from 'react-cookie'
 import { ThirdwebProvider,
   ConnectWallet,
   metamaskWallet,
@@ -34,86 +35,88 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_MEAUSREMENT_ID} />
-      <CookieBanner />
-      <ThirdwebProvider
-        activeChain="binance"
-        clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
-        supportedWallets={[
-          metamaskWallet(),
-          coinbaseWallet({ recommended: true }),
-          walletConnect(),
-          safeWallet({
-            personalWallets: [
-              metamaskWallet(),
-              coinbaseWallet({ recommended: true }),
-              walletConnect(),
-              trustWallet(),
-              zerionWallet(),
-              bloctoWallet(),
-              magicLink({
-                apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
-                oauthOptions: {
-                  providers: [
-                    "google"
-                  ],
-                },
-              }),
-              frameWallet(),
-              rainbowWallet(),
-              phantomWallet(),
-            ],
-          }),
-          trustWallet(),
-          zerionWallet(),
-          bloctoWallet(),
-          magicLink({
-            apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
-            oauthOptions: {
-              providers: [
-                "google"
+      <CookiesProvider>
+        <CookieBanner />
+        <ThirdwebProvider
+          activeChain="binance"
+          clientId={process.env.NEXT_PUBLIC_THIRDWEB_PRIVATE_KEY}
+          supportedWallets={[
+            metamaskWallet(),
+            coinbaseWallet({ recommended: true }),
+            walletConnect(),
+            safeWallet({
+              personalWallets: [
+                metamaskWallet(),
+                coinbaseWallet({ recommended: true }),
+                walletConnect(),
+                trustWallet(),
+                zerionWallet(),
+                bloctoWallet(),
+                magicLink({
+                  apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
+                  oauthOptions: {
+                    providers: [
+                      "google"
+                    ],
+                  },
+                }),
+                frameWallet(),
+                rainbowWallet(),
+                phantomWallet(),
               ],
-            },
-          }),
-          frameWallet(),
-          rainbowWallet(),
-          phantomWallet(),
-        ]}
-        // supportedWallets={[
-        //   metamaskWallet(),
-        //   coinbaseWallet(),
-        //   walletConnect({
-        //     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_V2_PROJECT_ID
-        //   }),
-        //   safeWallet(),
-        // ]}
-        // supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
-        dAppMeta={{
-          name: 'Nuva NFT',
-          description: 'A Multichain NFT Marketplace',
-          logoUrl: 'https://nuvanft.io/assets/nuvanft.png',
-          url: 'https://nuvanft.io'
-        }}>
-        <ThemeProvider>
-          <UserProvider>
-            <AdminUserProvider>
-              <SearchProvider>
-                <QueryClientProvider client={client}>
-                  <MarketplaceProvider>
-                    <SettingsProvider>
-                      <CollectionFilterProvider>
+            }),
+            trustWallet(),
+            zerionWallet(),
+            bloctoWallet(),
+            magicLink({
+              apiKey: process.env.NEXT_PUBLIC_MAGIC_LINK_KEY,
+              oauthOptions: {
+                providers: [
+                  "google"
+                ],
+              },
+            }),
+            frameWallet(),
+            rainbowWallet(),
+            phantomWallet(),
+          ]}
+          // supportedWallets={[
+          //   metamaskWallet(),
+          //   coinbaseWallet(),
+          //   walletConnect({
+          //     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_V2_PROJECT_ID
+          //   }),
+          //   safeWallet(),
+          // ]}
+          // supportedChains={process.env.NODE_ENV == 'production' ? [Ethereum, Binance, Polygon, Avalanche, Arbitrum] : [Ethereum, Goerli, Polygon, Mumbai, Arbitrum, ArbitrumGoerli, Avalanche, AvalancheFuji, Binance, BinanceTestnet]}
+          dAppMeta={{
+            name: 'Nuva NFT',
+            description: 'A Multichain NFT Marketplace',
+            logoUrl: 'https://nuvanft.io/assets/nuvanft.png',
+            url: 'https://nuvanft.io'
+          }}>
+          <ThemeProvider>
+            <UserProvider>
+              <AdminUserProvider>
+                <SearchProvider>
+                  <QueryClientProvider client={client}>
+                    <MarketplaceProvider>
+                      <SettingsProvider>
+                        <CollectionFilterProvider>
 
-                          <Component {...pageProps} />
+                            <Component {...pageProps} />
 
-                      </CollectionFilterProvider>
-                    </SettingsProvider>
-                    <ReactQueryDevtools />
-                  </MarketplaceProvider>
-                </QueryClientProvider>
-              </SearchProvider>
-            </AdminUserProvider>
-          </UserProvider>
-        </ThemeProvider>
-      </ThirdwebProvider>
+                        </CollectionFilterProvider>
+                      </SettingsProvider>
+                      <ReactQueryDevtools />
+                    </MarketplaceProvider>
+                  </QueryClientProvider>
+                </SearchProvider>
+              </AdminUserProvider>
+            </UserProvider>
+          </ThemeProvider>
+        </ThirdwebProvider>
+      </CookiesProvider>
     </>
   )
 }

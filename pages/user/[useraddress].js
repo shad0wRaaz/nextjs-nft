@@ -10,7 +10,7 @@ import { VscHeart } from 'react-icons/vsc'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import Loader from '../../components/Loader'
-import { useChain } from '@thirdweb-dev/react'
+import { ThirdwebSDK, useChain } from '@thirdweb-dev/react'
 import { HiChevronRight } from 'react-icons/hi'
 import { useMutation, useQuery } from 'react-query'
 import { useEffect, useRef, useState } from 'react'
@@ -133,7 +133,7 @@ const User = () => {
     INFURA_getMyCollections(selectedBlockchain, address),
     {
       enabled: Boolean(address) ,
-      onSuccess: (res) => {
+      onSuccess: async (res) => {
         // console.log(res);
       }
     }

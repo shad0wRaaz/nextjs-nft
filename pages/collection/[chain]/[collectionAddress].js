@@ -219,23 +219,6 @@ const CollectionDetails = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if(!collectionData) return
-
-    ;(async () => {
-      const nftImagePath = await getImagefromWeb3(collectionData?.web3imageprofile);
-      const nftBannerPath = await getImagefromWeb3(collectionData?.web3imagebanner);
-      const creatorImgPath = await getImagefromWeb3(collectionData?.creator?.web3imageprofile);
-
-      // console.log(nftImagePath)
-      setImgPath(nftImagePath?.data);
-      setBannerPath(nftBannerPath?.data);
-      setCreatorImgPath(creatorImgPath?.data);
-    })();
-
-    return() => {}
-
-  }, [collectionData]);
 
 
   useEffect(() => {
@@ -538,6 +521,18 @@ const CollectionDetails = (props) => {
 
   useEffect(() => {
     if(!collectionData) return
+
+    ;(async () => {
+      const nftImagePath = await getImagefromWeb3(collectionData?.web3imageprofile);
+      const nftBannerPath = await getImagefromWeb3(collectionData?.web3imagebanner);
+      const creatorImgPath = await getImagefromWeb3(collectionData?.creator?.web3imageprofile);
+
+      // console.log(nftImagePath)
+      setImgPath(nftImagePath?.data);
+      setBannerPath(nftBannerPath?.data);
+      setCreatorImgPath(creatorImgPath?.data);
+    })();
+
     if(collectionData?.external_link){
       if(!collectionData.external_link?.startsWith('https') && !collectionData?.external_link.startsWith('http') ){
         setExternalLink('https://' + collectionData.external_link);
@@ -566,6 +561,16 @@ const CollectionDetails = (props) => {
       learnmore: linksData[0]?.learnmorelink, 
       whitepaper: linksData[0]?.whitepaper,
     });
+
+    ;(async() => {
+      const { data } = await axios.get(`${HOST}/api/moralis/getNFTOwnersOfCollection/${chain}/${collectionAddress}`)
+      if(data){
+        const ownerArray = data?.map(nft => nft.owner_of);
+        const ownerset = new Set(ownerArray);
+        setNftHolders(Array.from(ownerset));
+      }
+
+    })()
 
     return() => {}
   }, [collectionData])
@@ -644,10 +649,11 @@ const CollectionDetails = (props) => {
       setFilteredNftData(filternfts);
     })();
 
-      //this is for showing owners details
-    const ownerArray = parsedData.map(o => o.ownerOf);
-    const ownerset = new Set(ownerArray);
-    setNftHolders(Array.from(ownerset));
+    // console.log(parsedData)
+    //   //this is for showing owners details
+    // const ownerArray = parsedData.map(o => o.ownerOf);
+    // const ownerset = new Set(ownerArray);
+    // setNftHolders(Array.from(ownerset));
 
     let propObj = [];
 

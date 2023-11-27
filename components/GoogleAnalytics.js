@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function GoogleAnalytics(props){
     useEffect(() => {
         pageview(props.GA_MEASUREMENT_ID, window.location.href);
-    });
+    },[]);
 
     return (
         <>

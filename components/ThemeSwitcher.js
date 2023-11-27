@@ -1,6 +1,7 @@
  import { useEffect } from 'react'
 import { useThemeContext } from '../contexts/ThemeContext'
 import { IconSun, IconMoon } from './icons/CustomIcons'
+import { useCookies } from 'react-cookie'
 
 const style = {
   background: `icon hover:bg-neutral-100 p-2 -mr-2 rounded-xl cursor-pointer`,
@@ -8,29 +9,32 @@ const style = {
 
 const ThemeSwitcher = () => {
   const { dark, setDark } = useThemeContext()
+  const [cookie, setCookie] = useCookies(['theme']);
 
-  useEffect(() => {
-    const themeStyle = localStorage.getItem('theme');
+  const changeTheme = () => {
+    const newTheme = dark ? 'light' : 'dark';
+    setCookie('theme', newTheme);
+    setDark(!dark);
+  }
+
+  // useEffect(() => {
+  //   const themeStyle = localStorage.getItem('theme');
     
-    if(dark != themeStyle){
-      const themeStyle = localStorage.setItem('theme', !themeStyle);
-      setDark(!themeStyle)
-    }
-    // if(themeStyle){
-    //   localStorage.setItem('theme', themeStyle)
-    // }{
-    //   localStorage.setItem('theme', themeStyle)
-    // }
-    return() => {}
-  }, [])
+  //   if(dark != themeStyle){
+  //     const themeStyle = localStorage.setItem('theme', !themeStyle);
+  //     setDark(!themeStyle)
+  //   }
+    
+  //   return() => {}
+  // }, [])
 
-  useEffect(() => {
-    localStorage.setItem('theme', dark);
-  }, [dark])
+  // useEffect(() => {
+  //   localStorage.setItem('theme', dark);
+  // }, [dark])
   return (
       <div
         className=""
-        onClick={() => setDark(!dark)}
+        onClick={() => changeTheme()}
       >
         {!dark ? 
         <div className="flex gap-2">

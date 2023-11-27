@@ -17,7 +17,7 @@ import { emailBody } from './emails/templates.js';
 import { ThirdwebStorage } from '@thirdweb-dev/storage';
 import { emailClient, sendEmail } from './emails/transporter/index.js';
 import { deleteMarketData, findListedNFTs, getListedNfts, getMarketData, latestMarketData, saveMarketData, saveMultipleMarketData } from './mango/mangoConfig.js';
-import { getNFTCollectionsByWallet, getNFTContractMetadata, getNFTMetadata, getNFTOwner, getNFTTransfersByTokenID, getNFTsByCollection, getNFTsByWallet } from './moralis/config.js';
+import { getNFTCollectionsByWallet, getNFTContractMetadata, getNFTMetadata, getNFTOwner, getNFTOwnersOfCollection, getNFTTransfersByTokenID, getNFTsByCollection, getNFTsByWallet } from './moralis/config.js';
 
 const app = express();
 //enable helmet middleware
@@ -397,6 +397,17 @@ app.get('/api/moralis/getNFTOwnerData/:chain/:contractAddress/:tokenid', async(r
   try{
     const ownerData = await getNFTOwner(chain, contractAddress, tokenid);
     return res.status(200).send(ownerData?.result);
+  
+  }catch(error){
+    console.log(":rocket: ~ file: index.js:17 ~ error:", error)
+    return res.send(null);
+  }
+});
+app.get('/api/moralis/getNFTOwnersOfCollection/:chain/:contractAddress', async(req, res) =>{
+  const {chain, contractAddress} = req.params;
+  try{
+    const owners = await getNFTOwnersOfCollection(chain, contractAddress);
+    return res.status(200).send(owners);
   
   }catch(error){
     console.log(":rocket: ~ file: index.js:17 ~ error:", error)

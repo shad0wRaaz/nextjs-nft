@@ -15,7 +15,7 @@ import ChainSelection from './ChainSelection'
 import nuvanftLogo from '../assets/nuvanft.png'
 import { BiArrowFromBottom } from 'react-icons/bi'
 import { Menu, Transition } from '@headlessui/react'
-import { useState, useEffect, Fragment } from 'react'
+import { useState, useEffect, Fragment, useCallback } from 'react'
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import { useUserContext } from '../contexts/UserContext'
 import { useThemeContext } from '../contexts/ThemeContext'
@@ -26,6 +26,7 @@ import { MdOutlineCollections, MdOutlineWidgets } from 'react-icons/md'
 import { getActiveListings, getLatestNfts } from '../fetchers/Web3Fetchers'
 import { IconImage, IconMagnifier, IconProfile } from './icons/CustomIcons'
 import { getMyCollections, getCoinPrices, getBlockedItems, checkReferralUser } from '../fetchers/SanityFetchers'
+import { useCookies } from 'react-cookie'
 
 
 
@@ -36,7 +37,8 @@ const Header = () => {
   const { w } = router.query;
   const address = useAddress();
   const chainid = useChainId();
-  const { dark, errorToastStyle, successToastStyle, headerToggler, setHeaderToggler} = useThemeContext();
+  const [cookie, setCookie] = useCookies(['theme']);
+  const { dark, setDark, errorToastStyle, successToastStyle, headerToggler, setHeaderToggler} = useThemeContext();
   const { setCoinPrices, blockchainIdFromName, blockchainName, setBlockedNfts, setBlockedCollections, setReferralAllowedCollections, setReferralCommission, HOST } = useSettingsContext();
   const [isLogged, setIsLogged] = useState(false);
   const { setMyUser, setMyCollections } = useUserContext();
@@ -44,6 +46,16 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   // const [headerToggler, setHeaderToggler ] = useState(true);
   // const showHeader = typeof window !== 'undefined' && localStorage.getItem("menu") || true;
+
+  useCallback(() => {
+    if(cookie['theme'] == "dark")
+      {
+        setDark(true) 
+      }
+    else {
+      setDark(false)
+    }
+  }, [cookie])
 
   const wallet = useWallet('magicLink');
 
